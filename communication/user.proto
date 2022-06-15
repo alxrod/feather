@@ -1,0 +1,100 @@
+syntax = "proto3";
+package main;
+option go_package=".;communication";
+
+message UserRegisterRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+    string full_name = 4;
+    uint32 user_type = 5;
+}
+
+message UserRegisterResponse {
+    bool success = 1;
+    string error = 2;
+    string token = 3;
+    string username = 4;
+}
+
+message UserLoginRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message UserLoginResponse {
+    bool success = 1;
+    string error = 2;
+    string token = 3;
+    string username = 4;
+}
+
+message UserLogoutRequest {
+    string username = 1;
+    string token = 2;
+}
+
+message UserLogoutResponse {
+    bool success = 1;
+    string error = 2;
+}
+
+service Auth{
+    rpc Register(UserRegisterRequest) returns (UserRegisterResponse) {};
+    rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
+    rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
+}
+
+message InstagramCreateRequest {
+    string user_id = 1;
+    string account = 2;
+    uint32 followers = 3;
+    bool verified = 4;
+}
+
+message TiktokCreateRequest {
+    string user_id = 1;
+    string account = 2;
+    uint32 followers = 3;
+    bool verified = 4;
+}
+
+message InstagramVerifyRequest {
+    string user_id = 1;
+    bool verified = 2;
+}
+message TiktokVerifyRequest {
+    string user_id = 1;
+    bool verified = 2;
+}
+
+message SocialResponse {
+    string account = 2;
+    uint32 followers = 3;
+    bool verified = 4;
+    string platform = 5;
+}
+service Social{
+    rpc AddInstagram(InstagramCreateRequest) returns (SocialResponse) {};
+    rpc AddTiktok(TiktokCreateRequest) returns (SocialResponse) {};
+    rpc VerifyInstagram(InstagramVerifyRequest) returns (SocialResponse) {};
+    rpc VerifyTiktok(TiktokVerifyRequest) returns (SocialResponse) {};
+}
+
+message PaymentSetupRequest {
+    string user_id = 1;
+    string card_number = 2;
+    string card_holder = 3;
+    uint32 month = 4;
+    uint32 year = 5;
+    string zip = 6;
+    string CVV = 7;
+}
+
+message PaymentSetupResponse {
+    bool valid = 1;
+}
+
+service Payment {
+    rpc SetupPayment(PaymentSetupRequest) returns (PaymentSetupResponse) {};
+}
