@@ -8,9 +8,6 @@ cert/server.key
 
 communication/*.go
 
-ui/featherapp/node_modules
-ui/featherapp/build
-
 
 
 
