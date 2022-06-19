@@ -1,17 +1,21 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { Link } from 'react-router-dom'
 
 import f_logo from "../../style/logo/f_logo.svg";
 import feather_logo from "../../style/logo/feather_logo.svg";
 
+import { bindActionCreators } from 'redux'
+import { logout } from "../../reducers/user.reducer";
+import { connect } from "react-redux";
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
+const NavBar = (props) => {
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -66,12 +70,10 @@ export default function Example() {
                   type="button"
                   className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
 
                 {/* Profile dropdown */}
-                <Menu as="div" className="ml-3 relative">
+                <Menu as="div" className="ml-3 relative z-50">
                   <div>
                     <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                       <span className="sr-only">Open user menu</span>
@@ -102,37 +104,47 @@ export default function Example() {
                           </Link>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/login"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Log in
-                          </Link>
-                        )}
-                      </Menu.Item>
+                      {!props.isLoggedIn && (
+                        <>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/login"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Log in
+                              </Link>
+                            )}
+                          </Menu.Item>
 
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/register"
+                                className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                              >
+                                Sign up
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        </>
+                      )}
+                      {props.isLoggedIn && (
                       <Menu.Item>
                         {({ active }) => (
                           <Link
-                            to="/register"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Sign up
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            to="/logout"
+                            to="#"
+                            onClick={() => {
+                              props.logout()
+                              window.location.reload(false);
+                            }}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Log out
                           </Link>
                         )}
                       </Menu.Item>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -193,16 +205,9 @@ export default function Example() {
                   />
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">Tom Cook</div>
-                  <div className="text-sm font-medium text-gray-500">tom@example.com</div>
+                  <div className="text-base font-medium text-gray-800">{props.isLoggedIn && (props.user.full_name)}</div>
+                  <div className="text-sm font-medium text-gray-500">{props.isLoggedIn && (props.user.email)}</div>
                 </div>
-                <button
-                  type="button"
-                  className="ml-auto flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
               </div>
               <div className="mt-3 space-y-1">
                 <Disclosure.Button
@@ -234,3 +239,17 @@ export default function Example() {
     </Disclosure>
   )
 }
+
+const mapStateToProps = ({ user }) => ({
+  isLoggedIn: user.isLoggedIn,
+  user: user.user,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  logout,
+}, dispatch)
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NavBar)

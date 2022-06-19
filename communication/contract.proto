@@ -1,0 +1,115 @@
+syntax = "proto3";
+package main;
+option go_package=".;communication";
+
+import "google/protobuf/timestamp.proto";
+
+message PriceEntity {
+    float current = 1;
+    float buyer = 2;
+    float worker = 3;
+}
+
+message DeadlineEntity {
+    google.protobuf.Timestamp current = 1;
+    google.protobuf.Timestamp buyer = 2;
+    google.protobuf.Timestamp worker = 3;
+}
+
+message ContractEntity {
+    string id = 1;
+    UserNubEntity worker = 2;
+    UserNubEntity buyer = 3;
+    PriceEntity price = 4;
+    DeadlineEntity deadline = 5;
+    string title = 8;
+    string summary = 6;
+    uint32 stage = 9;
+    repeated ItemEntity items = 7;
+}
+
+message UserNubEntity {
+    string id = 1;
+    string username = 2;
+    uint32 type = 3;
+}
+
+message ItemEntity {
+    string id = 1;
+    string contract_id = 2;
+    string name = 4;
+    repeated ItemChunk body = 3;
+}
+
+message ItemChunk {
+    uint32 type = 1;
+    string author_id = 2;
+    bool worker_approve = 3;
+    bool buyer_approve = 4;
+    string text = 5;
+}
+message ContractCreateRequest {
+    string user_id = 1;
+    string title = 2;
+    string summary = 3;
+    string intro_message = 4;
+    PriceEntity price = 5;
+    DeadlineEntity deadline = 6;
+    repeated ItemEntity items = 7;
+}
+
+message ContractQueryRequest {
+    string contract_ids = 1;
+    string user_id = 2;
+}
+
+message ContractSuggestPrice {
+    string user_id = 1;
+    uint32 new_price = 2;
+}
+message ContractReactPrice {
+    string user_id = 1;
+    bool accept = 2;
+}
+message ContractSuggestDeadline {
+    string user_id = 1;
+    uint32 new_price = 2;
+}
+message ContractReactDeadline {
+    string user_id = 1;
+    bool accept = 2;
+}
+
+message ContractAddItemRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string item_title = 3;
+    string item_body = 4;
+}
+message ContractDelItemRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string item_id = 3;
+}
+
+message ContractResponse {
+    ContractEntity contract = 2;
+}
+
+message ContractAddItemResponse {
+    ContractEntity contract = 2;
+    string item_id = 3;
+}
+
+service Contract {
+    rpc Create(ContractCreateRequest) returns (ContractResponse) {};
+    rpc Query(ContractQueryRequest) returns (ContractResponse) {};
+
+    rpc SuggestPrice(ContractSuggestPrice) returns (ContractResponse) {};
+    rpc ReactPrice(ContractReactPrice) returns (ContractResponse) {};
+    rpc SuggestDate(ContractSuggestDeadline) returns (ContractResponse) {};
+    rpc ReactDate(ContractReactDeadline) returns (ContractResponse) {};
+
+    rpc AddItem(ContractAddItemRequest) returns (ContractAddItemResponse) {};
+    rpc DeleteItem(ContractDelItemRequest) returns (ContractResponse) {};
+}

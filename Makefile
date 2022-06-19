@@ -13,7 +13,7 @@ backend:
 
 .PHONY: proto
 proto:
-	protoc communication/user.proto \
+	protoc communication/*.proto \
 		--js_out=import_style=commonjs,binary:./ui/featherapp/src/proto\
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ui/featherapp/src/proto \
 		--go-grpc_out=./communication \

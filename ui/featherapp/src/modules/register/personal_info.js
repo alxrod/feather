@@ -10,12 +10,17 @@ export default function PersonalInfo(props) {
     const [nameError, setNameError] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
+    const [generalError, setGenError] = useState("")
 
     const handleRegister = (e) => {
       e.preventDefault()
       form.current.validateAll();
       if (usernameError === "" && nameError === "" && emailError === "" && passwordError === "") {
-        props.handleRegister(e)
+        props.handleRegister(e).then(() => {
+          props.nextPhase()
+        }, (error) => {
+          setGenError(error)
+        })
       }
     }
     const handleUsernameChange = (e) => {
@@ -77,6 +82,9 @@ export default function PersonalInfo(props) {
               <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Welcome Aboard!</h2>
               <p className="mt-2 text-center text-sm text-gray-600">
                 We're so excited to have you
+              </p>
+              <p className="mt-2 text-center text-sm text-red">
+                {generalError}
               </p>
 
             </div>

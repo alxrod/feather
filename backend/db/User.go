@@ -14,18 +14,25 @@ import (
 )
 
 const (
-	INFLUENCER = 0
-	SPONSOR    = 1
+	WORKER = 0
+	BUYER  = 1
+)
+
+const (
+	ADMIN_ROLE  = 7 // 111
+	STD_ROLE    = 3 // 011
+	UNAUTH_ROLE = 1 //001
 )
 
 type User struct {
 	Username  string             `bson:"username"`
 	Id        primitive.ObjectID `bson:"_id,omitempty"`
 	Type      uint32             `bson:"user_type"`
+	Role      uint32             `bson:"role"`
 	Password  string             `bson:"password"`
 	Email     string             `bson:"email"`
 	FullName  string             `bson:"full_name"`
-	Contracts []ContractNub      `bson:"contract_ids"`
+	Contracts []uint32           `bson:"contract_ids"`
 	Instagram InstagramNub       `bson:"instagram"`
 	Tiktok    TiktokNub          `bson:"tiktok"`
 	Payment   PaymentNub         `bson:"payment"`
@@ -39,11 +46,6 @@ type PaymentNub struct {
 	Expiration time.Time `bson: expiration_date`
 	CVV        string    `bson: CVV`
 	Zip        string    `bson: zipcode`
-}
-
-type ContractNub struct {
-	Id    string `bson:"id"`
-	Stage string `bson:"stage"`
 }
 
 type InstagramNub struct {
@@ -112,13 +114,21 @@ func UserInsert(username, password, email, full_name string, user_type uint32, c
 		Email:    email,
 		FullName: full_name,
 		Type:     user_type,
+		Role:     STD_ROLE,
 	}
 
-	_, err = collection.InsertOne(context.TODO(), userD)
+	res, err := collection.InsertOne(context.TODO(), userD)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert User: \nusername: %s, \npassword: %s, \nemail: %s", username, password, email)))
 		return nil, err
 	} else {
+		id := res.InsertedID
+		switch val := id.(type) {
+		case primitive.ObjectID:
+			userD.Id = val
+		default:
+			log.Println(color.Ize(color.Red, fmt.Sprintf("Generated User %s did not have a valid generated id", userD.Username)))
+		}
 		return userD, nil
 	}
 }

@@ -21,7 +21,6 @@ const mapStateToProps = ({ user }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    createContract: () => push('/create-contract'),
 }, dispatch)
 
 export default connect(

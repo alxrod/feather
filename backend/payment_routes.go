@@ -13,7 +13,7 @@ import (
 )
 
 func (s *BackServer) SetupPayment(ctx context.Context, req *comms.PaymentSetupRequest) (*comms.PaymentSetupResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection("users")
+	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
 
 	id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {

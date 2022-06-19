@@ -15,6 +15,8 @@ message UserRegisterResponse {
     string error = 2;
     string token = 3;
     string username = 4;
+    string id = 5;
+    uint32 role = 6;
 }
 
 message UserLoginRequest {
@@ -23,10 +25,11 @@ message UserLoginRequest {
 }
 
 message UserLoginResponse {
-    bool success = 1;
-    string error = 2;
+    string Error = 1;
     string token = 3;
     string username = 4;
+    string id = 5;
+    uint32 role = 6;
 }
 
 message UserLogoutRequest {
@@ -35,14 +38,40 @@ message UserLogoutRequest {
 }
 
 message UserLogoutResponse {
-    bool success = 1;
-    string error = 2;
+    string Error = 1;
+}
+
+message UserPullRequest {
+    string user_id = 1;
+}
+
+message UserPullResponse {
+    string user_id = 1;
+    string username = 2;
+    uint32 user_type = 3;
+    uint32 role = 14;
+    string email = 4;
+    string full_name = 5;
+    repeated uint32 contract_ids = 6 [packed=true];
+
+    string insta_account = 7;
+    uint32 insta_followers = 8;
+    bool insta_verified = 9;
+
+    string tiktok_account = 10;
+    uint32 tiktok_followers = 11;
+    bool tiktok_verified = 12;
+
+    bool payment_setup = 13;
+
+
 }
 
 service Auth{
     rpc Register(UserRegisterRequest) returns (UserRegisterResponse) {};
     rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
     rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
+    rpc Pull(UserPullRequest) returns (UserPullResponse) {};
 }
 
 message InstagramCreateRequest {
@@ -61,11 +90,11 @@ message TiktokCreateRequest {
 
 message InstagramVerifyRequest {
     string user_id = 1;
-    bool verified = 2;
+    string code = 2;
 }
 message TiktokVerifyRequest {
     string user_id = 1;
-    bool verified = 2;
+    bool code = 2;
 }
 
 message SocialResponse {

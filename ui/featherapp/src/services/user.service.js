@@ -3,6 +3,7 @@ import {
     UserLoginRequest,
     UserRegisterRequest,
     UserLogoutRequest,
+    UserPullRequest,
 
     InstagramCreateRequest,
     InstagramVerifyRequest,
@@ -17,10 +18,11 @@ export const authClient = new AuthClient("https://localhost:8080");
 export const socialClient = new SocialClient("https://localhost:8080");
 export const paymentClient = new PaymentClient("https://localhost:8080");
 
-export const INFLUENCER_TYPE = 0
-export const SPONSOR_TYPE = 1
+export const WORKER_TYPE = 0
+export const BUYER_TYPE = 1
 
 class UserService {
+
     // Auth Requests
     login(username, password) {
         var loginRequest = new UserLoginRequest();   
@@ -29,20 +31,23 @@ class UserService {
 
         return new Promise( (resolve, reject) => { 
             authClient.login(loginRequest, null, function(error, response) {
-                var resp = response.toObject();
                 if (error) {
                     reject(error)
+                    return 
                 }
-                if (resp.token) {
+                var resp = response.toObject();
+                if (resp.error !== "") {
+                    reject(resp.error)
+                    return
+                } else {
                     var data = {
                         username: resp.username,
-                        accessToken: resp.token,
+                        access_token: resp.token,
+                        user_id: resp.id,
+                        role: resp.role,
                     }
                     localStorage.setItem("user", JSON.stringify(data));
                     resolve(data)
-                }
-                if (resp.success === false && resp.error !== "") {
-                    reject(new Error(resp.error))
                 }
                reject(new Error("Catch all invalid request"))
             });
@@ -56,22 +61,25 @@ class UserService {
         registerRequest.setFullName(full_name);
         registerRequest.setEmail(email);
         registerRequest.setPassword(password);
-        registerRequest.setUserType(INFLUENCER_TYPE);
+        registerRequest.setUserType(WORKER_TYPE);
 
         console.log(registerRequest.toObject());
         return new Promise (function (resolve, reject) {
             authClient.register(registerRequest, null, function(err, response) {
-                var resp = response.toObject();
                 if (err) {
                     reject(err)
                 }
+                var resp = response.toObject();
+                
                 if (resp.token) {
                     const data = {
                         username: resp.username,
-                        accessToken: resp.token
+                        access_token: resp.token,
+                        user_id: resp.id,
+                        role: resp.role,
                     }
                     localStorage.setItem("user", JSON.stringify(data));
-                    resolve()
+                    resolve(data)
                 }
                 if (resp.success === false && resp.error !== "") {
                     reject(resp.error)
@@ -89,38 +97,39 @@ class UserService {
             return Error("You are not currently logged in")
         }
         logoutRequest.setUsername(user.username);
-        logoutRequest.setToken(user.accessToken);
+        logoutRequest.setToken(user.access_token);
 
         authClient.logout(logoutRequest, null, function(err, response) {
-            var resp = response.toObject();
             if (err) {
                 return err
             }
-            if (resp.success) {
-                localStorage.removeItem("user");
-            } else {
-                return Error(resp.error)
-            }
+            var resp = response.toObject();
+            localStorage.removeItem("user");
+
         });
         return Error("Request failed")
         
     }
 
     // Social Setup Requests
-    add_instagram(user_id, account) {
+    add_instagram(token, user_id, account) {
         var addRequest = new InstagramCreateRequest;   
         addRequest.setAccount(account);
         addRequest.setUserId(user_id);
         // TODO connect these to Paul's authenticator
-        addRequest.setVerified(true);
+        addRequest.setVerified(false);
         addRequest.setFollowers(100000);
 
+        var metadata = {"authorization": token}
+
         return new Promise( (resolve, reject) => { 
-            socialClient.addInstagram(addRequest, null, function(error, response) {
-                var resp = response.toObject();
+
+            socialClient.addInstagram(addRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
+                var resp = response.toObject();
+                
                 if (resp.account) {
                     var data = {
                         account: resp.account,
@@ -135,20 +144,23 @@ class UserService {
         });
     }
 
-    add_tiktok(user_id, account) {
+    add_tiktok(token, user_id, account) {
         var addRequest = new TiktokCreateRequest;   
         addRequest.setAccount(account);
         addRequest.setUserId(user_id);
         // TODO connect these to Paul's authenticator
-        addRequest.setVerified(true);
+        addRequest.setVerified(false);
         addRequest.setFollowers(100000);
 
+        var metadata = {"authorization": token}
+
         return new Promise( (resolve, reject) => { 
-            socialClient.addTiktok(addRequest, null, function(error, response) {
-                var resp = response.toObject();
+            socialClient.addTiktok(addRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
+                var resp = response.toObject();
+                
                 if (resp.account) {
                     var data = {
                         account: resp.account,
@@ -163,19 +175,21 @@ class UserService {
         });
     }
 
-    verify_instagram(user_id) {
+    verify_instagram(token, user_id, code) {
         var verifyRequest = new InstagramVerifyRequest; 
           
         verifyRequest.setUserId(user_id);
-        // TODO connect these to Paul's authenticator
-        verifyRequest.setVerified(true);
+        verifyRequest.setCode(code);
+
+        var metadata = {"authorization": token}
 
         return new Promise( (resolve, reject) => { 
-            socialClient.verifyInstagram(verifyRequest, null, function(error, response) {
-                var resp = response.toObject();
+            socialClient.verifyInstagram(verifyRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
+                var resp = response.toObject();
+                
                 if (resp.account) {
                     var data = {
                         account: resp.account,
@@ -190,19 +204,21 @@ class UserService {
         });
     }
     
-    verify_tiktok(user_id) {
+    verify_tiktok(token, user_id, code) {
         var verifyRequest = new TiktokVerifyRequest; 
           
         verifyRequest.setUserId(user_id);
-        // TODO connect these to Paul's authenticator
-        verifyRequest.setVerified(true);
+        verifyRequest.setCode(code);
+
+        var metadata = {"authorization": token}
 
         return new Promise( (resolve, reject) => { 
-            socialClient.verifyTiktok(verifyRequest, null, function(error, response) {
-                var resp = response.toObject();
+            socialClient.verifyTiktok(verifyRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
+                var resp = response.toObject();
+                
                 if (resp.account) {
                     var data = {
                         account: resp.account,
@@ -218,7 +234,7 @@ class UserService {
     }
 
     // Payment Setup (WILL BE REPLACED BY STRIPE ASAP)
-    add_payment(user_id, card_number, card_holder, month, year, zip, cvv) {
+    add_payment(token, user_id, card_number, card_holder, month, year, zip, cvv) {
         var addRequest = new PaymentSetupRequest;   
         addRequest.setUserId(user_id);
         addRequest.setCardNumber(card_number);
@@ -228,12 +244,15 @@ class UserService {
         addRequest.setZip(zip);
         addRequest.setCvv(cvv); 
 
+        var metadata = {"authorization": token}
+
         return new Promise( (resolve, reject) => { 
-            paymentClient.setupPayment(addRequest, null, function(error, response) {
-                var resp = response.toObject();
+            paymentClient.setupPayment(addRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
+                var resp = response.toObject();
+                
                 if (resp.valid == true) {
                     resolve(resp)
                 }
@@ -241,6 +260,38 @@ class UserService {
             });
         });
     }
+
+    
+    pull_user(token, user_id) {
+        var pullRequest = new UserPullRequest();   
+        pullRequest.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            authClient.pull(pullRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                console.log(response)
+                var resp = response.toObject();
+                
+                resolve(resp)
+            });
+        });
+    }
+}
+
+export const ownership_format = (data, user_type) => {
+    if (user_type === WORKER_TYPE) {
+        data.worker = data.you
+        data.buyer = data.partner
+    } else {
+        data.worker = data.partner
+        data.buyer = data.you
+    }
+    delete data.you
+    delete data.partner
+    return data
 }
 
 export default new UserService();

@@ -76,6 +76,11 @@ func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
 			w.Header().Set("grpc-status", "")
 			w.Header().Set("grpc-message", "")
+
+			if m.IsGrpcWebRequest(r) {
+				fmt.Printf(color.Ize(color.Cyan, fmt.Sprintf("Backend Request for : %s\n", r.URL)))
+			}
+
 			m.ServeHTTP(w, r)
 			return
 		}

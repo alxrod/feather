@@ -1,11 +1,11 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import { Redirect } from 'react-router-dom';
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { login } from "../../reducers/user";
+import { login } from "../../reducers/user.reducer";
 import { push } from 'connected-react-router'
 import { Link } from 'react-router-dom'
 
@@ -25,10 +25,9 @@ const Login = (props) => {
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [genError, setGenError] = useState("")
 
     const form = useRef(null)
-    const checkBtn = useRef(null)
     
     const onChangeUsername = (e) => {
         setUsername(e.target.value)
@@ -39,94 +38,25 @@ const Login = (props) => {
 
     const handleLogin = (e) => {
         e.preventDefault()
-        setLoading(false)
         form.current.validateAll();
-        if (checkBtn.current.context._errors.length === 0) {
+        if (username !== "" && password !== "") {
             props.login(username, password)
             .then(() => {
-                push("/");
             })
-            .catch(() => {
-                setLoading(false)
+            .catch((error) => {
+              console.log("Caught error")
+              setGenError(error)
             })
-        } else {
-            setLoading(false)
         }
     }
-
+    
     if (props.isLoggedIn) {
-        return (<Redirect to="/profile"/>);
+      return (
+        <Redirect to={"/contracts"}/>
+      )
     }
-    // return (
-    //     <div className="col-md-12">
-    //         <div className="card card-container">
-    //             <img
-    //                 src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-    //                 alt="profile-img"
-    //                 className="profile-img-card"
-    //             />
-    //             <Form
-    //                 onSubmit={handleLogin}
-    //                 ref={form}
-    //             >
-    //                 <div className="form-group">
-    //                     <label htmlFor="username">Username</label>
-    //                     <Input
-    //                         type="text"
-    //                         className="form-control"
-    //                         name="username"
-    //                         value={username}
-    //                         onChange={onChangeUsername}
-    //                         validations={[required]}
-    //                     />
-    //                 </div>
-    //                 <div className="form-group">
-    //                     <label htmlFor="password">Password</label>
-    //                     <Input
-    //                         type="password"
-    //                         className="form-control"
-    //                         name="password"
-    //                         value={password}
-    //                         onChange={onChangePassword}
-    //                         validations={[required]}
-    //                     />
-    //                 </div>
-    //                 <div className="form-group">
-    //                     <button
-    //                         className="btn btn-primary btn-block"
-    //                         disabled={loading}
-    //                     >
-    //                         {loading && (
-    //                             <span className="spinner-border spinner-border sm"></span>
-    //                         )}
-    //                         <span>Login</span>
-    //                     </button>
-    //                 </div>
-    //                 {props.message && (
-    //                     <div className="form-group">
-    //                         <div className="alert alert-danger" role="alert">
-    //                             {props.message}
-    //                         </div>
-    //                     </div>
-    //                 )}
-    //                 <CheckButton
-    //                     style={{ display: "none" }}
-    //                     ref={checkBtn}
-    //                 />
-    //             </Form>
-    //         </div>
-    //     </div>
-    // )
     return (
         <>
-          {/*
-            This example requires updating your template:
-    
-            ```
-            <html class="h-full bg-gray-50">
-            <body class="h-full">
-            ```
-          */}
           <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
               <img
@@ -145,17 +75,22 @@ const Login = (props) => {
     
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
               <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <form className="space-y-6" action="#" method="POST">
+                <Form ref={form}>
+                  {!(genError === "") && (
+                    <p className="text-red">{genError}</p>
+                  )}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                      Email address
+                    <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                      Username
                     </label>
                     <div className="mt-1">
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
+                      <Input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autoComplete="username"
+                        value={username}
+                        onChange={onChangeUsername}
                         required
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
@@ -167,11 +102,13 @@ const Login = (props) => {
                       Password
                     </label>
                     <div className="mt-1">
-                      <input
+                      <Input
                         id="password"
                         name="password"
                         type="password"
                         autoComplete="current-password"
+                        value={password}
+                        onChange={onChangePassword}
                         required
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       />
@@ -180,7 +117,7 @@ const Login = (props) => {
     
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <input
+                      <Input
                         id="remember-me"
                         name="remember-me"
                         type="checkbox"
@@ -201,12 +138,13 @@ const Login = (props) => {
                   <div>
                     <button
                       type="submit"
+                      onClick={handleLogin}
                       className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                       Sign in
                     </button>
                   </div>
-                </form>
+                </Form>
     
               </div>
             </div>
@@ -221,7 +159,8 @@ const mapStateToProps = ({ user }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    login
+    login,
+    push,
 }, dispatch)
 
 export default connect(

@@ -1,82 +1,120 @@
-import React, { useEffect } from 'react';
-import { Route, Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { Redirect, Route, Link } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import NavBar from "../navbar"
 
 import Home from '../home'
-import Example from '../example'
 
 import Login from '../login'
 import Register from '../register'
 import Profile from '../profile'
 
-import { logout, clearMessage } from "../../reducers/user";
+import { logout, clearMessage } from "../../reducers/user.reducer";
 import {history} from '../../reducers'
 
 import ContractsView from '../contracts_view';
 import MessageView from '../message_view';
 
 
-import ContractCreate from '../contract_create';
-import ContractView from '../contract_view';
-import ContractNegotiate from '../contract_negotiate';
-import ContractSettle from '../contract_settle';
+import ContractCreate from '../contract/contract_create';
+import ContractView from '../contract/contract_view';
+import ContractNegotiate from '../contract/contract_negotiate';
+import ContractSettle from '../contract/contract_settle';
+import { push } from 'connected-react-router'
+import { useLocation } from 'react-router-dom'
 
+import { 
+  pullUser
+} from "../../reducers/user.reducer";
+
+const ADMIN_ROLE = 7 // 111
+const STD_ROLE = 3 // 011
+const UNAUTH_ROLE = 1 //001
+const routes = {
+  "/": UNAUTH_ROLE,
+  "/messages": STD_ROLE,
+  "/contracts": STD_ROLE,
+
+  "/create": STD_ROLE,
+  "/negotiate": STD_ROLE,
+  "/view": STD_ROLE,
+  "/settle": STD_ROLE,
+
+  "/login": UNAUTH_ROLE,
+  "/register": UNAUTH_ROLE,
+  "/profile": STD_ROLE,
+  
+}
 const App = (props) => {
+  const loc = useLocation();
+  const [pullReq, setPullReq] = useState(false);
+  let firstLoad = true
+
+  // useEffect(() => {
+  //   console.log("Detected at root")
+  //   if (props.isLoggedIn == true &&
+  //       loc.pathname == "/login" &&
+  //       loc.pathname == "/register") {
+  //     props.push("/contracts");
+  //   }
+  // }, [props.isLoggedIn])
 
   useEffect( () => {
-    history.listen((location) => {
-    });
-  }) 
-  const handleLogout = (e) => {
-    e.preventDefault()
-    props.logout(props.user.username)
-  }
-  
-  const auth_links = () => {
-    if (!props.user) {
-      return (
-        <div>
-          <Link to="/login">login </Link>
-          <Link to="/register">register </Link>
-        </div>
-      )
-    } else {
-      return (
-        <div>
-          <Link to="/profile">profile </Link>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      )
-    }
-  }
+    console.log("Calling a link change to path: " + loc.pathname)
+    console.log(loc.pathname)
+    authRedirect(loc.pathname)
+  }, [loc]) 
 
+  useEffect( () => {
+    if (pullReq == true && props.user !== null && props.user.type === undefined) {
+      console.log("Pulling user data")
+      props.pullUser(props.user.user_id).then(() => {
+        console.log("Finished pull")
+        setPullReq(false);
+      });
+    }
+  }, [pullReq])
+
+  const authRedirect = (pathname) => {
+    if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
+      console.log("You aren't logged in yet")
+      console.log(props.user)
+      props.push("/login")
+      return false
+    } else if (props.user !== null) {
+      const role = props.user.role
+      if ((routes[pathname] & role) !== routes[pathname]) {
+        props.push("/login")
+        return false
+      }
+    }
+    console.log("And no redirect")
+    return true
+  }
 
   return (
 
     <div className="App">
       <header>
         <NavBar/>
-        {/* <Link to="/">Home </Link>
-        <Link to="/example">Example </Link>
-        {auth_links()} */}
       </header>
 
       <main>
+        <Route exact path="/" element={<Home/>} component={Home} />
+
         <Route exact path="/contracts" element={<ContractsView/>} component={ContractsView} />
         <Route exact path="/messages" element={<MessageView/>} component={MessageView} />
-        
+
         <Route path="/create" element={<ContractCreate/>} component={ContractCreate} />
         <Route path="/negotiate" element={<ContractNegotiate/>} component={ContractNegotiate} />
         <Route path="/view" element={<ContractView/>} component={ContractView} />
         <Route path="/settle" element={<ContractSettle/>} component={ContractSettle} />
-
-        <Route exact path="/login" element={<Login/>} component={Login} />
-        <Route exact path="/register" element={<Register/>} component={Register} />
+        
         <Route exact path="/profile" element={<Profile/>} component={Profile} />
 
-        {/* <Route exact path="/example" element={<Example/>} component={Example} /> */}
+        <Route exact path="/login" element={<Login/>} component={Login} />    
+        <Route exact path="/register" element={<Register/>} component={Register} />
       </main>
     </div>
   );
@@ -84,12 +122,14 @@ const App = (props) => {
 
 
 const mapStateToProps = ({ user }) => ({
-    user: user.user
+    user: user.user,
+    isLoggedIn: user.isLoggedIn,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  logout,
+  pullUser,
   clearMessage,
+  push,
 }, dispatch)
 
 export default connect(

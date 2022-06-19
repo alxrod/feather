@@ -6,6 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+const (
+	USERS_COL = "users"
+	ITEM_COL  = "contract_items"
+	CON_COL   = "contracts"
+)
+
 // Errors:
 type ErrorUserNotFound struct {
 	username string
@@ -14,7 +20,7 @@ type ErrorUserNotFound struct {
 
 func (e *ErrorUserNotFound) Error() string {
 	if e.username != "" {
-		return fmt.Sprintf("User not found with username %s in DB", e.username)
+		return fmt.Sprintf("There is no registered user with username '%s'", e.username)
 	} else {
 		return fmt.Sprintf("User not found with id %s in DB", e.id)
 	}
@@ -52,7 +58,7 @@ type ErrorPasswordIncorrect struct {
 }
 
 func (e *ErrorPasswordIncorrect) Error() string {
-	return fmt.Sprintf("User %s does not have the password %s in DB", e.username, e.password)
+	return "That's the wrong password!"
 }
 
 type ErrorUserWithEmailAlreadyExists struct {

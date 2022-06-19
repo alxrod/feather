@@ -8,8 +8,12 @@ import (
 	"time"
 
 	"github.com/TwiN/go-color"
+
+	db "github.com/alxrod/feather/backend/db"
+	interceptors "github.com/alxrod/feather/backend/interceptors"
+	services "github.com/alxrod/feather/backend/services"
 	comms "github.com/alxrod/feather/communication"
-	"github.com/alxrod/feather/interceptors"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -20,24 +24,41 @@ import (
 const debug = false
 
 // Update this to use .env value
-var JwtKey = []byte("my_secret_key")
+const (
+	secretKey     = "my_secret_key"
+	tokenDuration = 15 * time.Minute
+)
 
-const timeout_minutes = 5
+func accessibleRoles() map[string]uint32 {
+
+	return map[string]uint32{
+		"/main.Auth/Pull":              db.STD_ROLE,
+		"/main.Social/AddInstagram":    db.STD_ROLE,
+		"/main.Social/AddTiktok":       db.STD_ROLE,
+		"/main.Social/VerifyInstagram": db.STD_ROLE,
+		"/main.Social/VerifyTiktok":    db.STD_ROLE,
+		"/main.Payment/SetupPayment":   db.STD_ROLE,
+	}
+}
 
 type BackServer struct {
 	comms.UnimplementedSocialServer
 	comms.UnimplementedPaymentServer
 	comms.UnimplementedAuthServer
+	comms.UnimplementedContractServer
 
-	GrpcSrv  *grpc.Server
-	lis      net.Listener
-	dbClient *mongo.Client
-	dbName   string
-	dbCtx    context.Context
+	JwtManager *services.JWTManager
+	GrpcSrv    *grpc.Server
+	lis        net.Listener
+	dbClient   *mongo.Client
+	dbName     string
+	dbCtx      context.Context
 }
 
 func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*BackServer, error) {
-	grpcServer, err := NewGrpcServer(server_cert, server_key)
+	jwtManager := services.NewJWTManager(secretKey, tokenDuration)
+
+	grpcServer, err := NewGrpcServer(server_cert, server_key, jwtManager)
 	if err != nil {
 		return nil, err
 	}
@@ -51,6 +72,7 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	if err != nil {
 		return nil, err
 	}
+
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
@@ -58,10 +80,11 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	}
 
 	s := &BackServer{
-		lis:      lis,
-		GrpcSrv:  grpcServer,
-		dbClient: client,
-		dbCtx:    ctx,
+		lis:        lis,
+		GrpcSrv:    grpcServer,
+		JwtManager: jwtManager,
+		dbClient:   client,
+		dbCtx:      ctx,
 	}
 	if len(dbName) == 1 {
 		s.dbName = dbName[0]
@@ -72,11 +95,12 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	comms.RegisterSocialServer(grpcServer, s)
 	comms.RegisterAuthServer(grpcServer, s)
 	comms.RegisterPaymentServer(grpcServer, s)
+	comms.RegisterContractServer(grpcServer, s)
 
 	return s, nil
 }
 
-func NewGrpcServer(pemPath, keyPath string) (*grpc.Server, error) {
+func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*grpc.Server, error) {
 	var cred credentials.TransportCredentials
 	var err error
 	if debug {
@@ -91,14 +115,12 @@ func NewGrpcServer(pemPath, keyPath string) (*grpc.Server, error) {
 		}
 	}
 
-	pc := interceptors.PingCounter{}
+	authIntercept := interceptors.NewAuthInterceptor(jwtManager, accessibleRoles())
+
 	s := grpc.NewServer(
 		grpc.Creds(cred),
-
-		grpc.ChainUnaryInterceptor(
-			pc.ServerCount,
-			interceptors.LogRequest,
-		),
+		grpc.UnaryInterceptor(authIntercept.Unary()),
+		grpc.StreamInterceptor(authIntercept.Stream()),
 	)
 
 	return s, nil

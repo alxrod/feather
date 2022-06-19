@@ -258,6 +258,67 @@ proto.main.AuthPromiseClient.prototype.logout =
 
 
 /**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.UserPullRequest,
+ *   !proto.main.UserPullResponse>}
+ */
+const methodDescriptor_Auth_Pull = new grpc.web.MethodDescriptor(
+  '/main.Auth/Pull',
+  grpc.web.MethodType.UNARY,
+  proto.main.UserPullRequest,
+  proto.main.UserPullResponse,
+  /**
+   * @param {!proto.main.UserPullRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.UserPullResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.UserPullRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.UserPullResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.UserPullResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.AuthClient.prototype.pull =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Auth/Pull',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_Pull,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.UserPullRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.UserPullResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.AuthPromiseClient.prototype.pull =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Auth/Pull',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_Pull);
+};
+
+
+/**
  * @param {string} hostname
  * @param {?Object} credentials
  * @param {?grpc.web.ClientOptions} options

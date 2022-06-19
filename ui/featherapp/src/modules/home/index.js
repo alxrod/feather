@@ -11,18 +11,7 @@ import { connect } from 'react-redux'
 
 const Home = props => (
     <div>
-        {/* <h1>Home</h1>
-        <p>Count: {props.count}</p>
-        <p>
-            <button onClick={props.increment}>Increment</button>
-            <button onClick={props.incrementAsync}>Increment Async</button>
-        </p>
-        
-        <p>
-            <button onClick={props.decrement}>Decrement</button>
-            <button onClick={props.decrementAsync}>Decrement Async</button>
-        </p>
-        <button onClick={() => props.changePage()}>Go to about page via redux</button> */}
+        <h1>Landing Page Coming Soon.</h1>
     </div>
 )
 
