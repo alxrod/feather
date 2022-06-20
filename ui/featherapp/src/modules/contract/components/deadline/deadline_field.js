@@ -7,7 +7,11 @@ const DeadlineField = (props) => {
   const [field_classes, setClasses] = useState("hidden")
 
   const date_str = useMemo(() => {
-    return props.deadline.you.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
+    if (props.deadline_str) {
+      return props.deadline_str
+    } else {
+      return props.deadline.you.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
+    }
   })
 
   const [openModal, setOpenModal] = useState(false)

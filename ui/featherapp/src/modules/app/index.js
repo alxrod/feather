@@ -17,6 +17,9 @@ import ContractsView from '../contracts_view';
 import MessageView from '../message_view';
 
 
+import ChatTest from '../contract/chat_test';
+
+import ContractRedirect from '../contract/contract_redirect';
 import ContractCreate from '../contract/contract_create';
 import ContractView from '../contract/contract_view';
 import ContractNegotiate from '../contract/contract_negotiate';
@@ -33,9 +36,11 @@ const STD_ROLE = 3 // 011
 const UNAUTH_ROLE = 1 //001
 const routes = {
   "/": UNAUTH_ROLE,
+  "/chat": STD_ROLE,
   "/messages": STD_ROLE,
   "/contracts": STD_ROLE,
 
+  "/contract": STD_ROLE,
   "/create": STD_ROLE,
   "/negotiate": STD_ROLE,
   "/view": STD_ROLE,
@@ -51,19 +56,12 @@ const App = (props) => {
   const [pullReq, setPullReq] = useState(false);
   let firstLoad = true
 
-  // useEffect(() => {
-  //   console.log("Detected at root")
-  //   if (props.isLoggedIn == true &&
-  //       loc.pathname == "/login" &&
-  //       loc.pathname == "/register") {
-  //     props.push("/contracts");
-  //   }
-  // }, [props.isLoggedIn])
-
   useEffect( () => {
     console.log("Calling a link change to path: " + loc.pathname)
-    console.log(loc.pathname)
-    authRedirect(loc.pathname)
+    const route_base = "/"+loc.pathname.split("/")[1]
+    console.log(route_base)
+    authRedirect(route_base)
+    
   }, [loc]) 
 
   useEffect( () => {
@@ -107,9 +105,13 @@ const App = (props) => {
         <Route exact path="/messages" element={<MessageView/>} component={MessageView} />
 
         <Route path="/create" element={<ContractCreate/>} component={ContractCreate} />
-        <Route path="/negotiate" element={<ContractNegotiate/>} component={ContractNegotiate} />
-        <Route path="/view" element={<ContractView/>} component={ContractView} />
-        <Route path="/settle" element={<ContractSettle/>} component={ContractSettle} />
+
+        <Route path="/chat/:chatId" element={<ChatTest/>} component={ChatTest} />
+
+        <Route path="/contract/:contractId" element={<ContractRedirect/>} component={ContractRedirect} />
+        <Route path="/negotiate/:contractId" element={<ContractNegotiate/>} component={ContractNegotiate} />
+        <Route path="/view/:contractId" element={<ContractView/>} component={ContractView} />
+        <Route path="/settle/:contractId" element={<ContractSettle/>} component={ContractSettle} />
         
         <Route exact path="/profile" element={<Profile/>} component={Profile} />
 

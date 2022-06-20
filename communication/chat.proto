@@ -1,0 +1,46 @@
+syntax = "proto3";
+package main;
+option go_package=".;communication";
+import "google/protobuf/timestamp.proto";
+
+message UserHandle {
+    string id = 1;
+    string username = 2;
+}
+
+message ChatMessage {
+    string id = 1;
+    UserHandle user = 2;
+    string message = 3;
+    google.protobuf.Timestamp timestamp = 4;
+}
+
+message UserJoin {
+    string user_id = 1;
+    string room_id = 2;
+}
+message UserLeave {
+    string user_id = 1;
+    string room_id = 2;
+}
+message UserClose{}
+
+message SendRequest {
+    string user_id = 1;
+    string room_id = 2;
+    string message = 3;
+}
+
+
+message SendResponse{}
+
+
+
+service Chat {
+
+    rpc JoinChat(UserJoin) returns (stream ChatMessage);
+    rpc LeaveChat(UserLeave) returns (UserClose);
+    
+    rpc SendMessage(SendRequest) returns (SendResponse);
+
+}

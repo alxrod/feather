@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { CalendarIcon, ChatAlt2Icon, CurrencyDollarIcon } from '@heroicons/react/outline'
 import WarningSign from "../warning_sign";
 import ApprovalSign from "../approval_sign";
+import {genEmptyContract} from "../../../../services/contract.service";
 
 import PriceField from "../price/price_field";
 import DeadlineField from "../deadline/deadline_field";
 
 
 const CriticalCriteria = (props) => {
+
+  const contract = useMemo(() => {
+    console.log("Memoization repeating")
+    if (props.selectedId !== undefined) {
+      console.log(props.selectedId)
+      return props.cachedContracts[props.selectedId]
+    } else {
+      return genEmptyContract()
+    }
+  }, [props.selectedId])
+
+  const formatDate = (date) => {
+    return date.toLocaleTimeString('en-US', {timeStyle: "short"}) + " " + date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
+  }
 
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-md">
@@ -24,12 +39,12 @@ const CriticalCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <PriceField price_str={props.price_str}/>
+                        <PriceField price_str={contract.price.current.toString()}/>
                       </div>
-                      <ApprovalSign item_state={props.price_state}/>
+                      {/* <ApprovalSign item_state={props.price_state}/>
                       <div className="mt-1">
                         <WarningSign item_state={props.price_assess}/>
-                      </div>
+                      </div> */}
                     </div>
 
                   </div>
@@ -53,12 +68,12 @@ const CriticalCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <DeadlineField deadline_str={props.deadline_str}/>
+                        <DeadlineField deadline_str={formatDate(contract.deadline.current)}/>
                       </div>
-                      <ApprovalSign item_state={props.deadline_state}/>
+                      {/* <ApprovalSign item_state={props.deadline_state}/>
                       <div className="mt-1">
                         <WarningSign item_state={props.deadline_assess}/>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -76,7 +91,10 @@ const CriticalCriteria = (props) => {
   )
 }
 
-const mapStateToProps = ({ }) => ({
+const mapStateToProps = ({ user, contract }) => ({
+  selectedId: contract.selectedId,
+  cachedContracts: contract.cachedContracts,
+  user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

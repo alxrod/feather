@@ -46,13 +46,16 @@ type BackServer struct {
 	comms.UnimplementedPaymentServer
 	comms.UnimplementedAuthServer
 	comms.UnimplementedContractServer
+	comms.UnimplementedChatServer
 
 	JwtManager *services.JWTManager
-	GrpcSrv    *grpc.Server
-	lis        net.Listener
-	dbClient   *mongo.Client
-	dbName     string
-	dbCtx      context.Context
+	ChatAgent  *services.ChatAgent
+
+	GrpcSrv  *grpc.Server
+	lis      net.Listener
+	dbClient *mongo.Client
+	dbName   string
+	dbCtx    context.Context
 }
 
 func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*BackServer, error) {
@@ -96,6 +99,7 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	comms.RegisterAuthServer(grpcServer, s)
 	comms.RegisterPaymentServer(grpcServer, s)
 	comms.RegisterContractServer(grpcServer, s)
+	comms.RegisterChatServer(grpcServer, s)
 
 	return s, nil
 }

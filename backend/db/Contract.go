@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -54,6 +55,33 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		proto.Id = contract.Id.Hex()
 	}
 	return proto
+}
+
+func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractNub, error) {
+	proto := &comms.ContractNub{}
+	if contract == nil {
+		return proto, nil
+	}
+
+	if contract.Id.IsZero() {
+		return nil, errors.New("Invalid contract id")
+	}
+
+	proto.Id = contract.Id.Hex()
+	proto.Title = contract.Title
+	proto.Deadline = timestamppb.New(contract.Deadline.Current)
+	proto.Price = contract.Price.Current
+	proto.Stage = contract.Stage
+
+	if contract.Worker.Id == user_id {
+		proto.UserType = WORKER
+	} else if contract.Buyer.Id == user_id {
+		proto.UserType = BUYER
+	} else {
+		return nil, errors.New("This user_id is not on this contract")
+	}
+
+	return proto, nil
 }
 
 type UserNub struct {
@@ -199,6 +227,9 @@ func ContractInsert(req *comms.ContractCreateRequest, userNub *UserNub, database
 			item_ids[idx] = res.Id
 		}
 
+		contract.Items = contractItems
+		contract.ItemIds = item_ids
+
 		filter := bson.D{{"_id", contract.Id}}
 		update := bson.D{{"$set", bson.D{{"item_ids", item_ids}}}}
 		_, err := contractCollection.UpdateOne(context.TODO(), filter, update)
@@ -206,6 +237,53 @@ func ContractInsert(req *comms.ContractCreateRequest, userNub *UserNub, database
 			log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with item ids %s", userNub.Username)))
 			return nil, err
 		}
+	}
+	return contract, nil
+}
+
+func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) ([]*Contract, error) {
+	contracts := make([]*Contract, 0)
+
+	worker_filter := bson.D{{"worker.id", user_id}}
+	cur, err := collection.Find(context.TODO(), worker_filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.Background()) {
+		var con *Contract
+		err := cur.Decode(&con)
+		if err != nil {
+			return nil, err
+		}
+		contracts = append(contracts, con)
+	}
+	cur.Close(context.Background())
+
+	buyer_filter := bson.D{{"buyer.id", user_id}}
+	cur, err = collection.Find(context.TODO(), buyer_filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var con *Contract
+		err := cur.Decode(&con)
+		if err != nil {
+			return nil, err
+		}
+		contracts = append(contracts, con)
+	}
+	cur.Close(context.TODO())
+
+	return contracts, nil
+}
+
+func ContractById(contract_id primitive.ObjectID, collection *mongo.Collection) (*Contract, error) {
+	filter := bson.D{{"_id", contract_id}}
+	var contract *Contract
+	var err error
+	if err = collection.FindOne(context.TODO(), filter).Decode(&contract); err != nil {
+		log.Println(color.Ize(color.Red, err.Error()))
+		return nil, errors.New("Contract Not Found")
 	}
 	return contract, nil
 }

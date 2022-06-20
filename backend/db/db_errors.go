@@ -10,6 +10,9 @@ const (
 	USERS_COL = "users"
 	ITEM_COL  = "contract_items"
 	CON_COL   = "contracts"
+
+	ROOM_COL = "chat_rooms"
+	MSG_COL  = "chat_messages"
 )
 
 // Errors:

@@ -1,12 +1,10 @@
 import React from 'react';
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
 import PlatformProfile from "./platform_profile"
 import BrandProfile from "./brand_profile"
 
 const PartnerCard = props => (
     <div className="flex flex-col">
-        <BrandProfile/>
+        <BrandProfile title={props.title} summary={props.summary}/>
         {!props.excludePlatform && (
             <PlatformProfile/>
         )}
@@ -16,10 +14,4 @@ const PartnerCard = props => (
 const mapStateToProps = ({ }) => ({
 })
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({
-}, dispatch)
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(PartnerCard)
+export default PartnerCard

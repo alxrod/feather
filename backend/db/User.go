@@ -40,6 +40,16 @@ type User struct {
 	Active_token string `bson:"-"`
 }
 
+func (user *User) Handle() *UserHandle {
+	userHandle := &UserHandle{}
+	if user == nil {
+		return userHandle
+	}
+	userHandle.Id = user.Id
+	userHandle.Username = user.Username
+	return userHandle
+}
+
 type PaymentNub struct {
 	CardNumber string    `bson: card_number`
 	CardHolder string    `bson: card_holder`

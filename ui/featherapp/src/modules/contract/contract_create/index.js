@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { push } from 'connected-react-router'
 import { createContract } from "../../../reducers/contract.reducer";
 
 import { ownership_format } from "../../../services/user.service";
@@ -77,7 +78,14 @@ const ContractCreate= (props) => {
     const price_set = ownership_format(price)
     const deadline_set = ownership_format(deadline)
     console.log(contractItems)
-    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems)
+    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems).then(
+      () => {
+        props.push("/contracts")
+      }, (error) => {
+        setOpenBanner(true)
+        setError(error)
+      }
+    )
   }
 
   const checkErrors = () => {
@@ -181,6 +189,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
+  push,
 }, dispatch)
 
 export default connect(

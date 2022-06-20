@@ -28,6 +28,20 @@ message ContractEntity {
     repeated ItemEntity items = 7;
 }
 
+message ContractNub {
+    string id = 1;
+    string title = 2;
+    google.protobuf.Timestamp deadline = 3;
+    float price = 4;
+    uint32 stage = 5;
+    uint32 user_type = 6;
+}
+
+message ContractNubSet {
+    string user_id = 1;
+    repeated ContractNub contract_nubs = 2;
+}
+
 message UserNubEntity {
     string id = 1;
     string username = 2;
@@ -58,8 +72,8 @@ message ContractCreateRequest {
     repeated ItemEntity items = 7;
 }
 
-message ContractQueryRequest {
-    string contract_ids = 1;
+message QueryByIdRequest {
+    string contract_id = 1;
     string user_id = 2;
 }
 
@@ -101,9 +115,15 @@ message ContractAddItemResponse {
     string item_id = 3;
 }
 
+message QueryByUserRequest {
+    string user_id = 1;
+}
+
 service Contract {
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
-    rpc Query(ContractQueryRequest) returns (ContractResponse) {};
+
+    rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
+    rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
 
     rpc SuggestPrice(ContractSuggestPrice) returns (ContractResponse) {};
     rpc ReactPrice(ContractReactPrice) returns (ContractResponse) {};

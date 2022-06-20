@@ -15,12 +15,9 @@ import { StarIcon, } from '@heroicons/react/outline'
               />
             </div>
             <div>
-              <h4 className="text-base font-bold">Nutrawork</h4>
+              <h4 className="text-base font-bold">{props.title}</h4>
               <p className="mt-1 text-sm">
-                <b className="font-semibold text-gray-900">Contract Summary:</b> Nutrawork is a vegan, plant based preworkout that is meant to help you 
-                get the best workout and diet all at once. For their influencer ad campaign, 
-                they want fitness influencers to film 30 second tiktok's summarzing a workout 
-                while including drinking a Nutrawork product. 
+                <b className="font-semibold text-gray-900">Contract Summary:</b> {props.summary}
               </p>
             </div>
           </div>

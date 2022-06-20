@@ -6,17 +6,90 @@ import {
     ItemEntity,
     ItemChunk,
     
+    
     ContractCreateRequest,
     ContractResponse,
+    QueryByUserRequest,
+    QueryByIdRequest,
 
 } from "../proto/communication/contract_pb";
+import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 
+
 export const contractClient = new ContractClient("https://localhost:8080");
+export const contractStages = {
+    INVITE: 0,
+    NEGOTIATE: 10,
+    SIGNED: 20,
+    ACTIVE: 30,
+    SETTLING: 40,
+    COMPLETE: 50,
+}
+
+export const genEmptyContract = () => {
+    return {
+        id: "", 
+        worker: {id: "", username: "", type: WORKER_TYPE}, 
+        buyer: {id: "", username: "", type: BUYER_TYPE},
+        price: {current: 0, worker: 0, buyer: 0},
+        deadline: {current: new Date(), worker: new Date(), buyer: new Date()},
+        title: "",
+        summary: "",
+        stage: 0,
+        itemsList: [],
+    }
+}
+
 
 class ContractService {
 
     // Calls
+    query_contract(token, user_id, contract_id) {
+        let queryRequest = new QueryByIdRequest();
+        queryRequest.setUserId(user_id);
+        queryRequest.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.queryById(queryRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                var resp = response.toObject();
+                
+                // Change times
+                resp.contract.deadline.current = response.getContract().getDeadline().getCurrent().toDate()
+                resp.contract.deadline.buyer = response.getContract().getDeadline().getBuyer().toDate()
+                resp.contract.deadline.worker = response.getContract().getDeadline().getBuyer().toDate()
+
+                resolve(resp)
+            });
+        });
+    }
+
+    query_contract_nubs(token, user_id) {
+        let queryRequest = new QueryByUserRequest();
+        queryRequest.setUserId(user_id);
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.queryByUser(queryRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                var resp = response.toObject();
+                
+                // Convert proto times to js times
+                const protoNubs = response.getContractNubsList()
+                for (let i = 0; i < protoNubs.length; i++) {
+                    resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
+                }
+                localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
+                resolve(resp)
+            });
+        });
+    }
+    
     create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items) {
         console.log("At service: ")
         console.log(items)

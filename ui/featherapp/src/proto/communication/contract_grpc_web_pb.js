@@ -140,16 +140,16 @@ proto.main.ContractPromiseClient.prototype.create =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.main.ContractQueryRequest,
+ *   !proto.main.QueryByIdRequest,
  *   !proto.main.ContractResponse>}
  */
-const methodDescriptor_Contract_Query = new grpc.web.MethodDescriptor(
-  '/main.Contract/Query',
+const methodDescriptor_Contract_QueryById = new grpc.web.MethodDescriptor(
+  '/main.Contract/QueryById',
   grpc.web.MethodType.UNARY,
-  proto.main.ContractQueryRequest,
+  proto.main.QueryByIdRequest,
   proto.main.ContractResponse,
   /**
-   * @param {!proto.main.ContractQueryRequest} request
+   * @param {!proto.main.QueryByIdRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -160,7 +160,7 @@ const methodDescriptor_Contract_Query = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.main.ContractQueryRequest} request The
+ * @param {!proto.main.QueryByIdRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -169,32 +169,93 @@ const methodDescriptor_Contract_Query = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ContractClient.prototype.query =
+proto.main.ContractClient.prototype.queryById =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Contract/Query',
+      '/main.Contract/QueryById',
       request,
       metadata || {},
-      methodDescriptor_Contract_Query,
+      methodDescriptor_Contract_QueryById,
       callback);
 };
 
 
 /**
- * @param {!proto.main.ContractQueryRequest} request The
+ * @param {!proto.main.QueryByIdRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.main.ContractResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ContractPromiseClient.prototype.query =
+proto.main.ContractPromiseClient.prototype.queryById =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Contract/Query',
+      '/main.Contract/QueryById',
       request,
       metadata || {},
-      methodDescriptor_Contract_Query);
+      methodDescriptor_Contract_QueryById);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.QueryByUserRequest,
+ *   !proto.main.ContractNubSet>}
+ */
+const methodDescriptor_Contract_QueryByUser = new grpc.web.MethodDescriptor(
+  '/main.Contract/QueryByUser',
+  grpc.web.MethodType.UNARY,
+  proto.main.QueryByUserRequest,
+  proto.main.ContractNubSet,
+  /**
+   * @param {!proto.main.QueryByUserRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractNubSet.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.QueryByUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractNubSet)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractNubSet>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.queryByUser =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/QueryByUser',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_QueryByUser,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.QueryByUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractNubSet>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.queryByUser =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/QueryByUser',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_QueryByUser);
 };
 
 
@@ -265,8 +326,8 @@ proto.main.ContractPromiseClient.prototype.suggestPrice =
  *   !proto.main.ContractReactPrice,
  *   !proto.main.ContractResponse>}
  */
-const methodDescriptor_Contract_RespondPrice = new grpc.web.MethodDescriptor(
-  '/main.Contract/RespondPrice',
+const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactPrice',
   grpc.web.MethodType.UNARY,
   proto.main.ContractReactPrice,
   proto.main.ContractResponse,
@@ -291,13 +352,13 @@ const methodDescriptor_Contract_RespondPrice = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ContractClient.prototype.respondPrice =
+proto.main.ContractClient.prototype.reactPrice =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Contract/RespondPrice',
+      '/main.Contract/ReactPrice',
       request,
       metadata || {},
-      methodDescriptor_Contract_RespondPrice,
+      methodDescriptor_Contract_ReactPrice,
       callback);
 };
 
@@ -310,13 +371,13 @@ proto.main.ContractClient.prototype.respondPrice =
  * @return {!Promise<!proto.main.ContractResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ContractPromiseClient.prototype.respondPrice =
+proto.main.ContractPromiseClient.prototype.reactPrice =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Contract/RespondPrice',
+      '/main.Contract/ReactPrice',
       request,
       metadata || {},
-      methodDescriptor_Contract_RespondPrice);
+      methodDescriptor_Contract_ReactPrice);
 };
 
 
@@ -387,8 +448,8 @@ proto.main.ContractPromiseClient.prototype.suggestDate =
  *   !proto.main.ContractReactDeadline,
  *   !proto.main.ContractResponse>}
  */
-const methodDescriptor_Contract_RespondDate = new grpc.web.MethodDescriptor(
-  '/main.Contract/RespondDate',
+const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactDate',
   grpc.web.MethodType.UNARY,
   proto.main.ContractReactDeadline,
   proto.main.ContractResponse,
@@ -413,13 +474,13 @@ const methodDescriptor_Contract_RespondDate = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ContractClient.prototype.respondDate =
+proto.main.ContractClient.prototype.reactDate =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Contract/RespondDate',
+      '/main.Contract/ReactDate',
       request,
       metadata || {},
-      methodDescriptor_Contract_RespondDate,
+      methodDescriptor_Contract_ReactDate,
       callback);
 };
 
@@ -432,13 +493,13 @@ proto.main.ContractClient.prototype.respondDate =
  * @return {!Promise<!proto.main.ContractResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ContractPromiseClient.prototype.respondDate =
+proto.main.ContractPromiseClient.prototype.reactDate =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Contract/RespondDate',
+      '/main.Contract/ReactDate',
       request,
       metadata || {},
-      methodDescriptor_Contract_RespondDate);
+      methodDescriptor_Contract_ReactDate);
 };
 
 
