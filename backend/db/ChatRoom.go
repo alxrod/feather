@@ -21,11 +21,12 @@ type ChatRoom struct {
 	Users       []*User       `bson:"-"`
 	ActiveUsers []*User       `bson:"-"`
 
-	MessageIds []primitive.ObjectID `bson:"message_ids`
+	MessageIds []primitive.ObjectID `bson:"message_ids"`
 	Messages   []*Message           `bson:"-"`
 }
 
 func ChatRoomInsert(contract_id primitive.ObjectID, users []*User, database *mongo.Database) (*ChatRoom, error) {
+	log.Println(color.Ize(color.Yellow, fmt.Sprintf("Inserting a chat room %s", contract_id.Hex())))
 	handles := make([]*UserHandle, len(users))
 	for idx, user := range users {
 		handles[idx] = user.Handle()

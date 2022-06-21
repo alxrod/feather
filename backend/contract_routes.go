@@ -32,14 +32,7 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 		return nil, err
 	}
 
-	userNub := &db.UserNub{
-		Id:       user.Id,
-		Username: user.Username,
-		Author:   true,
-		Type:     user.Type,
-	}
-
-	contract, err := db.ContractInsert(req, userNub, s.dbClient.Database(s.dbName))
+	contract, err := db.ContractInsert(req, user, s.dbClient.Database(s.dbName))
 	if err != nil {
 		return nil, err
 	}

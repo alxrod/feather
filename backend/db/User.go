@@ -50,6 +50,19 @@ func (user *User) Handle() *UserHandle {
 	return userHandle
 }
 
+func (user *User) Nub(author_status bool) *UserNub {
+	userNub := &UserNub{}
+	if user == nil {
+		return userNub
+	}
+	userNub.Id = user.Id
+	userNub.Username = user.Username
+	userNub.Author = author_status
+	userNub.Type = user.Type
+
+	return userNub
+}
+
 type PaymentNub struct {
 	CardNumber string    `bson: card_number`
 	CardHolder string    `bson: card_holder`

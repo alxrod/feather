@@ -27,6 +27,8 @@ type Contract struct {
 	// ChatRoom string     `bson:"chat_room_id"`
 	Items   []*ContractItem      `bson:"-"`
 	ItemIds []primitive.ObjectID `bson:"item_ids"`
+
+	RoomId primitive.ObjectID `bson:"room_id"`
 	// Drafts   []DraftNub `bson:"drafts"`
 	Stage uint32 `bson:"stage"`
 }
@@ -154,10 +156,10 @@ func (dn *DeadlineNub) Proto() *comms.DeadlineEntity {
 	return proto
 }
 
-func ContractInsert(req *comms.ContractCreateRequest, userNub *UserNub, database *mongo.Database) (*Contract, error) {
+func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mongo.Database) (*Contract, error) {
 	var price *PriceNub
 	var deadline *DeadlineNub
-	if userNub.Type == WORKER {
+	if user.Type == WORKER {
 		price = &PriceNub{
 			Current:          req.Price.Worker,
 			Worker:           req.Price.Worker,
@@ -197,16 +199,16 @@ func ContractInsert(req *comms.ContractCreateRequest, userNub *UserNub, database
 		Summary:  req.Summary,
 		Stage:    stage,
 	}
-	if userNub.Type == WORKER {
-		contract.Worker = userNub
+	if user.Type == WORKER {
+		contract.Worker = user.Nub(true)
 	} else {
-		contract.Buyer = userNub
+		contract.Buyer = user.Nub(true)
 	}
 
 	contractCollection := database.Collection(CON_COL)
 	res, err := contractCollection.InsertOne(context.TODO(), contract)
 	if err != nil {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Contract for %s", userNub.Username)))
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Contract for %s", user.Username)))
 		return nil, err
 	}
 
@@ -234,10 +236,23 @@ func ContractInsert(req *comms.ContractCreateRequest, userNub *UserNub, database
 		update := bson.D{{"$set", bson.D{{"item_ids", item_ids}}}}
 		_, err := contractCollection.UpdateOne(context.TODO(), filter, update)
 		if err != nil {
-			log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with item ids %s", userNub.Username)))
+			log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with item ids %s", user.Username)))
 			return nil, err
 		}
 	}
+	users := []*User{user}
+	room, err := ChatRoomInsert(contract.Id, users, database)
+	if err != nil {
+		return nil, err
+	}
+	contract.RoomId = room.Id
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"room_id", room.Id}}}}
+	_, err = contractCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+
 	return contract, nil
 }
 
