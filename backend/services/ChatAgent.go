@@ -34,11 +34,13 @@ type Connection struct {
 }
 
 func (agent *ChatAgent) SetRoom(room_id primitive.ObjectID, database *mongo.Database) (*db.ChatRoom, error) {
+	// log.Println("Setting a chat room")
 	room, err := db.ChatRoomQueryId(room_id, database)
 	if err != nil {
 		return nil, err
 	}
 	agent.accessMu.Lock()
+	log.Printf("Setting a chat room as id %s\n", room.Id.Hex())
 	agent.ActiveRooms[room.Id] = &CacheEntry{room: room}
 	agent.accessMu.Unlock()
 	return room, err
@@ -53,6 +55,7 @@ func (agent *ChatAgent) GetRoom(room_id primitive.ObjectID) (*db.ChatRoom, error
 }
 
 func (agent *ChatAgent) UserJoin(room_id, user_id primitive.ObjectID, stream comms.Chat_JoinChatServer, database *mongo.Database) (*Connection, error) {
+	log.Printf("User %s joing %s \n", user_id, room_id)
 	entry, ok := agent.ActiveRooms[room_id]
 	if !ok {
 		_, err := agent.SetRoom(room_id, database)
@@ -113,6 +116,7 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 	}
 	entry, ok := agent.ActiveRooms[room_id]
 	if !ok {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("The room %s is not active", room_id.Hex())))
 		return errors.New("You must join the room before sending messages, this room is not active")
 	}
 	entry.mu.Lock()
@@ -131,18 +135,20 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 }
 
 func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, msg *comms.ChatMessage) error {
+	log.Println("Broadcasting")
 	entry, ok := agent.ActiveRooms[room_id]
 	if !ok {
 		return errors.New("You can't broadcast to an inactive room")
 	}
 	wait := sync.WaitGroup{}
 	done := make(chan int)
+	removals := make(chan int)
 
-	for _, conn := range entry.conns {
+	for idx, conn := range entry.conns {
 		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Broadcasting to user id %s in room %s", user_id.Hex(), room_id.Hex())))
 		wait.Add(1)
 
-		go func(msg *comms.ChatMessage, conn *Connection) {
+		go func(msg *comms.ChatMessage, conn *Connection, idx int) {
 			defer wait.Done()
 
 			if conn.Active {
@@ -154,12 +160,19 @@ func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, ms
 					conn.Active = false
 					conn.Err <- err
 				}
+			} else {
+				removals <- idx
 			}
-		}(msg, conn)
+		}(msg, conn, idx)
 	}
 
 	go func() {
 		wait.Wait()
+		close(removals)
+		for removal := range removals {
+			entry.conns = append(entry.conns[:removal], entry.conns[removal+1:]...)
+		}
+		log.Printf("After broadcasting we have %d connections in this room", len(entry.conns))
 		close(done)
 	}()
 

@@ -50,7 +50,7 @@ const ContractCreate= (props) => {
     setPrice(oldPrices)
   }
   const changeDeadline = (new_date) => {
-    console.log("changing deadline to " + new_date)
+    // console.log("changing deadline to " + new_date)
     let oldDeadlines = deadline
     oldDeadlines.you = new_date
 
@@ -77,7 +77,7 @@ const ContractCreate= (props) => {
     
     const price_set = ownership_format(price)
     const deadline_set = ownership_format(deadline)
-    console.log(contractItems)
+    // console.log(contractItems)
     props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems).then(
       () => {
         props.push("/contracts")
@@ -110,8 +110,8 @@ const ContractCreate= (props) => {
 
   const addContractItem = () => {
     setNextId(nextId+1)
-    console.log("Adding item with value " + nextId)
-    console.log(contractItems)
+    // console.log("Adding item with value " + nextId)
+    // console.log(contractItems)
     let old_cons = contractItems
     old_cons[nextId.toString()] = {
       name: "Item " + nextId.toString(),

@@ -1,76 +1,36 @@
 import { ChatAltIcon } from '@heroicons/react/solid'
 import { CheckIcon, XIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import TextTag from "../tag_in_text"
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import {useEffect, useRef } from 'react'
 
-const activity = [
-  {
-    id: 1,
-    type: 'comment',
-    tag: 'Price',
-    person: { name: 'Eduardo Benz', href: '#' },
-    imageUrl:
-      'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-    comment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam. ',
-    date: '6d ago',
-  },
-  {
-    id: 2,
-    type: 'suggestion',
-    old_value: "200",
-    new_value: "250",
-    tag: "Price",
-    person: { name: 'Laurel Amanda', href: '#' },
-    date: '2d ago',
-  },
-  {
-    id: 3,
-    type: 'accept',
-    person: { name: 'Laurel Amanda', href: '#' },
-    tag: "Price",
-    old_value: "200",
-    new_value: "250",
-    date: '6h ago',
-  },
-  {
-    id: 4,
-    type: 'comment',
-    tag: 'Deadline',
-    person: { name: 'Eduardo Benz', href: '#' },
-    imageUrl:
-      'https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
-    comment:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Tincidunt nunc ipsum tempor purus vitae id. Morbi in vestibulum nec varius. Et diam cursus quis sed purus nam. ',
-    date: '6d ago',
-  },
-  {
-    id: 5,
-    type: 'reject',
-    person: { name: 'Laurel Amanda', href: '#' },
-    tag: "Deadline",
-    old_value: "June 1st",
-    new_value: "June 5th",
-    date: '6h ago',
-  },
-]
+const MainTimeline = (props) => {
+  const bottomOfChat = useRef(null)
+  useEffect( () => {
+    // console.log("Current Messages")
+    // console.log(props.messages)
+    bottomOfChat.current?.scrollIntoView({behavior: 'auto'});
+  }, [props.messages])
 
-export default function MainTimeline() {
+
   return (
-    <div className="flow-root overflow-y-scroll grow">
+    <div className="flow-root overflow-y-scroll grow h-[45vh]">
       <ul role="list" className="-mb-8">
-        {activity.map((activityItem, activityItemIdx) => (
-          <li key={activityItem.id}>
+        {props.messages.map((msg, msgIdx) => (
+          <li key={msgIdx}>
             <div className="relative pb-8">
-              {activityItemIdx !== activity.length - 1 ? (
+              {msgIdx !== props.messages.length - 1 ? (
                 <span className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
               ) : null}
               <div className="relative flex items-start space-x-3">
-                {activityItem.type === 'comment' ? (
+              {/* msg.type === 'comment' */}
+                {true ? (
                   <>
                     <div className="relative">
                       <img
                         className="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
-                        src={activityItem.imageUrl}
+                        src={"https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"}
                         alt=""
                       />
 
@@ -81,20 +41,22 @@ export default function MainTimeline() {
                     <div className="min-w-0 flex-1">
                       <div>
                         <div className="text-sm">
-                          <a href={activityItem.person.href} className="font-medium text-gray-900">
-                            {activityItem.person.name}
+                          <a href={"#"} className="font-medium text-gray-900">
+                            {msg.user.username}
                           </a>
                         </div>
                         <div className="flex">
-                          <p className="mt-0.5 text-sm text-gray-500 mr-1">Commented {activityItem.date} on</p><TextTag tagName="Price"/>
+                          <p className="mt-0.5 text-sm text-gray-500 mr-1">Commented {"date"} on</p><TextTag tagName="Price"/>
                         </div>
                       </div>
                       <div className="mt-2 text-sm text-gray-700">
-                        <p>{activityItem.comment}</p>
+                        <p>{msg.message}</p>
                       </div>
                     </div>
                   </>
-                ) : activityItem.type === 'suggestion' ? (
+                  // suggestion mode
+                ) : null}
+                {/* : false ? (
                   <>
                     <div>
                       <div className="relative px-1">
@@ -106,7 +68,7 @@ export default function MainTimeline() {
                     <div className="min-w-0 flex-1 py-1.5">
                       <div className="text-sm text-gray-500">
                         <a href={"#"} className="font-medium text-gray-900">
-                          {activityItem.person.name}
+                          {msg.user.username}
                         </a>{' '}
                         suggested changing {' '}
                         <TextTag tagName={activityItem.tag}/> {' '}
@@ -178,13 +140,25 @@ export default function MainTimeline() {
                       </div>
                     </div>
                   </>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
           </li>
         ))}
       </ul>
-      
+      <div ref={bottomOfChat}></div>
     </div>
   )
 }
+
+const mapStateToProps = ({ chat }) => ({
+  messages: chat.messages
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+}, dispatch)
+
+export default connect(
+		mapStateToProps,
+		mapDispatchToProps
+)(MainTimeline)

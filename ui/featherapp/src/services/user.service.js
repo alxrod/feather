@@ -63,7 +63,7 @@ class UserService {
         registerRequest.setPassword(password);
         registerRequest.setUserType(WORKER_TYPE);
 
-        console.log(registerRequest.toObject());
+        // console.log(registerRequest.toObject());
         return new Promise (function (resolve, reject) {
             authClient.register(registerRequest, null, function(err, response) {
                 if (err) {
@@ -272,7 +272,7 @@ class UserService {
                 if (error) {
                     reject(error)
                 }
-                console.log(response)
+                // console.log(response)
                 var resp = response.toObject();
                 
                 resolve(resp)

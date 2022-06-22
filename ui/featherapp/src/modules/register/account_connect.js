@@ -93,11 +93,11 @@ const AccountConnect = (props) => {
 
     const handleTiktokClick = (e) => {
       if (tiktokBtnMode === false) {
-        console.log("Search click")
+        // console.log("Search click")
         handleAddTiktok(e)
       } else {
         handleVerifyTiktok(e)
-        console.log("CHeck click")
+        // console.log("CHeck click")
       }
     }
 

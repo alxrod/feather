@@ -58,6 +58,7 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
+		Message:   req.Message,
 	}
 
 	messageCollection := database.Collection(MSG_COL)
@@ -72,15 +73,20 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 	return message, nil
 }
 
-func MessageQueryById(id primitive.ObjectID, collection *mongo.Collection) (*Message, error) {
+func MessageQueryById(id primitive.ObjectID, database *mongo.Database) (*Message, error) {
 	var msg *Message
 	filter := bson.M{"_id": id}
 	var err error
-	err = collection.FindOne(context.TODO(), filter).Decode(&msg)
+	err = database.Collection(MSG_COL).FindOne(context.TODO(), filter).Decode(&msg)
 	if err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
 	}
+	user, err := UserQueryId(msg.UserId, database.Collection(USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+	msg.User = user
 	return msg, err
 
 }

@@ -26,6 +26,7 @@ message ContractEntity {
     string summary = 6;
     uint32 stage = 9;
     repeated ItemEntity items = 7;
+    string room_id = 10;
 }
 
 message ContractNub {

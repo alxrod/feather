@@ -71,7 +71,7 @@ func ChatRoomQueryId(room_id primitive.ObjectID, database *mongo.Database) (*Cha
 
 	messages := make([]*Message, len(room.MessageIds))
 	for idx, id := range room.MessageIds {
-		msg, err := MessageQueryById(id, database.Collection(MSG_COL))
+		msg, err := MessageQueryById(id, database)
 		if err != nil {
 			log.Println(color.Ize(color.Red, fmt.Sprintf("Couldn't find message id %s for room %s", id, room_id)))
 		}

@@ -5,8 +5,8 @@ export const CONTRACT_CREATE = "contract/contract/CREATE"
 export const CONTRACT_NUB_PULL_ALL = "contract/contract_nub/PULL_ALL"
 export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 
-const initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
-if (initialNubs !== undefined) {
+let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
+if (initialNubs) {
     for (let i = 0; i < initialNubs.length; i++) {
         initialNubs[i].deadline = new Date(initialNubs[i].deadline)
     }
@@ -81,8 +81,8 @@ export const queryContract = (contract_id) => {
                     type: CONTRACT_PULL_CURRENT,
                     payload: data.contract,
                 });
-                console.log("Finished Contract Pull by Id")
-                console.log(data)
+                // console.log("Finished Contract Pull by Id")
+                // console.log(data)
                 return Promise.resolve();
             },
             (error) => {
@@ -92,8 +92,8 @@ export const queryContract = (contract_id) => {
                      error.response.data.message) ||
                     error.message ||
                     error.toString();
-                console.log("Failed Contract Pull by Id")
-                console.log(error)
+                // console.log("Failed Contract Pull by Id")
+                // console.log(error)
                 return Promise.reject(message);
             }
         );
@@ -115,8 +115,8 @@ export const queryContractNubs = () => {
                     type: CONTRACT_NUB_PULL_ALL,
                     payload: data.contractNubsList,
                 });
-                console.log("Finished Contract Pull")
-                console.log(data)
+                // console.log("Finished Contract Pull")
+                // console.log(data)
                 return Promise.resolve();
             },
             (error) => {
@@ -126,8 +126,8 @@ export const queryContractNubs = () => {
                      error.response.data.message) ||
                     error.message ||
                     error.toString();
-                console.log("Failed Contract Pull")
-                console.log(error)
+                // console.log("Failed Contract Pull")
+                // console.log(error)
                 return Promise.reject(message);
             }
         );
@@ -152,8 +152,8 @@ export const createContract = (title, summary, intro_message, price_set, deadlin
                     type: CONTRACT_CREATE,
                     payload: data.contract
                 });
-                console.log("Finished Contract Creation")
-                console.log(data)
+                // console.log("Finished Contract Creation")
+                // console.log(data)
                 return Promise.resolve();
             },
             (error) => {
@@ -163,8 +163,8 @@ export const createContract = (title, summary, intro_message, price_set, deadlin
                      error.response.data.message) ||
                     error.message ||
                     error.toString();
-                console.log("Failed Contract Creation")
-                console.log(error)
+                // console.log("Failed Contract Creation")
+                // console.log(error)
                 return Promise.reject(message);
             }
         );

@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -38,6 +39,10 @@ func accessibleRoles() map[string]uint32 {
 		"/main.Social/VerifyInstagram": db.STD_ROLE,
 		"/main.Social/VerifyTiktok":    db.STD_ROLE,
 		"/main.Payment/SetupPayment":   db.STD_ROLE,
+		"/main.Chat/JoinChat":          db.STD_ROLE,
+		"/main.Chat/SendMessage":       db.STD_ROLE,
+		"/main.Chat/PullChatHistory":   db.STD_ROLE,
+		"/main.Chat/LeaveChat":         db.STD_ROLE,
 	}
 }
 
@@ -86,8 +91,11 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		lis:        lis,
 		GrpcSrv:    grpcServer,
 		JwtManager: jwtManager,
-		dbClient:   client,
-		dbCtx:      ctx,
+		ChatAgent: &services.ChatAgent{
+			ActiveRooms: map[primitive.ObjectID]*services.CacheEntry{},
+		},
+		dbClient: client,
+		dbCtx:    ctx,
 	}
 	if len(dbName) == 1 {
 		s.dbName = dbName[0]

@@ -13,7 +13,6 @@ import DeadlineField from "../deadline/deadline_field";
 const CriticalCriteria = (props) => {
 
   const contract = useMemo(() => {
-    console.log("Memoization repeating")
     if (props.selectedId !== undefined) {
       console.log(props.selectedId)
       return props.cachedContracts[props.selectedId]

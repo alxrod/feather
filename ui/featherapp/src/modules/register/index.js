@@ -58,18 +58,18 @@ const Register = (props) => {
     }
 
     const handleAddInstagram = (e) => {
-        console.log("Trying to verify instagram")
-        console.log(props.user)
+        // console.log("Trying to verify instagram")
+        // console.log(props.user)
         return new Promise((resolve, reject) => {
             if (props.user.user_id === "") {
                 reject("You must log in before trying to add an instagram account")
             }
-            console.log("Adding instagram")
+            // console.log("Adding instagram")
             props.createInstagram(props.user.user_id, instaName).then( () => {
                 console.log("Successfully added instagram")
                 resolve()
             }, err => {
-                console.log("Instagram Add Error: " + err)
+                // console.log("Instagram Add Error: " + err)
                 reject(err)
             })
         })
@@ -82,10 +82,10 @@ const Register = (props) => {
             }
             console.log("Adding instagram")
             props.createTiktok(props.user.user_id, tiktokName).then( () => {
-                console.log("Successfully added instagram")
+                // console.log("Successfully added instagram")
                 resolve()
             }, err => {
-                console.log("Tiktok Add Error: " + err)
+                // console.log("Tiktok Add Error: " + err)
                 reject(err)
             })
         })
@@ -99,10 +99,10 @@ const Register = (props) => {
             }
             console.log("Verifying instagram")
             props.verifyInstagram(props.user.user_id).then( () => {
-                console.log("Successfully verified instagram")
+                // console.log("Successfully verified instagram")
                 resolve()
             }, err => {
-                console.log("Instagram Verify Error: " + err)
+                // console.log("Instagram Verify Error: " + err)
                 reject(err)
             })
         })
@@ -115,10 +115,10 @@ const Register = (props) => {
             }
             console.log("Verifying tiktok")
             props.verifyTiktok(props.user.user_id).then( () => {
-                console.log("Successfully verified tiktok")
+                // console.log("Successfully verified tiktok")
                 resolve()
             }, err => {
-                console.log("Tiktok Verify Error: " + err)
+                // console.log("Tiktok Verify Error: " + err)
                 reject(err)
             })
         })
@@ -131,10 +131,10 @@ const Register = (props) => {
             }
             console.log("Setting up payment")
             props.addPayment(props.user.user_id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
-                console.log("Successfully setup Payment")
+                // console.log("Successfully setup Payment")
                 resolve()
             }, err => {
-                console.log("Payment Setup Error: " + err)
+                // console.log("Payment Setup Error: " + err)
                 reject(err)
             })
         })

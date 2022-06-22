@@ -932,7 +932,8 @@ proto.main.ContractEntity.toObject = function(includeInstance, msg) {
     summary: jspb.Message.getFieldWithDefault(msg, 6, ""),
     stage: jspb.Message.getFieldWithDefault(msg, 9, 0),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.main.ItemEntity.toObject, includeInstance)
+    proto.main.ItemEntity.toObject, includeInstance),
+    roomId: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -1009,6 +1010,10 @@ proto.main.ContractEntity.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.main.ItemEntity;
       reader.readMessage(value,proto.main.ItemEntity.deserializeBinaryFromReader);
       msg.addItems(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRoomId(value);
       break;
     default:
       reader.skipField();
@@ -1105,6 +1110,13 @@ proto.main.ContractEntity.serializeBinaryToWriter = function(message, writer) {
       7,
       f,
       proto.main.ItemEntity.serializeBinaryToWriter
+    );
+  }
+  f = message.getRoomId();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
+      f
     );
   }
 };
@@ -1365,6 +1377,24 @@ proto.main.ContractEntity.prototype.addItems = function(opt_value, opt_index) {
  */
 proto.main.ContractEntity.prototype.clearItemsList = function() {
   return this.setItemsList([]);
+};
+
+
+/**
+ * optional string room_id = 10;
+ * @return {string}
+ */
+proto.main.ContractEntity.prototype.getRoomId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ContractEntity} returns this
+ */
+proto.main.ContractEntity.prototype.setRoomId = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -23,7 +24,8 @@ func (s *BackServer) JoinChat(req *comms.UserJoin, stream comms.Chat_JoinChatSer
 	if err != nil {
 		return err
 	}
-	return <-conn.Err
+	err = <-conn.Err
+	return err
 }
 
 func (s *BackServer) LeaveChat(ctx context.Context, req *comms.UserLeave) (*comms.UserClose, error) {
@@ -55,4 +57,30 @@ func (s *BackServer) SendMessage(ctx context.Context, req *comms.SendRequest) (*
 	}
 
 	return &comms.SendResponse{}, nil
+}
+
+func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullRequest) (*comms.ChatMessageSet, error) {
+	if req.RoomId == "" {
+		return nil, errors.New("You must pass a room_id to get messages")
+	}
+
+	room_id, err := primitive.ObjectIDFromHex(req.RoomId)
+	if err != nil {
+		return nil, errors.New("You passed an invalid room id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	room, err := db.ChatRoomQueryId(room_id, database)
+	if err != nil {
+		return nil, err
+	}
+
+	protos := make([]*comms.ChatMessage, len(room.Messages))
+	for idx, message := range room.Messages {
+		protos[idx] = message.Proto()
+	}
+	return &comms.ChatMessageSet{
+		RoomId:   room.Id.Hex(),
+		Messages: protos,
+	}, nil
 }

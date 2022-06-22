@@ -14,7 +14,6 @@ import (
 )
 
 var routes []string = []string{
-	"/",
 	"/messages",
 	"/contracts",
 
@@ -22,6 +21,8 @@ var routes []string = []string{
 	"/register",
 	"/logout",
 
+	"/chat",
+	"/contract",
 	"/create",
 	"/negotiate",
 	"/view",
@@ -55,10 +56,9 @@ func (srv *FrontServer) SetUpHandler(multiplex *grpcMultiplexer) error {
 
 func (srv *FrontServer) Serve(addr string) {
 	s := &http.Server{
-		Handler:      srv.router,
-		Addr:         addr,
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler:     srv.router,
+		Addr:        addr,
+		ReadTimeout: 15 * time.Second,
 	}
 	log.Println(color.Ize(color.Green, "Serving Frontend on 127.0.0.1:8080"))
 	log.Fatal(s.ListenAndServeTLS("cert/server.crt", "cert/server.key"))
@@ -70,26 +70,27 @@ type grpcMultiplexer struct {
 
 func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) {
+		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
+
+			// log.Println("Request is GRPC")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
-			w.Header().Set("grpc-status", "")
-			w.Header().Set("grpc-message", "")
+			w.Header().Set("Access-Control-Allow-Headers", "grpc-timeout, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
+			// w.Header().Set("grpc-status", "")
+			// w.Header().Set("grpc-message", "")
 
-			if m.IsGrpcWebRequest(r) {
+			if m.IsGrpcWebRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
 				fmt.Printf(color.Ize(color.Cyan, fmt.Sprintf("Backend Request for : %s\n", r.URL)))
 			}
-
 			m.ServeHTTP(w, r)
 			return
 		}
 
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
-
 		path := fmt.Sprintf("%v", r.URL)
 		for _, route := range routes {
-			if route == path {
+			if strings.Contains(path, route) || path == "/" {
+				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", r.URL)))
 				http.StripPrefix(path, next).ServeHTTP(w, r)
 				return
 			}

@@ -56,6 +56,9 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 	if !contract.Id.IsZero() {
 		proto.Id = contract.Id.Hex()
 	}
+	if !contract.RoomId.IsZero() {
+		proto.RoomId = contract.RoomId.Hex()
+	}
 	return proto
 }
 

@@ -2,19 +2,21 @@ import React, {useState, useMemo, useEffect } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import {queryContract} from "../../../reducers/contract.reducer"
-import { genEmptyContract } from '../../../services/contract.service';
+import { joinChat, pullRecord } from '../../../reducers/chat.reducer';
+import { testStream } from '../../../services/chat.service';
 
 import MainChat from "../components/chat/main_chat";
 
 
 const ChatTest = (props) => {
-  const { params: { chatId } } = props.match;
-
+  const { params: { roomId } } = props.match;
+  // testStream()
+  props.joinChat(roomId)
+  props.pullRecord(roomId)
 
 	return (
-		<div className="p-4 sm:p-6 lg:p-8 m-auto">
-			<MainChat/>
+		<div className="py-4 mx-[15%] sm:p-6 lg:p-8 m-auto">
+			<MainChat roomId={roomId}/>
 		</div>
 	)
 }
@@ -26,7 +28,8 @@ const mapStateToProps = ({ user, contract }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  queryContract
+  joinChat,
+  pullRecord,
 }, dispatch)
 
 export default connect(

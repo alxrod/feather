@@ -2,13 +2,13 @@ import React from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Timeline from "./main_timeline_summary"
-import MessageBox from "./chat_box"
+import ChatBox from "./chat_box"
 
-const PartnerCard = (props) => {
+const MainChat = (props) => {
     return (
         <div className="flex flex-col grow">
             <Timeline/>
-            <MessageBox/>
+            <ChatBox roomId={props.roomId}/>
         </div>
     )
 }
@@ -23,4 +23,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(PartnerCard)
+)(MainChat)

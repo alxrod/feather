@@ -91,8 +91,8 @@ class ContractService {
     }
     
     create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items) {
-        console.log("At service: ")
-        console.log(items)
+        // console.log("At service: ")
+        // console.log(items)
 
         let createRequest = new ContractCreateRequest();   
 
@@ -108,7 +108,7 @@ class ContractService {
             createRequest.addItems(itemEntity, i);
             i++
         }
-        console.log(createRequest)
+        // console.log(createRequest)
         
 
         return new Promise( (resolve, reject) => { 
@@ -117,7 +117,7 @@ class ContractService {
                 if (error) {
                     reject(error)
                 }
-                console.log(response)
+                // console.log(response)
                 var resp = response.toObject();
                 resolve(resp)
             });

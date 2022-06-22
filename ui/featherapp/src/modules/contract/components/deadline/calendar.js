@@ -130,9 +130,6 @@ const Calendar = (props) => {
                 'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
               )}
               onClick={(e) => {
-                console.log("Setting the day to")
-                console.log(dayjs().month())
-                console.log(parseInt(e.target.innerHTML))
                 setSelMonth(month)
                 setSelYear(year)
                 setSelDay(parseInt(e.target.innerHTML))

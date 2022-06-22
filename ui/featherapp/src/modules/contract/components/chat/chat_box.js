@@ -1,6 +1,10 @@
 import { Fragment, useState } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { Listbox, Transition } from '@headlessui/react'
 import { TagIcon } from '@heroicons/react/solid'
+
+import { sendMessage } from '../../../../reducers/chat.reducer';
 
 const labels = [
   { name: 'Unlabelled', value: null },
@@ -16,9 +20,25 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ChatBox() {
+const ChatBox = (props) => {
   const [labelled, setLabelled] = useState(labels[0])
+  const [message, setMessage] = useState("")
 
+  const handleSend = (e) => {
+    e.preventDefault()
+    if (message !== "" && props.roomId !== undefined) {
+      props.sendMessage(props.roomId, message).then(
+        setMessage("")
+      )
+    }
+  }
+
+  const onEnterPress = (e) => {
+    if(e.keyCode == 13 && e.shiftKey == false) {
+      e.preventDefault();
+      handleSend(e)
+    }
+  }
   return (
     <form action="#" className="relative">
       <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
@@ -31,7 +51,9 @@ export default function ChatBox() {
           id="description"
           className="block w-full border-0 py-3 h-20 resize-none placeholder-gray-500 focus:ring-0 sm:text-sm"
           placeholder="Write a chat message, feel free to label it with the item you're talking about..."
-          defaultValue={''}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={onEnterPress}
         />
 
         {/* Spacer element to match the height of the toolbar */}
@@ -105,7 +127,7 @@ export default function ChatBox() {
           </div>
           <div className="flex-shrink-0">
             <button
-              type="submit"
+              onClick={handleSend}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Send
@@ -116,3 +138,17 @@ export default function ChatBox() {
     </form>
   )
 }
+const mapStateToProps = ({ user, contract }) => ({
+  selectedId: contract.selectedId,
+  cachedContracts: contract.cachedContracts,
+  user: user.user,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  sendMessage
+}, dispatch)
+
+export default connect(
+		mapStateToProps,
+		mapDispatchToProps
+)(ChatBox)

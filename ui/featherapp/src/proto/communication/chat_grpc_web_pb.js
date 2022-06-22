@@ -79,6 +79,67 @@ proto.main.ChatPromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ChatPullRequest,
+ *   !proto.main.ChatMessageSet>}
+ */
+const methodDescriptor_Chat_PullChatHistory = new grpc.web.MethodDescriptor(
+  '/main.Chat/PullChatHistory',
+  grpc.web.MethodType.UNARY,
+  proto.main.ChatPullRequest,
+  proto.main.ChatMessageSet,
+  /**
+   * @param {!proto.main.ChatPullRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ChatMessageSet.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ChatPullRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ChatMessageSet)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ChatMessageSet>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ChatClient.prototype.pullChatHistory =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Chat/PullChatHistory',
+      request,
+      metadata || {},
+      methodDescriptor_Chat_PullChatHistory,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ChatPullRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ChatMessageSet>}
+ *     Promise that resolves to the response
+ */
+proto.main.ChatPromiseClient.prototype.pullChatHistory =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Chat/PullChatHistory',
+      request,
+      metadata || {},
+      methodDescriptor_Chat_PullChatHistory);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.UserJoin,
  *   !proto.main.ChatMessage>}
  */

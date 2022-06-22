@@ -102,18 +102,17 @@ export default function PaymentSetup(props) {
   const handleAddPayment = (e) => {
     e.preventDefault()
     form.current.validateAll();
-    console.log("Made it through validation")
+    // console.log("Made it through validation")
     if (numberError === "" &&
         holderError === "" &&
         expError === "" &&
         cvvError === "" &&
         zipError === ""
       ) {
-      console.log("Made it through the forms")
+      // console.log("Made it through the forms")
       props.handleAddPayment(e).then(() => {
-        console.log("Next phase")
+        // console.log("Next phase")
         props.nextPhase()
-        console.log()
       }, (error) => {
         setGenError(error)
       })

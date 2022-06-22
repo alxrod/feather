@@ -1,6 +1,7 @@
 import React, {useState, useMemo, useEffect } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import {queryContract} from "../../../reducers/contract.reducer"
 import { genEmptyContract } from '../../../services/contract.service';
@@ -27,7 +28,7 @@ const ContractNegotiate = (props) => {
   const { params: { contractId } } = props.match;
 
   useEffect(() => {
-    console.log("Calling the reload effect")
+    // console.log("Calling the reload effect")
     if (reload) {
       props.queryContract(contractId)
       setReload(false)
@@ -40,6 +41,9 @@ const ContractNegotiate = (props) => {
 				<div className="flex flex-col min-w-[45vw] grow mr-10">
 					<div className="mb-5">
 						<PartnerCard title={contract.title} summary={contract.summary}/>
+            <Link to={"/chat/"+contract.roomId}>
+              <button>TEST CHAT</button>
+            </Link>
 					</div>
 					<div> 
 						<CriticalCriteria/>

@@ -57,9 +57,9 @@ const App = (props) => {
   let firstLoad = true
 
   useEffect( () => {
-    console.log("Calling a link change to path: " + loc.pathname)
+    // console.log("Calling a link change to path: " + loc.pathname)
     const route_base = "/"+loc.pathname.split("/")[1]
-    console.log(route_base)
+    // console.log(route_base)
     authRedirect(route_base)
     
   }, [loc]) 
@@ -68,7 +68,7 @@ const App = (props) => {
     if (pullReq == true && props.user !== null && props.user.type === undefined) {
       console.log("Pulling user data")
       props.pullUser(props.user.user_id).then(() => {
-        console.log("Finished pull")
+        // console.log("Finished pull")
         setPullReq(false);
       });
     }
@@ -87,7 +87,6 @@ const App = (props) => {
         return false
       }
     }
-    console.log("And no redirect")
     return true
   }
 
@@ -106,7 +105,7 @@ const App = (props) => {
 
         <Route path="/create" element={<ContractCreate/>} component={ContractCreate} />
 
-        <Route path="/chat/:chatId" element={<ChatTest/>} component={ChatTest} />
+        <Route path="/chat/:roomId" element={<ChatTest/>} component={ChatTest} />
 
         <Route path="/contract/:contractId" element={<ContractRedirect/>} component={ContractRedirect} />
         <Route path="/negotiate/:contractId" element={<ContractNegotiate/>} component={ContractNegotiate} />
