@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"errors"
+	"time"
 
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
@@ -46,8 +47,10 @@ func (s *BackServer) LeaveChat(ctx context.Context, req *comms.UserLeave) (*comm
 	return &comms.UserClose{}, nil
 }
 
+// All Send Message Functions:
+// ########################################################################################################################
 func (s *BackServer) SendMessage(ctx context.Context, req *comms.SendRequest) (*comms.SendResponse, error) {
-	if req.UserId == "" || req.RoomId == "" || req.Message == "" {
+	if req.UserId == "" || req.RoomId == "" {
 		return nil, errors.New("You must pass a user id, room id, and message to send a message")
 	}
 	database := s.dbClient.Database(s.dbName)
@@ -57,6 +60,50 @@ func (s *BackServer) SendMessage(ctx context.Context, req *comms.SendRequest) (*
 	}
 
 	return &comms.SendResponse{}, nil
+}
+
+func (s *BackServer) SendPriceMessage(
+	contract *db.Contract,
+	user *db.User,
+	newPrice float32,
+	oldPrice float32,
+	editType uint32) error {
+
+	if user == nil || contract == nil {
+		return errors.New("You must provide both user and contract to change price")
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.PRICE,
+
+		Body: &db.MessageBody{
+			Type:     editType,
+			PriceNew: newPrice,
+			PriceOld: oldPrice,
+			Resolved: false,
+		},
+		Label: &db.LabelNub{
+			Type: db.LABEL_PRICE,
+			Name: "Price",
+		},
+	}
+	if contract.Worker.Id == user.Id {
+		msg.Body.WorkerStatus = db.DECISION_YES
+		msg.Body.BuyerStatus = db.DECISION_UNDECIDED
+	} else {
+		msg.Body.WorkerStatus = db.DECISION_UNDECIDED
+		msg.Body.BuyerStatus = db.DECISION_YES
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullRequest) (*comms.ChatMessageSet, error) {

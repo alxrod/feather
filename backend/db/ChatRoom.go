@@ -13,6 +13,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const (
+	MSG_COMMENT  = 0
+	MSG_ITEM     = 1
+	MSG_DEADLINE = 2
+	MSG_PRICE    = 3
+)
+
 type ChatRoom struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	ContractId primitive.ObjectID `bson:"contract_id"`
@@ -134,6 +141,28 @@ func (room *ChatRoom) AddMessage(req *comms.SendRequest, database *mongo.Databas
 		return nil, err
 	}
 	return added_msg, nil
+}
+
+func (room *ChatRoom) AddMessageInternal(msg *Message, database *mongo.Database) (*Message, error) {
+	if room == nil {
+		return nil, errors.New("Attempted to add message to nil room")
+	}
+	var err error
+	msg.Id, err = MessageInsertInternal(msg, room.Id, database)
+	if err != nil {
+		return nil, err
+	}
+	room.MessageIds = append(room.MessageIds, msg.Id)
+	room.Messages = append(room.Messages, msg)
+
+	filter := bson.D{{"_id", room.Id}}
+	update := bson.D{{"$set", bson.D{{"message_ids", room.MessageIds}}}}
+	_, err = database.Collection(ROOM_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
+
 }
 
 type UserHandle struct {

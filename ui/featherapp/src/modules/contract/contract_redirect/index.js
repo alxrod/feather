@@ -9,6 +9,7 @@ const ContractRedirect = (props) => {
     const { params: { contractId } } = props.match;
 
     let path="/contracts"
+    
     for (let i = 0; i < props.contracts.length; i++) {
         if (props.contracts[i].id === contractId) {
             if (props.contracts[i].stage == contractStages.INVITE) {
@@ -31,8 +32,10 @@ const ContractRedirect = (props) => {
     )
 }
 
-const mapStateToProps = ({ contract }) => ({
-    contracts: contract.contractNubs
+const mapStateToProps = ({ contract, user }) => ({
+    contracts: contract.contractNubs,
+    isLoggedIn: user.isLoggedIn,
+
   })
 
 

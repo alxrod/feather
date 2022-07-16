@@ -12,7 +12,10 @@ import {
     QueryByUserRequest,
     QueryByIdRequest,
 
+    ContractSuggestPrice,
+
 } from "../proto/communication/contract_pb";
+import {msgMethods} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 
@@ -90,7 +93,7 @@ class ContractService {
         });
     }
     
-    create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items) {
+    create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items, password) {
         // console.log("At service: ")
         // console.log(items)
 
@@ -102,6 +105,7 @@ class ContractService {
         createRequest.setIntroMessage(intro_message);
         createRequest.setPrice(this.generatePriceEntity(price_set));
         createRequest.setDeadline(this.generateDeadlineEntity(deadline_set));
+        createRequest.setPassword(password)
         let i = 0
         for (const [_, item] of Object.entries(items)) {
             const itemEntity = this.generateItemEntity(item)
@@ -124,6 +128,24 @@ class ContractService {
         });
     }
 
+    suggestPrice(token, user_id, contract_id, new_price) {
+        let suggestRequest = new ContractSuggestPrice();
+        suggestRequest.setUserId(user_id);
+        suggestRequest.setContractId(contract_id);
+        suggestRequest.setNewPrice(new_price);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestPrice(suggestRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
+
+    }
+    
     // Helpers
     generateDeadlineEntity(time_set) {
         let entity = new DeadlineEntity();

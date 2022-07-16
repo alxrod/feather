@@ -15,16 +15,127 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Methods
+const (
+	COMMENT  = 0
+	ITEM     = 1
+	DEADLINE = 2
+	PRICE    = 3
+)
+
+// Editing Typs
+const (
+	UNDEFINED = 0
+	SUGGEST   = 1
+	APPROVE   = 2
+	REJECT    = 3
+)
+
+// Labels
+const (
+	LABEL_UNLABELED = 0
+	LABEL_PRICE     = 1
+	LABEL_ITEM      = 2
+	LABEL_DEADLINE  = 3
+)
+
+const (
+	DECISION_YES       = 2
+	DECISION_NO        = 1
+	DECISION_UNDECIDED = 0
+)
+
+const (
+	RESOL_UNDECIDED = 0
+	RESOL_APPROVED  = 1
+	RESOL_REJECTED  = 2
+	RESOL_CANCELED  = 3
+)
+
 type Message struct {
 	Id     primitive.ObjectID `bson:"_id,omitempty"`
 	RoomId primitive.ObjectID `bson:"room_id"`
 
-	Message string `bson:"message"`
+	// Message string    `bson:"message"`
+	Method uint32       `bson:"method"`
+	Body   *MessageBody `bson:"body"`
+
+	Label *LabelNub `bson:"label"`
 
 	UserId primitive.ObjectID `bson:"user_id"`
 	User   *User              `bson:"-"`
 
 	Timestamp time.Time `bson:"timestamp"`
+}
+
+type MessageBody struct {
+	Type    uint32 `bson:"type,omitempty"`
+	Message string `bson:"message,omitempty"`
+
+	Resolved     bool   `bson:"resolved,omitempty"`
+	ResolStatus  uint32 `bson:"resol_status,omitempty"`
+	WorkerStatus uint32 `bson:"worker_status,omitempty"`
+	BuyerStatus  uint32 `bson:"buyer_status,omitempty"`
+
+	ItemNew string `bson:"item_new,omitempty"`
+	ItemOld string `bson:"item_old,omitempty"`
+
+	DeadlineNew time.Time `bson:"deadline_new,omitempty"`
+	DeadlineOld time.Time `bson:"deadline_old,omitempty"`
+
+	PriceNew float32 `bson:"price_new,omitempty"`
+	PriceOld float32 `bson:"price_old,omitempty"`
+}
+
+func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
+	return &comms.ChatMessage_CommentBody{
+		&comms.CommentMsgBody{
+			Message: b.Message,
+		},
+	}
+}
+
+func (b *MessageBody) DeadlineProto() *comms.ChatMessage_DeadlineBody {
+	return &comms.ChatMessage_DeadlineBody{
+		&comms.DeadlineMsgBody{
+			NewVersion:   timestamppb.New(b.DeadlineNew),
+			OldVersion:   timestamppb.New(b.DeadlineOld),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
+
+func (b *MessageBody) PriceProto() *comms.ChatMessage_PriceBody {
+	return &comms.ChatMessage_PriceBody{
+		&comms.PriceMsgBody{
+			NewVersion:   b.PriceNew,
+			OldVersion:   b.PriceOld,
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+
+			Type: b.Type,
+		},
+	}
+}
+
+func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
+	return &comms.ChatMessage_ItemBody{
+		&comms.ItemMsgBody{
+			NewVersion:   b.ItemNew,
+			OldVersion:   b.ItemNew,
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
 }
 
 func (m *Message) Proto() *comms.ChatMessage {
@@ -35,10 +146,56 @@ func (m *Message) Proto() *comms.ChatMessage {
 
 	proto.Id = m.Id.Hex()
 	proto.User = m.User.Handle().Proto()
-	proto.Message = m.Message
 	proto.Timestamp = timestamppb.New(m.Timestamp)
+	proto.Method = m.Method
+	proto.Label = m.Label.Proto()
+
+	if m.Method == COMMENT {
+		proto.Body = m.Body.CommentProto()
+	} else if m.Method == ITEM {
+		proto.Body = m.Body.ItemProto()
+	} else if m.Method == DEADLINE {
+		proto.Body = m.Body.DeadlineProto()
+	} else if m.Method == PRICE {
+		proto.Body = m.Body.PriceProto()
+	}
 
 	return proto
+}
+
+type LabelNub struct {
+	Type   uint32             `bson:"type"`
+	Name   string             `bson:"name"`
+	ItemId primitive.ObjectID `bson:"item_id,omitempty"`
+}
+
+func (lb *LabelNub) Proto() *comms.ChatLabel {
+	proto := &comms.ChatLabel{Name: "", Type: LABEL_UNLABELED}
+	if lb == nil {
+		return proto
+	}
+	proto.Type = lb.Type
+	proto.Name = lb.Name
+	if !lb.ItemId.IsZero() {
+		proto.ItemId = lb.ItemId.Hex()
+	}
+	return proto
+}
+
+func NewLabel(req *comms.ChatLabel) (*LabelNub, error) {
+	if req.Type != 0 && req.Name == "" {
+		return nil, errors.New("You must provide a name if the label is not unlabeled.")
+	}
+	nub := &LabelNub{
+		Type: req.Type,
+		Name: req.Name,
+	}
+	id, err := primitive.ObjectIDFromHex(req.ItemId)
+	if err == nil {
+		nub.ItemId = id
+	}
+
+	return nub, nil
 }
 
 func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database *mongo.Database) (*Message, error) {
@@ -52,13 +209,22 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 	if err != nil {
 		return nil, err
 	}
+	if req.Label == nil {
+		return nil, errors.New("Even if it is unlabeled, you must provide a label entity")
+	}
+	label, err := NewLabel(req.Label)
+	if err != nil {
+		return nil, err
+	}
 
 	message := &Message{
 		RoomId:    room_id,
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
-		Message:   req.Message,
+		Method:    req.Method,
+		Body:      ParseBody(req),
+		Label:     label,
 	}
 
 	messageCollection := database.Collection(MSG_COL)
@@ -71,6 +237,58 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 	id := res.InsertedID.(primitive.ObjectID)
 	message.Id = id
 	return message, nil
+}
+
+func MessageReplace(msg *Message, database *mongo.Database) error {
+	filter := bson.D{{"_id", msg.Id}}
+	_, err := database.Collection(MSG_COL).ReplaceOne(context.TODO(), filter, msg)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Message, error) {
+	filter := bson.D{{"_id", message_id}}
+	var message *Message
+	var err error
+	if err = database.Collection(MSG_COL).FindOne(context.TODO(), filter).Decode(&message); err != nil {
+		log.Println(color.Ize(color.Red, err.Error()))
+		return nil, errors.New("Contract Not Found")
+	}
+	return message, nil
+}
+
+func MessageInsertInternal(msg *Message, room_id primitive.ObjectID, database *mongo.Database) (primitive.ObjectID, error) {
+	messageCollection := database.Collection(MSG_COL)
+	res, err := messageCollection.InsertOne(context.TODO(), msg)
+	if err != nil {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Internally Insert Message for room %s", room_id.Hex())))
+		return primitive.NewObjectID(), err
+	}
+
+	id := res.InsertedID.(primitive.ObjectID)
+	return id, nil
+}
+
+func ParseBody(req *comms.SendRequest) *MessageBody {
+	body := &MessageBody{}
+	if req.Method == COMMENT {
+		body.Message = req.GetCommentBody().Message
+	} else if req.Method == ITEM {
+		body.Type = req.GetItemBody().Type
+		body.ItemNew = req.GetItemBody().NewVersion
+		body.ItemOld = req.GetItemBody().OldVersion
+	} else if req.Method == DEADLINE {
+		body.Type = req.GetDeadlineBody().Type
+		body.DeadlineNew = req.GetDeadlineBody().NewVersion.AsTime()
+		body.DeadlineOld = req.GetDeadlineBody().OldVersion.AsTime()
+	} else if req.Method == PRICE {
+		body.Type = req.GetPriceBody().Type
+		body.PriceNew = req.GetPriceBody().NewVersion
+		body.PriceOld = req.GetPriceBody().OldVersion
+	}
+	return body
 }
 
 func MessageQueryById(id primitive.ObjectID, database *mongo.Database) (*Message, error) {

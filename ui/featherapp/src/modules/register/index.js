@@ -217,7 +217,7 @@ const Register = (props) => {
                     handleAddPayment={handleAddPayment}
                 />)
     } else {
-        return ( <Redirect to={'/contracts'}/>)
+        return ( <Redirect to={props.redirectLink}/>)
     }
    
 }
@@ -225,6 +225,7 @@ const Register = (props) => {
 const mapStateToProps = ({ user }) => ({
     message: user.message,
     user: user.user,
+    redirectLink: user.redirectLink
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

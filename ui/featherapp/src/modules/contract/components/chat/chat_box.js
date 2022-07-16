@@ -1,33 +1,42 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Listbox, Transition } from '@headlessui/react'
 import { TagIcon } from '@heroicons/react/solid'
 
 import { sendMessage } from '../../../../reducers/chat.reducer';
-
-const labels = [
-  { name: 'Unlabelled', value: null },
-  { name: 'Price', value: 1 },
-  { name: 'Deadline', value: 2},
-  { name: 'Item 1', value: 3},
-  { name: 'Item 2', value: 4},
-  { name: 'Item 3', value: 5}
-  // More items...
-]
+import { labelTypes } from '../../../../services/chat.service';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 const ChatBox = (props) => {
+
+  const [labels, setLabels] = useState([
+    { name: 'Unlabelled', id:"", type: labelTypes.UNLABELED },
+    { name: 'Deadline', id:"", type: labelTypes.DEADLINE },
+    { name: 'Price', id:"", type: labelTypes.PRICE },
+  ])
   const [labelled, setLabelled] = useState(labels[0])
   const [message, setMessage] = useState("")
+  useEffect( () => {
+    if (props.selectedId !== "") {
+      const curContract = props.cachedContracts[props.selectedId]
+      let items = [...labels]
+      for (let i = 0; i<curContract.itemsList.length; i++) {
+        const item = curContract.itemsList[i]
+        items.push({name: item.name, id: item.id, type: labelTypes.ITEM})
+      }
+      setLabels(items)
+    }
+  }, [props.selectedId])
 
   const handleSend = (e) => {
     e.preventDefault()
+    console.log("Sending message?")
     if (message !== "" && props.roomId !== undefined) {
-      props.sendMessage(props.roomId, message).then(
+      props.sendMessage(props.roomId, message, labelled).then(
         setMessage("")
       )
     }
@@ -102,9 +111,9 @@ const ChatBox = (props) => {
                     leaveTo="opacity-0"
                   >
                     <Listbox.Options className="absolute right-0 z-10 mt-1 w-52 bg-white shadow max-h-56 rounded-lg py-3 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                      {labels.map((label) => (
+                      {labels.map((label, idx) => (
                         <Listbox.Option
-                          key={label.value}
+                          key={idx}
                           className={({ active }) =>
                             classNames(
                               active ? 'bg-gray-100' : 'bg-white',

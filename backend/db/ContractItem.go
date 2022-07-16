@@ -8,6 +8,7 @@ import (
 
 	"github.com/TwiN/go-color"
 	comms "github.com/alxrod/feather/communication"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -113,4 +114,15 @@ func ItemInsert(item *comms.ItemEntity, contract_id primitive.ObjectID, collecti
 		}
 		return contract_item, nil
 	}
+}
+
+func ContractItemById(item_id primitive.ObjectID, collection *mongo.Collection) (*ContractItem, error) {
+	filter := bson.D{{"_id", item_id}}
+	var contractItem *ContractItem
+	var err error
+	if err = collection.FindOne(context.TODO(), filter).Decode(&contractItem); err != nil {
+		log.Println(color.Ize(color.Red, err.Error()))
+		return nil, errors.New("Contract Item Not Found")
+	}
+	return contractItem, nil
 }

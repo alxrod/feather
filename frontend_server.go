@@ -89,7 +89,7 @@ func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
 		path := fmt.Sprintf("%v", r.URL)
 		for _, route := range routes {
-			if strings.Contains(path, route) || path == "/" {
+			if (strings.Contains(path, route) && route != "/") || path == "/" {
 				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", r.URL)))
 				http.StripPrefix(path, next).ServeHTTP(w, r)
 				return

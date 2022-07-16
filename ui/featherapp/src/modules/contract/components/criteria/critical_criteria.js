@@ -13,7 +13,7 @@ import DeadlineField from "../deadline/deadline_field";
 const CriticalCriteria = (props) => {
 
   const contract = useMemo(() => {
-    if (props.selectedId !== undefined) {
+    if (props.selectedId !== "") {
       console.log(props.selectedId)
       return props.cachedContracts[props.selectedId]
     } else {
@@ -38,7 +38,7 @@ const CriticalCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <PriceField price_str={contract.price.current.toString()}/>
+                        <PriceField/>
                       </div>
                       {/* <ApprovalSign item_state={props.price_state}/>
                       <div className="mt-1">
@@ -49,9 +49,6 @@ const CriticalCriteria = (props) => {
                   </div>
                 </div>
                 
-                <div>
-                  <ChatAlt2Icon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
               </div>
               
             </div>
@@ -77,9 +74,6 @@ const CriticalCriteria = (props) => {
                   </div>
                 </div>
                 
-                <div>
-                  <ChatAlt2Icon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
               </div>
               
             </div>

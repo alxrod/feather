@@ -21,6 +21,8 @@ var global = (function() {
   return Function('return this')();
 }.call(null));
 
+var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
+goog.object.extend(proto, google_protobuf_timestamp_pb);
 goog.exportSymbol('proto.main.InstagramCreateRequest', null, global);
 goog.exportSymbol('proto.main.InstagramVerifyRequest', null, global);
 goog.exportSymbol('proto.main.PaymentSetupRequest', null, global);
@@ -636,6 +638,7 @@ proto.main.UserRegisterResponse.toObject = function(includeInstance, msg) {
     success: jspb.Message.getBooleanFieldWithDefault(msg, 1, false),
     error: jspb.Message.getFieldWithDefault(msg, 2, ""),
     token: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    tokenTimeout: (f = msg.getTokenTimeout()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     username: jspb.Message.getFieldWithDefault(msg, 4, ""),
     id: jspb.Message.getFieldWithDefault(msg, 5, ""),
     role: jspb.Message.getFieldWithDefault(msg, 6, 0)
@@ -686,6 +689,11 @@ proto.main.UserRegisterResponse.deserializeBinaryFromReader = function(msg, read
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setToken(value);
+      break;
+    case 7:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setTokenTimeout(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -747,6 +755,14 @@ proto.main.UserRegisterResponse.serializeBinaryToWriter = function(message, writ
     writer.writeString(
       3,
       f
+    );
+  }
+  f = message.getTokenTimeout();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
   f = message.getUsername();
@@ -824,6 +840,43 @@ proto.main.UserRegisterResponse.prototype.getToken = function() {
  */
 proto.main.UserRegisterResponse.prototype.setToken = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp token_timeout = 7;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.main.UserRegisterResponse.prototype.getTokenTimeout = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 7));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.UserRegisterResponse} returns this
+*/
+proto.main.UserRegisterResponse.prototype.setTokenTimeout = function(value) {
+  return jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.main.UserRegisterResponse} returns this
+ */
+proto.main.UserRegisterResponse.prototype.clearTokenTimeout = function() {
+  return this.setTokenTimeout(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.UserRegisterResponse.prototype.hasTokenTimeout = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 
@@ -1075,6 +1128,7 @@ proto.main.UserLoginResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     error: jspb.Message.getFieldWithDefault(msg, 1, ""),
     token: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    tokenTimeout: (f = msg.getTokenTimeout()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     username: jspb.Message.getFieldWithDefault(msg, 4, ""),
     id: jspb.Message.getFieldWithDefault(msg, 5, ""),
     role: jspb.Message.getFieldWithDefault(msg, 6, 0)
@@ -1121,6 +1175,11 @@ proto.main.UserLoginResponse.deserializeBinaryFromReader = function(msg, reader)
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setToken(value);
+      break;
+    case 7:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setTokenTimeout(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -1175,6 +1234,14 @@ proto.main.UserLoginResponse.serializeBinaryToWriter = function(message, writer)
     writer.writeString(
       3,
       f
+    );
+  }
+  f = message.getTokenTimeout();
+  if (f != null) {
+    writer.writeMessage(
+      7,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
   f = message.getUsername();
@@ -1234,6 +1301,43 @@ proto.main.UserLoginResponse.prototype.getToken = function() {
  */
 proto.main.UserLoginResponse.prototype.setToken = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp token_timeout = 7;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.main.UserLoginResponse.prototype.getTokenTimeout = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 7));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.UserLoginResponse} returns this
+*/
+proto.main.UserLoginResponse.prototype.setTokenTimeout = function(value) {
+  return jspb.Message.setWrapperField(this, 7, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.main.UserLoginResponse} returns this
+ */
+proto.main.UserLoginResponse.prototype.clearTokenTimeout = function() {
+  return this.setTokenTimeout(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.UserLoginResponse.prototype.hasTokenTimeout = function() {
+  return jspb.Message.getField(this, 7) != null;
 };
 
 

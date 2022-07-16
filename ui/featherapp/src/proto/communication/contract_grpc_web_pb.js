@@ -263,13 +263,13 @@ proto.main.ContractPromiseClient.prototype.queryByUser =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractSuggestPrice,
- *   !proto.main.ContractResponse>}
+ *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_SuggestPrice = new grpc.web.MethodDescriptor(
   '/main.Contract/SuggestPrice',
   grpc.web.MethodType.UNARY,
   proto.main.ContractSuggestPrice,
-  proto.main.ContractResponse,
+  proto.main.ContactEditResponse,
   /**
    * @param {!proto.main.ContractSuggestPrice} request
    * @return {!Uint8Array}
@@ -277,7 +277,7 @@ const methodDescriptor_Contract_SuggestPrice = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.ContractResponse.deserializeBinary
+  proto.main.ContactEditResponse.deserializeBinary
 );
 
 
@@ -286,9 +286,9 @@ const methodDescriptor_Contract_SuggestPrice = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.ContractClient.prototype.suggestPrice =
@@ -307,7 +307,7 @@ proto.main.ContractClient.prototype.suggestPrice =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.ContractResponse>}
+ * @return {!Promise<!proto.main.ContactEditResponse>}
  *     Promise that resolves to the response
  */
 proto.main.ContractPromiseClient.prototype.suggestPrice =
@@ -324,13 +324,13 @@ proto.main.ContractPromiseClient.prototype.suggestPrice =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractReactPrice,
- *   !proto.main.ContractResponse>}
+ *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
   '/main.Contract/ReactPrice',
   grpc.web.MethodType.UNARY,
   proto.main.ContractReactPrice,
-  proto.main.ContractResponse,
+  proto.main.ContactEditResponse,
   /**
    * @param {!proto.main.ContractReactPrice} request
    * @return {!Uint8Array}
@@ -338,7 +338,7 @@ const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.ContractResponse.deserializeBinary
+  proto.main.ContactEditResponse.deserializeBinary
 );
 
 
@@ -347,9 +347,9 @@ const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.ContractClient.prototype.reactPrice =
@@ -368,7 +368,7 @@ proto.main.ContractClient.prototype.reactPrice =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.ContractResponse>}
+ * @return {!Promise<!proto.main.ContactEditResponse>}
  *     Promise that resolves to the response
  */
 proto.main.ContractPromiseClient.prototype.reactPrice =
@@ -385,13 +385,13 @@ proto.main.ContractPromiseClient.prototype.reactPrice =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractSuggestDeadline,
- *   !proto.main.ContractResponse>}
+ *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
   '/main.Contract/SuggestDate',
   grpc.web.MethodType.UNARY,
   proto.main.ContractSuggestDeadline,
-  proto.main.ContractResponse,
+  proto.main.ContactEditResponse,
   /**
    * @param {!proto.main.ContractSuggestDeadline} request
    * @return {!Uint8Array}
@@ -399,7 +399,7 @@ const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.ContractResponse.deserializeBinary
+  proto.main.ContactEditResponse.deserializeBinary
 );
 
 
@@ -408,9 +408,9 @@ const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.ContractClient.prototype.suggestDate =
@@ -429,7 +429,7 @@ proto.main.ContractClient.prototype.suggestDate =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.ContractResponse>}
+ * @return {!Promise<!proto.main.ContactEditResponse>}
  *     Promise that resolves to the response
  */
 proto.main.ContractPromiseClient.prototype.suggestDate =
@@ -446,13 +446,13 @@ proto.main.ContractPromiseClient.prototype.suggestDate =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractReactDeadline,
- *   !proto.main.ContractResponse>}
+ *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
   '/main.Contract/ReactDate',
   grpc.web.MethodType.UNARY,
   proto.main.ContractReactDeadline,
-  proto.main.ContractResponse,
+  proto.main.ContactEditResponse,
   /**
    * @param {!proto.main.ContractReactDeadline} request
    * @return {!Uint8Array}
@@ -460,7 +460,7 @@ const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.ContractResponse.deserializeBinary
+  proto.main.ContactEditResponse.deserializeBinary
 );
 
 
@@ -469,9 +469,9 @@ const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.ContractClient.prototype.reactDate =
@@ -490,7 +490,7 @@ proto.main.ContractClient.prototype.reactDate =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.ContractResponse>}
+ * @return {!Promise<!proto.main.ContactEditResponse>}
  *     Promise that resolves to the response
  */
 proto.main.ContractPromiseClient.prototype.reactDate =

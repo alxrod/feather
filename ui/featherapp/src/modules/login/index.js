@@ -51,8 +51,10 @@ const Login = (props) => {
     }
     
     if (props.isLoggedIn) {
+      console.log("Redirect link")
+      console.log(props.redirectLink)
       return (
-        <Redirect to={"/contracts"}/>
+        <Redirect to={props.redirectLink}/>
       )
     }
     return (
@@ -155,7 +157,8 @@ const Login = (props) => {
 
 const mapStateToProps = ({ user }) => ({
     isLoggedIn: user.isLoggedIn,
-    message: user.message
+    message: user.message,
+    redirectLink: user.redirectLink,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

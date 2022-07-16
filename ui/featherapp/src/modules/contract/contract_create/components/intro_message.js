@@ -1,7 +1,7 @@
 const IntroMessage = (props) => {
 
   return (
-    <form action="#" className="relative grow flex flex-col min-h-[250px]">
+    <form action="#" className="relative grow flex flex-col mb-5">
       <div className="flex flex-col grow border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
         <div className="grow flex flex-col">
         <h1 className="text-lg text-indigo-700 font-medium py-3 px-5">Write an Intro Message to get things started</h1>

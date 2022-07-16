@@ -18,7 +18,7 @@ const ContractNegotiate = (props) => {
   let [reload, setReload] = useState(true)
 
   const contract = useMemo(() => {
-    if (props.selectedId !== undefined) {
+    if (props.selectedId !== "") {
       return props.cachedContracts[props.selectedId]
     } else {
       return genEmptyContract()
@@ -41,16 +41,13 @@ const ContractNegotiate = (props) => {
 				<div className="flex flex-col min-w-[45vw] grow mr-10">
 					<div className="mb-5">
 						<PartnerCard title={contract.title} summary={contract.summary}/>
-            <Link to={"/chat/"+contract.roomId}>
-              <button>TEST CHAT</button>
-            </Link>
 					</div>
 					<div> 
 						<CriticalCriteria/>
 					</div>
 				</div>
 				<div className="flex flex-row min-w-[45vw]">
-					<MainChat/>
+					<MainChat roomId={contract.roomId}/>
 				</div>
 			</div>
 			<div className="mt-5">

@@ -4,9 +4,12 @@ export const REGISTER_SUCCESS = "user/auth/REGISTER_SUCCESS"
 export const REGISTER_FAIL = "user/auth/REGISTER_FAIL"
 export const LOGIN_SUCCESS = "user/auth/LOGIN_SUCCESS"
 export const LOGIN_FAIL = "user/auth/LOGIN_FAIL"
-export const LOGOUT = "user/auth/LOGOUT"
+export const AUTH_FAILED = "user/auth/AUTH_FAILED"
+export const LOGOUT = "authed.user/auth/LOGOUT"
 export const USER_PULL_SUCCESS = "user/auth/PULL_SUCCESS"
 export const USER_PULL_FAIL = "user/auth/PULL_FAIL"
+
+export const SET_REDIRECT_LINK = "user/auth/REDIRECT_LINK"
 
 export const SOCIAL_LINK_SUCCESS = "user/social/LINK_SUCCESS"
 export const SOCIAL_LINK_FAIL = "user/social/LINK_FAIL"
@@ -21,11 +24,22 @@ export const CLEAR_MESSAGE = "user/CLEAR_MESSAGE"
 
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
-? { isLoggedIn: true, user }
-: { isLoggedIn: false, user: null };
+? { isLoggedIn: true, user, redirectLink: "/contracts" }
+: { isLoggedIn: false, user: null, redirectLink: "/contracts"};
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case SET_REDIRECT_LINK:
+            return {
+                ...state,
+                redirectLink: action.payload
+            }
+        case AUTH_FAILED: 
+            return {
+                ...state,
+                isLoggedIn: false,
+                user: null,
+            }
         case PAYMENT_SETUP_SUCCESS:
             return {
                 ...state,
@@ -261,6 +275,15 @@ export const logout = () => {
         dispatch({
             type: LOGOUT,
         });
+    }
+}
+
+export const setRedirect = (link) => {
+    return dispatch => {
+        dispatch({
+            type: SET_REDIRECT_LINK,
+            payload: link,
+        })
     }
 }
 

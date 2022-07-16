@@ -27,7 +27,7 @@ func NewJWTManager(secretKey string, tokenDuration time.Duration) *JWTManager {
 }
 
 // Generate generates and signs a new token for a user
-func (manager *JWTManager) Generate(user *db.User) (string, error) {
+func (manager *JWTManager) Generate(user *db.User) (string, time.Time, error) {
 	claims := UserClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(manager.tokenDuration).Unix(),
@@ -37,7 +37,10 @@ func (manager *JWTManager) Generate(user *db.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(manager.secretKey))
+	tkn_timeout := time.Now().Add(manager.tokenDuration)
+	tkn, err := token.SignedString([]byte(manager.secretKey))
+
+	return tkn, tkn_timeout, err
 }
 
 // Verify verifies the access token string and return a user claim if the token is valid

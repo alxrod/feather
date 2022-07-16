@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { CalendarIcon, ChatAlt2Icon, CurrencyDollarIcon } from '@heroicons/react/outline'
+import { CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/outline'
 
 import PriceField from "../price/price_field";
 import DeadlineField from "../deadline/deadline_field";
@@ -23,10 +23,10 @@ const CombinedCriteria = (props) => {
                   <div className="flex-shrink-0">
                     <CurrencyDollarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true" />
                   </div>
-                  <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
+                  <div className="min-w-0 flex-1 px-2 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <PriceField price_str={props.price_str} changePrice={props.changePrice} disabled={!props.active}/>
+                        <PriceField createMode={props.createMode ? true : false} price_str={props.price_str} changePrice={props.changePrice} disabled={!props.active}/>
                       </div>
                     </div>
                   </div>

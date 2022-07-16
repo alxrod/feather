@@ -2,6 +2,8 @@ syntax = "proto3";
 package main;
 option go_package=".;communication";
 
+import "google/protobuf/timestamp.proto";
+
 message UserRegisterRequest {
     string username = 1;
     string email = 2;
@@ -14,6 +16,8 @@ message UserRegisterResponse {
     bool success = 1;
     string error = 2;
     string token = 3;
+    google.protobuf.Timestamp token_timeout = 7;
+
     string username = 4;
     string id = 5;
     uint32 role = 6;
@@ -27,6 +31,7 @@ message UserLoginRequest {
 message UserLoginResponse {
     string Error = 1;
     string token = 3;
+    google.protobuf.Timestamp token_timeout = 7;
     string username = 4;
     string id = 5;
     uint32 role = 6;

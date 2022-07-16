@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { createContract } from "../../../reducers/contract.reducer";
+import { createContract, clearSelected } from "../../../reducers/contract.reducer";
 
 import { ownership_format } from "../../../services/user.service";
 
@@ -12,11 +12,15 @@ import NewContractItem from "../components/contract_item/new_contract_item";
 
 import CreateSummary from "./components/create_summary.js"
 import IntroMessage from "./components/intro_message.js"
+import PasswordField from "./components/password_field"
 import ErrorBanner from "./components/error_banner.js"
 
 import { ITEM_AGREED } from "../../../custom_encodings"
 
 const ContractCreate= (props) => {
+  useEffect( () => {
+    props.clearSelected()
+  })
   const [price, setPrice] = useState({
     current: 0.0,
     you: 0.0,
@@ -41,13 +45,12 @@ const ContractCreate= (props) => {
   })
 
   const changePrice = (new_price) => {
-    let oldPrices = price
-    price.you = new_price
-
-    // Specific for create because first version
-    price.current = new_price
-    price.partner = new_price
-    setPrice(oldPrices)
+    const fl = parseFloat(new_price)
+    price.you = fl
+    price.current = fl
+    price.partner = fl
+    console.log(price)
+    setPrice(price)
   }
   const changeDeadline = (new_date) => {
     // console.log("changing deadline to " + new_date)
@@ -60,10 +63,15 @@ const ContractCreate= (props) => {
     
     setDeadline(oldDeadlines)
   }
+
+  const changePassword = (new_password) => {
+    setConPassword(new_password)
+  }
         
   const [conTitle, setConTitle] = useState("")
   const [conDescript, setConDescript] = useState("")
   const [conMessage, setConMessage] = useState("")
+  const [conPassword, setConPassword] = useState("")
 
   const [nextId, setNextId] = useState(1)
 
@@ -78,7 +86,7 @@ const ContractCreate= (props) => {
     const price_set = ownership_format(price)
     const deadline_set = ownership_format(deadline)
     // console.log(contractItems)
-    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems).then(
+    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems, conPassword).then(
       () => {
         props.push("/contracts")
       }, (error) => {
@@ -94,6 +102,8 @@ const ContractCreate= (props) => {
       errors += "You must choose a deadline. "
     }
     if (price.you <= 0) {
+      console.log("Price issue:");
+      console.log(price)
       errors += "You must choose a price greater than $0. "
     }
     if (conTitle === "") {
@@ -104,6 +114,9 @@ const ContractCreate= (props) => {
     }
     if (conMessage === "") {
       errors += "You need a introduction message. "
+    }
+    if (conPassword.length < 5) {
+      errors += "You need at least a 5 character password for your contract"
     }
     return errors
   } 
@@ -138,7 +151,7 @@ const ContractCreate= (props) => {
               <CombinedCriteria 
                 deadline={deadline}
                 price={price}
-                  
+                createMode={true}
                 changePrice={changePrice}
                 changeDeadline={changeDeadline}
 
@@ -160,6 +173,10 @@ const ContractCreate= (props) => {
             <IntroMessage
               message={conMessage}
               setMessage={setConMessage}
+            />
+            <PasswordField
+              password={conPassword}
+              setPassword={setConPassword}
             />
           </div>
         </div>
@@ -189,6 +206,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
+  clearSelected,
   push,
 }, dispatch)
 

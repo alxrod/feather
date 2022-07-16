@@ -11,8 +11,54 @@ message UserHandle {
 message ChatMessage {
     string id = 1;
     UserHandle user = 2;
-    string message = 3;
-    google.protobuf.Timestamp timestamp = 4;
+    google.protobuf.Timestamp timestamp = 3;
+    ChatLabel label =  5;
+    uint32 method = 4;
+    oneof body {
+        CommentMsgBody comment_body = 6;
+        DeadlineMsgBody deadline_body = 7;
+        PriceMsgBody price_body = 8;
+        ItemMsgBody item_body = 9;
+    }   
+}
+
+message ChatLabel {
+    uint32 type = 1;
+    string name = 2;
+    string item_id = 3;
+
+}
+
+message CommentMsgBody {
+    string message = 1;
+}
+
+message ItemMsgBody {
+    string new_version = 1;
+    string old_version = 2;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+message DeadlineMsgBody {
+    google.protobuf.Timestamp new_version = 1;
+    google.protobuf.Timestamp old_version = 2;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+message PriceMsgBody {
+    float new_version = 1;
+    float old_version = 2;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
 }
 
 message UserJoin {
@@ -28,7 +74,14 @@ message UserClose{}
 message SendRequest {
     string user_id = 1;
     string room_id = 2;
-    string message = 3;
+    uint32 method = 10;
+    oneof body {
+        CommentMsgBody comment_body = 6;
+        DeadlineMsgBody deadline_body = 7;
+        PriceMsgBody price_body = 8;
+        ItemMsgBody item_body = 9;
+    }  
+    ChatLabel label = 4;
 }
 
 message SendResponse{}
@@ -41,11 +94,9 @@ message ChatMessageSet{
     repeated ChatMessage messages = 2;
 }
 service Chat {
-
     rpc PullChatHistory(ChatPullRequest) returns (ChatMessageSet);
     rpc JoinChat(UserJoin) returns (stream ChatMessage);
     rpc LeaveChat(UserLeave) returns (UserClose);
     
     rpc SendMessage(SendRequest) returns (SendResponse);
-
 }

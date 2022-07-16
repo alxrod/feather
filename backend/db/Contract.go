@@ -17,6 +17,7 @@ import (
 
 type Contract struct {
 	Id       primitive.ObjectID `bson:"_id,omitempty"`
+	Password string             `bson:"password"`
 	Worker   *UserNub           `bson:"worker"`
 	Buyer    *UserNub           `bson:"buyer"`
 	Price    *PriceNub          `bson:"price"`
@@ -50,6 +51,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		Deadline: contract.Deadline.Proto(),
 		Summary:  contract.Summary,
 		Title:    contract.Title,
+		Password: contract.Password,
 		Items:    items,
 		Stage:    contract.Stage,
 	}
@@ -59,6 +61,13 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 	if !contract.RoomId.IsZero() {
 		proto.RoomId = contract.RoomId.Hex()
 	}
+
+	itemProtos := make([]*comms.ItemEntity, len(contract.Items))
+	for i, item := range contract.Items {
+		itemProtos[i] = item.Proto()
+	}
+
+	proto.Items = itemProtos
 	return proto
 }
 
@@ -121,11 +130,11 @@ const (
 )
 
 type PriceNub struct {
-	Current          float32 `bson:"current"`
-	Worker           float32 `bson:"worker"`
-	Buyer            float32 `bson:"buyer"`
-	AwaitingApproval bool    `bson:"awaiting_approval"`
-	Proposer         string  `bson:"proposer_id"`
+	Current          float32            `bson:"current"`
+	Worker           float32            `bson:"worker"`
+	Buyer            float32            `bson:"buyer"`
+	AwaitingApproval bool               `bson:"awaiting_approval"`
+	Proposer         primitive.ObjectID `bson:"proposer_id"`
 }
 
 func (pn *PriceNub) Proto() *comms.PriceEntity {
@@ -136,16 +145,20 @@ func (pn *PriceNub) Proto() *comms.PriceEntity {
 	proto.Current = pn.Current
 	proto.Worker = pn.Worker
 	proto.Buyer = pn.Buyer
+	proto.AwaitingApproval = pn.AwaitingApproval
+	if pn.AwaitingApproval == true && !pn.Proposer.IsZero() {
+		proto.ProposerId = pn.Proposer.Hex()
+	}
 
 	return proto
 }
 
 type DeadlineNub struct {
-	Current          time.Time `bson:"current"`
-	Worker           time.Time `bson:"worker_id"`
-	Buyer            time.Time `bson:"buyer_id"`
-	AwaitingApproval bool      `bson:"awaiting_approval"`
-	Proposer         string    `bson:"proposer_id"`
+	Current          time.Time          `bson:"current"`
+	Worker           time.Time          `bson:"worker_id"`
+	Buyer            time.Time          `bson:"buyer_id"`
+	AwaitingApproval bool               `bson:"awaiting_approval"`
+	Proposer         primitive.ObjectID `bson:"proposer_id"`
 }
 
 func (dn *DeadlineNub) Proto() *comms.DeadlineEntity {
@@ -156,6 +169,12 @@ func (dn *DeadlineNub) Proto() *comms.DeadlineEntity {
 	proto.Current = timestamppb.New(dn.Current)
 	proto.Buyer = timestamppb.New(dn.Worker)
 	proto.Worker = timestamppb.New(dn.Buyer)
+
+	proto.AwaitingApproval = dn.AwaitingApproval
+	if dn.AwaitingApproval == true && !dn.Proposer.IsZero() {
+		proto.ProposerId = dn.Proposer.Hex()
+	}
+
 	return proto
 }
 
@@ -168,14 +187,14 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 			Worker:           req.Price.Worker,
 			Buyer:            req.Price.Worker,
 			AwaitingApproval: false,
-			Proposer:         req.UserId,
+			Proposer:         user.Id,
 		}
 		deadline = &DeadlineNub{
 			Current:          req.Deadline.Worker.AsTime(),
 			Worker:           req.Deadline.Worker.AsTime(),
 			Buyer:            req.Deadline.Worker.AsTime(),
 			AwaitingApproval: false,
-			Proposer:         req.UserId,
+			Proposer:         user.Id,
 		}
 	} else {
 		price = &PriceNub{
@@ -183,14 +202,14 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 			Worker:           req.Price.Buyer,
 			Buyer:            req.Price.Buyer,
 			AwaitingApproval: false,
-			Proposer:         req.UserId,
+			Proposer:         user.Id,
 		}
 		deadline = &DeadlineNub{
 			Current:          req.Deadline.Buyer.AsTime(),
 			Worker:           req.Deadline.Buyer.AsTime(),
 			Buyer:            req.Deadline.Buyer.AsTime(),
 			AwaitingApproval: false,
-			Proposer:         req.UserId,
+			Proposer:         user.Id,
 		}
 	}
 	stage := INVITE
@@ -200,6 +219,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 		Deadline: deadline,
 		Title:    req.Title,
 		Summary:  req.Summary,
+		Password: req.Password,
 		Stage:    stage,
 	}
 	if user.Type == WORKER {
@@ -295,13 +315,57 @@ func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) (
 	return contracts, nil
 }
 
-func ContractById(contract_id primitive.ObjectID, collection *mongo.Collection) (*Contract, error) {
+func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Contract, error) {
 	filter := bson.D{{"_id", contract_id}}
 	var contract *Contract
 	var err error
-	if err = collection.FindOne(context.TODO(), filter).Decode(&contract); err != nil {
+	if err = database.Collection(CON_COL).FindOne(context.TODO(), filter).Decode(&contract); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("Contract Not Found")
 	}
+	items := make([]*ContractItem, len(contract.ItemIds))
+	for idx, id := range contract.ItemIds {
+		item, err := ContractItemById(id, database.Collection(ITEM_COL))
+		if err != nil {
+			return nil, err
+		}
+		items[idx] = item
+	}
+	contract.Items = items
 	return contract, nil
+}
+
+func ContractSuggestPrice(contract *Contract, user *User, newPrice float32, database *mongo.Database) error {
+	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
+		return errors.New(fmt.Sprintf("The user w/ id %s is not a member of the contract w/ id %s", user.Id.Hex(), contract.Id.Hex()))
+	}
+	if contract.Price.AwaitingApproval == true {
+		return errors.New(fmt.Sprintf("The contract %s is already awaiting approval of a different price change", contract.Id.Hex()))
+	}
+
+	priceNub := contract.Price
+	if user.Id == contract.Worker.Id {
+		priceNub.Worker = newPrice
+	} else {
+		priceNub.Buyer = newPrice
+	}
+	priceNub.Proposer = user.Id
+	priceNub.AwaitingApproval = true
+	contract.Price = priceNub
+
+	err := ContractSavePrice(contract, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractSavePrice(contract *Contract, database *mongo.Database) error {
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"price", contract.Price}}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }

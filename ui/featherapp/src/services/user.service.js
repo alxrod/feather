@@ -42,10 +42,22 @@ class UserService {
                 } else {
                     var data = {
                         username: resp.username,
+                        password: password,
                         access_token: resp.token,
                         user_id: resp.id,
                         role: resp.role,
                     }
+                    var creds = {
+                        username: resp.username,
+                        password: password,
+                        user_id: resp.id,
+                        access_token: resp.token,
+                        token_timeout: response.getTokenTimeout().toDate(),
+                    }
+                    localStorage.setItem("creds", JSON.stringify(creds));
+
+                    console.log("JUST LOGGED IN, INFO:")
+                    console.log(data)
                     localStorage.setItem("user", JSON.stringify(data));
                     resolve(data)
                 }
@@ -74,10 +86,19 @@ class UserService {
                 if (resp.token) {
                     const data = {
                         username: resp.username,
+                        password: password,
                         access_token: resp.token,
                         user_id: resp.id,
                         role: resp.role,
                     }
+                    var creds = {
+                        username: resp.username,
+                        password: password,
+                        user_id: resp.id,
+                        access_token: resp.token,
+                        token_timeout: response.getTokenTimeout().toDate(),
+                    }
+                    localStorage.setItem("creds", JSON.stringify(creds));
                     localStorage.setItem("user", JSON.stringify(data));
                     resolve(data)
                 }
@@ -105,6 +126,7 @@ class UserService {
             }
             var resp = response.toObject();
             localStorage.removeItem("user");
+            localStorage.removeItem("creds");
 
         });
         return Error("Request failed")
@@ -278,6 +300,48 @@ class UserService {
                 resolve(resp)
             });
         });
+    }
+}
+
+export const authChecker = (needAuth) => {
+    const creds = JSON.parse(localStorage.getItem("creds"))
+    console.log(creds)
+    if (needAuth && creds === null) {
+        return Promise.resolve(null)
+    } else if (needAuth && creds) {
+        const d = new Date(creds.token_timeout)
+        if (d <= Date.now()) {
+            return new Promise(resolve => {
+                console.log("Auth token expired, requesting a new one")
+                var loginRequest = new UserLoginRequest();   
+                loginRequest.setUsername(creds.username);
+                loginRequest.setPassword(creds.password);
+        
+                authClient.login(loginRequest, null, function(error, response) {
+                    if (error) {
+                        resolve(null)
+                    }
+                    var resp = response.toObject();
+                    if (resp.error !== "") {
+                        resolve(null)
+                    } else {
+                        var new_creds = {
+                            username: resp.username,
+                            password: creds.password,
+                            user_id: resp.id,
+                            access_token: resp.token,
+                            token_timeout: response.getTokenTimeout().toDate(),
+                        }
+                        localStorage.setItem("creds", JSON.stringify(new_creds));
+                    }
+                    resolve(new_creds)
+                })
+            })
+        } else {
+            return Promise.resolve(creds)
+        }
+    } else {
+        return Promise.resolve({})
     }
 }
 

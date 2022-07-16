@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
@@ -27,10 +28,11 @@ type CacheEntry struct {
 }
 
 type Connection struct {
-	Stream comms.Chat_JoinChatServer
-	Id     primitive.ObjectID
-	Active bool
-	Err    chan error
+	Stream       comms.Chat_JoinChatServer
+	Id           primitive.ObjectID
+	Active       bool
+	Err          chan error
+	CreationTime time.Time
 }
 
 func (agent *ChatAgent) SetRoom(room_id primitive.ObjectID, database *mongo.Database) (*db.ChatRoom, error) {
@@ -71,10 +73,11 @@ func (agent *ChatAgent) UserJoin(room_id, user_id primitive.ObjectID, stream com
 		return nil, err
 	}
 	conn := &Connection{
-		Stream: stream,
-		Id:     user_id,
-		Active: true,
-		Err:    make(chan error),
+		Stream:       stream,
+		Id:           user_id,
+		Active:       true,
+		Err:          make(chan error),
+		CreationTime: time.Now().Local(),
 	}
 	entry.conns = append(entry.conns, conn)
 
@@ -134,6 +137,40 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 	return err
 }
 
+func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Database) error {
+	room_id := msg.RoomId
+	entry, ok := agent.ActiveRooms[room_id]
+	if !ok {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("The room %s is not active", room_id.Hex())))
+		return errors.New("You must join the room before sending messages, this room is not active")
+	}
+	entry.mu.Lock()
+	msg, err := entry.room.AddMessageInternal(msg, database)
+	if err != nil {
+		entry.mu.Unlock()
+		return err
+	}
+	entry.mu.Unlock()
+
+	proto := msg.Proto()
+	go func(
+		agent *ChatAgent,
+		room_id primitive.ObjectID,
+		user_id primitive.ObjectID,
+		proto *comms.ChatMessage) {
+
+		agent.BroadcastMessage(room_id, user_id, proto)
+
+	}(agent, room_id, msg.UserId, proto)
+
+	return nil
+}
+
+type ConnLog struct {
+	time  time.Time
+	index int
+}
+
 func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, msg *comms.ChatMessage) error {
 	log.Println("Broadcasting")
 	entry, ok := agent.ActiveRooms[room_id]
@@ -142,15 +179,41 @@ func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, ms
 	}
 	wait := sync.WaitGroup{}
 	done := make(chan int)
-	removals := make(chan int)
+	removals := make([]int, 0)
+
+	users := make(map[primitive.ObjectID]*ConnLog)
 
 	for idx, conn := range entry.conns {
-		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Broadcasting to user id %s in room %s", user_id.Hex(), room_id.Hex())))
+		clog, exists := users[conn.Id]
+		if !exists {
+			users[conn.Id] = &ConnLog{
+				time:  conn.CreationTime,
+				index: idx,
+			}
+		} else {
+			if conn.Active {
+				if conn.CreationTime.After(clog.time) {
+					entry.conns[users[conn.Id].index].Active = false
+					users[conn.Id] = &ConnLog{
+						time:  conn.CreationTime,
+						index: idx,
+					}
+				} else {
+					conn.Active = false
+				}
+			}
+		}
+	}
+
+	// for idx, conn := range entry.conns {
+	// 	log.Println(fmt.Sprintf("Conn: %s for user id %s created at %s is %b", idx, conn.Id, conn.CreationTime, conn.Active))
+	// }
+
+	for idx, conn := range entry.conns {
 		wait.Add(1)
 
 		go func(msg *comms.ChatMessage, conn *Connection, idx int) {
 			defer wait.Done()
-
 			if conn.Active {
 				err := conn.Stream.Send(msg)
 				log.Println(color.Ize(color.Yellow, fmt.Sprintf("Sending message %v to user %v", msg.Id, conn.Id)))
@@ -161,17 +224,27 @@ func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, ms
 					conn.Err <- err
 				}
 			} else {
-				removals <- idx
+				removals = append(removals, idx)
 			}
 		}(msg, conn, idx)
 	}
 
 	go func() {
 		wait.Wait()
-		close(removals)
-		for removal := range removals {
-			entry.conns = append(entry.conns[:removal], entry.conns[removal+1:]...)
+
+		newConns := make([]*Connection, 0)
+		for idx, remainingConn := range entry.conns {
+			found := false
+			for removal := range removals {
+				if idx == removal {
+					found = true
+				}
+			}
+			if !found {
+				newConns = append(newConns, remainingConn)
+			}
 		}
+		entry.conns = newConns
 		log.Printf("After broadcasting we have %d connections in this room", len(entry.conns))
 		close(done)
 	}()

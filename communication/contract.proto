@@ -8,16 +8,21 @@ message PriceEntity {
     float current = 1;
     float buyer = 2;
     float worker = 3;
+    bool awaiting_approval = 4;
+    string proposer_id = 5;
 }
 
 message DeadlineEntity {
     google.protobuf.Timestamp current = 1;
     google.protobuf.Timestamp buyer = 2;
     google.protobuf.Timestamp worker = 3;
+    bool awaiting_approval = 4;
+    string proposer_id = 5;
 }
 
 message ContractEntity {
     string id = 1;
+    string password = 11;
     UserNubEntity worker = 2;
     UserNubEntity buyer = 3;
     PriceEntity price = 4;
@@ -67,7 +72,9 @@ message ContractCreateRequest {
     string user_id = 1;
     string title = 2;
     string summary = 3;
+    string password = 8;
     string intro_message = 4;
+    uint32 role = 9;
     PriceEntity price = 5;
     DeadlineEntity deadline = 6;
     repeated ItemEntity items = 7;
@@ -78,21 +85,28 @@ message QueryByIdRequest {
     string user_id = 2;
 }
 
+
 message ContractSuggestPrice {
     string user_id = 1;
-    uint32 new_price = 2;
+    string contract_id = 2;
+    float new_price = 3;
 }
 message ContractReactPrice {
     string user_id = 1;
-    bool accept = 2;
+    string contract_id = 2;
+    string message_id = 4;
+    uint32 status = 3;
 }
 message ContractSuggestDeadline {
     string user_id = 1;
-    uint32 new_price = 2;
+    string contract_id = 2;
+    uint32 new_price = 3;
 }
 message ContractReactDeadline {
     string user_id = 1;
-    bool accept = 2;
+    string contract_id = 2;
+    string message_id = 4;
+    uint32 status = 3;
 }
 
 message ContractAddItemRequest {
@@ -101,6 +115,7 @@ message ContractAddItemRequest {
     string item_title = 3;
     string item_body = 4;
 }
+
 message ContractDelItemRequest {
     string user_id = 1;
     string contract_id = 2;
@@ -109,6 +124,7 @@ message ContractDelItemRequest {
 
 message ContractResponse {
     ContractEntity contract = 2;
+    uint32 yourRole = 3;
 }
 
 message ContractAddItemResponse {
@@ -120,16 +136,18 @@ message QueryByUserRequest {
     string user_id = 1;
 }
 
+message ContactEditResponse {}
+
 service Contract {
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
 
     rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
 
-    rpc SuggestPrice(ContractSuggestPrice) returns (ContractResponse) {};
-    rpc ReactPrice(ContractReactPrice) returns (ContractResponse) {};
-    rpc SuggestDate(ContractSuggestDeadline) returns (ContractResponse) {};
-    rpc ReactDate(ContractReactDeadline) returns (ContractResponse) {};
+    rpc SuggestPrice(ContractSuggestPrice) returns (ContactEditResponse) {};
+    rpc ReactPrice(ContractReactPrice) returns (ContactEditResponse) {};
+    rpc SuggestDate(ContractSuggestDeadline) returns (ContactEditResponse) {};
+    rpc ReactDate(ContractReactDeadline) returns (ContactEditResponse) {};
 
     rpc AddItem(ContractAddItemRequest) returns (ContractAddItemResponse) {};
     rpc DeleteItem(ContractDelItemRequest) returns (ContractResponse) {};

@@ -9,6 +9,7 @@ import (
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterRequest) (*comms.UserRegisterResponse, error) {
@@ -36,18 +37,19 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 				Id:       "",
 			}, nil
 		}
-		tkn, err := s.JwtManager.Generate(user)
+		tkn, tkn_timeout, err := s.JwtManager.Generate(user)
 		if err != nil {
 			return nil, err
 		}
 
 		return &comms.UserRegisterResponse{
-			Success:  true,
-			Error:    "",
-			Token:    tkn,
-			Username: user.Username,
-			Id:       user.Id.Hex(),
-			Role:     user.Role,
+			Success:      true,
+			Error:        "",
+			Token:        tkn,
+			TokenTimeout: timestamppb.New(tkn_timeout),
+			Username:     user.Username,
+			Id:           user.Id.Hex(),
+			Role:         user.Role,
 		}, nil
 
 	// Handles nil case, meaning user query was successful, user already exists
@@ -69,15 +71,16 @@ func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*c
 		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Returning error: %s", err.Error())))
 		return &comms.UserLoginResponse{Error: err.Error()}, nil
 	}
-	tkn, err := s.JwtManager.Generate(user)
+	tkn, tkn_timeout, err := s.JwtManager.Generate(user)
 	if err != nil {
 		return &comms.UserLoginResponse{Error: err.Error()}, nil
 	}
 	return &comms.UserLoginResponse{
-		Token:    tkn,
-		Username: user.Username,
-		Id:       user.Id.Hex(),
-		Role:     user.Role,
+		Token:        tkn,
+		TokenTimeout: timestamppb.New(tkn_timeout),
+		Username:     user.Username,
+		Id:           user.Id.Hex(),
+		Role:         user.Role,
 	}, nil
 
 }
