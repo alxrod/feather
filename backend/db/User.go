@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	WORKER = 0
-	BUYER  = 1
+	WORKER = uint32(0)
+	BUYER  = uint32(1)
 )
 
 const (
@@ -32,7 +32,6 @@ type User struct {
 	Password  string             `bson:"password"`
 	Email     string             `bson:"email"`
 	FullName  string             `bson:"full_name"`
-	Contracts []uint32           `bson:"contract_ids"`
 	Instagram InstagramNub       `bson:"instagram"`
 	Tiktok    TiktokNub          `bson:"tiktok"`
 	Payment   PaymentNub         `bson:"payment"`

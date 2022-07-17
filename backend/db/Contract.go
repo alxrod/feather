@@ -15,6 +15,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const (
+	INVITE    = uint32(0)
+	NEGOTIATE = uint32(10)
+	SIGNED    = uint32(20)
+	ACTIVE    = uint32(30)
+	SETTLING  = uint32(40)
+	COMPLETE  = uint32(50)
+)
+
 type Contract struct {
 	Id       primitive.ObjectID `bson:"_id,omitempty"`
 	Password string             `bson:"password"`
@@ -87,15 +96,39 @@ func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractN
 	proto.Price = contract.Price.Current
 	proto.Stage = contract.Stage
 
-	if contract.Worker.Id == user_id {
+	if contract.Worker != nil && contract.Worker.Id == user_id {
 		proto.UserType = WORKER
-	} else if contract.Buyer.Id == user_id {
+	} else if contract.Buyer != nil && contract.Buyer.Id == user_id {
 		proto.UserType = BUYER
 	} else {
 		return nil, errors.New("This user_id is not on this contract")
 	}
 
 	return proto, nil
+}
+
+func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
+	proto := &comms.InviteNub{}
+	if contract == nil {
+		return proto, nil
+	}
+	if contract.Id.IsZero() {
+		return nil, errors.New("Invalid contract id")
+	}
+	if contract.Stage != INVITE {
+		return nil, errors.New("This contract is not in the invite stage")
+	}
+	proto.Id = contract.Id.Hex()
+	proto.Title = contract.Title
+	proto.Password = contract.Password
+	proto.Deadline = timestamppb.New(contract.Deadline.Current)
+	proto.Price = contract.Price.Current
+	proto.Summary = contract.Summary
+	proto.Worker = contract.Worker.Proto()
+	proto.Buyer = contract.Buyer.Proto()
+
+	return proto, nil
+
 }
 
 type UserNub struct {
@@ -119,15 +152,6 @@ func (un *UserNub) Proto() *comms.UserNubEntity {
 	}
 	return proto
 }
-
-const (
-	INVITE    = uint32(0)
-	NEGOTIATE = uint32(10)
-	SIGNED    = uint32(20)
-	ACTIVE    = uint32(30)
-	SETTLING  = uint32(40)
-	COMPLETE  = uint32(50)
-)
 
 type PriceNub struct {
 	Current          float32            `bson:"current"`
@@ -181,7 +205,7 @@ func (dn *DeadlineNub) Proto() *comms.DeadlineEntity {
 func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mongo.Database) (*Contract, error) {
 	var price *PriceNub
 	var deadline *DeadlineNub
-	if user.Type == WORKER {
+	if req.Role == WORKER {
 		price = &PriceNub{
 			Current:          req.Price.Worker,
 			Worker:           req.Price.Worker,
@@ -222,7 +246,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 		Password: req.Password,
 		Stage:    stage,
 	}
-	if user.Type == WORKER {
+	if req.Role == WORKER {
 		contract.Worker = user.Nub(true)
 	} else {
 		contract.Buyer = user.Nub(true)
@@ -354,6 +378,34 @@ func ContractSuggestPrice(contract *Contract, user *User, newPrice float32, data
 	contract.Price = priceNub
 
 	err := ContractSavePrice(contract, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractClaim(user *User, contract *Contract, database *mongo.Database) error {
+	nub := &UserNub{
+		Id:       user.Id,
+		Username: user.Username,
+		Author:   false,
+	}
+	if contract.Worker == nil {
+		nub.Type = WORKER
+		contract.Worker = nub
+	} else if contract.Buyer == nil {
+		nub.Type = BUYER
+		contract.Buyer = nub
+	} else {
+		return errors.New("This contract has already been claimed")
+	}
+
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"worker", contract.Worker}}}}
+	if nub.Type == BUYER {
+		update = bson.D{{"$set", bson.D{{"buyer", contract.Buyer}}}}
+	}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
 	}

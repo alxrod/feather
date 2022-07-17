@@ -140,6 +140,128 @@ proto.main.ContractPromiseClient.prototype.create =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.InviteDataRequest,
+ *   !proto.main.InviteNub>}
+ */
+const methodDescriptor_Contract_InviteQuery = new grpc.web.MethodDescriptor(
+  '/main.Contract/InviteQuery',
+  grpc.web.MethodType.UNARY,
+  proto.main.InviteDataRequest,
+  proto.main.InviteNub,
+  /**
+   * @param {!proto.main.InviteDataRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.InviteNub.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.InviteDataRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.InviteNub)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.InviteNub>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.inviteQuery =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/InviteQuery',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_InviteQuery,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.InviteDataRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.InviteNub>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.inviteQuery =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/InviteQuery',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_InviteQuery);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ClaimContractRequest,
+ *   !proto.main.ContractResponse>}
+ */
+const methodDescriptor_Contract_Claim = new grpc.web.MethodDescriptor(
+  '/main.Contract/Claim',
+  grpc.web.MethodType.UNARY,
+  proto.main.ClaimContractRequest,
+  proto.main.ContractResponse,
+  /**
+   * @param {!proto.main.ClaimContractRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ClaimContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.claim =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/Claim',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Claim,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ClaimContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.claim =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/Claim',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Claim);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.QueryByIdRequest,
  *   !proto.main.ContractResponse>}
  */

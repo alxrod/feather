@@ -11,8 +11,10 @@ import {
     ContractResponse,
     QueryByUserRequest,
     QueryByIdRequest,
+    InviteDataRequest,
 
     ContractSuggestPrice,
+    ClaimContractRequest,
 
 } from "../proto/communication/contract_pb";
 import {msgMethods} from "./chat.service"
@@ -65,7 +67,8 @@ class ContractService {
                 resp.contract.deadline.current = response.getContract().getDeadline().getCurrent().toDate()
                 resp.contract.deadline.buyer = response.getContract().getDeadline().getBuyer().toDate()
                 resp.contract.deadline.worker = response.getContract().getDeadline().getBuyer().toDate()
-
+                
+                resp.contract.role = resp.role
                 resolve(resp)
             });
         });
@@ -93,7 +96,7 @@ class ContractService {
         });
     }
     
-    create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items, password) {
+    create_contract(token, user_id, title, summary, intro_message, price_set, deadline_set, items, password, role) {
         // console.log("At service: ")
         // console.log(items)
 
@@ -106,6 +109,7 @@ class ContractService {
         createRequest.setPrice(this.generatePriceEntity(price_set));
         createRequest.setDeadline(this.generateDeadlineEntity(deadline_set));
         createRequest.setPassword(password)
+        createRequest.setRole(role)
         let i = 0
         for (const [_, item] of Object.entries(items)) {
             const itemEntity = this.generateItemEntity(item)
@@ -123,6 +127,7 @@ class ContractService {
                 }
                 // console.log(response)
                 var resp = response.toObject();
+                resp.contract.role = resp.role
                 resolve(resp)
             });
         });
@@ -141,6 +146,41 @@ class ContractService {
                     reject(error)
                 }
                 resolve()
+            });
+        });
+
+    }
+
+    claimContract(token, user_id, contract_id, password) {
+        let claimRequest = new ClaimContractRequest();
+        claimRequest.setUserId(user_id);
+        claimRequest.setContractId(contract_id);
+        claimRequest.setPassword(password);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.claim(claimRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+
+    }
+
+    queryInvite(contract_id) {
+        let queryRequest = new InviteDataRequest();
+        queryRequest.setId(contract_id);
+        console.log("Trying")
+        return new Promise( (resolve, reject) => { 
+            contractClient.inviteQuery(queryRequest, null, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                const resp = response.toObject()
+                resp.deadline = response.getDeadline().toDate()
+                resolve(resp)
             });
         });
 

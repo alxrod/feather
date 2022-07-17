@@ -10,6 +10,7 @@ import (
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateRequest) (*comms.ContractResponse, error) {
@@ -39,6 +40,7 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 	contractProto := contract.Proto()
 	return &comms.ContractResponse{
 		Contract: contractProto,
+		Role:     req.Role,
 	}, nil
 
 }
@@ -59,13 +61,59 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 	if err != nil {
 		return nil, err
 	}
-	if (contract.Worker != nil && contract.Worker.Id != user_id) || (contract.Buyer != nil && contract.Buyer.Id != user_id) {
+	if (contract.Worker != nil && contract.Worker.Id != user_id) && (contract.Buyer != nil && contract.Buyer.Id != user_id) {
 		return nil, errors.New("The queried contract does not belong to this user")
+	}
+
+	role := db.BUYER
+	if contract.Worker != nil && contract.Worker.Id == user_id {
+		role = db.WORKER
 	}
 
 	proto := contract.Proto()
 	return &comms.ContractResponse{
 		Contract: proto,
+		Role:     role,
+	}, nil
+}
+
+func (s *BackServer) InviteQuery(ctx context.Context, req *comms.InviteDataRequest) (*comms.InviteNub, error) {
+	contract_id, err := primitive.ObjectIDFromHex(req.Id)
+	if err != nil {
+		return nil, errors.New("Invalid contract id")
+	}
+	database := s.dbClient.Database(s.dbName)
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, err
+	}
+	proto, err := contract.InviteProto()
+	if err != nil {
+		return nil, err
+	}
+	return proto, nil
+}
+
+func (s *BackServer) Claim(ctx context.Context, req *comms.ClaimContractRequest) (*comms.ContractResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+	if req.Password != contract.Password {
+		return nil, errors.New("Incorrect password to claim contract")
+	}
+	err = db.ContractClaim(user, contract, database)
+	if err != nil {
+		return nil, err
+	}
+	role := db.BUYER
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
+		role = db.WORKER
+	}
+	return &comms.ContractResponse{
+		Contract: contract.Proto(),
+		Role:     role,
 	}, nil
 }
 
@@ -209,4 +257,25 @@ func (s *BackServer) SuggestDeadline(ctx context.Context, req *comms.ContractSug
 
 func (s *BackServer) ReactDeadline(ctx context.Context, req *comms.ContractReactDeadline) (*comms.ContactEditResponse, error) {
 	return &comms.ContactEditResponse{}, nil
+}
+
+func pullUserContract(req_user_id, req_contract_id string, database *mongo.Database) (*db.User, *db.Contract, error) {
+	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
+	if err != nil {
+		return nil, nil, errors.New("Invalid contract id")
+	}
+	user_id, err := primitive.ObjectIDFromHex(req_user_id)
+	if err != nil {
+		return nil, nil, errors.New("Invalid user id")
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, nil, err
+	}
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, nil, err
+	}
+	return user, contract, nil
+
 }

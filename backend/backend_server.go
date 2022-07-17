@@ -43,6 +43,7 @@ func accessibleRoles() map[string]uint32 {
 		"/main.Chat/SendMessage":       db.STD_ROLE,
 		"/main.Chat/PullChatHistory":   db.STD_ROLE,
 		"/main.Chat/LeaveChat":         db.STD_ROLE,
+		"/main.Chat/Claim":             db.STD_ROLE,
 	}
 }
 

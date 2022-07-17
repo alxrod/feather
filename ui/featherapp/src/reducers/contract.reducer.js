@@ -5,6 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE, authChecker} from "../services/user.service";
 export const CONTRACT_CREATE = "contract/contract/CREATE"
 export const CONTRACT_CLEAR_SELECTED = "contract/contract/CLEAR"
 export const CONTRACT_NUB_PULL_ALL = "contract/contract_nub/PULL_ALL"
+export const CONTRACT_CLAIM = "contract/contract/CLAIM"
 
 export const CONTRACT_START_PULL = "contract/contract/START_PULL"
 export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
@@ -27,6 +28,7 @@ const initialState = {
     selectedId: "",
     awaitingEdit: false,
     loadingContract: false,
+    contractClaimed: false,
     
 }
 
@@ -51,6 +53,11 @@ export default (state = initialState, action) => {
                     [action.payload.id]: action.payload
                 }
             }
+        case CONTRACT_CLAIM:
+            return {
+                ...state,
+                contractClaimed: true
+            }
         case CONTRACT_START_PULL:
             console.log("STARTING CONTRACT PULL")
             return {
@@ -66,6 +73,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 selectedId: "",
+                contractClaimed: false,
             }
 
         case CONTRACT_PULL_CURRENT:
@@ -208,7 +216,7 @@ export const queryContractNubs = () => {
     }
 };
 
-export const createContract = (title, summary, intro_message, price_set, deadline_set, items, password) => {
+export const createContract = (title, summary, intro_message, price_set, deadline_set, items, password, role) => {
     return dispatch => {
         return authChecker(true).then(creds => {
             if (creds === undefined) {
@@ -217,7 +225,7 @@ export const createContract = (title, summary, intro_message, price_set, deadlin
             }
             return Promise.resolve(creds)
         }).then((creds) => {
-            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, intro_message, price_set, deadline_set, items, password).then(
+            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, intro_message, price_set, deadline_set, items, password, role).then(
                 (data) => {
                     if (data.contract.worker.id == creds.user_id) {
                         data.contract.user_type = WORKER_TYPE
@@ -263,6 +271,40 @@ export const suggestPrice = (contract_id, new_price) => {
                     console.log("Approval received")
                     dispatch({
                         type: CONTRACT_SUGGEST_PRICE,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
+
+export const claimContract = (contract_id, password) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.claimContract(creds.access_token, creds.user_id, contract_id, password).then(
+                () => {
+                    console.log("Approval received")
+                    dispatch({
+                        type: CONTRACT_CLAIM,
                     });
                     return Promise.resolve();
                 },

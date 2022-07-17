@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
 import { createContract, clearSelected } from "../../../reducers/contract.reducer";
 
-import { ownership_format } from "../../../services/user.service";
+import { ownership_format, WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
 
 import ContractItem from "../components/contract_item/contract_item";
 import CombinedCriteria from "../components/criteria/combined_criteria";
@@ -13,6 +13,7 @@ import NewContractItem from "../components/contract_item/new_contract_item";
 import CreateSummary from "./components/create_summary.js"
 import IntroMessage from "./components/intro_message.js"
 import PasswordField from "./components/password_field"
+import RoleField from "./components/role_field"
 import ErrorBanner from "./components/error_banner.js"
 
 import { ITEM_AGREED } from "../../../custom_encodings"
@@ -67,11 +68,21 @@ const ContractCreate= (props) => {
   const changePassword = (new_password) => {
     setConPassword(new_password)
   }
+
+  const changeRole = () => {
+    if (conRole === WORKER_TYPE) {
+      setConRole(BUYER_TYPE)
+    } else {
+      setConRole(WORKER_TYPE)
+    }
+
+  }
         
   const [conTitle, setConTitle] = useState("")
   const [conDescript, setConDescript] = useState("")
   const [conMessage, setConMessage] = useState("")
   const [conPassword, setConPassword] = useState("")
+  const [conRole, setConRole] = useState(WORKER_TYPE)
 
   const [nextId, setNextId] = useState(1)
 
@@ -86,7 +97,7 @@ const ContractCreate= (props) => {
     const price_set = ownership_format(price)
     const deadline_set = ownership_format(deadline)
     // console.log(contractItems)
-    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems, conPassword).then(
+    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
       }, (error) => {
@@ -177,6 +188,10 @@ const ContractCreate= (props) => {
             <PasswordField
               password={conPassword}
               setPassword={setConPassword}
+            />
+            <RoleField
+              role={conRole}
+              changeRole={changeRole}
             />
           </div>
         </div>

@@ -68,7 +68,7 @@ const App = (props) => {
   useEffect( () => {
     // console.log("Calling a link change to path: " + loc.pathname)
     const route_base = "/"+loc.pathname.split("/")[1]
-    if (no_nav_routes.includes(route_base)) {
+    if (no_nav_routes.includes(route_base) && !props.isLoggedIn) {
       props.setNavbar(false)
     } else {
       props.setNavbar(true)

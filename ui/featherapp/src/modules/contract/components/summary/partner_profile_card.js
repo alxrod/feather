@@ -1,12 +1,12 @@
 import React from 'react';
-import PlatformProfile from "./platform_profile"
-import BrandProfile from "./brand_profile"
+import PartnerProfile from "./partner"
+import SummaryCard from "./summary_card"
 
 const PartnerCard = props => (
     <div className="flex flex-col">
-        <BrandProfile title={props.title} summary={props.summary}/>
+        <SummaryCard title={props.title} summary={props.summary}/>
         {!props.excludePlatform && (
-            <PlatformProfile/>
+            <PartnerProfile/>
         )}
     </div>
 )

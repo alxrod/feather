@@ -107,7 +107,6 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 		UserType:       user.Type,
 		Role:           user.Role,
 		FullName:       user.FullName,
-		ContractIds:    user.Contracts,
 		InstaAccount:   user.Instagram.Account,
 		InstaFollowers: user.Instagram.Followers,
 		InstaVerified:  user.Instagram.Verified,

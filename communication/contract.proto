@@ -43,6 +43,20 @@ message ContractNub {
     uint32 user_type = 6;
 }
 
+message InviteDataRequest {
+    string id = 1;
+}
+message InviteNub {
+    string id = 1;
+    string title = 2;
+    string password = 8;
+    string summary = 3;
+    float price = 4;
+    google.protobuf.Timestamp deadline = 5;
+    UserNubEntity worker = 6;
+    UserNubEntity buyer = 7;
+}
+
 message ContractNubSet {
     string user_id = 1;
     repeated ContractNub contract_nubs = 2;
@@ -124,7 +138,7 @@ message ContractDelItemRequest {
 
 message ContractResponse {
     ContractEntity contract = 2;
-    uint32 yourRole = 3;
+    uint32 role = 3;
 }
 
 message ContractAddItemResponse {
@@ -136,10 +150,19 @@ message QueryByUserRequest {
     string user_id = 1;
 }
 
+message ClaimContractRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string password = 3;
+}
+
 message ContactEditResponse {}
 
 service Contract {
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
+    rpc InviteQuery(InviteDataRequest) returns (InviteNub) {};
+
+    rpc Claim(ClaimContractRequest) returns (ContractResponse) {};
 
     rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
