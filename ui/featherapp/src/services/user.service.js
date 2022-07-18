@@ -305,7 +305,6 @@ class UserService {
 
 export const authChecker = (needAuth) => {
     const creds = JSON.parse(localStorage.getItem("creds"))
-    console.log(creds)
     if (needAuth && creds === null) {
         return Promise.resolve(null)
     } else if (needAuth && creds) {

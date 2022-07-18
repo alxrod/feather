@@ -5,14 +5,13 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
+import { reactPrice, updateLocalPrice } from "../../../../../reducers/contract.reducer"
+import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { resolTypes } from "../../../../../services/chat.service"
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-
-const modes = {
-  DECIDING: 1,
-  APPROVED: 2,
-  REJECTED: 3,
-}
-export default (props) => {
+const PriceMsg = (props) => {
   const genTimeString = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
@@ -26,18 +25,57 @@ export default (props) => {
   } 
 
   const [yourStatus, setStatus] = useState(decisionTypes.UNDECIDED)
-  console.log("Msg:")
-  console.log(props.msg)
-  console.log(props.yourRole)
+
+  const [otherUsername, setOtherUsername] = useState("")
+  const [otherStatus, setOtherStatus] = useState(0)
+
+  const [version, setVersion] = useState(1)
+  useEffect( () => {
+    if (props.reloaded === true) {
+      if ((version+1) > 1) {
+        props.updateLocalPrice(props.msg)
+      }
+      setVersion(version+1)
+      props.finishedReload()
+    }
+  }, [props.reloaded])
 
   useEffect( () => {
-    if (props.yourRole == WORKER_TYPE) {
-      setStatus(props.msg.body.workerStatus)
-    } else if (props.yourRole == BUYER_TYPE) {
-      setStatus(props.msg.body.buyerStatus)
-    } 
-  }, [props.msg, props.yourRole])
+    if (props.selectedId !== "") {
+      const contract = props.cachedContracts[props.selectedId]
+      if (contract.worker.username === props.user.username) {
+        setOtherUsername(contract.buyer.username)
+      } else {
+        setOtherUsername(contract.worker.username)
+      }
+    }
+    
+  }, [props.selectedId])
 
+  useEffect( () => {
+    if (props.msg) {
+      // console.log("New Status for " + props.msg.id)
+      if (props.yourRole == WORKER_TYPE) {
+        setStatus(props.msg.body.workerStatus)
+        setOtherStatus(props.msg.body.buyerStatus)
+        // console.log("You: "+props.msg.body.workerStatus)
+        // console.log("Par: "+props.msg.body.buyerStatus)
+      } else if (props.yourRole == BUYER_TYPE) {
+        setStatus(props.msg.body.buyerStatus)
+        setOtherStatus(props.msg.body.workerStatus)
+        // console.log("You: "+props.msg.body.buyerStatus)
+        // console.log("Par: "+props.msg.body.workerStatus)
+      } 
+    }
+    
+  }, [props.msg, props.yourRole, version])
+
+  const acceptChange = () => {
+    props.reactPrice(props.selectedId, props.msg.id, decisionTypes.YES)
+  }
+  const rejectChange = () => {
+    props.reactPrice(props.selectedId, props.msg.id, decisionTypes.NO)
+  }
   
   
 
@@ -68,29 +106,75 @@ export default (props) => {
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="flex items-center">
-              <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
-              <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-              <p className="ml-1 text-green text-lg font-medium">${props.msg.body.newVersion}</p>
+              {(props.msg.body.resolStatus === resolTypes.CANCELED || props.msg.body.resolStatus === resolTypes.REJECTED) ? (
+                <>
+                  {(yourStatus === decisionTypes.NO) ? (
+                    <>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
+                      <p className="ml-1 text-gray-400 text-lg font-medium">$<s>{props.msg.body.newVersion}</s></p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
+                      <p className="ml-1 text-gray-400 text-lg font-medium">$<s>{props.msg.body.newVersion}</s></p>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {(yourStatus === decisionTypes.NO) ? (
+                    <>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
+                      <p className="ml-1 text-gray-400 text-lg font-medium">$<s>{props.msg.body.newVersion}</s></p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
+                      <p className="ml-1 text-green text-lg font-medium">${props.msg.body.newVersion}</p>
+                    </>
+                  )}
+                </>
+              )}
+
+              
             </div>
             <div className="w-6"></div>
             <div className="w-16">
               {(yourStatus == decisionTypes.UNDECIDED) && (
-                <DecideButton/>
+                <DecideButton 
+                  approve={acceptChange}
+                  reject={rejectChange}
+                />
               )} 
             </div>
           </div>
-          {(yourStatus == decisionTypes.YES) && (
+          <div className="flex">
+            {(yourStatus == decisionTypes.YES) && (
               <div className="flex items-center justify-between">
-                <p className="text-grey-400 mr-2">You <b className="text-green">approved</b> this change</p>
-                <button><u><i className="text-grey-100">undo</i></u></button>
+                <p className="text-grey-400 mr-1">You <b className="text-green">approved</b></p>
               </div>
             )}
             {(yourStatus == decisionTypes.NO) && (
               <div>
-                <p className="text-red">You rejected this change</p>
-                <button className="text-red">Undo</button>
+                <p className="text-grey-400 mr-1">You <b className="text-red">rejected</b></p>
               </div>
             )}
+            {" "}
+            {(otherStatus == decisionTypes.YES) && (
+              <div className="flex items-center justify-between">
+                <p className="text-grey-400">{otherUsername} <b className="text-green">approved</b>{" "}</p>
+              </div>
+            )}
+            {(otherStatus == decisionTypes.NO) && (
+              <div>
+                <p className="text-grey-400">{otherUsername} <b className="text-red">rejected</b></p>
+              </div>
+            )}
+          </div>
           
 
           
@@ -100,3 +184,20 @@ export default (props) => {
 
   )
 }
+
+const mapStateToProps = ({ user, contract }) => ({
+  selectedId: contract.selectedId,
+  cachedContracts: contract.cachedContracts,
+  user: user.user,
+})
+  
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  reactPrice,
+  updateLocalPrice,
+  finishedReload,
+}, dispatch)
+  
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PriceMsg)

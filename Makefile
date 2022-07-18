@@ -11,6 +11,10 @@ build:
 backend:
 	go build -o api . && ./api   
 
+.PHONY: debug
+debug:
+	npm run dev --prefix ui/featherapp/ 
+
 .PHONY: proto
 proto:
 	protoc communication/*.proto \

@@ -1,11 +1,10 @@
-import ChatService, {CHAT_MESSAGE_RECEIVE} from "../services/chat.service";
+import ChatService from "../services/chat.service";
 
 import {authChecker} from "../services/user.service";
 import {AUTH_FAILED} from "./user.reducer";
 
 export const CHAT_JOIN = "chat/room/JOIN"
 export const CHAT_LEAVE = "chat/room/LEAVE"
-
 export const CHAT_MESSAGE_ATTEMPT_SEND = "chat/message/ATTEMPT_SEND"
 export const CHAT_MESSAGE_SUCCESS_SEND = "chat/message/SUCCESS_SEND"
 export const CHAT_MESSAGE_FAIL_SEND = "chat/message/FAIL_SEND"
@@ -13,19 +12,28 @@ export const CHAT_MESSAGE_FAIL_SEND = "chat/message/FAIL_SEND"
 export const CHAT_MESSAGE_HISTORY_PULLED = "chat/history/PULLED_MESSAGES"
 export const CHAT_CLEAR_ROOM = "chat/room/CLEAR"
 
+export const CHAT_MESSAGE_RECEIVE = "chat/message/RECEIVE"
+export const CHAT_MESSAGE_UPDATE = "chat/message/UPDATE"
+export const CHAT_CLEAR_RELOAD = "chat/message/CLEAR_RELOAD"
+
 export const sendStates = {PENDING: 0, SUCCESS: 1, FAIL: 2, INACTIVE: 3}
 
 const initialState = {
     roomId: "",
     isActive: false,
     messages: [],
-    sending: sendStates.INACTIVE 
+    sending: sendStates.INACTIVE,
+    
+    reloadMsg: false,
+    reloadIdx: 0,
 }
 
 export default (state = initialState, action) => {
     switch (action.type) {
 
         case CHAT_MESSAGE_HISTORY_PULLED:
+            console.log("FINISHED HISTORY PULL:")
+            console.log(action.payload)
             return {
                 ...state,
                 messages: action.payload
@@ -75,10 +83,47 @@ export default (state = initialState, action) => {
                 ...state,
                 messages: [...state.messages, action.payload]
             }
+
+        case CHAT_MESSAGE_UPDATE:
+            const [newMessage, idx] = editMessageState(state.messages, action.payload) 
+            if (idx === -1) {
+                return { ...state }
+            }
+            return {
+                ...state,
+                messages: state.messages.map(
+                    (msg, i) => i === idx ? newMessage : msg
+                ),
+                reloadMsg: true,
+                reloadIdx: idx,
+            }
+        case CHAT_CLEAR_RELOAD:
+            return {
+                ...state,
+                reloadMsg: false,
+                reloadIdx: -1,
+            }
+
         default:
             return state
     }
 
+}
+const editMessageState = (msgs, info) => {
+    let msg = {};
+    let i = -1;
+    for (i = 0; i < msgs.length; i++) {
+        if (msgs[i].id === info.msgId) {
+            msg = msgs[i]
+
+            msg.body.buyerStatus = info.buyerStatus
+            msg.body.workerStatus = info.workerStatus
+            msg.body.resolStatus = info.resolStatus
+            msg.body.resolved = info.resolved
+            break
+        }
+    }
+    return [msg, i];
 }
 
 export const joinChat = (room_id, role) => {
@@ -105,13 +150,18 @@ export const joinChat = (room_id, role) => {
 
 export const clearChat = () => {
     return dispatch => {
-        console.log("Clearing chat")
         dispatch({
             type: CHAT_CLEAR_ROOM,
         });
     }
 };
-
+export const finishedReload = () => {
+    return dispatch => {
+        dispatch({
+            type: CHAT_CLEAR_RELOAD,
+        })
+    }
+}
 export const sendMessage = (room_id, message, label) => {
     console.log("Sending " + message + " to " + room_id);
     return dispatch => {
@@ -155,8 +205,7 @@ export const pullRecord = (room_id) => {
         }).then((creds) => {
             return ChatService.pullRecord(creds.access_token, room_id).then(
                 (data) => {
-                    console.log("Received data, contents:")
-                    console.log(data)
+
                     dispatch({
                         type: CHAT_MESSAGE_HISTORY_PULLED,
                         payload: data

@@ -18,20 +18,12 @@ const MainChat = (props) => {
         }
         if (props.loadingContract === false) {
             if (props.roomId !== undefined && props.roomId !== localRoomId) {
-                console.log("Calling messages info on Room Id: "+props.roomId)
                 const contract = props.cachedContracts[props.selectedId]
-                setRole(WORKER_TYPE)
-                if (contract.buyer.id === props.user.id) {
-                    console.log("Joining chat as buyer")
-                    setRole(BUYER_TYPE)
-                } else {
-                    console.log("Joining chat as worker")
-                }
-                props.joinChat(props.roomId, role)
+                setRole(contract.role)
+                props.joinChat(props.roomId, contract.role)
                 props.pullRecord(props.roomId)
             }
         }
-        
     }, [props.user, props.selectedId])
     
     return (

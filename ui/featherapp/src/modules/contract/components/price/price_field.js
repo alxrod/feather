@@ -8,7 +8,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import EditLock from "../../../general_components/edit_lock"
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useLocation } from 'react-router-dom'
-
+import { ArrowRightIcon } from '@heroicons/react/solid'
 
 function isFloat(n) {
   return (n === "") || parseFloat(n.match(/^-?\d*(\.\d+)?$/))>0 || parseFloat((n+"0").match(/^-?\d*(\.\d+)?$/))>0;
@@ -25,15 +25,17 @@ const PriceField = (props) => {
   const [textColor, setTextColor] = useState("text-gray-500")
   const [proposing, toggleProposing] = useState(false)
   const [lock, toggleLock] = useState(false)
+  const [oldPrice, setOldPrice] = useState("")
 
   let user_type = WORKER_TYPE
 
   useEffect( () => {
+    
     if (props.createMode !== true && props.selectedId !== "" && props.selectedId != cur_contract.id) {   
+      
       cur_contract = props.cachedContracts[props.selectedId]
       let price = cur_contract.price
-      console.log("Updating with price:")
-      console.log(price)
+
       if (cur_contract.worker && cur_contract.worker.id === props.user.user_id) {
         user_type = WORKER_TYPE
       } else {
@@ -43,7 +45,11 @@ const PriceField = (props) => {
   
       if (price.awaitingApproval == true) {
         toggleLock(true)
+        setClasses("hidden")
         setTextColor("text-green")
+        console.log("Receiving")
+        console.log(price)
+        setOldPrice(price.current)
         if (price.proposerId === props.user.user_id) {
           if (user_type === WORKER_TYPE) {
             newPrice = price.worker
@@ -53,26 +59,25 @@ const PriceField = (props) => {
         } else {
           if (user_type === WORKER_TYPE) {
             newPrice = price.buyer
+            
           } else {
             newPrice = price.worker
           }
         }
       } else {
         newPrice = price.current
+        setTextColor("text-gray-500")
         toggleLock(false)
       }
       setOrigPrice(newPrice)
       setFieldValue(newPrice)
     }
-  }, [props.selectedId, props.cachedContracts])
+  }, [props.selectedId, props.cachedContracts, props.awaitingEdit])
 
   useEffect( () => {
     if (props.selectedId !== "" && props.cachedContracts !== undefined) {
       if (props.cachedContracts[props.selectedId].price.awaitingApproval === true) {
-        console.log("Lock is active")
         toggleLock(true)
-      } else {
-        console.log(props.cachedContracts[props.selectedId].price)
       }
     }
 
@@ -108,6 +113,7 @@ const PriceField = (props) => {
   }
 
   const rejectChange = () => {
+    console.log("Rejecting change")
     toggleProposing(false)
     setFieldValue(origPrice)
   }
@@ -121,16 +127,39 @@ const PriceField = (props) => {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span className="text-gray-500 sm:text-sm">$</span>
             </div>
-            <input
-              type="text"
-              name="price"
-              id="price"
-              className={textColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
-              value={fieldValue}
-              disabled={props.disabled || lock}
-              onChange={handlePriceChange}
-              aria-describedby="price-currency"
-            />
+            {(lock == false) ? (
+              <input
+                type="text"
+                name="price"
+                id="price"
+                className={textColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                value={fieldValue}
+                disabled={props.disabled || lock}
+                onChange={handlePriceChange}
+                aria-describedby="price-currency"
+              />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  name="price"
+                  id="price"
+                  className={textColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                  value={""}
+                  disabled={props.disabled || lock}
+                  onChange={handlePriceChange}
+                  aria-describedby="price-currency"
+                />
+                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                  <span className="text-gray-400 items-center text-sm flex" id="price-currency">
+                    <p>{oldPrice}</p>
+                    <ArrowRightIcon className="w-3 h-3"/>
+                    <p className="text-green">{fieldValue}</p>
+                  </span>
+                </div>
+              </>
+            )}
+              
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <span className="text-gray-400 sm:text-sm" id="price-currency">
                 {lock && (
@@ -147,7 +176,7 @@ const PriceField = (props) => {
             <p className="text-red text-sm">You can only enter a dollar amount</p>
           </div>
         </div>
-        {proposing && (
+        {(proposing && !lock) && (
           <div className="ml-1 pt-1 my-auto">
             <DecideButton approve={submitChange} reject={rejectChange}/>
           </div>
@@ -157,9 +186,10 @@ const PriceField = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, contract, chat }) => ({
   selectedId: contract.selectedId,
   awaitingEdit: contract.awaitingEdit,
+  reloadMsg: chat.reloadMsg,
   cachedContracts: contract.cachedContracts,
   user: user.user,
 })

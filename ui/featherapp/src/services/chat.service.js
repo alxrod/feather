@@ -11,11 +11,11 @@ import {
     ChatLabel,
 
 } from "../proto/communication/chat_pb";
-import { CONTRACT_UPDATE_PRICE } from "../reducers/contract.reducer"
+import { CONTRACT_UPDATE_PRICE, CONTRACT_SEND_EDIT } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-export const CHAT_MESSAGE_RECEIVE = "chat/message/RECEIVE"
+import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat.reducer"
 
 
 export const chatClient = new ChatClient("https://localhost:8080");
@@ -32,6 +32,7 @@ export const msgMethods = {
     ITEM: 1,
     DEADLINE: 2,
     PRICE: 3,
+    REVISION: 4,
 }
 
 export const editTypes = {
@@ -45,7 +46,12 @@ export const decisionTypes = {
     NO: 1,
     UNDECIDED: 0,
 }
-
+export const resolTypes = {
+    UNDECIDED: 0,
+	APPROVED: 1,
+	REJECTED: 2,
+	CANCELED: 3,
+}
 class ChatService {
 
     joinChat(token, user_id, room_id, dispatch, role) {
@@ -59,14 +65,15 @@ class ChatService {
 
         stream.on('data', function (response) {
             const msg = response.toObject()
-            // console.log("Received message: ")
-            // console.log(msg)
             const formatedMsg = reformatBody(msg)
             parseMessage(formatedMsg, role, user_id, dispatch)
-            dispatch({
-                type: CHAT_MESSAGE_RECEIVE,
-                payload: formatedMsg,
-            })
+            if (msg.method !== msgMethods.REVISION) {
+                dispatch({
+                    type: CHAT_MESSAGE_RECEIVE,
+                    payload: formatedMsg,
+                })
+            }
+            
         })
         stream.on('status', function(status) {
             console.log(status.code);
@@ -91,7 +98,6 @@ class ChatService {
                 if (error) {
                     reject(error)
                 } else {
-                    console.log("message pull history success")
                     var resp = response.toObject();
                     let messages = []
                     
@@ -144,6 +150,9 @@ class ChatService {
 const parseMessage = (msg, role, this_user_id, dispatch) => {
     if (msg.method === msgMethods.PRICE) {
         if (msg.body.type === editTypes.SUGGEST) {
+            dispatch({
+                type: CONTRACT_SEND_EDIT,
+            })
             const newPrice = {
                 proposerId: msg.user.id,
                 current: msg.body.oldVersion,
@@ -157,13 +166,28 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 } else {
                     newPrice.buyer = msg.body.newVersion
                 }   
-            } 
-            console.log("Parsing a new message send")
+            } else if (this_user_id !== msg.user.id) {
+                if (role === WORKER_TYPE) {
+                    newPrice.buyer = msg.body.newVersion
+                } else {
+                    newPrice.worker = msg.body.newVersion
+                }   
+            }
+            console.log("Suggestion new price:")
+            console.log(newPrice)
             dispatch({
                 type: CONTRACT_UPDATE_PRICE,
                 payload: newPrice,
             })
         }
+    } else if (msg.method === msgMethods.REVISION) {
+        dispatch({
+            type: CONTRACT_SEND_EDIT,
+        })
+        dispatch({
+            type: CHAT_MESSAGE_UPDATE,
+            payload: msg.body,
+        })
     }
 }
 
@@ -176,6 +200,8 @@ const reformatBody = (msg) => {
         msg.body = msg.deadlineBody
     } else if (msg.method === msgMethods.PRICE) {
         msg.body = msg.priceBody
+    } else if (msg.method === msgMethods.REVISION) {
+        msg.body = msg.revBody
     } else {
         msg.body = {}
     }

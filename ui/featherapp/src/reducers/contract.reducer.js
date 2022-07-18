@@ -1,6 +1,7 @@
 import ContractService from "../services/contract.service";
 import {AUTH_FAILED} from "./user.reducer";
 import {WORKER_TYPE, BUYER_TYPE, authChecker} from "../services/user.service";
+import {resolTypes} from "../services/chat.service";
 
 export const CONTRACT_CREATE = "contract/contract/CREATE"
 export const CONTRACT_CLEAR_SELECTED = "contract/contract/CLEAR"
@@ -10,7 +11,7 @@ export const CONTRACT_CLAIM = "contract/contract/CLAIM"
 export const CONTRACT_START_PULL = "contract/contract/START_PULL"
 export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 
-export const CONTRACT_SUGGEST_PRICE = "contract/price/SUGGEST"
+export const CONTRACT_SEND_EDIT = "contract/contract/SEND_SEND"
 export const CONTRACT_UPDATE_PRICE = "contract/price/SET_AWAITING"
 
 
@@ -59,7 +60,6 @@ export default (state = initialState, action) => {
                 contractClaimed: true
             }
         case CONTRACT_START_PULL:
-            console.log("STARTING CONTRACT PULL")
             return {
                 ...state,
                 loadingContract: true,
@@ -77,7 +77,8 @@ export default (state = initialState, action) => {
             }
 
         case CONTRACT_PULL_CURRENT:
-            console.log("PULL FINISHED")
+            console.log("FINISHED PULLING CONTRACT:")
+            console.log(action.payload)
             return {
                 ...state,
                 loadingContract: false,
@@ -99,11 +100,13 @@ export default (state = initialState, action) => {
                 }
             }
         
-        case CONTRACT_SUGGEST_PRICE:
+        case CONTRACT_SEND_EDIT:
             return {
                 ...state,
                 awaitingEdit: true,
             }
+        
+        
 
         case CONTRACT_UPDATE_PRICE:
             return {
@@ -159,8 +162,6 @@ export const queryContract = (contract_id) => {
                         type: CONTRACT_PULL_CURRENT,
                         payload: data.contract,
                     });
-                    console.log("Finished Contract Pull by Id")
-                    console.log(data)
                     return Promise.resolve();
                 },
                 (error) => {
@@ -270,7 +271,7 @@ export const suggestPrice = (contract_id, new_price) => {
                 () => {
                     console.log("Approval received")
                     dispatch({
-                        type: CONTRACT_SUGGEST_PRICE,
+                        type: CONTRACT_SEND_EDIT,
                     });
                     return Promise.resolve();
                 },
@@ -289,6 +290,40 @@ export const suggestPrice = (contract_id, new_price) => {
         });
     }
 };
+
+export const reactPrice = (contract_id, message_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactPrice(creds.access_token, creds.user_id, contract_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+
+}
 
 export const claimContract = (contract_id, password) => {
     return dispatch => {
@@ -323,3 +358,28 @@ export const claimContract = (contract_id, password) => {
         });
     }
 };
+
+export const updateLocalPrice = (msg) => {
+    return dispatch => {
+        const newPrice = {
+            proposerId: msg.user.id,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
+            
+        }
+        if (msg.body.resolStatus === resolTypes.APPROVED) {
+            newPrice.current = msg.body.newVersion
+            newPrice.buyer = msg.body.newVersion
+            newPrice.worker = msg.body.newVersion
+        }
+
+        console.log("New price:")
+        console.log(newPrice)
+        dispatch({
+            type: CONTRACT_UPDATE_PRICE,
+            payload: newPrice,
+        });
+    }
+}

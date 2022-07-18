@@ -19,16 +19,15 @@ message ChatMessage {
         DeadlineMsgBody deadline_body = 7;
         PriceMsgBody price_body = 8;
         ItemMsgBody item_body = 9;
+        RevMsgBody rev_body = 10;
     }   
 }
-
 message ChatLabel {
     uint32 type = 1;
     string name = 2;
     string item_id = 3;
 
 }
-
 message CommentMsgBody {
     string message = 1;
 }
@@ -42,6 +41,7 @@ message ItemMsgBody {
     uint32 worker_status = 5;
     uint32 buyer_status = 6;
 }
+
 message DeadlineMsgBody {
     google.protobuf.Timestamp new_version = 1;
     google.protobuf.Timestamp old_version = 2;
@@ -56,6 +56,14 @@ message PriceMsgBody {
     float old_version = 2;
     uint32 type = 3;
     bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+
+message RevMsgBody {
+    string msg_id = 1;
+    bool resolved = 2;
     uint32 resol_status = 7;
     uint32 worker_status = 5;
     uint32 buyer_status = 6;

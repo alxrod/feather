@@ -38,7 +38,7 @@ const NavBar = (props) => {
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                     {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                    <div className="flex px-1 pt-1 border-b-2 text-sm font-medium border-black-500">
+                    <div className="flex px-1 pt-1 border-b-2 font-medium border-black-500">
                       <Link
                           to="/contracts"
                           className=" text-gray-900 inline-flex items-center"
@@ -54,7 +54,7 @@ const NavBar = (props) => {
                     <div className="flex hover:border-gray-300 border-b-2 ">
                       <Link
                           to="/messages"
-                          className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1text-sm font-medium"
+                          className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 font-medium"
                       >
                         Messages
                       </Link>
@@ -78,11 +78,16 @@ const NavBar = (props) => {
                     <div>
                       <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span className="sr-only">Open user menu</span>
-                        <img
-                          className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                          alt=""
-                        />
+                        <div className="flex items-center">
+                          {props.isLoggedIn && (
+                            <h1 className="mr-2 text-gray-400 text-lg">@{props.user.username}</h1>
+                          )}
+                          <img
+                            className="h-8 w-8 rounded-full"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                            alt=""
+                          />
+                        </div>
                       </Menu.Button>
                     </div>
                     <Transition
@@ -172,38 +177,39 @@ const NavBar = (props) => {
                   href="#"
                   className="bg-indigo-50 border-black-500 text-black-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
                 >
-                  Dashboard
+                  <Link
+                    to="/contracts"
+                    className=" text-gray-900 inline-flex items-center"
+                  >
+                    Contracts
+                  </Link>
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
                   href="#"
                   className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
                 >
-                  Team
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  Projects
-                </Disclosure.Button>
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  Calendar
+                  <Link
+                    to="/messages"
+                    className=" text-gray-900 inline-flex items-center"
+                  >
+                    Contracts
+                  </Link>
                 </Disclosure.Button>
               </div>
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center px-4">
                   <div className="flex-shrink-0">
-                    <img
-                      className="h-10 w-10 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
-                    />
+                    <div className="flex items-center">
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        alt=""
+                      />
+                      {props.isLoggedIn && (
+                        <h1 className="ml-1">@{props.user.username}</h1>
+                      )}
+                    </div>
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-gray-800">{props.isLoggedIn && (props.user.full_name)}</div>
@@ -211,27 +217,73 @@ const NavBar = (props) => {
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
-                  <Disclosure.Button
-                    as="a"
-                    href="#"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                  >
-                    Your Profile
-                  </Disclosure.Button>
-                  <Disclosure.Button
-                    as="a"
-                    href="#"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                  >
-                    Settings
-                  </Disclosure.Button>
-                  <Disclosure.Button
-                    as="a"
-                    href="#"
-                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                  >
-                    Sign out
-                  </Disclosure.Button>
+                <Disclosure.Button
+                  as="a"
+                  href="#"
+                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                >
+                {({ active }) => (
+                    <Link
+                      to="/profile"
+                      className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
+                    >
+                      Your Account
+                    </Link>
+                  )}
+                </Disclosure.Button>
+                {!props.isLoggedIn && (
+                  <>
+                    <Disclosure.Button
+                      as="a"
+                      href="#"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    >
+                      {({ active }) => (
+                        <Link
+                          to="/login"
+                          className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
+                        >
+                          Log in
+                        </Link>
+                      )}
+                    </Disclosure.Button>
+
+                    <Disclosure.Button
+                      as="a"
+                      href="#"
+                      className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    >
+                      {({ active }) => (
+                        <Link
+                          to="/register"
+                          className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
+                        >
+                          Sign up
+                        </Link>
+                      )}
+                    </Disclosure.Button>
+                  </>
+                )}
+                {props.isLoggedIn && (
+                <Disclosure.Button
+                  as="a"
+                  href="#"
+                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                >
+                  {({ active }) => (
+                    <Link
+                      to="#"
+                      onClick={() => {
+                        props.logout()
+                        window.location.reload(false);
+                      }}
+                      className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
+                    >
+                      Log out
+                    </Link>
+                  )}
+                </Disclosure.Button>
+                )}
                 </div>
               </div>
             </Disclosure.Panel>

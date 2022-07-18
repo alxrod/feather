@@ -16,8 +16,10 @@ import {
     ContractSuggestPrice,
     ClaimContractRequest,
 
+    ContractReactPrice,
+
 } from "../proto/communication/contract_pb";
-import {msgMethods} from "./chat.service"
+import {msgMethods,decisionTypes} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 
@@ -150,6 +152,27 @@ class ContractService {
         });
 
     }
+
+    reactPrice(token, user_id, contract_id, message_id, status) {
+        let reactRequest = new ContractReactPrice();
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setStatus(status);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactPrice(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
+            });
+        });
+
+    }
+
+
 
     claimContract(token, user_id, contract_id, password) {
         let claimRequest = new ClaimContractRequest();

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/TwiN/go-color"
@@ -25,14 +26,15 @@ const (
 )
 
 type Contract struct {
-	Id       primitive.ObjectID `bson:"_id,omitempty"`
-	Password string             `bson:"password"`
-	Worker   *UserNub           `bson:"worker"`
-	Buyer    *UserNub           `bson:"buyer"`
-	Price    *PriceNub          `bson:"price"`
-	Deadline *DeadlineNub       `bson:"deadline"`
-	Title    string             `bson: title`
-	Summary  string             `bson:"summary"`
+	Id           primitive.ObjectID `bson:"_id,omitempty"`
+	Password     string             `bson:"password"`
+	Worker       *UserNub           `bson:"worker"`
+	Buyer        *UserNub           `bson:"buyer"`
+	Price        *PriceNub          `bson:"price"`
+	Deadline     *DeadlineNub       `bson:"deadline"`
+	Title        string             `bson: title`
+	Summary      string             `bson:"summary"`
+	CreationTime time.Time          `bson:"creation_time"`
 
 	// ChatRoom string     `bson:"chat_room_id"`
 	Items   []*ContractItem      `bson:"-"`
@@ -239,12 +241,13 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	stage := INVITE
 
 	contract := &Contract{
-		Price:    price,
-		Deadline: deadline,
-		Title:    req.Title,
-		Summary:  req.Summary,
-		Password: req.Password,
-		Stage:    stage,
+		Price:        price,
+		Deadline:     deadline,
+		Title:        req.Title,
+		Summary:      req.Summary,
+		Password:     req.Password,
+		CreationTime: time.Now(),
+		Stage:        stage,
 	}
 	if req.Role == WORKER {
 		contract.Worker = user.Nub(true)
@@ -336,6 +339,9 @@ func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) (
 	}
 	cur.Close(context.TODO())
 
+	sort.Slice(contracts, func(i, j int) bool {
+		return contracts[i].CreationTime.Before(contracts[j].CreationTime)
+	})
 	return contracts, nil
 }
 

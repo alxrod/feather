@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	db "github.com/alxrod/feather/backend/db"
@@ -69,8 +70,24 @@ func (s *BackServer) SendPriceMessage(
 	oldPrice float32,
 	editType uint32) error {
 
-	if user == nil || contract == nil {
-		return errors.New("You must provide both user and contract to change price")
+	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
+		return errors.New("You must provide both user and contract with 2 users to change price with")
+	}
+	body := &db.MessageBody{
+		Type:         editType,
+		PriceNew:     newPrice,
+		PriceOld:     oldPrice,
+		Resolved:     false,
+		ResolStatus:  db.RESOL_UNDECIDED,
+		WorkerStatus: db.DECISION_UNDECIDED,
+		BuyerStatus:  db.DECISION_UNDECIDED,
+	}
+	if contract.Worker.Id == user.Id {
+		log.Println("Sender is worker")
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer.Id == user.Id {
+		log.Println("Sender is buyer")
+		body.BuyerStatus = db.DECISION_YES
 	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
@@ -79,25 +96,22 @@ func (s *BackServer) SendPriceMessage(
 		Timestamp: time.Now().Local(),
 		Method:    db.PRICE,
 
-		Body: &db.MessageBody{
-			Type:     editType,
-			PriceNew: newPrice,
-			PriceOld: oldPrice,
-			Resolved: false,
-		},
+		Body: body,
 		Label: &db.LabelNub{
 			Type: db.LABEL_PRICE,
 			Name: "Price",
 		},
 	}
-	if contract.Worker.Id == user.Id {
-		msg.Body.WorkerStatus = db.DECISION_YES
-		msg.Body.BuyerStatus = db.DECISION_UNDECIDED
-	} else {
-		msg.Body.WorkerStatus = db.DECISION_UNDECIDED
-		msg.Body.BuyerStatus = db.DECISION_YES
-	}
 
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
@@ -232,14 +233,16 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 		contract.Price.Current = msg.Body.PriceNew
 		contract.Price.Worker = msg.Body.PriceNew
 		contract.Price.Buyer = msg.Body.PriceNew
+		contract.Price.AwaitingApproval = false
 		saveContract = true
 		// 2)
-	} else if msg.Body.WorkerStatus == db.DECISION_NO || msg.Body.BuyerStatus == db.DECISION_YES {
+	} else if msg.Body.WorkerStatus == db.DECISION_NO || msg.Body.BuyerStatus == db.DECISION_NO {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_REJECTED
 		contract.Price.Current = msg.Body.PriceOld
 		contract.Price.Worker = msg.Body.PriceOld
 		contract.Price.Buyer = msg.Body.PriceOld
+		contract.Price.AwaitingApproval = false
 		saveContract = true
 	}
 	if saveContract {
@@ -248,7 +251,26 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	if err = db.MessageReplace(msg, database); err != nil {
 		return nil, err
 	}
-
+	// Revision Sideeffect message sent
+	revMsgBody := &db.MessageBody{
+		MsgId:        msg.Id,
+		Resolved:     msg.Body.Resolved,
+		ResolStatus:  msg.Body.ResolStatus,
+		WorkerStatus: msg.Body.WorkerStatus,
+		BuyerStatus:  msg.Body.BuyerStatus,
+	}
+	revMsg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.REVISION,
+		Body:      revMsgBody,
+		Label:     &db.LabelNub{},
+	}
+	if err = s.SendRevMessage(revMsg); err != nil {
+		return nil, err
+	}
 	return &comms.ContactEditResponse{}, nil
 }
 func (s *BackServer) SuggestDeadline(ctx context.Context, req *comms.ContractSuggestDeadline) (*comms.ContactEditResponse, error) {

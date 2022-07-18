@@ -147,11 +147,16 @@ func (room *ChatRoom) AddMessageInternal(msg *Message, database *mongo.Database)
 	if room == nil {
 		return nil, errors.New("Attempted to add message to nil room")
 	}
+	if msg.Method == REVISION {
+		msg.Id = primitive.NewObjectID()
+		return msg, nil
+	}
 	var err error
 	msg.Id, err = MessageInsertInternal(msg, room.Id, database)
 	if err != nil {
 		return nil, err
 	}
+
 	room.MessageIds = append(room.MessageIds, msg.Id)
 	room.Messages = append(room.Messages, msg)
 

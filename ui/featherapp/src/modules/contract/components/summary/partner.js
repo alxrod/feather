@@ -14,7 +14,6 @@ const CriticalCriteria = (props) => {
   useEffect( () => {
     if (props.selectedId !== "") {
       const contract = props.cachedContracts[props.selectedId]
-      console.log(contract)
       if (contract.role === WORKER_TYPE) {
         setPartnerRole(BUYER_TYPE)
         if (contract.buyer.id === "") {

@@ -21,6 +21,7 @@ const (
 	ITEM     = 1
 	DEADLINE = 2
 	PRICE    = 3
+	REVISION = 4
 )
 
 // Editing Typs
@@ -72,24 +73,31 @@ type MessageBody struct {
 	Type    uint32 `bson:"type,omitempty"`
 	Message string `bson:"message,omitempty"`
 
+	// Used for all complex types
 	Resolved     bool   `bson:"resolved,omitempty"`
 	ResolStatus  uint32 `bson:"resol_status,omitempty"`
 	WorkerStatus uint32 `bson:"worker_status,omitempty"`
 	BuyerStatus  uint32 `bson:"buyer_status,omitempty"`
 
+	// Item messages
 	ItemNew string `bson:"item_new,omitempty"`
 	ItemOld string `bson:"item_old,omitempty"`
 
+	// Deadline messages
 	DeadlineNew time.Time `bson:"deadline_new,omitempty"`
 	DeadlineOld time.Time `bson:"deadline_old,omitempty"`
 
+	// Price messages
 	PriceNew float32 `bson:"price_new,omitempty"`
 	PriceOld float32 `bson:"price_old,omitempty"`
+
+	// Revision messages
+	MsgId primitive.ObjectID `bson:"msg_id,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
 	return &comms.ChatMessage_CommentBody{
-		&comms.CommentMsgBody{
+		CommentBody: &comms.CommentMsgBody{
 			Message: b.Message,
 		},
 	}
@@ -97,7 +105,7 @@ func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
 
 func (b *MessageBody) DeadlineProto() *comms.ChatMessage_DeadlineBody {
 	return &comms.ChatMessage_DeadlineBody{
-		&comms.DeadlineMsgBody{
+		DeadlineBody: &comms.DeadlineMsgBody{
 			NewVersion:   timestamppb.New(b.DeadlineNew),
 			OldVersion:   timestamppb.New(b.DeadlineOld),
 			Resolved:     b.Resolved,
@@ -111,7 +119,7 @@ func (b *MessageBody) DeadlineProto() *comms.ChatMessage_DeadlineBody {
 
 func (b *MessageBody) PriceProto() *comms.ChatMessage_PriceBody {
 	return &comms.ChatMessage_PriceBody{
-		&comms.PriceMsgBody{
+		PriceBody: &comms.PriceMsgBody{
 			NewVersion:   b.PriceNew,
 			OldVersion:   b.PriceOld,
 			Resolved:     b.Resolved,
@@ -126,7 +134,7 @@ func (b *MessageBody) PriceProto() *comms.ChatMessage_PriceBody {
 
 func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
 	return &comms.ChatMessage_ItemBody{
-		&comms.ItemMsgBody{
+		ItemBody: &comms.ItemMsgBody{
 			NewVersion:   b.ItemNew,
 			OldVersion:   b.ItemNew,
 			Resolved:     b.Resolved,
@@ -134,6 +142,18 @@ func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
 			WorkerStatus: b.WorkerStatus,
 			BuyerStatus:  b.BuyerStatus,
 			Type:         b.Type,
+		},
+	}
+}
+
+func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
+	return &comms.ChatMessage_RevBody{
+		RevBody: &comms.RevMsgBody{
+			MsgId:        b.MsgId.Hex(),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
 		},
 	}
 }
@@ -158,6 +178,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.DeadlineProto()
 	} else if m.Method == PRICE {
 		proto.Body = m.Body.PriceProto()
+	} else if m.Method == REVISION {
+		proto.Body = m.Body.RevProto()
 	}
 
 	return proto
