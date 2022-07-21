@@ -2,6 +2,8 @@
 import { CheckIcon } from '@heroicons/react/solid'
 import {useState, useEffect} from "react"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {Tooltip} from "flowbite-react"
+
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -58,17 +60,21 @@ const DeadlineDisplay = (props) => {
               <li key={deadline.id}>
                 {deadline.status === 'past' ? (
                   <>
-                    <a
-                      href="#"
-                      className={"relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-indigo-600 rounded-full hover:bg-indigo-900"}
-                    >
-                      <CheckIcon className={"w-"+(props.iconSize-2)+" h-"+(props.iconSize-2)+" text-white"} aria-hidden="true" />
-                      {/* <span
-                        className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-indigo-500"
-                        aria-hidden="true"
-                      /> */}
-                      <span className="sr-only">{deadline.id}</span>
-                    </a>
+                    <Tooltip style="light" content={"Deadline "+deadline.id+": " + deadline.current.date.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.current.date.toLocaleDateString()}>
+                      <a
+                        href="#"
+                        data-tooltip-target="tooltip-light" 
+                        data-tooltip-style="light"
+                        className={"relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-indigo-600 rounded-full hover:bg-indigo-900"}
+                      >
+                        <CheckIcon className={"w-"+(props.iconSize-2)+" h-"+(props.iconSize-2)+" text-white"} aria-hidden="true" />
+                        {/* <span
+                          className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-indigo-500"
+                          aria-hidden="true"
+                        /> */}
+                        <span className="sr-only">{deadline.id}</span>
+                      </a>
+                    </Tooltip>
                   </>
                 // ) : step.status === 'current' ? (
                 //   <>
@@ -86,16 +92,19 @@ const DeadlineDisplay = (props) => {
                 //   </>
                 ) : (
                   <>
-                    <a
-                      href="#"
-                      className={"group relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-white border-2 border-gray-300 rounded-full hover:border-gray-400"}
-                    >
-                      <span
-                        className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"
-                        aria-hidden="true"
-                      />
-                      <span className="sr-only">{deadline.id}</span>
-                    </a>
+                    <Tooltip style="light" content={"Deadline "+deadline.id+": " + deadline.current.date.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.current.date.toLocaleDateString()}>
+                      <a
+                        href="#"
+                        className={"group relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-white border-2 border-gray-300 rounded-full hover:border-gray-400"}
+                      >
+                        <span
+                          className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"
+                          aria-hidden="true"
+                        />
+                        <span className="sr-only">{deadline.id}</span>
+                      </a>
+                    </Tooltip>
+
                   </>
                 )}
               </li>

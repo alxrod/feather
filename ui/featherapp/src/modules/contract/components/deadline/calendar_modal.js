@@ -4,6 +4,9 @@ import { Dialog, Transition } from '@headlessui/react'
 import Calendar from "./calendar"
 import CalendarTime from "./calendar_time"
 import DeadlineDisplay from "./deadline_display"
+import DeadlineSummary from "./deadline_summary"
+import DeadlineChoice from "./deadline_choice"
+import { PlusIcon } from '@heroicons/react/solid'
 
 const CalendarModal = (props) => {
 
@@ -35,20 +38,62 @@ const CalendarModal = (props) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:mx-[5vh] sm:w-full sm:p-6">
+              <Dialog.Panel className="relative bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-6xl min-h-[60vh] sm:w-full sm:p-6">
                 <div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      Pick a New Due Date!
+                      Pick a deadline to <b className="text-indigo-600">edit</b> or <b className="text-indigo-600">add</b> a new one
                     </Dialog.Title>
                     
-                    <div className="mt-2">
-                    <div className="w-full" >
-                      <DeadlineDisplay role={props.role} deadlines={props.deadlines} iconSize={8}/>
-                    </div>
-                      {/* <Calendar deadline={props.deadline} role={props.role} changeDeadline={props.changeDeadline}/> */}
+                    <div className="my-2">
+                      <div className="w-full" >
+                        <DeadlineDisplay role={props.role} deadlines={props.deadlines} iconSize={8}/>
+                      </div>
+                      
                     </div>
                   </div>
+                      <div className="my-2 flex justify-between">
+                        <div>
+                          <div className="max-w-xs">
+                            <DeadlineChoice/>
+                          </div>
+                          <p className="mt-1 text-sm text-gray-600">
+                            Choose a deadline from the <b className="text-indigo-600">dropdown</b> or click on it on the <b className="text-indigo-600">timeline</b>
+                          </p>
+                        </div>
+                        <div className="sm:my-auto">
+                          <button
+                          type="submit"
+                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            <span className="flex items-center font-light">
+                              <PlusIcon className="w-4 h-4"/>
+                              Deadline
+                            </span>
+                          </button>
+                          </div>
+                        
+                      </div>
+                      
+                      <div className="shadow sm:rounded-md sm:overflow-hidden">
+                        <div className="px-4 py-5 grid grid-cols-1 sm:grid-cols-2">
+                          <div className="flex flex-col mr-1">
+                            <DeadlineSummary/>
+                          </div>
+                          <div className="p-2 flex flex-col ml-1">
+                            <Calendar role={props.role} deadline={props.deadlines[0].current.date}/>
+                            <CalendarTime/>
+                          </div>
+                        </div>
+                        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                          <button
+                            type="submit"
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
                 </div>
                 {/* <CalendarTime deadline={props.deadline} role={props.role} changeDeadline={props.changeDeadline} setOpen={props.setOpen}/> */}
               </Dialog.Panel>

@@ -15,22 +15,42 @@ const Calendar = (props) => {
   dayjs.extend(isoWeek)
   dayjs.extend(isToday)
   
-  let yourDate = props.deadline.worker
-  let partnerDate = props.deadline.buyer
-  if (props.role == BUYER_TYPE) {
-    yourDate = props.deadline.buyer
-    partnerDate = props.deadline.worker
-  }
+  
 
   
-  
-  const [year, setYear] = useState(yourDate.getFullYear())
+  const datePlaceholder = new Date()
+  const [year, setYear] = useState(datePlaceholder.getFullYear())
   const today = dayjs().set('year', year);
-  const [month, setMonth] = useState(yourDate.getMonth())
+  const [month, setMonth] = useState(datePlaceholder.getMonth())
 
-  const [selMonth, setSelMonth] = useState(yourDate.getMonth())
-  const [selYear, setSelYear] = useState(yourDate.getFullYear())
-  const [selDay, setSelDay] = useState(yourDate.getDate())
+  const [selMonth, setSelMonth] = useState(datePlaceholder.getMonth())
+  const [selYear, setSelYear] = useState(datePlaceholder.getFullYear())
+  const [selDay, setSelDay] = useState(datePlaceholder.getDate())
+  const [yourDate, setYourDate] = useState(datePlaceholder)
+  const [partnerDate, setPartnerDate] = useState(datePlaceholder)
+
+  useEffect( () => {
+    if (props.deadline !== undefined) {
+      if (props.role == BUYER_TYPE) {
+        setYourDate(props.deadline.buyer)
+        setPartnerDate(props.deadline.worker)
+      } else {
+        setYourDate(props.deadline.worker)
+        setPartnerDate(props.deadline.buyer)
+      }
+    }
+  }, [props.deadline])
+
+  useEffect( () => {
+    if (yourDate !== undefined) {
+      setYear(yourDate.getFullYear())
+      setMonth(yourDate.getMonth())
+      setSelMonth(yourDate.getMonth())
+      setSelYear(yourDate.getFullYear())
+      setSelDay(yourDate.getDate())
+    }
+    
+  }, [yourDate])
 
   useEffect( () => {
     console.log(props.deadline)
