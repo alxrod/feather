@@ -44,7 +44,7 @@ const CombinedCriteria = (props) => {
                     <CalendarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true"/>
                   </div>
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
-                    <DeadlineField deadline={props.deadline} changeDeadline={props.changeDeadline} disabled={!props.active}/>
+                    <DeadlineField createMode={props.createMode ? true : false} deadline={props.deadline} changeDeadline={props.changeDeadline} disabled={!props.active}/>
                   </div>
                 </div>
               </div>

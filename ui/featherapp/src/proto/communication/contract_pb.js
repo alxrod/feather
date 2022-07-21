@@ -4396,7 +4396,7 @@ proto.main.ContractSuggestDeadline.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    newPrice: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    newDeadline: (f = msg.getNewDeadline()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4442,8 +4442,9 @@ proto.main.ContractSuggestDeadline.deserializeBinaryFromReader = function(msg, r
       msg.setContractId(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setNewPrice(value);
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setNewDeadline(value);
       break;
     default:
       reader.skipField();
@@ -4488,11 +4489,12 @@ proto.main.ContractSuggestDeadline.serializeBinaryToWriter = function(message, w
       f
     );
   }
-  f = message.getNewPrice();
-  if (f !== 0) {
-    writer.writeUint32(
+  f = message.getNewDeadline();
+  if (f != null) {
+    writer.writeMessage(
       3,
-      f
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -4535,20 +4537,39 @@ proto.main.ContractSuggestDeadline.prototype.setContractId = function(value) {
 
 
 /**
- * optional uint32 new_price = 3;
- * @return {number}
+ * optional google.protobuf.Timestamp new_deadline = 3;
+ * @return {?proto.google.protobuf.Timestamp}
  */
-proto.main.ContractSuggestDeadline.prototype.getNewPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.main.ContractSuggestDeadline.prototype.getNewDeadline = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
 };
 
 
 /**
- * @param {number} value
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.ContractSuggestDeadline} returns this
+*/
+proto.main.ContractSuggestDeadline.prototype.setNewDeadline = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.main.ContractSuggestDeadline} returns this
  */
-proto.main.ContractSuggestDeadline.prototype.setNewPrice = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
+proto.main.ContractSuggestDeadline.prototype.clearNewDeadline = function() {
+  return this.setNewDeadline(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.ContractSuggestDeadline.prototype.hasNewDeadline = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

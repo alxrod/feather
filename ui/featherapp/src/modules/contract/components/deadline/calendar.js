@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import React, {useState, useEffect} from 'react'
+import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
 
 import * as dayjs from 'dayjs'
 var isoWeek = require('dayjs/plugin/isoWeek')
@@ -14,16 +15,26 @@ const Calendar = (props) => {
   dayjs.extend(isoWeek)
   dayjs.extend(isToday)
   
-  const [year, setYear] = useState(props.deadline.you.getFullYear())
-  const today = dayjs().set('year', year);
-  const [month, setMonth] = useState(props.deadline.you.getMonth())
+  let yourDate = props.deadline.worker
+  let partnerDate = props.deadline.buyer
+  if (props.role == BUYER_TYPE) {
+    yourDate = props.deadline.buyer
+    partnerDate = props.deadline.worker
+  }
 
-  const [selMonth, setSelMonth] = useState(props.deadline.you.getMonth())
-  const [selYear, setSelYear] = useState(props.deadline.you.getFullYear())
-  const [selDay, setSelDay] = useState(props.deadline.you.getDate())
+  
+  
+  const [year, setYear] = useState(yourDate.getFullYear())
+  const today = dayjs().set('year', year);
+  const [month, setMonth] = useState(yourDate.getMonth())
+
+  const [selMonth, setSelMonth] = useState(yourDate.getMonth())
+  const [selYear, setSelYear] = useState(yourDate.getFullYear())
+  const [selDay, setSelDay] = useState(yourDate.getDate())
 
   useEffect( () => {
-    const oldDate = props.deadline.you
+    console.log(props.deadline)
+    const oldDate = yourDate
     if (selMonth !== oldDate.getMonth() ||
       selYear !== oldDate.getFullYear() ||
       selDay !== oldDate.getDate()) {

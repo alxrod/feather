@@ -114,7 +114,7 @@ message ContractReactPrice {
 message ContractSuggestDeadline {
     string user_id = 1;
     string contract_id = 2;
-    uint32 new_price = 3;
+    google.protobuf.Timestamp new_deadline = 3;
 }
 message ContractReactDeadline {
     string user_id = 1;

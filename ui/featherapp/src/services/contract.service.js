@@ -14,7 +14,9 @@ import {
     InviteDataRequest,
 
     ContractSuggestPrice,
+    ContractSuggestDate,
     ClaimContractRequest,
+    
 
     ContractReactPrice,
 
@@ -150,7 +152,10 @@ class ContractService {
                 resolve()
             });
         });
+    }
 
+    suggestDate(token, user_id, contract_id, new_date) {
+        
     }
 
     reactPrice(token, user_id, contract_id, message_id, status) {
