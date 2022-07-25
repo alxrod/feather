@@ -1,4 +1,4 @@
-import { ChatAltIcon } from '@heroicons/react/solid'
+import { CurrencyDollarIcon } from '@heroicons/react/outline'
 import ChatLabel from "../chat_label"
 import {editTypes, decisionTypes} from "../../../../../services/chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
@@ -89,7 +89,7 @@ const PriceMsg = (props) => {
         />
 
         <span className="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-          <ChatAltIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <CurrencyDollarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>
       </div>
       <div className="min-w-0 flex-1">

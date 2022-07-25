@@ -74,7 +74,7 @@ const NavBar = (props) => {
                   </button>
 
                   {/* Profile dropdown */}
-                  <Menu as="div" className="ml-3 relative z-50">
+                  <Menu as="div" className="ml-3 relative z-3">
                     <div>
                       <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span className="sr-only">Open user menu</span>

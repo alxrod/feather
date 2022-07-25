@@ -11,10 +11,77 @@ const DeadlineField = (props) => {
 
   // Visuals:
   const [errorVisibility, setErrorVisibility] = useState("hidden")
-
+  const [reloadFlag, toggleReloadFlag] = useState(false)
   
   // Logic
 
+  const genTestSet = () => {
+    return [
+      {
+        id: 1,
+        idx: 0,
+        current: {
+          payout: 0,
+          date: new Date(),
+          detail: "Submit the material"
+        },
+        worker: {
+          payout: 0,
+          date: new Date(),
+          detail: "Submit the material"
+        },
+        buyer: {
+          payout: 0,
+          date: new Date(),
+          detail: "Submit the material"
+        },
+        awaitingApproval: false,
+        proposerId: ""
+      },
+      {
+        id: 2,
+        idx: 1,
+        current: {
+          payout: 15,
+          date: addWeeks(new Date(), 1),
+          detail: "Submit the first draft"
+        },
+        worker: {
+          payout: 15,
+          date: addWeeks(new Date(), 1),
+          detail: "Submit the first draft"
+        },
+        buyer: {
+          payout: 15,
+          date: addWeeks(new Date(), 1),
+          detail: "Submit the first draft"
+        },
+        awaitingApproval: false,
+        proposerId: ""
+      },
+      {
+        id: 3,
+        idx: 2,
+        current: {
+          payout: 85,
+          date: addWeeks(new Date(), 2),
+          detail: "Submit the final draft"
+        },
+        worker: {
+          payout: 85,
+          date: addWeeks(new Date(), 2),
+          detail: "Submit the final draft"
+        },
+        buyer: {
+          payout: 85,
+          date: addWeeks(new Date(), 2),
+          detail: "Submit the final draft"
+        },
+        awaitingApproval: false,
+        proposerId: ""
+      }
+    ]
+  }
 
   const genEmptyDeadline = (date) => {
     return {
@@ -43,30 +110,67 @@ const DeadlineField = (props) => {
     return date
   }
 
-  const [localDeadlines, setLocalDeadlines] = useState([genEmptyDeadline(new Date()), genEmptyDeadline(addWeeks(new Date(), 1)), genEmptyDeadline(addWeeks(new Date(), 2))])
+  const [localDeadlines, setLocalDeadlines] = useState(genTestSet())
   const [role, setRole] = useState(WORKER_TYPE)
   
-  const editDeadline = (idx, new_deadline) => {
+  const editDeadline = (new_deadline) => {
     const newDeadlines = localDeadlines
-    newDeadlines[idx] = localDeadlines
-    setLocalDeadlines(newDeadlines)
+    for (let i = 0; i < newDeadlines.length; i++) {
+      if (newDeadlines[i].id === new_deadline.id) {
+        newDeadlines[i] = new_deadline
+      }
+    }
+    console.log("Updating deadlines")
+    setLocalDeadlines(sortDeadlines(newDeadlines))
+    toggleReloadFlag(!reloadFlag)
   }
 
-  const removeDeadline = (idx) => {
+  const removeDeadline = (id) => {
     const newDeadlines = []
     for (let i = 0; i < localDeadlines.length; i++) {
-      if (i !== idx) {
+      if (localDeadlines[i].id !== id) {
         newDeadlines.push(localDeadlines[i])
       }
     }
-    setLocalDeadlines(newDeadlines)
+    setLocalDeadlines(sortDeadlines(newDeadlines))
+    toggleReloadFlag(!reloadFlag)
   }
 
-  const addDeadline = (new_deadline) => {
+  const addDeadline = () => {
+    console.log("ADDING DEADLINE")
+    const lastDeadline = localDeadlines[localDeadlines.length-1]
+    const newDate = addWeeks(lastDeadline.current.date,1)
+    const new_deadline = genEmptyDeadline(newDate)
+    
+    new_deadline.id = lastDeadline.id+1
+    new_deadline.idx = lastDeadline.idx+1
     const newDeadlines = localDeadlines
+    new_deadline.id = localDeadlines.length + 1
     newDeadlines.push(new_deadline)
-    setLocalDeadlines(newDeadlines)
+    setLocalDeadlines(sortDeadlines(newDeadlines))
+    toggleReloadFlag(!reloadFlag)
   }
+
+  const sortDeadlines = (deadlines) => {
+    if (role === WORKER_TYPE) {
+      deadlines.sort((a, b) => (a.worker.date > b.worker.date) ? 1 : -1)
+    } else if (role === BUYER_TYPE) {
+      deadlines.sort((a, b) => (a.buyer.date > b.buyer.date) ? 1 : -1)
+    } else {
+      deadlines.sort((a, b) => (a.current.date > b.current.date) ? 1 : -1)
+    }
+    for (let i = 0; i < deadlines.length; i++) {
+      deadlines[i].idx = i
+      deadlines[i].relDate = deadlines[i].current.date
+      if (role === WORKER_TYPE) {
+        deadlines[i].relDate = deadlines[i].worker.date
+      } else if (role === BUYER_TYPE) {
+        deadlines[i].relDate = deadlines[i].buyer.date
+      }
+    }
+    return deadlines
+  }
+
 
   // list.sort((a, b) => (a.color > b.color) ? 1 : -1)
 
@@ -114,10 +218,12 @@ const DeadlineField = (props) => {
         open={openModal} 
         setOpen={setOpenModal} 
         role={role} 
+        reloadFlag={reloadFlag}
         deadlines={localDeadlines}
         editDeadline={editDeadline}
         addDeadline={addDeadline}
         removeDeadline={removeDeadline}
+        sortDeadlines={sortDeadlines}
       />
     </>
   )

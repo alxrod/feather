@@ -15,9 +15,6 @@ const Calendar = (props) => {
   dayjs.extend(isoWeek)
   dayjs.extend(isToday)
   
-  
-
-  
   const datePlaceholder = new Date()
   const [year, setYear] = useState(datePlaceholder.getFullYear())
   const today = dayjs().set('year', year);
@@ -31,20 +28,26 @@ const Calendar = (props) => {
 
   useEffect( () => {
     if (props.deadline !== undefined) {
+      console.log("Changed the deadline to")
+      console.log(props.deadline)
       if (props.role == BUYER_TYPE) {
-        setYourDate(props.deadline.buyer)
-        setPartnerDate(props.deadline.worker)
+        setYourDate(props.deadline.buyer.date)
+        setPartnerDate(props.deadline.worker.date)
       } else {
-        setYourDate(props.deadline.worker)
-        setPartnerDate(props.deadline.buyer)
+        setYourDate(props.deadline.worker.date)
+        setPartnerDate(props.deadline.buyer.date)
       }
     }
-  }, [props.deadline])
+  }, [props.deadline, props.reloadFlag])
 
   useEffect( () => {
     if (yourDate !== undefined) {
       setYear(yourDate.getFullYear())
       setMonth(yourDate.getMonth())
+
+      console.log("Updating selected date")
+      console.log(yourDate)
+      
       setSelMonth(yourDate.getMonth())
       setSelYear(yourDate.getFullYear())
       setSelDay(yourDate.getDate())
@@ -53,16 +56,66 @@ const Calendar = (props) => {
   }, [yourDate])
 
   useEffect( () => {
-    console.log(props.deadline)
-    const oldDate = yourDate
-    if (selMonth !== oldDate.getMonth() ||
-      selYear !== oldDate.getFullYear() ||
-      selDay !== oldDate.getDate()) {
+    if (yourDate !== undefined) {
+      const oldDate = yourDate
+      if (selMonth !== oldDate.getMonth() ||
+        selYear !== oldDate.getFullYear() ||
+        selDay !== oldDate.getDate()) {
         
-      const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
-      props.changeDeadline(newDate)
-    } 
+        const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
+        const newDeadline = props.deadline
+        if (props.role === WORKER_TYPE) {
+          newDeadline.worker.date = newDate
+        } else if (props.role === BUYER_TYPE) {
+          newDeadline.buyer.date = newDate
+        }
+        props.editDeadline(newDeadline)
+      } 
+    }
+    
   }, [selMonth, selYear, selDay])
+
+  const handleDateChange = (e) => {
+    const newDate = new Date(year, month, parseInt(e.target.innerHTML), yourDate.getHours(), yourDate.getMinutes())
+    const now = new Date()
+    if (newDate < now) {
+      props.setErrorMsg("You can't set a deadline in the past")
+      return
+    }
+    if (props.deadline.idx > 0) {
+      let prev = props.deadlines[props.deadline.idx - 1]
+      if (props.role === WORKER_TYPE) {
+        if (prev.worker.date > newDate) {
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          return
+        }
+      } else if (props.role === BUYER_TYPE) {
+        if (prev.buyer.date > newDate) {
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          return
+        }
+      }
+    }
+
+    if (props.deadline.idx < props.deadlines.length-1) {
+      let next = props.deadlines[props.deadline.idx + 1]
+      if (props.role === WORKER_TYPE) {
+        if (next.worker.date < newDate) {
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          return
+        }
+      } else if (props.role === BUYER_TYPE) {
+        if (next.buyer.date < newDate) {
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          return
+        }
+      }
+    }
+    props.setErrorMsg("")
+    setSelMonth(month)
+    setSelYear(year)
+    setSelDay(parseInt(e.target.innerHTML))
+  }
   
   
   const startWeek = today.startOf("isoWeek");
@@ -155,16 +208,12 @@ const Calendar = (props) => {
                 !isSel(day+1) && isDay(day+1) && 'text-indigo-600',
                 !isSel(day+1) && !isDay(day+1) && 'text-gray-900',
                 isSel(day+1) && isDay(day+1) && 'bg-indigo-600',
-                isSel(day+1) && !isDay(day+1) && 'bg-gray-900',
+                isSel(day+1) && !isDay(day+1) && 'bg-gray-500',
                 !isSel(day+1) && 'hover:bg-gray-200',
                 (isSel(day+1) || isDay(day+1)) && 'font-semibold',
                 'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
               )}
-              onClick={(e) => {
-                setSelMonth(month)
-                setSelYear(year)
-                setSelDay(parseInt(e.target.innerHTML))
-              }}
+              onClick={handleDateChange}
             >
               {day + 1}
             </button>
