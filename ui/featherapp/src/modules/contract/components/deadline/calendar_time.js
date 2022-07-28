@@ -109,7 +109,11 @@ const CalendarTime = (props) => {
 
 
     const newDeadline = props.deadline
-    if (props.role === WORKER_TYPE) {
+    if (props.createMode === true) {
+      newDeadline.worker.date = newDate
+      newDeadline.current.date = newDate
+      newDeadline.buyer.date = newDate
+    } else if (props.role === WORKER_TYPE) {
       newDeadline.worker.date = newDate
     } else if (props.role === BUYER_TYPE) {
       newDeadline.buyer.date = newDate

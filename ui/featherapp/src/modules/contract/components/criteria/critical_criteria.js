@@ -64,7 +64,7 @@ const CriticalCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <DeadlineField deadline_str={formatDate(contract.deadline.current)}/>
+                        <DeadlineField/>
                       </div>
                       {/* <ApprovalSign item_state={props.deadline_state}/>
                       <div className="mt-1">

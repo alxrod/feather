@@ -12,105 +12,24 @@ const DeadlineField = (props) => {
   // Visuals:
   const [errorVisibility, setErrorVisibility] = useState("hidden")
   const [reloadFlag, toggleReloadFlag] = useState(false)
-  
-  // Logic
 
-  const genTestSet = () => {
-    return [
-      {
-        id: 1,
-        idx: 0,
-        current: {
-          payout: 0,
-          date: new Date(),
-          detail: "Submit the material"
-        },
-        worker: {
-          payout: 0,
-          date: new Date(),
-          detail: "Submit the material"
-        },
-        buyer: {
-          payout: 0,
-          date: new Date(),
-          detail: "Submit the material"
-        },
-        awaitingApproval: false,
-        proposerId: ""
-      },
-      {
-        id: 2,
-        idx: 1,
-        current: {
-          payout: 15,
-          date: addWeeks(new Date(), 1),
-          detail: "Submit the first draft"
-        },
-        worker: {
-          payout: 15,
-          date: addWeeks(new Date(), 1),
-          detail: "Submit the first draft"
-        },
-        buyer: {
-          payout: 15,
-          date: addWeeks(new Date(), 1),
-          detail: "Submit the first draft"
-        },
-        awaitingApproval: false,
-        proposerId: ""
-      },
-      {
-        id: 3,
-        idx: 2,
-        current: {
-          payout: 85,
-          date: addWeeks(new Date(), 2),
-          detail: "Submit the final draft"
-        },
-        worker: {
-          payout: 85,
-          date: addWeeks(new Date(), 2),
-          detail: "Submit the final draft"
-        },
-        buyer: {
-          payout: 85,
-          date: addWeeks(new Date(), 2),
-          detail: "Submit the final draft"
-        },
-        awaitingApproval: false,
-        proposerId: ""
-      }
-    ]
-  }
+  const [localDeadlines, setLocalDeadlines] = useState([])
 
-  const genEmptyDeadline = (date) => {
-    return {
-      current: {
-        payout: 0,
-        date: date,
-        detail: ""
-      },
-      worker: {
-        payout: 0,
-        date: date,
-        detail: ""
-      },
-      buyer: {
-        payout: 0,
-        date: date,
-        detail: ""
-      },
-      awaitingApproval: false,
-      proposerId: ""
+  useEffect( () => {
+    if (props.deadlines && props.deadlines.length >= 2) {
+      const newDeadlines = importDeadlines(props.deadlines)
+      setLocalDeadlines(newDeadlines)
+    }  else if (props.createMode !== true && props.selectedId !== "") {
+      const contract = props.cachedContracts[props.selectedId]
+      const importedDeadlines = importDeadlines(contract.deadlinesList)
+      setLocalDeadlines(importedDeadlines)
     }
+  }, [props.deadlines, props.selectedId])
+
+  const saveDeadlines = () => {
+    props.changeDeadlines(exportDeadlines(localDeadlines))
   }
 
-  const addWeeks = (date, weeks) => {
-    date.setDate(date.getDate() + weeks * 7)
-    return date
-  }
-
-  const [localDeadlines, setLocalDeadlines] = useState(genTestSet())
   const [role, setRole] = useState(WORKER_TYPE)
   
   const editDeadline = (new_deadline) => {
@@ -139,16 +58,23 @@ const DeadlineField = (props) => {
   const addDeadline = () => {
     console.log("ADDING DEADLINE")
     const lastDeadline = localDeadlines[localDeadlines.length-1]
+    console.log("Last deadlien is")
+    console.log(lastDeadline)
     const newDate = addWeeks(lastDeadline.current.date,1)
+    console.log("New date is " + newDate)
     const new_deadline = genEmptyDeadline(newDate)
     
-    new_deadline.id = lastDeadline.id+1
+    new_deadline.id = localDeadlines.length +1
     new_deadline.idx = lastDeadline.idx+1
-    const newDeadlines = localDeadlines
-    new_deadline.id = localDeadlines.length + 1
+    let newDeadlines = localDeadlines
     newDeadlines.push(new_deadline)
     setLocalDeadlines(sortDeadlines(newDeadlines))
     toggleReloadFlag(!reloadFlag)
+    for (let i = 0; i < newDeadlines.length; i++) {
+      if (newDeadlines[i].id === new_deadline.id) {
+        return i
+      }
+    }
   }
 
   const sortDeadlines = (deadlines) => {
@@ -190,10 +116,6 @@ const DeadlineField = (props) => {
       setOpenModal(true)
     }
   }
-
-  
-
-
   return (
     <>
       <div className="flex">
@@ -224,6 +146,8 @@ const DeadlineField = (props) => {
         addDeadline={addDeadline}
         removeDeadline={removeDeadline}
         sortDeadlines={sortDeadlines}
+        saveDeadlines={saveDeadlines}
+        createMode={props.createMode}
       />
     </>
   )
@@ -242,3 +166,167 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(DeadlineField)
+
+
+
+// Setup
+const importDeadlines = (incoming) => {
+  let outgoing = []
+  for (let i = 0; i < incoming.length; i++) {
+    let in_d = incoming[i]
+    let out_d = {
+      idx: i,
+      current: {
+        payout: in_d.currentPayout,
+        detail: in_d.currentDetail,
+        date: in_d.currentDate,
+      },
+      worker: {
+        payout: in_d.workerPayout,
+        detail: in_d.workerDetail,
+        date: in_d.workerDate,
+      },
+      buyer: {
+        payout: in_d.buyerPayout,
+        detail: in_d.buyerDetail,
+        date: in_d.buyerDate,
+      },
+      awaitingApproval: in_d.awaitingApproval,
+      proposerId: in_d.proposerId,
+    }
+    if (in_d.id === "") {
+      out_d.id = (i+1).toString()
+    } else {
+      out_d.id = in_d.id
+    }
+    outgoing.push(out_d)
+  }
+  return outgoing
+}
+
+const exportDeadlines = (incoming) => {
+  let outgoing = []
+  for (let i = 0; i < incoming.length; i++) {
+    let in_d = incoming[i]
+    let out_d = {
+      idx: i,
+      awaitingApproval: in_d.awaitingApproval,
+      proposerId: in_d.proposerId,
+
+      currentPayout: in_d.current.payout,
+      currentDetail: in_d.current.detail,
+      currentDate: in_d.current.date,
+
+      workerPayout: in_d.worker.payout,
+      workerDetail: in_d.worker.detail,
+      workerDate: in_d.worker.date,
+
+      buyerPayout: in_d.buyer.payout,
+      buyerDetail: in_d.buyer.detail,
+      buyerDate: in_d.buyer.date,
+      
+    }
+    out_d.id = in_d.id
+    outgoing.push(out_d)
+  }
+  console.log("Outgoing deadlones:")
+  console.log(outgoing)
+  return outgoing
+}
+
+
+const genTestSet = () => {
+  return [
+    {
+      id: 1,
+      idx: 0,
+      current: {
+        payout: 0,
+        date: new Date(),
+        detail: "Submit the material"
+      },
+      worker: {
+        payout: 0,
+        date: new Date(),
+        detail: "Submit the material"
+      },
+      buyer: {
+        payout: 0,
+        date: new Date(),
+        detail: "Submit the material"
+      },
+      awaitingApproval: false,
+      proposerId: ""
+    },
+    {
+      id: 2,
+      idx: 1,
+      current: {
+        payout: 15,
+        date: addWeeks(new Date(), 1),
+        detail: "Submit the first draft"
+      },
+      worker: {
+        payout: 15,
+        date: addWeeks(new Date(), 1),
+        detail: "Submit the first draft"
+      },
+      buyer: {
+        payout: 15,
+        date: addWeeks(new Date(), 1),
+        detail: "Submit the first draft"
+      },
+      awaitingApproval: false,
+      proposerId: ""
+    },
+    {
+      id: 3,
+      idx: 2,
+      current: {
+        payout: 85,
+        date: addWeeks(new Date(), 2),
+        detail: "Submit the final draft"
+      },
+      worker: {
+        payout: 85,
+        date: addWeeks(new Date(), 2),
+        detail: "Submit the final draft"
+      },
+      buyer: {
+        payout: 85,
+        date: addWeeks(new Date(), 2),
+        detail: "Submit the final draft"
+      },
+      awaitingApproval: false,
+      proposerId: ""
+    }
+  ]
+}
+
+const genEmptyDeadline = (date) => {
+  return {
+    current: {
+      payout: 0,
+      date: date,
+      detail: ""
+    },
+    worker: {
+      payout: 0,
+      date: date,
+      detail: ""
+    },
+    buyer: {
+      payout: 0,
+      date: date,
+      detail: ""
+    },
+    awaitingApproval: false,
+    proposerId: ""
+  }
+}
+
+const addWeeks = (date, weeks) => {
+  let newDate = new Date(date.getTime());
+  newDate.setDate(newDate.getDate() + weeks * 7)
+  return newDate
+}

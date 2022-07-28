@@ -43,7 +43,7 @@ export default (state = initialState, action) => {
                     [action.payload.id]: {
                         id: action.payload.id,
                         title: action.payload.title,
-                        deadline: action.payload.deadline.current,
+                        deadline: action.payload.deadlinesList[0],
                         price: action.payload.price.current,
                         stage: action.payload.stage,
                         user_type: action.payload.user_type,
@@ -88,7 +88,7 @@ export default (state = initialState, action) => {
                     [action.payload.id]: {
                         id: action.payload.id,
                         title: action.payload.title,
-                        deadline: action.payload.deadline.current,
+                        deadline: action.payload.deadlinesList[0],
                         price: action.payload.price.current,
                         stage: action.payload.stage,
                         user_type: action.payload.user_type,
@@ -160,7 +160,7 @@ export const queryContract = (contract_id) => {
                 (data) => {
                     dispatch({
                         type: CONTRACT_PULL_CURRENT,
-                        payload: data.contract,
+                        payload: data,
                     });
                     return Promise.resolve();
                 },
@@ -217,7 +217,7 @@ export const queryContractNubs = () => {
     }
 };
 
-export const createContract = (title, summary, intro_message, price_set, deadline_set, items, password, role) => {
+export const createContract = (title, summary, intro_message, price_set, deadlines, items, password, role) => {
     return dispatch => {
         return authChecker(true).then(creds => {
             if (creds === undefined) {
@@ -226,7 +226,7 @@ export const createContract = (title, summary, intro_message, price_set, deadlin
             }
             return Promise.resolve(creds)
         }).then((creds) => {
-            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, intro_message, price_set, deadline_set, items, password, role).then(
+            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, intro_message, price_set, deadlines, items, password, role).then(
                 (data) => {
                     if (data.contract.worker.id == creds.user_id) {
                         data.contract.user_type = WORKER_TYPE

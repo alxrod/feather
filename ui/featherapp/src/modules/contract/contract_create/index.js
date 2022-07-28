@@ -18,16 +18,18 @@ import ErrorBanner from "./components/error_banner.js"
 
 import { ITEM_AGREED } from "../../../custom_encodings"
 
+import { genEmptyDeadline } from '../../../services/contract.service';
+
 const ContractCreate= (props) => {
   useEffect( () => {
     props.clearSelected()
   })
-  const [price, setPrice] = useState({
+  const [price, setPrice] = useState(0.0)
+  const priceObj = {
     current: 0.0,
-    you: 0.0,
-    partner: 0.0,
-  })
-
+    worker: 0.0,
+    buyer: 0.0,
+  }
   const [contractItems, setContractItems] = useState({})
 
   const [error, setError] = useState("")
@@ -39,30 +41,23 @@ const ContractCreate= (props) => {
 		setContractItems(new_contracts)
 	}
   
-  const [deadline, setDeadline] = useState({
-    current: new Date(),
-    you: new Date(),
-    partner: new Date(),
-  })
+  const now = new Date()
+  const [deadlines, setDeadlines] = useState([
+    genEmptyDeadline(new Date(now.getTime() + 1*86400000)),
+    genEmptyDeadline(new Date(now.getTime() + 8*86400000))
+  ])
 
   const changePrice = (new_price) => {
     const fl = parseFloat(new_price)
-    price.you = fl
-    price.current = fl
-    price.partner = fl
-    console.log(price)
-    setPrice(price)
+    priceObj.current = fl
+    priceObj.worker = fl
+    priceObj.buyer = fl
+    console.log(new_price)
+    setPrice(new_price)
   }
-  const changeDeadline = (new_date) => {
+  const changeDeadlines = (new_deadlines) => {
     // console.log("changing deadline to " + new_date)
-    let oldDeadlines = deadline
-    oldDeadlines.you = new_date
-
-    // Specific for create first version
-    oldDeadlines.current = new_date
-    oldDeadlines.partner = new_date
-    
-    setDeadline(oldDeadlines)
+    setDeadlines(new_deadlines)
   }
 
   const changePassword = (new_password) => {
@@ -93,15 +88,21 @@ const ContractCreate= (props) => {
       setError(errors)
       return
     }
-    
-    const price_set = ownership_format(price)
-    const deadline_set = ownership_format(deadline)
-    // console.log(contractItems)
-    props.createContract(conTitle, conDescript, conMessage, price_set, deadline_set, contractItems, conPassword, conRole).then(
+    console.log("Made it to contract creation")
+    console.log(conTitle)
+    console.log(conDescript)
+    console.log(conMessage)
+    console.log(priceObj)
+    console.log(deadlines)
+    console.log(contractItems)
+    console.log(conPassword)
+    console.log(conRole)
+    props.createContract(conTitle, conDescript, conMessage, priceObj, deadlines, contractItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
       }, (error) => {
         setOpenBanner(true)
+        console.log(error)
         setError(error)
       }
     )
@@ -109,8 +110,10 @@ const ContractCreate= (props) => {
 
   const checkErrors = () => {
     let errors = ""
-    if (!deadline.current) {
-      errors += "You must choose a deadline. "
+    if (deadlines.length < 2) {
+      errors += "You must choose 2 future deadlines for start and end"
+      console.log("deadlines:")
+      console.log(deadlines)
     }
     if (price.you <= 0) {
       console.log("Price issue:");
@@ -160,11 +163,11 @@ const ContractCreate= (props) => {
           <div className="flex flex-col grow min-w-[45vw] mr-10">
             <div className="mb-5"> 
               <CombinedCriteria 
-                deadline={deadline}
+                deadlines={deadlines}
                 price={price}
                 createMode={true}
                 changePrice={changePrice}
-                changeDeadline={changeDeadline}
+                changeDeadlines={changeDeadlines}
 
                 active={true}
               />

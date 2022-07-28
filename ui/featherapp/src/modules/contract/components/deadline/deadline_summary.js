@@ -17,7 +17,11 @@ const DeadlineSummary = (props) => {
         props.setErrorMsg("")
       }
       let newDeadline = props.deadline
-      if (props.role === WORKER_TYPE) {
+      if (props.createMode === true) {
+        newDeadline.worker.payout = newVal
+        newDeadline.current.payout = newVal
+        newDeadline.buyer.payout = newVal
+      } else if (props.role === WORKER_TYPE) {
         newDeadline.worker.payout = newVal
       } else if (props.role === BUYER_TYPE) {
         newDeadline.buyer.payout = newVal
@@ -31,7 +35,11 @@ const DeadlineSummary = (props) => {
     const changeDetail = (e) => {
       const newVal = e.target.value
       let newDeadline = props.deadline
-      if (props.role === WORKER_TYPE) {
+      if (props.createMode === true) {
+        newDeadline.worker.detail = newVal
+        newDeadline.current.detail = newVal
+        newDeadline.buyer.detail = newVal
+      } else if (props.role === WORKER_TYPE) {
         newDeadline.worker.detail = newVal
       } else if (props.role === BUYER_TYPE) {
         newDeadline.buyer.detail = newVal

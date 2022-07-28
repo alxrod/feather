@@ -155,7 +155,7 @@ func (contract *Contract) NextDeadline() (*time.Time, error) {
 	now := time.Now()
 	var earliest *time.Time
 	for _, deadline := range contract.Deadlines {
-		if deadline.CurrentDate.Before(now) {
+		if deadline.CurrentDate.After(now) {
 			if earliest == nil || deadline.CurrentDate.Before(*earliest) {
 				earliest = &deadline.CurrentDate
 			}
@@ -284,7 +284,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 		}
 	}
 
-	if len(req.Items) < 2 {
+	if len(req.Deadlines) < 2 {
 		return nil, errors.New("Your contract must have at least a start and end deadline")
 	}
 
@@ -325,11 +325,11 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	return contract, nil
 }
 
-func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) ([]*Contract, error) {
+func ContractsByUser(user_id primitive.ObjectID, database *mongo.Database) ([]*Contract, error) {
 	contracts := make([]*Contract, 0)
 
 	worker_filter := bson.D{{"worker.id", user_id}}
-	cur, err := collection.Find(context.TODO(), worker_filter)
+	cur, err := database.Collection(CON_COL).Find(context.TODO(), worker_filter)
 	if err != nil {
 		return nil, err
 	}
@@ -339,12 +339,13 @@ func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) (
 		if err != nil {
 			return nil, err
 		}
+
 		contracts = append(contracts, con)
 	}
 	cur.Close(context.Background())
 
 	buyer_filter := bson.D{{"buyer.id", user_id}}
-	cur, err = collection.Find(context.TODO(), buyer_filter)
+	cur, err = database.Collection(CON_COL).Find(context.TODO(), buyer_filter)
 	if err != nil {
 		return nil, err
 	}
@@ -357,6 +358,28 @@ func ContractsByUser(user_id primitive.ObjectID, collection *mongo.Collection) (
 		contracts = append(contracts, con)
 	}
 	cur.Close(context.TODO())
+
+	for _, con := range contracts {
+		items := make([]*ContractItem, len(con.ItemIds))
+		for idx, id := range con.ItemIds {
+			item, err := ContractItemById(id, database.Collection(ITEM_COL))
+			if err != nil {
+				return nil, err
+			}
+			items[idx] = item
+		}
+		con.Items = items
+
+		deadlines := make([]*Deadline, len(con.DeadlineIds))
+		for idx, id := range con.DeadlineIds {
+			deadline, err := DeadlineById(id, database)
+			if err != nil {
+				return nil, err
+			}
+			deadlines[idx] = deadline
+		}
+		con.Deadlines = deadlines
+	}
 
 	sort.Slice(contracts, func(i, j int) bool {
 		return contracts[i].CreationTime.Before(contracts[j].CreationTime)

@@ -128,8 +128,8 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 		return nil, err
 	}
 
-	contractCollection := s.dbClient.Database(s.dbName).Collection(db.CON_COL)
-	contracts, err := db.ContractsByUser(user_id, contractCollection)
+	database := s.dbClient.Database(s.dbName)
+	contracts, err := db.ContractsByUser(user_id, database)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
 		return nil, err

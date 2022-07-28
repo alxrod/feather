@@ -1,5 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { CheckIcon } from '@heroicons/react/solid'
+import {Fragment} from "react"
 import {useState, useEffect} from "react"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import {Tooltip} from "flowbite-react"
@@ -46,7 +47,6 @@ const DeadlineDisplay = (props) => {
     if (props.setSelected) {
       props.setSelected(idx)
     }
-    
   }
   return (
     <div className="flex flex-col">
@@ -57,8 +57,8 @@ const DeadlineDisplay = (props) => {
       <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
         <ol role="list" className="flex grow w-full items-center">
           {fDeadlines.map((deadline, idx) => (
-            <>
-              <li key={deadline.id}>
+            <Fragment key={deadline.id}>
+              <li >
                 {deadline.status === 'past' ? (
                   <>
                     <Tooltip 
@@ -80,7 +80,7 @@ const DeadlineDisplay = (props) => {
                           aria-hidden="true"
                         /> */}
                         <span className="sr-only">{deadline.id}</span>
-                        <div className="hidden">{updateFlag}</div>
+                        <span className="hidden">{updateFlag}</span>
                       </p>
                     </Tooltip>
                   </>
@@ -122,16 +122,16 @@ const DeadlineDisplay = (props) => {
                 )}
               </li>
               {((idx !== props.deadlines.length - 1) && deadline.status === "past" ) && (
-                <div key={deadline.id*10} className="grow" aria-hidden="true">
+                <div key={deadline.id*3-1} className="grow" aria-hidden="true">
                   <div className="h-0.5 w-full border-b-2 border-indigo-600" />
                 </div>
               )}
               {((idx !== props.deadlines.length - 1) && deadline.status === "future" ) && (
-                <div key={deadline.id*10} className="grow" aria-hidden="true">
+                <div key={deadline.id*3} className="grow" aria-hidden="true">
                   <div className="h-0.5 border-b-2 border-grey-300" />
                 </div>
               )}
-            </>
+            </Fragment>
 
           ))}
         </ol>

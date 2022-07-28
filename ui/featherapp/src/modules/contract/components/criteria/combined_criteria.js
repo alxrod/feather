@@ -8,11 +8,6 @@ import DeadlineField from "../deadline/deadline_field";
 
 
 const CombinedCriteria = (props) => {
-
-  const price_str = useMemo(() => {
-    props.price.you.toString()
-  })
-
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-md w-full mr-5">
       <ul role="list" className="divide-y divide-gray-200 flex flex-row justify-between">
@@ -44,7 +39,7 @@ const CombinedCriteria = (props) => {
                     <CalendarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true"/>
                   </div>
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
-                    <DeadlineField createMode={props.createMode ? true : false} deadline={props.deadline} changeDeadline={props.changeDeadline} disabled={!props.active}/>
+                    <DeadlineField createMode={props.createMode ? true : false} deadlines={props.deadlines} changeDeadlines={props.changeDeadlines} disabled={!props.active}/>
                   </div>
                 </div>
               </div>

@@ -23,7 +23,9 @@ const CalendarModal = (props) => {
   }, [props.deadlines])
 
   const handleAddDeadline = () => {
-    props.addDeadline()
+    const newSelect = props.addDeadline()
+    console.log("Selected: " + newSelect)
+    setSelected(newSelect)
   }
 
   return (
@@ -118,6 +120,7 @@ const CalendarModal = (props) => {
                               deadline={props.deadlines[selected]} 
                               editDeadline={props.editDeadline}
                               setErrorMsg={setErrorMsg}
+                              createMode={props.createMode}
                             />
                           </div>
                           <div className="p-2 flex flex-col ml-1">
@@ -128,6 +131,7 @@ const CalendarModal = (props) => {
                               deadline={props.deadlines[selected]}
                               setErrorMsg={setErrorMsg}
                               reloadFlag={props.reloadFlag}
+                              createMode={props.createMode}
                             />
                             <CalendarTime
                               role={props.role} 
@@ -136,6 +140,7 @@ const CalendarModal = (props) => {
                               deadline={props.deadlines[selected]}
                               setErrorMsg={setErrorMsg}
                               reloadFlag={props.reloadFlag}
+                              createMode={props.createMode}
                             />
                           </div>
                         </div>
@@ -143,6 +148,7 @@ const CalendarModal = (props) => {
                           <button
                             type="submit"
                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={props.saveDeadlines}
                           >
                             Save
                           </button>
