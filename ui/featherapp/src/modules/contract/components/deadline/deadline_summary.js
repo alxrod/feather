@@ -7,7 +7,6 @@ const DeadlineSummary = (props) => {
     }
 
     const changePayout = (e) => {
-        
       let newVal = parseInt(e.target.value)
       if (e.target.value === "") {
         newVal = 0
@@ -59,8 +58,6 @@ const DeadlineSummary = (props) => {
 
     const [payoutValue, setPayout] = useState(0)
     const [detailValue, setDetail] = useState("")
-
-    
 
     return (
       <div className="grow flex flex-col">

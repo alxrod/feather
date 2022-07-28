@@ -811,11 +811,19 @@ proto.main.DeadlineEntity.prototype.toObject = function(opt_includeInstance) {
  */
 proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
-    current: (f = msg.getCurrent()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    buyer: (f = msg.getBuyer()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    worker: (f = msg.getWorker()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    proposerId: jspb.Message.getFieldWithDefault(msg, 5, "")
+    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
+    proposerId: jspb.Message.getFieldWithDefault(msg, 13, ""),
+    currentDetail: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    currentPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    currentDate: (f = msg.getCurrentDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    workerDetail: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    workerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+    workerDate: (f = msg.getWorkerDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
+    buyerDetail: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    buyerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
+    buyerDate: (f = msg.getBuyerDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -853,27 +861,59 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCurrent(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
       break;
     case 2:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setBuyer(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setContractId(value);
       break;
-    case 3:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setWorker(value);
-      break;
-    case 4:
+    case 12:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAwaitingApproval(value);
       break;
-    case 5:
+    case 13:
       var value = /** @type {string} */ (reader.readString());
       msg.setProposerId(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCurrentDetail(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setCurrentPayout(value);
+      break;
+    case 5:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setCurrentDate(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setWorkerDetail(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setWorkerPayout(value);
+      break;
+    case 8:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setWorkerDate(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyerDetail(value);
+      break;
+    case 10:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setBuyerPayout(value);
+      break;
+    case 11:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setBuyerDate(value);
       break;
     default:
       reader.skipField();
@@ -904,164 +944,145 @@ proto.main.DeadlineEntity.prototype.serializeBinary = function() {
  */
 proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getCurrent();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
       1,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+      f
     );
   }
-  f = message.getBuyer();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getContractId();
+  if (f.length > 0) {
+    writer.writeString(
       2,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getWorker();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+      f
     );
   }
   f = message.getAwaitingApproval();
   if (f) {
     writer.writeBool(
-      4,
+      12,
       f
     );
   }
   f = message.getProposerId();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      13,
       f
+    );
+  }
+  f = message.getCurrentDetail();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getCurrentPayout();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      4,
+      f
+    );
+  }
+  f = message.getCurrentDate();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+    );
+  }
+  f = message.getWorkerDetail();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getWorkerPayout();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      7,
+      f
+    );
+  }
+  f = message.getWorkerDate();
+  if (f != null) {
+    writer.writeMessage(
+      8,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+    );
+  }
+  f = message.getBuyerDetail();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getBuyerPayout();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      10,
+      f
+    );
+  }
+  f = message.getBuyerDate();
+  if (f != null) {
+    writer.writeMessage(
+      11,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional google.protobuf.Timestamp current = 1;
- * @return {?proto.google.protobuf.Timestamp}
+ * optional string id = 1;
+ * @return {string}
  */
-proto.main.DeadlineEntity.prototype.getCurrent = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 1));
+proto.main.DeadlineEntity.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.main.DeadlineEntity} returns this
-*/
-proto.main.DeadlineEntity.prototype.setCurrent = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {string} value
  * @return {!proto.main.DeadlineEntity} returns this
  */
-proto.main.DeadlineEntity.prototype.clearCurrent = function() {
-  return this.setCurrent(undefined);
+proto.main.DeadlineEntity.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
+ * optional string contract_id = 2;
+ * @return {string}
  */
-proto.main.DeadlineEntity.prototype.hasCurrent = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.main.DeadlineEntity.prototype.getContractId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
- * optional google.protobuf.Timestamp buyer = 2;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.main.DeadlineEntity.prototype.getBuyer = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 2));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.main.DeadlineEntity} returns this
-*/
-proto.main.DeadlineEntity.prototype.setBuyer = function(value) {
-  return jspb.Message.setWrapperField(this, 2, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * @param {string} value
  * @return {!proto.main.DeadlineEntity} returns this
  */
-proto.main.DeadlineEntity.prototype.clearBuyer = function() {
-  return this.setBuyer(undefined);
+proto.main.DeadlineEntity.prototype.setContractId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.main.DeadlineEntity.prototype.hasBuyer = function() {
-  return jspb.Message.getField(this, 2) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp worker = 3;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.main.DeadlineEntity.prototype.getWorker = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.main.DeadlineEntity} returns this
-*/
-proto.main.DeadlineEntity.prototype.setWorker = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.main.DeadlineEntity} returns this
- */
-proto.main.DeadlineEntity.prototype.clearWorker = function() {
-  return this.setWorker(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.main.DeadlineEntity.prototype.hasWorker = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-/**
- * optional bool awaiting_approval = 4;
+ * optional bool awaiting_approval = 12;
  * @return {boolean}
  */
 proto.main.DeadlineEntity.prototype.getAwaitingApproval = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
 };
 
 
@@ -1070,16 +1091,16 @@ proto.main.DeadlineEntity.prototype.getAwaitingApproval = function() {
  * @return {!proto.main.DeadlineEntity} returns this
  */
 proto.main.DeadlineEntity.prototype.setAwaitingApproval = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 4, value);
+  return jspb.Message.setProto3BooleanField(this, 12, value);
 };
 
 
 /**
- * optional string proposer_id = 5;
+ * optional string proposer_id = 13;
  * @return {string}
  */
 proto.main.DeadlineEntity.prototype.getProposerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
 };
 
 
@@ -1088,7 +1109,226 @@ proto.main.DeadlineEntity.prototype.getProposerId = function() {
  * @return {!proto.main.DeadlineEntity} returns this
  */
 proto.main.DeadlineEntity.prototype.setProposerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+  return jspb.Message.setProto3StringField(this, 13, value);
+};
+
+
+/**
+ * optional string current_detail = 3;
+ * @return {string}
+ */
+proto.main.DeadlineEntity.prototype.getCurrentDetail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setCurrentDetail = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional float current_payout = 4;
+ * @return {number}
+ */
+proto.main.DeadlineEntity.prototype.getCurrentPayout = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setCurrentPayout = function(value) {
+  return jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp current_date = 5;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.main.DeadlineEntity.prototype.getCurrentDate = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.DeadlineEntity} returns this
+*/
+proto.main.DeadlineEntity.prototype.setCurrentDate = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.clearCurrentDate = function() {
+  return this.setCurrentDate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.hasCurrentDate = function() {
+  return jspb.Message.getField(this, 5) != null;
+};
+
+
+/**
+ * optional string worker_detail = 6;
+ * @return {string}
+ */
+proto.main.DeadlineEntity.prototype.getWorkerDetail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setWorkerDetail = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional float worker_payout = 7;
+ * @return {number}
+ */
+proto.main.DeadlineEntity.prototype.getWorkerPayout = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setWorkerPayout = function(value) {
+  return jspb.Message.setProto3FloatField(this, 7, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp worker_date = 8;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.main.DeadlineEntity.prototype.getWorkerDate = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 8));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.DeadlineEntity} returns this
+*/
+proto.main.DeadlineEntity.prototype.setWorkerDate = function(value) {
+  return jspb.Message.setWrapperField(this, 8, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.clearWorkerDate = function() {
+  return this.setWorkerDate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.hasWorkerDate = function() {
+  return jspb.Message.getField(this, 8) != null;
+};
+
+
+/**
+ * optional string buyer_detail = 9;
+ * @return {string}
+ */
+proto.main.DeadlineEntity.prototype.getBuyerDetail = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setBuyerDetail = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional float buyer_payout = 10;
+ * @return {number}
+ */
+proto.main.DeadlineEntity.prototype.getBuyerPayout = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 10, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setBuyerPayout = function(value) {
+  return jspb.Message.setProto3FloatField(this, 10, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp buyer_date = 11;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.main.DeadlineEntity.prototype.getBuyerDate = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.main.DeadlineEntity} returns this
+*/
+proto.main.DeadlineEntity.prototype.setBuyerDate = function(value) {
+  return jspb.Message.setWrapperField(this, 11, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.clearBuyerDate = function() {
+  return this.setBuyerDate(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.hasBuyerDate = function() {
+  return jspb.Message.getField(this, 11) != null;
 };
 
 
@@ -1098,7 +1338,7 @@ proto.main.DeadlineEntity.prototype.setProposerId = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.main.ContractEntity.repeatedFields_ = [7];
+proto.main.ContractEntity.repeatedFields_ = [5,7];
 
 
 
@@ -1136,7 +1376,8 @@ proto.main.ContractEntity.toObject = function(includeInstance, msg) {
     worker: (f = msg.getWorker()) && proto.main.UserNubEntity.toObject(includeInstance, f),
     buyer: (f = msg.getBuyer()) && proto.main.UserNubEntity.toObject(includeInstance, f),
     price: (f = msg.getPrice()) && proto.main.PriceEntity.toObject(includeInstance, f),
-    deadline: (f = msg.getDeadline()) && proto.main.DeadlineEntity.toObject(includeInstance, f),
+    deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
+    proto.main.DeadlineEntity.toObject, includeInstance),
     title: jspb.Message.getFieldWithDefault(msg, 8, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 6, ""),
     stage: jspb.Message.getFieldWithDefault(msg, 9, 0),
@@ -1205,7 +1446,7 @@ proto.main.ContractEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = new proto.main.DeadlineEntity;
       reader.readMessage(value,proto.main.DeadlineEntity.deserializeBinaryFromReader);
-      msg.setDeadline(value);
+      msg.addDeadlines(value);
       break;
     case 8:
       var value = /** @type {string} */ (reader.readString());
@@ -1295,9 +1536,9 @@ proto.main.ContractEntity.serializeBinaryToWriter = function(message, writer) {
       proto.main.PriceEntity.serializeBinaryToWriter
     );
   }
-  f = message.getDeadline();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getDeadlinesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       5,
       f,
       proto.main.DeadlineEntity.serializeBinaryToWriter
@@ -1490,39 +1731,40 @@ proto.main.ContractEntity.prototype.hasPrice = function() {
 
 
 /**
- * optional DeadlineEntity deadline = 5;
- * @return {?proto.main.DeadlineEntity}
+ * repeated DeadlineEntity deadlines = 5;
+ * @return {!Array<!proto.main.DeadlineEntity>}
  */
-proto.main.ContractEntity.prototype.getDeadline = function() {
-  return /** @type{?proto.main.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, proto.main.DeadlineEntity, 5));
+proto.main.ContractEntity.prototype.getDeadlinesList = function() {
+  return /** @type{!Array<!proto.main.DeadlineEntity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.main.DeadlineEntity, 5));
 };
 
 
 /**
- * @param {?proto.main.DeadlineEntity|undefined} value
+ * @param {!Array<!proto.main.DeadlineEntity>} value
  * @return {!proto.main.ContractEntity} returns this
 */
-proto.main.ContractEntity.prototype.setDeadline = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
+proto.main.ContractEntity.prototype.setDeadlinesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
 
 
 /**
- * Clears the message field making it undefined.
+ * @param {!proto.main.DeadlineEntity=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.main.DeadlineEntity}
+ */
+proto.main.ContractEntity.prototype.addDeadlines = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.main.DeadlineEntity, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.main.ContractEntity} returns this
  */
-proto.main.ContractEntity.prototype.clearDeadline = function() {
-  return this.setDeadline(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.main.ContractEntity.prototype.hasDeadline = function() {
-  return jspb.Message.getField(this, 5) != null;
+proto.main.ContractEntity.prototype.clearDeadlinesList = function() {
+  return this.setDeadlinesList([]);
 };
 
 
@@ -3356,7 +3598,7 @@ proto.main.ItemChunk.prototype.setText = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.main.ContractCreateRequest.repeatedFields_ = [7];
+proto.main.ContractCreateRequest.repeatedFields_ = [6,7];
 
 
 
@@ -3396,7 +3638,8 @@ proto.main.ContractCreateRequest.toObject = function(includeInstance, msg) {
     introMessage: jspb.Message.getFieldWithDefault(msg, 4, ""),
     role: jspb.Message.getFieldWithDefault(msg, 9, 0),
     price: (f = msg.getPrice()) && proto.main.PriceEntity.toObject(includeInstance, f),
-    deadline: (f = msg.getDeadline()) && proto.main.DeadlineEntity.toObject(includeInstance, f),
+    deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
+    proto.main.DeadlineEntity.toObject, includeInstance),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.main.ItemEntity.toObject, includeInstance)
   };
@@ -3467,7 +3710,7 @@ proto.main.ContractCreateRequest.deserializeBinaryFromReader = function(msg, rea
     case 6:
       var value = new proto.main.DeadlineEntity;
       reader.readMessage(value,proto.main.DeadlineEntity.deserializeBinaryFromReader);
-      msg.setDeadline(value);
+      msg.addDeadlines(value);
       break;
     case 7:
       var value = new proto.main.ItemEntity;
@@ -3553,9 +3796,9 @@ proto.main.ContractCreateRequest.serializeBinaryToWriter = function(message, wri
       proto.main.PriceEntity.serializeBinaryToWriter
     );
   }
-  f = message.getDeadline();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getDeadlinesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       6,
       f,
       proto.main.DeadlineEntity.serializeBinaryToWriter
@@ -3718,39 +3961,40 @@ proto.main.ContractCreateRequest.prototype.hasPrice = function() {
 
 
 /**
- * optional DeadlineEntity deadline = 6;
- * @return {?proto.main.DeadlineEntity}
+ * repeated DeadlineEntity deadlines = 6;
+ * @return {!Array<!proto.main.DeadlineEntity>}
  */
-proto.main.ContractCreateRequest.prototype.getDeadline = function() {
-  return /** @type{?proto.main.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, proto.main.DeadlineEntity, 6));
+proto.main.ContractCreateRequest.prototype.getDeadlinesList = function() {
+  return /** @type{!Array<!proto.main.DeadlineEntity>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.main.DeadlineEntity, 6));
 };
 
 
 /**
- * @param {?proto.main.DeadlineEntity|undefined} value
+ * @param {!Array<!proto.main.DeadlineEntity>} value
  * @return {!proto.main.ContractCreateRequest} returns this
 */
-proto.main.ContractCreateRequest.prototype.setDeadline = function(value) {
-  return jspb.Message.setWrapperField(this, 6, value);
+proto.main.ContractCreateRequest.prototype.setDeadlinesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 6, value);
 };
 
 
 /**
- * Clears the message field making it undefined.
+ * @param {!proto.main.DeadlineEntity=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.main.DeadlineEntity}
+ */
+proto.main.ContractCreateRequest.prototype.addDeadlines = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 6, opt_value, proto.main.DeadlineEntity, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.main.ContractCreateRequest} returns this
  */
-proto.main.ContractCreateRequest.prototype.clearDeadline = function() {
-  return this.setDeadline(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.main.ContractCreateRequest.prototype.hasDeadline = function() {
-  return jspb.Message.getField(this, 6) != null;
+proto.main.ContractCreateRequest.prototype.clearDeadlinesList = function() {
+  return this.setDeadlinesList([]);
 };
 
 

@@ -13,11 +13,23 @@ message PriceEntity {
 }
 
 message DeadlineEntity {
-    google.protobuf.Timestamp current = 1;
-    google.protobuf.Timestamp buyer = 2;
-    google.protobuf.Timestamp worker = 3;
-    bool awaiting_approval = 4;
-    string proposer_id = 5;
+    string id = 1;
+    string contract_id = 2;
+    bool awaiting_approval = 12;
+    string proposer_id = 13;
+    
+    string current_detail = 3;
+    float current_payout = 4;
+    google.protobuf.Timestamp current_date = 5;
+
+    string worker_detail = 6;
+    float worker_payout = 7;
+    google.protobuf.Timestamp worker_date = 8;
+
+    string buyer_detail = 9;
+    float buyer_payout = 10;
+    google.protobuf.Timestamp buyer_date = 11;
+
 }
 
 message ContractEntity {
@@ -26,7 +38,7 @@ message ContractEntity {
     UserNubEntity worker = 2;
     UserNubEntity buyer = 3;
     PriceEntity price = 4;
-    DeadlineEntity deadline = 5;
+    repeated DeadlineEntity deadlines = 5;
     string title = 8;
     string summary = 6;
     uint32 stage = 9;
@@ -90,7 +102,7 @@ message ContractCreateRequest {
     string intro_message = 4;
     uint32 role = 9;
     PriceEntity price = 5;
-    DeadlineEntity deadline = 6;
+    repeated DeadlineEntity deadlines = 6;
     repeated ItemEntity items = 7;
 }
 

@@ -23,9 +23,12 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 	if req.Title == "" ||
 		req.Summary == "" ||
 		req.IntroMessage == "" ||
-		req.Price == nil ||
-		req.Deadline == nil {
-		return nil, errors.New("Title, summary, intro, price, and deadline are all required to create a contract.")
+		req.Price == nil {
+		return nil, errors.New("Title, summary, intro, and price are all required to create a contract.")
+	}
+
+	if len(req.Deadlines) < 2 {
+		return nil, errors.New("You must specify at least a start and end deadline for the contract")
 	}
 
 	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)

@@ -31,18 +31,18 @@ type Contract struct {
 	Worker       *UserNub           `bson:"worker"`
 	Buyer        *UserNub           `bson:"buyer"`
 	Price        *PriceNub          `bson:"price"`
-	Deadline     *DeadlineNub       `bson:"deadline"`
 	Title        string             `bson: title`
 	Summary      string             `bson:"summary"`
 	CreationTime time.Time          `bson:"creation_time"`
 
-	// ChatRoom string     `bson:"chat_room_id"`
+	Deadlines   []*Deadline          `bson:"-"`
+	DeadlineIds []primitive.ObjectID `bson:"deadline_ids"`
+
 	Items   []*ContractItem      `bson:"-"`
 	ItemIds []primitive.ObjectID `bson:"item_ids"`
 
 	RoomId primitive.ObjectID `bson:"room_id"`
-	// Drafts   []DraftNub `bson:"drafts"`
-	Stage uint32 `bson:"stage"`
+	Stage  uint32             `bson:"stage"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -59,7 +59,6 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		Worker:   contract.Worker.Proto(),
 		Buyer:    contract.Buyer.Proto(),
 		Price:    contract.Price.Proto(),
-		Deadline: contract.Deadline.Proto(),
 		Summary:  contract.Summary,
 		Title:    contract.Title,
 		Password: contract.Password,
@@ -78,7 +77,13 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		itemProtos[i] = item.Proto()
 	}
 
+	deadlineProtos := make([]*comms.DeadlineEntity, len(contract.Deadlines))
+	for i, deadline := range contract.Deadlines {
+		deadlineProtos[i] = deadline.Proto()
+	}
+
 	proto.Items = itemProtos
+	proto.Deadlines = deadlineProtos
 	return proto
 }
 
@@ -94,7 +99,13 @@ func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractN
 
 	proto.Id = contract.Id.Hex()
 	proto.Title = contract.Title
-	proto.Deadline = timestamppb.New(contract.Deadline.Current)
+
+	nextDeadline, err := contract.NextDeadline()
+	if err != nil {
+		return nil, err
+	}
+	proto.Deadline = timestamppb.New(*nextDeadline)
+
 	proto.Price = contract.Price.Current
 	proto.Stage = contract.Stage
 
@@ -123,7 +134,11 @@ func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
 	proto.Id = contract.Id.Hex()
 	proto.Title = contract.Title
 	proto.Password = contract.Password
-	proto.Deadline = timestamppb.New(contract.Deadline.Current)
+	nextDeadline, err := contract.NextDeadline()
+	if err != nil {
+		return nil, err
+	}
+	proto.Deadline = timestamppb.New(*nextDeadline)
 	proto.Price = contract.Price.Current
 	proto.Summary = contract.Summary
 	proto.Worker = contract.Worker.Proto()
@@ -131,6 +146,25 @@ func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
 
 	return proto, nil
 
+}
+
+func (contract *Contract) NextDeadline() (*time.Time, error) {
+	if contract == nil {
+		return nil, errors.New("This contract is nil")
+	}
+	now := time.Now()
+	var earliest *time.Time
+	for _, deadline := range contract.Deadlines {
+		if deadline.CurrentDate.Before(now) {
+			if earliest == nil || deadline.CurrentDate.Before(*earliest) {
+				earliest = &deadline.CurrentDate
+			}
+		}
+	}
+	if earliest == nil {
+		return nil, errors.New("This contract is missing deadlines")
+	}
+	return earliest, nil
 }
 
 type UserNub struct {
@@ -179,46 +213,13 @@ func (pn *PriceNub) Proto() *comms.PriceEntity {
 	return proto
 }
 
-type DeadlineNub struct {
-	Current          time.Time          `bson:"current"`
-	Worker           time.Time          `bson:"worker_id"`
-	Buyer            time.Time          `bson:"buyer_id"`
-	AwaitingApproval bool               `bson:"awaiting_approval"`
-	Proposer         primitive.ObjectID `bson:"proposer_id"`
-}
-
-func (dn *DeadlineNub) Proto() *comms.DeadlineEntity {
-	proto := &comms.DeadlineEntity{}
-	if dn == nil {
-		return proto
-	}
-	proto.Current = timestamppb.New(dn.Current)
-	proto.Buyer = timestamppb.New(dn.Worker)
-	proto.Worker = timestamppb.New(dn.Buyer)
-
-	proto.AwaitingApproval = dn.AwaitingApproval
-	if dn.AwaitingApproval == true && !dn.Proposer.IsZero() {
-		proto.ProposerId = dn.Proposer.Hex()
-	}
-
-	return proto
-}
-
 func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mongo.Database) (*Contract, error) {
 	var price *PriceNub
-	var deadline *DeadlineNub
 	if req.Role == WORKER {
 		price = &PriceNub{
 			Current:          req.Price.Worker,
 			Worker:           req.Price.Worker,
 			Buyer:            req.Price.Worker,
-			AwaitingApproval: false,
-			Proposer:         user.Id,
-		}
-		deadline = &DeadlineNub{
-			Current:          req.Deadline.Worker.AsTime(),
-			Worker:           req.Deadline.Worker.AsTime(),
-			Buyer:            req.Deadline.Worker.AsTime(),
 			AwaitingApproval: false,
 			Proposer:         user.Id,
 		}
@@ -230,19 +231,11 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 			AwaitingApproval: false,
 			Proposer:         user.Id,
 		}
-		deadline = &DeadlineNub{
-			Current:          req.Deadline.Buyer.AsTime(),
-			Worker:           req.Deadline.Buyer.AsTime(),
-			Buyer:            req.Deadline.Buyer.AsTime(),
-			AwaitingApproval: false,
-			Proposer:         user.Id,
-		}
 	}
 	stage := INVITE
 
 	contract := &Contract{
 		Price:        price,
-		Deadline:     deadline,
 		Title:        req.Title,
 		Summary:      req.Summary,
 		Password:     req.Password,
@@ -290,14 +283,40 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 			return nil, err
 		}
 	}
+
+	if len(req.Items) < 2 {
+		return nil, errors.New("Your contract must have at least a start and end deadline")
+	}
+
+	contractDeadlines := make([]*Deadline, len(req.Deadlines))
+	deadline_ids := make([]primitive.ObjectID, len(req.Deadlines))
+	for idx, deadline := range req.Deadlines {
+		res, err := DeadlineInsert(deadline, user.Id, contract.Id, database)
+		if err != nil {
+			return nil, err
+		}
+		contractDeadlines[idx] = res
+		deadline_ids[idx] = res.Id
+	}
+	contract.Deadlines = contractDeadlines
+	contract.DeadlineIds = deadline_ids
+
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"deadline_ids", deadline_ids}}}}
+	_, err = contractCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with deadline ids")))
+		return nil, err
+	}
+
 	users := []*User{user}
 	room, err := ChatRoomInsert(contract.Id, users, database)
 	if err != nil {
 		return nil, err
 	}
 	contract.RoomId = room.Id
-	filter := bson.D{{"_id", contract.Id}}
-	update := bson.D{{"$set", bson.D{{"room_id", room.Id}}}}
+	filter = bson.D{{"_id", contract.Id}}
+	update = bson.D{{"$set", bson.D{{"room_id", room.Id}}}}
 	_, err = contractCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
@@ -362,6 +381,17 @@ func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Co
 		items[idx] = item
 	}
 	contract.Items = items
+
+	deadlines := make([]*Deadline, len(contract.DeadlineIds))
+	for idx, id := range contract.DeadlineIds {
+		deadline, err := DeadlineById(id, database)
+		if err != nil {
+			return nil, err
+		}
+		deadlines[idx] = deadline
+	}
+	contract.Deadlines = deadlines
+
 	return contract, nil
 }
 
