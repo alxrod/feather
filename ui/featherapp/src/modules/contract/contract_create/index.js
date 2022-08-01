@@ -25,20 +25,23 @@ const ContractCreate= (props) => {
     props.clearSelected()
   })
   const [price, setPrice] = useState(0.0)
-  const priceObj = {
+  const [priceObj, setPriceObj] = useState({
     current: 0.0,
     worker: 0.0,
     buyer: 0.0,
-  }
+  })
   const [contractItems, setContractItems] = useState({})
+  const [contractItemsChanged, toggleItemsChanged] = useState(false)
 
   const [error, setError] = useState("")
   const [openBanner, setOpenBanner] = useState(false)
 
   const updateContractItem = (newInfo) => {
+    console.log("Calling update contract")
 		var new_contracts = {...contractItems}
 		new_contracts[newInfo.id] = newInfo
 		setContractItems(new_contracts)
+    toggleItemsChanged(!contractItemsChanged)
 	}
   
   const now = new Date()
@@ -49,10 +52,11 @@ const ContractCreate= (props) => {
 
   const changePrice = (new_price) => {
     const fl = parseFloat(new_price)
-    priceObj.current = fl
-    priceObj.worker = fl
-    priceObj.buyer = fl
-    console.log(new_price)
+    const newPriceObj = priceObj
+    newPriceObj.current = fl
+    newPriceObj.worker = fl
+    newPriceObj.buyer = fl
+    setPriceObj(newPriceObj)
     setPrice(new_price)
   }
   const changeDeadlines = (new_deadlines) => {
@@ -97,6 +101,7 @@ const ContractCreate= (props) => {
     console.log(contractItems)
     console.log(conPassword)
     console.log(conRole)
+
     props.createContract(conTitle, conDescript, conMessage, priceObj, deadlines, contractItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
@@ -136,19 +141,24 @@ const ContractCreate= (props) => {
   } 
 
   const addContractItem = () => {
-    setNextId(nextId+1)
+    
     // console.log("Adding item with value " + nextId)
     // console.log(contractItems)
     let old_cons = contractItems
-    old_cons[nextId.toString()] = {
+    let new_id = nextId.toString()
+    const new_item = {
       name: "Item " + nextId.toString(),
-      id: nextId.toString(),
+      id: new_id,
 			text: [],
 			recip_status: ITEM_AGREED,
 			sender_status: ITEM_AGREED,
 			chats: [],
     }
+    old_cons[nextId.toString()] = new_item
+    setNextId(nextId+1)
     setContractItems(old_cons)
+    toggleItemsChanged(!contractItemsChanged)
+    return Promise.resolve(new_item)
   }
 
 
@@ -165,9 +175,16 @@ const ContractCreate= (props) => {
               <CombinedCriteria 
                 deadlines={deadlines}
                 price={price}
+
+                contractItems={contractItems}
+                addContractItem={addContractItem}
+                contractItemsChanged={contractItemsChanged}
+
                 createMode={true}
                 changePrice={changePrice}
                 changeDeadlines={changeDeadlines}
+                changeItem={updateContractItem}
+                
 
                 active={true}
               />
@@ -200,7 +217,7 @@ const ContractCreate= (props) => {
         </div>
         <div className="mt-5 flex flex-col justify-start items-center">
           {Object.entries(contractItems).map((contract_and_key) => (
-            <div className="min-h-[100px] w-full" key={contract_and_key[0]}>
+            <div className="min-h-[100px] w-full mb-5" key={contract_and_key[0]}>
               <ContractItem override={true} contract_info={contract_and_key[1]} changeItem={updateContractItem} disabled={false} />
             </div>
           ))}

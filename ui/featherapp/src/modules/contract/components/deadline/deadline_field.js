@@ -39,7 +39,6 @@ const DeadlineField = (props) => {
         newDeadlines[i] = new_deadline
       }
     }
-    console.log("Updating deadlines")
     setLocalDeadlines(sortDeadlines(newDeadlines))
     toggleReloadFlag(!reloadFlag)
   }
@@ -56,14 +55,10 @@ const DeadlineField = (props) => {
   }
 
   const addDeadline = () => {
-    console.log("ADDING DEADLINE")
     const lastDeadline = localDeadlines[localDeadlines.length-1]
-    console.log("Last deadlien is")
-    console.log(lastDeadline)
     const newDate = addWeeks(lastDeadline.current.date,1)
-    console.log("New date is " + newDate)
     const new_deadline = genEmptyDeadline(newDate)
-    
+    console.log("New deadline")
     new_deadline.id = localDeadlines.length +1
     new_deadline.idx = lastDeadline.idx+1
     let newDeadlines = localDeadlines
@@ -111,8 +106,9 @@ const DeadlineField = (props) => {
   const [openModal, setOpenModal] = useState(false)
 
   const handleOpenCalendar = (e) => {
-    if (props.disabled == false || props.disabled == undefined) {
-      // console.log("Opening")
+    console.log("Openign")
+    if (props.disabled !== true) {
+      console.log("Opening")
       setOpenModal(true)
     }
   }
@@ -148,6 +144,11 @@ const DeadlineField = (props) => {
         sortDeadlines={sortDeadlines}
         saveDeadlines={saveDeadlines}
         createMode={props.createMode}
+
+        contractItems={props.contractItems}
+        addContractItem={props.addContractItem}
+        contractItemsChanged={props.contractItemsChanged}
+        changeItem={props.changeItem}
       />
     </>
   )
@@ -178,26 +179,29 @@ const importDeadlines = (incoming) => {
       idx: i,
       current: {
         payout: in_d.currentPayout,
-        detail: in_d.currentDetail,
         date: in_d.currentDate,
       },
       worker: {
         payout: in_d.workerPayout,
-        detail: in_d.workerDetail,
         date: in_d.workerDate,
       },
       buyer: {
         payout: in_d.buyerPayout,
-        detail: in_d.buyerDetail,
         date: in_d.buyerDate,
       },
       awaitingApproval: in_d.awaitingApproval,
       proposerId: in_d.proposerId,
+      itemsList: in_d.itemsList
     }
     if (in_d.id === "") {
       out_d.id = (i+1).toString()
     } else {
       out_d.id = in_d.id
+    }
+    if (i === incoming.length - 1) {
+      out_d.lastDeadline = true
+    } else {
+      out_d.lastDeadline = false
     }
     outgoing.push(out_d)
   }
@@ -214,23 +218,20 @@ const exportDeadlines = (incoming) => {
       proposerId: in_d.proposerId,
 
       currentPayout: in_d.current.payout,
-      currentDetail: in_d.current.detail,
       currentDate: in_d.current.date,
 
       workerPayout: in_d.worker.payout,
-      workerDetail: in_d.worker.detail,
       workerDate: in_d.worker.date,
 
       buyerPayout: in_d.buyer.payout,
-      buyerDetail: in_d.buyer.detail,
       buyerDate: in_d.buyer.date,
+
+      itemsList: in_d.itemsList,
       
     }
     out_d.id = in_d.id
     outgoing.push(out_d)
   }
-  console.log("Outgoing deadlones:")
-  console.log(outgoing)
   return outgoing
 }
 
@@ -243,17 +244,14 @@ const genTestSet = () => {
       current: {
         payout: 0,
         date: new Date(),
-        detail: "Submit the material"
       },
       worker: {
         payout: 0,
         date: new Date(),
-        detail: "Submit the material"
       },
       buyer: {
         payout: 0,
         date: new Date(),
-        detail: "Submit the material"
       },
       awaitingApproval: false,
       proposerId: ""
@@ -264,17 +262,14 @@ const genTestSet = () => {
       current: {
         payout: 15,
         date: addWeeks(new Date(), 1),
-        detail: "Submit the first draft"
       },
       worker: {
         payout: 15,
         date: addWeeks(new Date(), 1),
-        detail: "Submit the first draft"
       },
       buyer: {
         payout: 15,
         date: addWeeks(new Date(), 1),
-        detail: "Submit the first draft"
       },
       awaitingApproval: false,
       proposerId: ""
@@ -285,17 +280,14 @@ const genTestSet = () => {
       current: {
         payout: 85,
         date: addWeeks(new Date(), 2),
-        detail: "Submit the final draft"
       },
       worker: {
         payout: 85,
         date: addWeeks(new Date(), 2),
-        detail: "Submit the final draft"
       },
       buyer: {
         payout: 85,
         date: addWeeks(new Date(), 2),
-        detail: "Submit the final draft"
       },
       awaitingApproval: false,
       proposerId: ""
@@ -308,20 +300,18 @@ const genEmptyDeadline = (date) => {
     current: {
       payout: 0,
       date: date,
-      detail: ""
     },
     worker: {
       payout: 0,
       date: date,
-      detail: ""
     },
     buyer: {
       payout: 0,
       date: date,
-      detail: ""
     },
     awaitingApproval: false,
-    proposerId: ""
+    proposerId: "",
+    itemsList: [],
   }
 }
 

@@ -64,7 +64,18 @@ const CriticalCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <DeadlineField/>
+                        <DeadlineField
+                        // Useful syntax if create mode undefined
+                          createMode={props.createMode ? true : false} 
+                          deadlines={props.deadlines} 
+                          changeDeadlines={props.changeDeadlines} 
+                          disabled={!props.active} 
+    
+                          contractItems={props.contractItems}
+                          addContractItem={props.addContractItem}
+                          contractItemsChanged={props.contractItemsChanged}
+                          changeItem={props.changeItem}
+                        />
                       </div>
                       {/* <ApprovalSign item_state={props.deadline_state}/>
                       <div className="mt-1">

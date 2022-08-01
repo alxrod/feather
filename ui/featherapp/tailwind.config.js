@@ -2,9 +2,11 @@ module.exports = {
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+    "./node_modules/flowbite/**/*.js",
+    
   ],
 
-  darkMode: 'media', // or 'class'
+  darkMode: 'class', // or 'class'
 
   safelist: [
     'w-64',

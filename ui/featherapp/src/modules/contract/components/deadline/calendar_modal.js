@@ -1,13 +1,19 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
+
+
 import Calendar from "./calendar"
 import CalendarTime from "./calendar_time"
 import DeadlineDisplay from "./deadline_display"
 import DeadlineSummary from "./deadline_summary"
 import DeadlineChoice from "./deadline_choice"
+import DeadlineItems from "./deadline_items"
+
+
 import { PlusIcon } from '@heroicons/react/solid'
 import { XIcon } from '@heroicons/react/outline'
+
 
 const CalendarModal = (props) => {
 
@@ -118,9 +124,19 @@ const CalendarModal = (props) => {
                             <DeadlineSummary 
                               role={props.role} 
                               deadline={props.deadlines[selected]} 
+                              deadlines={props.deadlines} 
                               editDeadline={props.editDeadline}
                               setErrorMsg={setErrorMsg}
                               createMode={props.createMode}
+                            />
+                            <DeadlineItems
+                              contractItems={props.contractItems}
+                              addContractItem={props.addContractItem}
+                              createMode={props.createMode}
+                              deadline={props.deadlines[selected]}
+                              editDeadline={props.editDeadline}
+                              contractItemsChanged={props.contractItemsChanged}
+                              changeItem={props.changeItem}
                             />
                           </div>
                           <div className="p-2 flex flex-col ml-1">

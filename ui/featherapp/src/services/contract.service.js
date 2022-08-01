@@ -5,6 +5,7 @@ import {
     ContractEntity,
     ItemEntity,
     ItemChunk,
+    ItemNub,
     
     
     ContractCreateRequest,
@@ -67,9 +68,7 @@ export const genEmptyDeadline = (date) => {
         workerPayout: 0,
         buyerPayout: 0,
     
-        currentDetail: "",
-        workerDetail: "",
-        buyerDetail: "",
+        itemsList: [],
     
         currentDate: date,
         workerDate: date,
@@ -264,6 +263,8 @@ class ContractService {
     //     current_date: new Date(),
     //     worker_date: new Date(),
     //     buyer_date: new Date(),
+
+    //     item_nubs: []
     // }
     generateDeadlineEntity(deadline_info) {
         console.log("Creating a deadline with")
@@ -279,10 +280,6 @@ class ContractService {
         entity.setWorkerPayout(deadline_info.workerPayout);
         entity.setBuyerPayout(deadline_info.buyerPayout)
 
-        entity.setCurrentDetail(deadline_info.currentDetail);
-        entity.setWorkerDetail(deadline_info.workerDetail);
-        entity.setBuyerDetail(deadline_info.buyerDetail);
-
         const current = new google_protobuf_timestamp_pb.Timestamp()
         current.fromDate(deadline_info.currentDate)
         entity.setCurrentDate(current)
@@ -294,6 +291,15 @@ class ContractService {
         const buyer = new google_protobuf_timestamp_pb.Timestamp()
         buyer.fromDate(deadline_info.buyerDate)
         entity.setBuyerDate(buyer)
+
+        let i = 0
+        for (const [_, item] of Object.entries(deadline_info.itemsList)) {
+            const itemNub = new ItemNub()
+            itemNub.setId(item.id)
+            itemNub.setName(item.name)
+            entity.addItems(itemNub, i)
+            i++
+        }
 
         return entity
     }  

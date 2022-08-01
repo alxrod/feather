@@ -18,17 +18,16 @@ message DeadlineEntity {
     bool awaiting_approval = 12;
     string proposer_id = 13;
     
-    string current_detail = 3;
     float current_payout = 4;
     google.protobuf.Timestamp current_date = 5;
 
-    string worker_detail = 6;
     float worker_payout = 7;
     google.protobuf.Timestamp worker_date = 8;
 
-    string buyer_detail = 9;
     float buyer_payout = 10;
     google.protobuf.Timestamp buyer_date = 11;
+
+    repeated ItemNub items = 14;
 
 }
 
@@ -85,6 +84,11 @@ message ItemEntity {
     string contract_id = 2;
     string name = 4;
     repeated ItemChunk body = 3;
+}
+
+message ItemNub {
+    string id = 1;
+    string name = 2;
 }
 
 message ItemChunk {

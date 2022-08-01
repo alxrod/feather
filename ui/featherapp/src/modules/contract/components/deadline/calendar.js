@@ -28,8 +28,6 @@ const Calendar = (props) => {
 
   useEffect( () => {
     if (props.deadline !== undefined) {
-      console.log("Changed the deadline to")
-      console.log(props.deadline)
       if (props.role == BUYER_TYPE) {
         setYourDate(props.deadline.buyer.date)
         setPartnerDate(props.deadline.worker.date)
@@ -44,9 +42,6 @@ const Calendar = (props) => {
     if (yourDate !== undefined) {
       setYear(yourDate.getFullYear())
       setMonth(yourDate.getMonth())
-
-      console.log("Updating selected date")
-      console.log(yourDate)
       
       setSelMonth(yourDate.getMonth())
       setSelYear(yourDate.getFullYear())
@@ -90,12 +85,12 @@ const Calendar = (props) => {
       let prev = props.deadlines[props.deadline.idx - 1]
       if (props.role === WORKER_TYPE) {
         if (prev.worker.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return
         }
       } else if (props.role === BUYER_TYPE) {
         if (prev.buyer.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return
         }
       }
@@ -105,12 +100,12 @@ const Calendar = (props) => {
       let next = props.deadlines[props.deadline.idx + 1]
       if (props.role === WORKER_TYPE) {
         if (next.worker.date < newDate) {
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return
         }
       } else if (props.role === BUYER_TYPE) {
         if (next.buyer.date < newDate) {
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return
         }
       }

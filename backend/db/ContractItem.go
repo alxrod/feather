@@ -47,6 +47,16 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 	return proto
 }
 
+func (ci *ContractItem) NubProto() *comms.ItemNub {
+	proto := &comms.ItemNub{}
+	if ci == nil {
+		return proto
+	}
+	proto.Id = ci.Id.Hex()
+	proto.Name = ci.Name
+	return proto
+}
+
 const (
 	CHUNK_UNEDITED = 0
 	CHUNK_ADDED    = 1

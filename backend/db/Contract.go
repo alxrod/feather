@@ -291,7 +291,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	contractDeadlines := make([]*Deadline, len(req.Deadlines))
 	deadline_ids := make([]primitive.ObjectID, len(req.Deadlines))
 	for idx, deadline := range req.Deadlines {
-		res, err := DeadlineInsert(deadline, user.Id, contract.Id, database)
+		res, err := DeadlineInsert(deadline, user.Id, contract.Id, contract.Items, database)
 		if err != nil {
 			return nil, err
 		}

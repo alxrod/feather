@@ -21,17 +21,17 @@ type Deadline struct {
 	AwaitingApproval bool               `bson:"awaiting_approval"`
 	ProposerId       primitive.ObjectID `bson:"proposer_id"`
 
-	CurrentDetail string    `bson:"current_detail"`
 	CurrentPayout float32   `bson:"current_payout"`
 	CurrentDate   time.Time `bson:"current_date"`
 
-	WorkerDetail string    `bson:"worker_detail"`
 	WorkerPayout float32   `bson:"worker_payout"`
 	WorkerDate   time.Time `bson:"worker_date"`
 
-	BuyerDetail string    `bson:"buyer_detail"`
 	BuyerPayout float32   `bson:"buyer_payout"`
 	BuyerDate   time.Time `bson:"buyer_date"`
+
+	Items   []*ContractItem      `bson:"-"`
+	ItemIds []primitive.ObjectID `bson:"item_ids"`
 }
 
 func (d *Deadline) Proto() *comms.DeadlineEntity {
@@ -44,10 +44,6 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	proto.AwaitingApproval = d.AwaitingApproval
 	proto.ProposerId = d.ProposerId.Hex()
 
-	proto.CurrentDetail = d.CurrentDetail
-	proto.WorkerDetail = d.WorkerDetail
-	proto.BuyerDetail = d.BuyerDetail
-
 	proto.CurrentPayout = d.CurrentPayout
 	proto.WorkerPayout = d.WorkerPayout
 	proto.BuyerPayout = d.BuyerPayout
@@ -56,18 +52,20 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	proto.WorkerDate = timestamppb.New(d.WorkerDate)
 	proto.BuyerDate = timestamppb.New(d.BuyerDate)
 
+	item_nubs := make([]*comms.ItemNub, len(d.ItemIds))
+	for idx, item := range d.Items {
+		item_nubs[idx] = item.NubProto()
+	}
+	proto.Items = item_nubs
+
 	return proto
 }
 
-func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, database *mongo.Database) (*Deadline, error) {
+func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {
 	deadline := &Deadline{
 		ContractId:       contract_id,
 		AwaitingApproval: proto.AwaitingApproval,
 		ProposerId:       user_id,
-
-		CurrentDetail: proto.CurrentDetail,
-		WorkerDetail:  proto.WorkerDetail,
-		BuyerDetail:   proto.BuyerDetail,
 
 		CurrentPayout: proto.CurrentPayout,
 		WorkerPayout:  proto.WorkerPayout,
@@ -76,6 +74,38 @@ func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.
 		CurrentDate: proto.CurrentDate.AsTime(),
 		WorkerDate:  proto.WorkerDate.AsTime(),
 		BuyerDate:   proto.BuyerDate.AsTime(),
+	}
+
+	deadline.ItemIds = make([]primitive.ObjectID, len(proto.Items))
+	deadline.Items = make([]*ContractItem, len(proto.Items))
+	for idx, nub := range proto.Items {
+		item_id, err := primitive.ObjectIDFromHex(nub.Id)
+		var item *ContractItem
+		if err != nil {
+			log.Printf("Proto Item Name: %s", nub.Name)
+			found := false
+			for _, it := range contract_items {
+				log.Printf("Item Name: %s", it.Name)
+				if it.Name == nub.Name {
+					item = it
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Println(color.Ize(color.Red, fmt.Sprintf("Invalid item id for deadline creation")))
+				return nil, err
+			}
+
+		} else {
+			item, err = ContractItemById(item_id, database.Collection(ITEM_COL))
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		deadline.Items[idx] = item
+		deadline.ItemIds[idx] = item.Id
 	}
 
 	res, err := database.Collection(DEADLINE_COL).InsertOne(context.TODO(), deadline)
@@ -101,6 +131,14 @@ func DeadlineById(deadline_id primitive.ObjectID, database *mongo.Database) (*De
 	if err = database.Collection(DEADLINE_COL).FindOne(context.TODO(), filter).Decode(&deadline); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("Deadline Not Found")
+	}
+	deadline.Items = make([]*ContractItem, len(deadline.ItemIds))
+	for idx, id := range deadline.ItemIds {
+		item, err := ContractItemById(id, database.Collection(ITEM_COL))
+		if err != nil {
+			return nil, err
+		}
+		deadline.Items[idx] = item
 	}
 	return deadline, nil
 }

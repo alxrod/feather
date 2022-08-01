@@ -17,7 +17,6 @@ const CalendarTime = (props) => {
 
   useEffect( () => {
     if (props.deadline !== undefined) {
-      console.log("Calendar Time updating the deadline")
       let datetime = props.deadline.current.date
       if (props.role === WORKER_TYPE) {
         datetime = props.deadline.worker.date
@@ -25,7 +24,6 @@ const CalendarTime = (props) => {
       if (props.role == BUYER_TYPE) {
         datetime = props.deadline.buyer.date
       }
-      console.log(datetime)
       setYourDate(datetime)
 
       const hour_24 = datetime.getHours()
@@ -74,11 +72,7 @@ const CalendarTime = (props) => {
       hour_24 += 12
     }
     let newDate = yourDate
-    console.log("What broke")
-    console.log(yourDate)
     newDate.setHours(hour_24)
-
-    console.log(newDate)
     
     if (!timeCheck(newDate)) {
       return
@@ -132,12 +126,12 @@ const CalendarTime = (props) => {
       let prev = props.deadlines[props.deadline.idx - 1]
       if (props.role === WORKER_TYPE) {
         if (prev.worker.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return false
         }
       } else if (props.role === BUYER_TYPE) {
         if (prev.buyer.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + (props.deadline.id-1)))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return false
         }
       }
@@ -147,15 +141,12 @@ const CalendarTime = (props) => {
       let next = props.deadlines[props.deadline.idx + 1]
       if (props.role === WORKER_TYPE) {
         if (next.worker.date < newDate) {
-          console.log("Compare")
-          console.log(next.worker.date)
-          console.log(newDate)
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return false
         }
       } else if (props.role === BUYER_TYPE) {
         if (next.buyer.date < newDate) {
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + (props.deadline.id+1)))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return false
         }
       }

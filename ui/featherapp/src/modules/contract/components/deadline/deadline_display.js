@@ -17,7 +17,6 @@ const DeadlineDisplay = (props) => {
 
   useEffect(() => {
     if (props.deadlines !== undefined) {
-      console.log("Loading deadlines into display")
       const sortedDeadlines = props.deadlines
       const now = new Date()
       for (let i = 0; i < sortedDeadlines.length; i++) {
@@ -34,16 +33,12 @@ const DeadlineDisplay = (props) => {
           sortedDeadlines[i].status = "future"
         }
       }
-      console.log("Sorted Deadlines:")
-      console.log(sortedDeadlines)
       setFormatedDeadlines(sortedDeadlines)
       toggleUpdateFlag(!updateFlag)
     }
   }, [props.deadlines, props.reloadFlag])
 
   const handleDeadlineClick = (idx) => {
-    console.log("Selecting")
-    console.log(idx)
     if (props.setSelected) {
       props.setSelected(idx)
     }
@@ -63,7 +58,7 @@ const DeadlineDisplay = (props) => {
                   <>
                     <Tooltip 
                       style="light" 
-                      content={"Deadline "+deadline.id+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
+                      content={"Deadline "+(deadline.idx+1)+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
                     >
                       <p
                         href="#"
@@ -102,7 +97,7 @@ const DeadlineDisplay = (props) => {
                   <>
                     <Tooltip 
                       style="light" 
-                      content={"Deadline "+deadline.id+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
+                      content={"Deadline "+(deadline.idx+1)+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
                     >
                       <p
                         href="#"

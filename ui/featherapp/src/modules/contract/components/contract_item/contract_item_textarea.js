@@ -297,50 +297,24 @@ const ContractTextArea = (props) => {
   
 
   return (
-    <div className="flex items-start space-x-4">
-      <div className="min-w-0 flex-1">
-        <form action="#">
-          <div className="border-b border-gray-200 focus-within:border-indigo-600">
+    <div className={"flex flex-col items-start space-x-4" + (props.embedded && " grow")}>
+      <div className="grow w-full">
+          <div 
+            className={"h-full focus-within:border-indigo-600" + (props.embedded ? " rounded-lg border border-gray-200 p-4" : " border-b")}
+            onClick={() => contentEditable.current.focus()}
+          >
             <label htmlFor="comment" className="sr-only">
               Add your comment
             </label>
             <ContentEditable
-              rows={4}
               innerRef={contentEditable}
-              className="block focus:outline-none w-full border-0 border-b border-transparent p-0 pb-2 resize-none focus:ring-0 focus:border-indigo-600 sm:text-sm"
+              className="block focus:outline-none w-full border-0 border-b border-transparent p-0 pb-2 resize-none sm:text-sm"
               html={contentState} // innerHTML of the editable div
               disabled={props.disabled}       // use true to disable editing
               onChange={handleChange} // handle innerHTML change
               tagName='article' // Use a custom HTML tag (uses a div by default)
             />
           </div>
-          <div className="pt-2 flex justify-end">
-            <div className="flex items-center space-x-5">
-              <div className="flow-root">
-                <button
-                  type="button"
-                  className="-m-2 w-10 h-10 rounded-full inline-flex items-center justify-center text-gray-400 hover:text-gray-500"
-                >
-                    <div className="flex justify-center items-center">
-                        <div className="absolute top-0 right-0 mr-2 mt-2">
-                        </div>
-                    </div>
-                </button>
-              </div>
-              <div className="flow-root">
-                
-              </div>
-            </div>
-            {!props.disabled && isSaving && (
-              <div className="flex flex-row">
-                <p className="text-gray-600 mr-2">
-                  Saving...
-                </p>
-                <Loading size={5}/>
-              </div>
-            )}
-          </div>
-        </form>
       </div>
       <div id={'contract_item_textarea'} 
           className="flex flex-row justify-end"
