@@ -16,8 +16,6 @@ const ContractItem = (props) => {
   })
   useEffect(() => {
     if (props.contract_info.default !== true) {
-      console.log("Setting contract info")
-      console.log(props.contract_info)
       const new_info = props.contract_info
       
       // Conversion:

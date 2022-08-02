@@ -11,7 +11,12 @@ import {
     ChatLabel,
 
 } from "../proto/communication/chat_pb";
-import { CONTRACT_UPDATE_PRICE, CONTRACT_SEND_EDIT } from "../reducers/contract.reducer"
+import { 
+    CONTRACT_UPDATE_PRICE, 
+    CONTRACT_SEND_EDIT,
+    CONTRACT_UPDATE_PAYOUT,
+    CONTRACT_DEADLINE_RELOAD,
+} from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
@@ -28,11 +33,12 @@ export const labelTypes = {
 }
 
 export const msgMethods = {
-    COMMENT: 0,
-    ITEM: 1,
-    DEADLINE: 2,
-    PRICE: 3,
-    REVISION: 4,
+    COMMENT:   0,
+	ITEM:      1,
+	DATE:      2,
+	PAYOUT:    5,
+	PRICE:     3,
+	REVISION:  4,
 }
 
 export const editTypes = {
@@ -149,37 +155,70 @@ class ChatService {
 
 const parseMessage = (msg, role, this_user_id, dispatch) => {
     if (msg.method === msgMethods.PRICE) {
-        if (msg.body.type === editTypes.SUGGEST) {
-            dispatch({
-                type: CONTRACT_SEND_EDIT,
-            })
-            const newPrice = {
-                proposerId: msg.user.id,
-                current: msg.body.oldVersion,
-                awaitingApproval: !msg.body.resolved,
-                buyer: msg.body.oldVersion,
-                worker: msg.body.oldVersion,
-            }
-            if (this_user_id === msg.user.id) {
-                if (role === WORKER_TYPE) {
-                    newPrice.worker = msg.body.newVersion
-                } else {
-                    newPrice.buyer = msg.body.newVersion
-                }   
-            } else if (this_user_id !== msg.user.id) {
-                if (role === WORKER_TYPE) {
-                    newPrice.buyer = msg.body.newVersion
-                } else {
-                    newPrice.worker = msg.body.newVersion
-                }   
-            }
-            console.log("Suggestion new price:")
-            console.log(newPrice)
-            dispatch({
-                type: CONTRACT_UPDATE_PRICE,
-                payload: newPrice,
-            })
+        dispatch({
+            type: CONTRACT_SEND_EDIT,
+        })
+        const newPrice = {
+            proposerId: msg.user.id,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
         }
+        if (this_user_id === msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newPrice.worker = msg.body.newVersion
+            } else {
+                newPrice.buyer = msg.body.newVersion
+            }   
+        } else if (this_user_id !== msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newPrice.buyer = msg.body.newVersion
+            } else {
+                newPrice.worker = msg.body.newVersion
+            }   
+        }
+        console.log("Suggestion new price:")
+        console.log(newPrice)
+        dispatch({
+            type: CONTRACT_UPDATE_PRICE,
+            payload: newPrice,
+        })
+    } else if (msg.method === msgMethods.PAYOUT) {
+        console.log("Received payout message")
+        console.log(msg)
+
+        const newPayout = {
+            proposerId: msg.user.id,
+            deadlineId: msg.body.deadlineId,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
+        }
+        if (this_user_id === msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newPayout.worker = msg.body.newVersion
+            } else {
+                newPayout.buyer = msg.body.newVersion
+            }   
+        } else if (this_user_id !== msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newPayout.buyer = msg.body.newVersion
+            } else {
+                newPayout.worker = msg.body.newVersion
+            }   
+        }
+        console.log("Suggestion new payout:")
+        console.log(newPayout)
+        dispatch({
+            type: CONTRACT_UPDATE_PAYOUT,
+            payload: newPayout,
+        })
+        dispatch({
+            type: CONTRACT_DEADLINE_RELOAD,
+        })
+
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CONTRACT_SEND_EDIT,
@@ -188,6 +227,7 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CHAT_MESSAGE_UPDATE,
             payload: msg.body,
         })
+        
     }
 }
 
@@ -196,8 +236,10 @@ const reformatBody = (msg) => {
         msg.body = msg.commentBody
     } else if (msg.method === msgMethods.ITEM) {
         msg.body = msg.itemBody
-    } else if (msg.method === msgMethods.DEADLINE) {
-        msg.body = msg.deadlineBody
+    } else if (msg.method === msgMethods.PAYOUT) {
+        msg.body = msg.payoutBody
+    } else if (msg.method === msgMethods.DATE) {
+        msg.body = msg.dateBody
     } else if (msg.method === msgMethods.PRICE) {
         msg.body = msg.priceBody
     } else if (msg.method === msgMethods.REVISION) {

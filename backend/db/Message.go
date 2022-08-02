@@ -19,7 +19,8 @@ import (
 const (
 	COMMENT  = 0
 	ITEM     = 1
-	DEADLINE = 2
+	DATE     = 2
+	PAYOUT   = 5
 	PRICE    = 3
 	REVISION = 4
 )
@@ -84,8 +85,12 @@ type MessageBody struct {
 	ItemOld string `bson:"item_old,omitempty"`
 
 	// Deadline messages
-	DeadlineNew time.Time `bson:"deadline_new,omitempty"`
-	DeadlineOld time.Time `bson:"deadline_old,omitempty"`
+	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
+
+	PayoutNew float32   `bson:"payout_new,omitempty"`
+	PayoutOld float32   `bson:"payout_old,omitempty"`
+	DateNew   time.Time `bson:"date_new,omitempty"`
+	DateOld   time.Time `bson:"date_old,omitempty"`
 
 	// Price messages
 	PriceNew float32 `bson:"price_new,omitempty"`
@@ -103,11 +108,27 @@ func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
 	}
 }
 
-func (b *MessageBody) DeadlineProto() *comms.ChatMessage_DeadlineBody {
-	return &comms.ChatMessage_DeadlineBody{
-		DeadlineBody: &comms.DeadlineMsgBody{
-			NewVersion:   timestamppb.New(b.DeadlineNew),
-			OldVersion:   timestamppb.New(b.DeadlineOld),
+func (b *MessageBody) DateProto() *comms.ChatMessage_DateBody {
+	return &comms.ChatMessage_DateBody{
+		DateBody: &comms.DateMsgBody{
+			DeadlineId:   b.DeadlineId.Hex(),
+			NewVersion:   timestamppb.New(b.DateNew),
+			OldVersion:   timestamppb.New(b.DateOld),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
+
+func (b *MessageBody) PayoutProto() *comms.ChatMessage_PayoutBody {
+	return &comms.ChatMessage_PayoutBody{
+		PayoutBody: &comms.PayoutMsgBody{
+			DeadlineId:   b.DeadlineId.Hex(),
+			NewVersion:   b.PayoutNew,
+			OldVersion:   b.PayoutOld,
 			Resolved:     b.Resolved,
 			ResolStatus:  b.ResolStatus,
 			WorkerStatus: b.WorkerStatus,
@@ -174,8 +195,10 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.CommentProto()
 	} else if m.Method == ITEM {
 		proto.Body = m.Body.ItemProto()
-	} else if m.Method == DEADLINE {
-		proto.Body = m.Body.DeadlineProto()
+	} else if m.Method == PAYOUT {
+		proto.Body = m.Body.PayoutProto()
+	} else if m.Method == DATE {
+		proto.Body = m.Body.DateProto()
 	} else if m.Method == PRICE {
 		proto.Body = m.Body.PriceProto()
 	} else if m.Method == REVISION {
@@ -301,10 +324,16 @@ func ParseBody(req *comms.SendRequest) *MessageBody {
 		body.Type = req.GetItemBody().Type
 		body.ItemNew = req.GetItemBody().NewVersion
 		body.ItemOld = req.GetItemBody().OldVersion
-	} else if req.Method == DEADLINE {
-		body.Type = req.GetDeadlineBody().Type
-		body.DeadlineNew = req.GetDeadlineBody().NewVersion.AsTime()
-		body.DeadlineOld = req.GetDeadlineBody().OldVersion.AsTime()
+	} else if req.Method == PAYOUT {
+		body.Type = req.GetPayoutBody().Type
+		body.DeadlineId, _ = primitive.ObjectIDFromHex(req.GetPayoutBody().DeadlineId)
+		body.PayoutNew = req.GetPayoutBody().NewVersion
+		body.PayoutOld = req.GetPayoutBody().OldVersion
+	} else if req.Method == DATE {
+		body.Type = req.GetPayoutBody().Type
+		body.DeadlineId, _ = primitive.ObjectIDFromHex(req.GetPayoutBody().DeadlineId)
+		body.DateNew = req.GetDateBody().NewVersion.AsTime()
+		body.DateOld = req.GetDateBody().OldVersion.AsTime()
 	} else if req.Method == PRICE {
 		body.Type = req.GetPriceBody().Type
 		body.PriceNew = req.GetPriceBody().NewVersion

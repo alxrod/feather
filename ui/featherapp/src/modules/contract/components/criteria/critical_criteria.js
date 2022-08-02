@@ -14,7 +14,6 @@ const CriticalCriteria = (props) => {
 
   const contract = useMemo(() => {
     if (props.selectedId !== "") {
-      console.log(props.selectedId)
       return props.cachedContracts[props.selectedId]
     } else {
       return genEmptyContract()

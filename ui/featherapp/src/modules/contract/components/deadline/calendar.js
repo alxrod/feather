@@ -69,6 +69,7 @@ const Calendar = (props) => {
           newDeadline.buyer.date = newDate
         }
         props.editDeadline(newDeadline)
+        props.saveDeadlines()
       } 
     }
     

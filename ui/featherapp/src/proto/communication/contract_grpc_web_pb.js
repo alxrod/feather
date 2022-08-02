@@ -506,16 +506,16 @@ proto.main.ContractPromiseClient.prototype.reactPrice =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.main.ContractSuggestDeadline,
+ *   !proto.main.ContractSuggestDate,
  *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
   '/main.Contract/SuggestDate',
   grpc.web.MethodType.UNARY,
-  proto.main.ContractSuggestDeadline,
+  proto.main.ContractSuggestDate,
   proto.main.ContactEditResponse,
   /**
-   * @param {!proto.main.ContractSuggestDeadline} request
+   * @param {!proto.main.ContractSuggestDate} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -526,7 +526,7 @@ const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.main.ContractSuggestDeadline} request The
+ * @param {!proto.main.ContractSuggestDate} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -547,7 +547,7 @@ proto.main.ContractClient.prototype.suggestDate =
 
 
 /**
- * @param {!proto.main.ContractSuggestDeadline} request The
+ * @param {!proto.main.ContractSuggestDate} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -567,16 +567,16 @@ proto.main.ContractPromiseClient.prototype.suggestDate =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.main.ContractReactDeadline,
+ *   !proto.main.ContractReactDate,
  *   !proto.main.ContactEditResponse>}
  */
 const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
   '/main.Contract/ReactDate',
   grpc.web.MethodType.UNARY,
-  proto.main.ContractReactDeadline,
+  proto.main.ContractReactDate,
   proto.main.ContactEditResponse,
   /**
-   * @param {!proto.main.ContractReactDeadline} request
+   * @param {!proto.main.ContractReactDate} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -587,7 +587,7 @@ const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.main.ContractReactDeadline} request The
+ * @param {!proto.main.ContractReactDate} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -608,7 +608,7 @@ proto.main.ContractClient.prototype.reactDate =
 
 
 /**
- * @param {!proto.main.ContractReactDeadline} request The
+ * @param {!proto.main.ContractReactDate} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -622,6 +622,128 @@ proto.main.ContractPromiseClient.prototype.reactDate =
       request,
       metadata || {},
       methodDescriptor_Contract_ReactDate);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractSuggestPayout,
+ *   !proto.main.ContactEditResponse>}
+ */
+const methodDescriptor_Contract_SuggestPayout = new grpc.web.MethodDescriptor(
+  '/main.Contract/SuggestPayout',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractSuggestPayout,
+  proto.main.ContactEditResponse,
+  /**
+   * @param {!proto.main.ContractSuggestPayout} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContactEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractSuggestPayout} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.suggestPayout =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/SuggestPayout',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestPayout,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractSuggestPayout} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContactEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.suggestPayout =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/SuggestPayout',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestPayout);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractReactPayout,
+ *   !proto.main.ContactEditResponse>}
+ */
+const methodDescriptor_Contract_ReactPayout = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactPayout',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractReactPayout,
+  proto.main.ContactEditResponse,
+  /**
+   * @param {!proto.main.ContractReactPayout} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContactEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractReactPayout} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContactEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContactEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.reactPayout =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ReactPayout',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactPayout,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractReactPayout} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContactEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.reactPayout =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ReactPayout',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactPayout);
 };
 
 

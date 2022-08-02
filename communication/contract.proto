@@ -15,19 +15,22 @@ message PriceEntity {
 message DeadlineEntity {
     string id = 1;
     string contract_id = 2;
-    bool awaiting_approval = 12;
-    string proposer_id = 13;
     
     float current_payout = 4;
-    google.protobuf.Timestamp current_date = 5;
-
     float worker_payout = 7;
-    google.protobuf.Timestamp worker_date = 8;
-
     float buyer_payout = 10;
+    bool payout_awaiting_approval = 12;
+    string payout_proposer_id = 13;
+
+
+    google.protobuf.Timestamp current_date = 5;
+    google.protobuf.Timestamp worker_date = 8;
     google.protobuf.Timestamp buyer_date = 11;
+    bool date_awaiting_approval = 16;
+    string date_proposer_id = 17;
 
     repeated ItemNub items = 14;
+    bool items_awaiting_approval = 15;
 
 }
 
@@ -127,15 +130,30 @@ message ContractReactPrice {
     string message_id = 4;
     uint32 status = 3;
 }
-message ContractSuggestDeadline {
+message ContractSuggestDate {
     string user_id = 1;
     string contract_id = 2;
-    google.protobuf.Timestamp new_deadline = 3;
+    string deadline_id = 4;
+    google.protobuf.Timestamp new_date = 3;
 }
-message ContractReactDeadline {
+message ContractSuggestPayout {
+    string user_id = 1;
+    string contract_id = 2;
+    string deadline_id = 4;
+    float new_payout = 3;
+}
+message ContractReactDate {
     string user_id = 1;
     string contract_id = 2;
     string message_id = 4;
+    string deadline_id = 5;
+    uint32 status = 3;
+}
+message ContractReactPayout {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string deadline_id = 5;
     uint32 status = 3;
 }
 
@@ -185,8 +203,11 @@ service Contract {
 
     rpc SuggestPrice(ContractSuggestPrice) returns (ContactEditResponse) {};
     rpc ReactPrice(ContractReactPrice) returns (ContactEditResponse) {};
-    rpc SuggestDate(ContractSuggestDeadline) returns (ContactEditResponse) {};
-    rpc ReactDate(ContractReactDeadline) returns (ContactEditResponse) {};
+
+    rpc SuggestDate(ContractSuggestDate) returns (ContactEditResponse) {};
+    rpc ReactDate(ContractReactDate) returns (ContactEditResponse) {};
+    rpc SuggestPayout(ContractSuggestPayout) returns (ContactEditResponse) {};
+    rpc ReactPayout(ContractReactPayout) returns (ContactEditResponse) {};
 
     rpc AddItem(ContractAddItemRequest) returns (ContractAddItemResponse) {};
     rpc DeleteItem(ContractDelItemRequest) returns (ContractResponse) {};

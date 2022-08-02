@@ -16,22 +16,24 @@ import (
 )
 
 type Deadline struct {
-	Id               primitive.ObjectID `bson:"_id,omitempty"`
-	ContractId       primitive.ObjectID `bson:"contract_id"`
-	AwaitingApproval bool               `bson:"awaiting_approval"`
-	ProposerId       primitive.ObjectID `bson:"proposer_id"`
+	Id         primitive.ObjectID `bson:"_id,omitempty"`
+	ContractId primitive.ObjectID `bson:"contract_id"`
 
-	CurrentPayout float32   `bson:"current_payout"`
-	CurrentDate   time.Time `bson:"current_date"`
+	CurrentPayout          float32            `bson:"current_payout"`
+	WorkerPayout           float32            `bson:"worker_payout"`
+	BuyerPayout            float32            `bson:"buyer_payout"`
+	PayoutProposerId       primitive.ObjectID `bson:"payout_proposer_id"`
+	PayoutAwaitingApproval bool               `bson:"payout_awaiting_approval"`
 
-	WorkerPayout float32   `bson:"worker_payout"`
-	WorkerDate   time.Time `bson:"worker_date"`
+	CurrentDate          time.Time          `bson:"current_date"`
+	WorkerDate           time.Time          `bson:"worker_date"`
+	BuyerDate            time.Time          `bson:"buyer_date"`
+	DateProposerId       primitive.ObjectID `bson:"date_proposer_id"`
+	DateAwaitingApproval bool               `bson:"date_awaiting_approval"`
 
-	BuyerPayout float32   `bson:"buyer_payout"`
-	BuyerDate   time.Time `bson:"buyer_date"`
-
-	Items   []*ContractItem      `bson:"-"`
-	ItemIds []primitive.ObjectID `bson:"item_ids"`
+	Items                 []*ContractItem      `bson:"-"`
+	ItemIds               []primitive.ObjectID `bson:"item_ids"`
+	ItemsAwaitingApproval bool                 `bson:"items_awaiting_approval"`
 }
 
 func (d *Deadline) Proto() *comms.DeadlineEntity {
@@ -41,39 +43,52 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	}
 	proto.Id = d.Id.Hex()
 	proto.ContractId = d.ContractId.Hex()
-	proto.AwaitingApproval = d.AwaitingApproval
-	proto.ProposerId = d.ProposerId.Hex()
+
+	if !d.PayoutProposerId.IsZero() {
+		proto.PayoutProposerId = d.PayoutProposerId.Hex()
+	}
+	if !d.DateProposerId.IsZero() {
+		proto.DateProposerId = d.DateProposerId.Hex()
+	}
 
 	proto.CurrentPayout = d.CurrentPayout
 	proto.WorkerPayout = d.WorkerPayout
 	proto.BuyerPayout = d.BuyerPayout
+	proto.PayoutAwaitingApproval = d.PayoutAwaitingApproval
 
 	proto.CurrentDate = timestamppb.New(d.CurrentDate)
 	proto.WorkerDate = timestamppb.New(d.WorkerDate)
 	proto.BuyerDate = timestamppb.New(d.BuyerDate)
+	proto.DateAwaitingApproval = d.DateAwaitingApproval
 
 	item_nubs := make([]*comms.ItemNub, len(d.ItemIds))
 	for idx, item := range d.Items {
 		item_nubs[idx] = item.NubProto()
 	}
 	proto.Items = item_nubs
+	proto.ItemsAwaitingApproval = d.ItemsAwaitingApproval
 
 	return proto
 }
 
 func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {
 	deadline := &Deadline{
-		ContractId:       contract_id,
-		AwaitingApproval: proto.AwaitingApproval,
-		ProposerId:       user_id,
+		ContractId: contract_id,
 
-		CurrentPayout: proto.CurrentPayout,
-		WorkerPayout:  proto.WorkerPayout,
-		BuyerPayout:   proto.BuyerPayout,
+		DateProposerId:   user_id,
+		PayoutProposerId: user_id,
 
-		CurrentDate: proto.CurrentDate.AsTime(),
-		WorkerDate:  proto.WorkerDate.AsTime(),
-		BuyerDate:   proto.BuyerDate.AsTime(),
+		CurrentPayout:          proto.CurrentPayout,
+		WorkerPayout:           proto.WorkerPayout,
+		BuyerPayout:            proto.BuyerPayout,
+		PayoutAwaitingApproval: false,
+
+		CurrentDate:          proto.CurrentDate.AsTime(),
+		WorkerDate:           proto.WorkerDate.AsTime(),
+		BuyerDate:            proto.BuyerDate.AsTime(),
+		DateAwaitingApproval: false,
+
+		ItemsAwaitingApproval: false,
 	}
 
 	deadline.ItemIds = make([]primitive.ObjectID, len(proto.Items))
@@ -141,4 +156,33 @@ func DeadlineById(deadline_id primitive.ObjectID, database *mongo.Database) (*De
 		deadline.Items[idx] = item
 	}
 	return deadline, nil
+}
+
+func DeadlineReplace(deadline *Deadline, database *mongo.Database) error {
+	filter := bson.D{{"_id", deadline.Id}}
+	_, err := database.Collection(DEADLINE_COL).ReplaceOne(context.TODO(), filter, deadline)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeadlineSuggestPayout(deadline *Deadline, user *User, userRole uint32, newPayout float32, database *mongo.Database) error {
+	if deadline.PayoutAwaitingApproval == true {
+		return errors.New(fmt.Sprintf("The deadline %s is already awaiting approval of a different payout change", deadline.Id.Hex()))
+	}
+
+	deadline.PayoutProposerId = user.Id
+	deadline.PayoutAwaitingApproval = true
+	if userRole == WORKER {
+		deadline.WorkerPayout = newPayout
+	} else if userRole == BUYER {
+		deadline.BuyerPayout = newPayout
+	}
+
+	err := DeadlineReplace(deadline, database)
+	if err != nil {
+		return err
+	}
+	return nil
 }

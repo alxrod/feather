@@ -2533,6 +2533,15 @@ input:checked + .toggle-bg {
 .pl-2\.5 {
   padding-left: 0.625rem;
 }
+.pl-20 {
+  padding-left: 5rem;
+}
+.pl-40 {
+  padding-left: 10rem;
+}
+.pl-28 {
+  padding-left: 7rem;
+}
 .text-left {
   text-align: left;
 }

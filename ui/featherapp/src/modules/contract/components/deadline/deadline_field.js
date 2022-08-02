@@ -4,27 +4,28 @@ import CalendarModal from "./calendar_modal";
 import DeadlineDisplay from "./deadline_display"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
+import { exportDeadlines, importDeadlines, genTestSet, genEmptyDeadline, addWeeks } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {suggestPayout} from "../../../../reducers/contract.reducer"
 
 const DeadlineField = (props) => {
 
   // Visuals:
   const [errorVisibility, setErrorVisibility] = useState("hidden")
   const [reloadFlag, toggleReloadFlag] = useState(false)
-
   const [localDeadlines, setLocalDeadlines] = useState([])
 
   useEffect( () => {
-    if (props.deadlines && props.deadlines.length >= 2) {
+    if (props.createMode === true && props.deadlines && props.deadlines.length >= 2) {
       const newDeadlines = importDeadlines(props.deadlines)
       setLocalDeadlines(newDeadlines)
-    }  else if (props.createMode !== true && props.selectedId !== "") {
+    } else if (props.createMode !== true && props.selectedId !== "") {
+      console.log("TRIGGING A DEALDINE RELOAD")
       const contract = props.cachedContracts[props.selectedId]
       const importedDeadlines = importDeadlines(contract.deadlinesList)
       setLocalDeadlines(importedDeadlines)
     }
-  }, [props.deadlines, props.selectedId])
+  }, [props.deadlines, props.selectedId, props.reloadDeadlines])
 
   const saveDeadlines = () => {
     props.changeDeadlines(exportDeadlines(localDeadlines))
@@ -92,8 +93,10 @@ const DeadlineField = (props) => {
     return deadlines
   }
 
-
-  // list.sort((a, b) => (a.color > b.color) ? 1 : -1)
+  const submitPayout = (deadline_id, new_payout) => {
+    console.log('Trying to submit payment for ' + deadline_id + " at " + new_payout)
+    props.suggestPayout(props.selectedId, deadline_id, new_payout)
+  }
 
   useEffect(() => {
     if (props.selectedId !== "") {
@@ -126,10 +129,6 @@ const DeadlineField = (props) => {
           >
             Edit
           </button>
-          {/* <div className={"flex items-center " + errorVisibility}>
-            <ExclamationCircleIcon className="h-4 w-4 text-red" aria-hidden="true" />
-            <p className="text-red text-sm">You must enter a valid date</p>
-          </div> */}
         </div>
       </div>
       <CalendarModal 
@@ -149,6 +148,8 @@ const DeadlineField = (props) => {
         addContractItem={props.addContractItem}
         contractItemsChanged={props.contractItemsChanged}
         changeItem={props.changeItem}
+        
+        submitPayout={submitPayout}
       />
     </>
   )
@@ -158,165 +159,14 @@ const DeadlineField = (props) => {
 const mapStateToProps = ({ user, contract, chat }) => ({
   selectedId: contract.selectedId,
   cachedContracts: contract.cachedContracts,
+  reloadDeadlines: contract.reloadDeadlinesFlag,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  suggestPayout
 }, dispatch)
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(DeadlineField)
-
-
-
-// Setup
-const importDeadlines = (incoming) => {
-  let outgoing = []
-  for (let i = 0; i < incoming.length; i++) {
-    let in_d = incoming[i]
-    let out_d = {
-      idx: i,
-      current: {
-        payout: in_d.currentPayout,
-        date: in_d.currentDate,
-      },
-      worker: {
-        payout: in_d.workerPayout,
-        date: in_d.workerDate,
-      },
-      buyer: {
-        payout: in_d.buyerPayout,
-        date: in_d.buyerDate,
-      },
-      awaitingApproval: in_d.awaitingApproval,
-      proposerId: in_d.proposerId,
-      itemsList: in_d.itemsList
-    }
-    if (in_d.id === "") {
-      out_d.id = (i+1).toString()
-    } else {
-      out_d.id = in_d.id
-    }
-    if (i === incoming.length - 1) {
-      out_d.lastDeadline = true
-    } else {
-      out_d.lastDeadline = false
-    }
-    outgoing.push(out_d)
-  }
-  return outgoing
-}
-
-const exportDeadlines = (incoming) => {
-  let outgoing = []
-  for (let i = 0; i < incoming.length; i++) {
-    let in_d = incoming[i]
-    let out_d = {
-      idx: i,
-      awaitingApproval: in_d.awaitingApproval,
-      proposerId: in_d.proposerId,
-
-      currentPayout: in_d.current.payout,
-      currentDate: in_d.current.date,
-
-      workerPayout: in_d.worker.payout,
-      workerDate: in_d.worker.date,
-
-      buyerPayout: in_d.buyer.payout,
-      buyerDate: in_d.buyer.date,
-
-      itemsList: in_d.itemsList,
-      
-    }
-    out_d.id = in_d.id
-    outgoing.push(out_d)
-  }
-  return outgoing
-}
-
-
-const genTestSet = () => {
-  return [
-    {
-      id: 1,
-      idx: 0,
-      current: {
-        payout: 0,
-        date: new Date(),
-      },
-      worker: {
-        payout: 0,
-        date: new Date(),
-      },
-      buyer: {
-        payout: 0,
-        date: new Date(),
-      },
-      awaitingApproval: false,
-      proposerId: ""
-    },
-    {
-      id: 2,
-      idx: 1,
-      current: {
-        payout: 15,
-        date: addWeeks(new Date(), 1),
-      },
-      worker: {
-        payout: 15,
-        date: addWeeks(new Date(), 1),
-      },
-      buyer: {
-        payout: 15,
-        date: addWeeks(new Date(), 1),
-      },
-      awaitingApproval: false,
-      proposerId: ""
-    },
-    {
-      id: 3,
-      idx: 2,
-      current: {
-        payout: 85,
-        date: addWeeks(new Date(), 2),
-      },
-      worker: {
-        payout: 85,
-        date: addWeeks(new Date(), 2),
-      },
-      buyer: {
-        payout: 85,
-        date: addWeeks(new Date(), 2),
-      },
-      awaitingApproval: false,
-      proposerId: ""
-    }
-  ]
-}
-
-const genEmptyDeadline = (date) => {
-  return {
-    current: {
-      payout: 0,
-      date: date,
-    },
-    worker: {
-      payout: 0,
-      date: date,
-    },
-    buyer: {
-      payout: 0,
-      date: date,
-    },
-    awaitingApproval: false,
-    proposerId: "",
-    itemsList: [],
-  }
-}
-
-const addWeeks = (date, weeks) => {
-  let newDate = new Date(date.getTime());
-  newDate.setDate(newDate.getDate() + weeks * 7)
-  return newDate
-}

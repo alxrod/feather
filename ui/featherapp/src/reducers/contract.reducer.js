@@ -11,9 +11,11 @@ export const CONTRACT_CLAIM = "contract/contract/CLAIM"
 export const CONTRACT_START_PULL = "contract/contract/START_PULL"
 export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 
-export const CONTRACT_SEND_EDIT = "contract/contract/SEND_SEND"
-export const CONTRACT_UPDATE_PRICE = "contract/price/SET_AWAITING"
+export const CONTRACT_SEND_EDIT = "contract/contract/SEND_EDIT"
+export const CONTRACT_UPDATE_PRICE = "contract/price/UPDATE_PRICE"
+export const CONTRACT_UPDATE_PAYOUT = "contract/deadline/UPDATE_PAYOUT"
 
+export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
 
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
@@ -30,6 +32,8 @@ const initialState = {
     awaitingEdit: false,
     loadingContract: false,
     contractClaimed: false,
+    
+    reloadDeadlinesFlag: false,
     
 }
 
@@ -120,6 +124,26 @@ export default (state = initialState, action) => {
                                     )
                                 )
             }
+
+        case CONTRACT_UPDATE_PAYOUT:
+            return {
+                ...state,
+                awaitingEdit: false,
+                cachedContracts: editContract(
+                                    state.cachedContracts, 
+                                    editDeadlinePayout(
+                                        state.cachedContracts[state.selectedId], 
+                                        action.payload
+                                    )
+                                )
+            }
+        
+        case CONTRACT_DEADLINE_RELOAD:
+            console.log("TRIGGERING A RELOAD IN THE REUCER")
+            return {
+                ...state,
+                reloadDeadlinesFlag: !state.reloadDeadlinesFlag,
+            }
         default:
             return state
     }
@@ -135,6 +159,27 @@ const editPrice = (contract, price) =>{
     return contract
 }
 
+const editDeadlinePayout = (contract, payout_info) => {
+    let deadline = {}
+    let i=0;
+    while (i<contract.deadlinesList.length) {
+        if (contract.deadlinesList[i].id === payout_info.deadlineId) {
+            deadline = contract.deadlinesList[i]
+            break
+        }
+        i++
+    }
+
+    deadline.payoutAwaitingApproval = payout_info.awaitingApproval
+    deadline.workerPayout = payout_info.worker
+    deadline.buyerPayout = payout_info.buyer
+    deadline.currentPayout = payout_info.current
+    deadline.payoutProposerId = payout_info.proposerId
+
+    contract.deadlinesList[i] = deadline
+    return contract
+    
+}
 export const clearSelected = () => {
     return dispatch => {
         dispatch({
@@ -322,7 +367,72 @@ export const reactPrice = (contract_id, message_id, status) => {
             );
         });
     }
+}
 
+export const suggestPayout = (contract_id, deadline_id, new_payout) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.suggestPayout(creds.access_token, creds.user_id, contract_id, deadline_id, new_payout).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
+
+export const reactPayout = (contract_id, message_id, deadline_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactPayout(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
 }
 
 export const claimContract = (contract_id, password) => {
@@ -380,6 +490,38 @@ export const updateLocalPrice = (msg) => {
         dispatch({
             type: CONTRACT_UPDATE_PRICE,
             payload: newPrice,
+        });
+        dispatch({
+            type: CONTRACT_DEADLINE_RELOAD,
+        });
+    }
+}
+
+export const updateLocalPayout = (msg) => {
+    return dispatch => {
+        const newPayout = {
+            proposerId: msg.user.id,
+            deadlineId: msg.body.deadlineId,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
+        }
+
+        if (msg.body.resolStatus === resolTypes.APPROVED) {
+            newPayout.current = msg.body.newVersion
+            newPayout.buyer = msg.body.newVersion
+            newPayout.worker = msg.body.newVersion
+        }
+
+        console.log("New payout:")
+        console.log(newPayout)
+        dispatch({
+            type: CONTRACT_UPDATE_PAYOUT,
+            payload: newPayout,
+        });
+        dispatch({
+            type: CONTRACT_DEADLINE_RELOAD,
         });
     }
 }

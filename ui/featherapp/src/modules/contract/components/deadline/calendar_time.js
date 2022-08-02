@@ -15,6 +15,8 @@ const CalendarTime = (props) => {
   const [minute, setMinute] = useState("00")
   const [period, setPeriod] = useState("AM")
 
+  const [timeoutId, setTimeoutId] = useState(-1)
+
   useEffect( () => {
     if (props.deadline !== undefined) {
       let datetime = props.deadline.current.date
@@ -63,6 +65,15 @@ const CalendarTime = (props) => {
       }
       props.editDeadline(newDeadline)
       setMinute(e.target.value)
+
+      if (timeoutId !== -1) {
+        clearTimeout(timeoutId);
+      }
+      const id = setTimeout(function(){
+        props.saveDeadlines()
+        setTimeoutId(-1)
+      },1000)
+      setTimeoutId(id)
     }
   }
 
@@ -85,6 +96,7 @@ const CalendarTime = (props) => {
     }
     setHour(e.target.value)
     props.editDeadline(newDeadline)
+    props.saveDeadlines()
   }
 
   const handlePeriodChange = (e) => {
@@ -113,6 +125,7 @@ const CalendarTime = (props) => {
       newDeadline.buyer.date = newDate
     }
     props.editDeadline(newDeadline)
+    props.saveDeadlines()
     setPeriod(period)
   }
 

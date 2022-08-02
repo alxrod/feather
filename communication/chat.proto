@@ -16,7 +16,8 @@ message ChatMessage {
     uint32 method = 4;
     oneof body {
         CommentMsgBody comment_body = 6;
-        DeadlineMsgBody deadline_body = 7;
+        PayoutMsgBody payout_body = 7;
+        DateMsgBody date_body = 11;
         PriceMsgBody price_body = 8;
         ItemMsgBody item_body = 9;
         RevMsgBody rev_body = 10;
@@ -42,7 +43,8 @@ message ItemMsgBody {
     uint32 buyer_status = 6;
 }
 
-message DeadlineMsgBody {
+message DateMsgBody {
+    string deadline_id = 8;
     google.protobuf.Timestamp new_version = 1;
     google.protobuf.Timestamp old_version = 2;
     uint32 type = 3;
@@ -51,6 +53,17 @@ message DeadlineMsgBody {
     uint32 worker_status = 5;
     uint32 buyer_status = 6;
 }
+message PayoutMsgBody {
+    string deadline_id = 8;
+    float new_version = 1;
+    float old_version = 2;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+
 message PriceMsgBody {
     float new_version = 1;
     float old_version = 2;
@@ -85,7 +98,8 @@ message SendRequest {
     uint32 method = 10;
     oneof body {
         CommentMsgBody comment_body = 6;
-        DeadlineMsgBody deadline_body = 7;
+        PayoutMsgBody payout_body = 7;
+        DateMsgBody date_body = 11;
         PriceMsgBody price_body = 8;
         ItemMsgBody item_body = 9;
     }  

@@ -20,17 +20,9 @@ const CalendarModal = (props) => {
   const cancelButtonRef = useRef(null)
   const [errorMsg, setErrorMsg] = useState("")
   const [selected, setSelected] = useState(0)
-  useEffect(() => {
-    console.log("changed selected to " + selected)
-  }, [selected])
-
-  useEffect( () => {
-    console.log("Deadlines changed")
-  }, [props.deadlines])
 
   const handleAddDeadline = () => {
     const newSelect = props.addDeadline()
-    console.log("Selected: " + newSelect)
     setSelected(newSelect)
   }
 
@@ -126,8 +118,11 @@ const CalendarModal = (props) => {
                               deadline={props.deadlines[selected]} 
                               deadlines={props.deadlines} 
                               editDeadline={props.editDeadline}
+                              saveDeadlines={props.saveDeadlines}
                               setErrorMsg={setErrorMsg}
                               createMode={props.createMode}
+
+                              submitPayout={props.submitPayout}
                             />
                             <DeadlineItems
                               contractItems={props.contractItems}
@@ -143,6 +138,7 @@ const CalendarModal = (props) => {
                             <Calendar 
                               role={props.role} 
                               editDeadline={props.editDeadline}
+                              saveDeadlines={props.saveDeadlines}
                               deadlines = {props.deadlines}
                               deadline={props.deadlines[selected]}
                               setErrorMsg={setErrorMsg}
@@ -152,6 +148,7 @@ const CalendarModal = (props) => {
                             <CalendarTime
                               role={props.role} 
                               editDeadline={props.editDeadline}
+                              saveDeadlines={props.saveDeadlines}
                               deadlines = {props.deadlines}
                               deadline={props.deadlines[selected]}
                               setErrorMsg={setErrorMsg}
@@ -164,9 +161,9 @@ const CalendarModal = (props) => {
                           <button
                             type="submit"
                             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            onClick={props.saveDeadlines}
+                            onClick={() => {props.setOpen(false)}}
                           >
-                            Save
+                            Done
                           </button>
                         </div>
                       </div>
