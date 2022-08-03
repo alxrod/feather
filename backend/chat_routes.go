@@ -139,6 +139,10 @@ func (s *BackServer) SendPayoutMessage(
 		log.Println("Sender is buyer")
 		body.BuyerStatus = db.DECISION_YES
 	}
+	label_name := deadline.Name
+	if label_name == "" {
+		label_name = "Deadline"
+	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
 		User:      user,
@@ -147,9 +151,10 @@ func (s *BackServer) SendPayoutMessage(
 		Method:    db.PAYOUT,
 
 		Body: body,
+
 		Label: &db.LabelNub{
 			Type: db.LABEL_DEADLINE,
-			Name: "Deadline",
+			Name: label_name,
 		},
 	}
 

@@ -15,6 +15,7 @@ message PriceEntity {
 message DeadlineEntity {
     string id = 1;
     string contract_id = 2;
+    string name = 18;
     
     float current_payout = 4;
     float worker_payout = 7;

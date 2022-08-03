@@ -886,6 +886,7 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 18, ""),
     currentPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     workerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
     buyerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
@@ -942,6 +943,10 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setContractId(value);
+      break;
+    case 18:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readFloat());
@@ -1035,6 +1040,13 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      18,
       f
     );
   }
@@ -1162,6 +1174,24 @@ proto.main.DeadlineEntity.prototype.getContractId = function() {
  */
 proto.main.DeadlineEntity.prototype.setContractId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string name = 18;
+ * @return {string}
+ */
+proto.main.DeadlineEntity.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 18, value);
 };
 
 

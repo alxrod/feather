@@ -109,6 +109,7 @@ const PayoutMsg = (props) => {
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="flex items-center">
+                <p className="text-gray-400 text-lg mr-2">{"Payout"}</p>
                 {(props.msg.body.resolStatus === resolTypes.CANCELED || props.msg.body.resolStatus === resolTypes.REJECTED) ? (
                     <>
                     {(yourStatus === decisionTypes.NO) ? (

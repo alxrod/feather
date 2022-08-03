@@ -18,6 +18,7 @@ import (
 type Deadline struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	ContractId primitive.ObjectID `bson:"contract_id"`
+	Name       string             `bson:"name"`
 
 	CurrentPayout          float32            `bson:"current_payout"`
 	WorkerPayout           float32            `bson:"worker_payout"`
@@ -43,6 +44,7 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	}
 	proto.Id = d.Id.Hex()
 	proto.ContractId = d.ContractId.Hex()
+	proto.Name = d.Name
 
 	if !d.PayoutProposerId.IsZero() {
 		proto.PayoutProposerId = d.PayoutProposerId.Hex()
@@ -74,6 +76,7 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {
 	deadline := &Deadline{
 		ContractId: contract_id,
+		Name:       proto.Name,
 
 		DateProposerId:   user_id,
 		PayoutProposerId: user_id,
