@@ -42,25 +42,30 @@ const CalendarBundle = (props) => {
       } else {
         setDecisionMode(false)
       }
-      props.editDeadline(new_deadline)
+      
     }
     
   }
 
   useEffect( () => {
-    if (origDeadline === null && props.deadline) {
-      setOrigDeadline(props.deadline)
+    if (props.deadline) {
+      if (origDeadline === null) {
+        setOrigDeadline(props.deadline)
+      }
+      setDecisionMode(false)
     }
   }, [props.deadline])
 
   return (
     <div className="w-full h-full">
-      {decisionMode && (
-        <div className="w-full flex flex-wrap justify-between">
-          <p className="text-gray-500">Commit your date change</p>
-          <DecideButton/>
-        </div>
-      )}
+      <div className="w-full h-6">
+        {decisionMode && (
+            <div className="w-full flex flex-wrap justify-between">
+              <p className="text-gray-500">Commit your date change</p>
+              <DecideButton/>
+            </div>   
+        )}
+      </div>
       
       <Calendar 
         role={props.role} 
@@ -70,6 +75,7 @@ const CalendarBundle = (props) => {
         setErrorMsg={props.setErrorMsg}
         reloadFlag={props.reloadFlag}
         createMode={props.createMode}
+        decisionMode={decisionMode}
       />
       <CalendarTime
         role={props.role} 

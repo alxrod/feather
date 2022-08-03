@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import React, {useState, useEffect} from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
+import {Tooltip} from "flowbite-react"
 
 import * as dayjs from 'dayjs'
 var isoWeek = require('dayjs/plugin/isoWeek')
@@ -23,17 +24,54 @@ const Calendar = (props) => {
   const [selMonth, setSelMonth] = useState(datePlaceholder.getMonth())
   const [selYear, setSelYear] = useState(datePlaceholder.getFullYear())
   const [selDay, setSelDay] = useState(datePlaceholder.getDate())
+
+  const [origMonth, setOrigMonth] = useState(datePlaceholder.getMonth())
+  const [origYear, setOrigYear] = useState(datePlaceholder.getFullYear())
+  const [origDay, setOrigDay] = useState(datePlaceholder.getDate())
+
+  const [nextMonth, setNextMonth] = useState(datePlaceholder.getMonth())
+  const [nextYear, setNextYear] = useState(datePlaceholder.getFullYear())
+  const [nextDay, setNextDay] = useState(datePlaceholder.getDate())
+  const [nextExists, toggleNextExists] = useState(false)
+
+  const [setOrig, toggleSetOrig] = useState(false)
+
   const [yourDate, setYourDate] = useState(datePlaceholder)
   const [partnerDate, setPartnerDate] = useState(datePlaceholder)
 
   useEffect( () => {
+    console.log("REFRESH HAPPENING!")
     if (props.deadline !== undefined) {
+      console.log(props.deadline)
+      let yD = props.deadline.current.date
+      let pD = props.deadline.current.date
+
       if (props.role == BUYER_TYPE) {
-        setYourDate(props.deadline.buyer.date)
-        setPartnerDate(props.deadline.worker.date)
+        yD = props.deadline.buyer.date
+        pD = props.deadline.worker.date
       } else {
-        setYourDate(props.deadline.worker.date)
-        setPartnerDate(props.deadline.buyer.date)
+        yD = props.deadline.worker.date
+        pD = props.deadline.buyer.date
+      }
+
+      setYourDate(yD)
+      setPartnerDate(pD)
+
+      setOrigMonth(props.deadline.current.date.getMonth())
+      setOrigYear(props.deadline.current.date.getFullYear())
+      setOrigDay(props.deadline.current.date.getDate())
+
+      let takeNext = false
+      for (let i = 0; i < props.deadlines.length; i++) {
+        if (takeNext === true) {
+          setNextMonth(props.deadlines[i].current.date.getMonth())
+          setNextYear(props.deadlines[i].current.date.getFullYear())
+          setNextDay(props.deadlines[i].current.date.getDate())
+          toggleNextExists(true)
+        }
+        if (props.deadlines[i].id == props.deadline.id) {
+          takeNext = true
+        }
       }
     }
   }, [props.deadline, props.reloadFlag])
@@ -58,7 +96,7 @@ const Calendar = (props) => {
         selDay !== oldDate.getDate()) {
         
         const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
-        const newDeadline = props.deadline
+        const newDeadline = structuredClone(props.deadline)
         if (props.createMode === true) {
           newDeadline.worker.date = newDate
           newDeadline.current.date = newDate
@@ -164,6 +202,42 @@ const Calendar = (props) => {
     return false
   }
 
+  const isOrig = (day) => {
+    if (props.decisionMode === true) {
+      if (month === origMonth) {
+        if (day === origDay) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  const isNext = (day) => {
+    if (nextExists) {
+      if (month === nextMonth) {
+        if (day === nextDay) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  const genTooltip = (day) => {
+    if (isSel(day) && props.decisionMode == false) {
+      return ("Deadline " + (props.deadline.idx+1))
+    } else if (isSel(day) && props.decisionMode) {
+      return ("New Deadline " + (props.deadline.idx+1))
+    }
+    if (isOrig(day) && !isSel(day)) {
+      return ("Old Deadline " + (props.deadline.idx+1))
+    }
+    if (isNext(day)) {
+      return ("Deadline " + (props.deadline.idx+2))
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center mt-5">
@@ -200,22 +274,57 @@ const Calendar = (props) => {
         {daysInMonth.map((day, dayIdx) => {
           return (
           <div key={day} className={classNames(dayIdx > 6 && 'border-t border-gray-200', 'py-2')}>
-            <button
-              type="button"
-              className={classNames(
-                isSel(day+1) && 'text-white',
-                !isSel(day+1) && isDay(day+1) && 'text-indigo-600',
-                !isSel(day+1) && !isDay(day+1) && 'text-gray-900',
-                isSel(day+1) && isDay(day+1) && 'bg-indigo-600',
-                isSel(day+1) && !isDay(day+1) && 'bg-gray-500',
-                !isSel(day+1) && 'hover:bg-gray-200',
-                (isSel(day+1) || isDay(day+1)) && 'font-semibold',
-                'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
-              )}
-              onClick={handleDateChange}
-            >
-              {day + 1}
-            </button>
+            {(isSel(day+1) || isOrig(day+1) || isNext(day+1)) ? (
+              <div className="w-full flex justify-center">
+              <Tooltip 
+                style="light" 
+                content={genTooltip(day+1)}
+              >
+                <button
+                  type="button"
+                  className={classNames(
+                    isSel(day+1) && 'text-white',
+                    isSel(day+1) && isDay(day+1) && 'bg-indigo-600',
+
+                    isSel(day+1) && !isDay(day+1) && (!props.decisionMode) && 'bg-gray-500',
+                    isSel(day+1) && !isDay(day+1) && (props.decisionMode) && 'bg-green',
+
+                    !isSel(day+1) && isOrig(day+1) && 'text-white',
+                    !isSel(day+1) && isOrig(day+1) && 'bg-gray-400',
+
+                    !isSel(day+1) && isNext(day+1) && 'text-white',
+                    !isSel(day+1) && isNext(day+1) && 'bg-indigo-600 hover:bg-indigo-800',
+
+
+                    !isSel(day+1) && isDay(day+1) && 'text-indigo-600',
+                    !isSel(day+1) && !isDay(day+1) && 'text-gray-900',   
+
+                    !isSel(day+1) && !isNext(day+1) && 'hover:bg-gray-200',
+
+                    (isSel(day+1) || isDay(day+1)) && 'font-semibold',
+                    'mx-auto flex h-8 w-8 items-center justify-center rounded-full'
+                  )}
+                  onClick={handleDateChange}
+                >
+                  {day + 1}
+                </button>
+              </Tooltip>
+              </div>
+            ) : (
+              <button
+                  type="button"
+                  className={classNames( 
+                    isDay(day+1) && 'text-indigo-600',
+                    !isDay(day+1) && 'text-gray-900',   
+                    (isDay(day+1)) && 'font-semibold',
+                    'hover:bg-gray-200 mx-auto flex h-8 w-8 items-center justify-center rounded-full'
+                  )}
+                  onClick={handleDateChange}
+                >
+                  {day + 1}
+              </button>
+            )}
+            
           </div>
         )}
         )}

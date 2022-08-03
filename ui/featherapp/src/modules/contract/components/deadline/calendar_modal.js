@@ -91,9 +91,11 @@ const CalendarModal = (props) => {
                           <p className="mt-1 text-sm text-gray-600">
                             Choose a deadline from the <b className="text-indigo-600">dropdown</b> or click on it on the <b className="text-indigo-600">timeline</b>
                           </p>
-                          <p className="mt-1 text-sm text-red">
-                            {errorMsg}
-                          </p>
+                          <div className="h-4">
+                            <p className="mt-1 text-sm text-red">
+                              {errorMsg}
+                            </p>
+                          </div>
                         </div>
                         <div className="sm:my-auto">
                           <button
