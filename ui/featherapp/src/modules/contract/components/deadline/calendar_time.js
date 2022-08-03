@@ -31,7 +31,12 @@ const CalendarTime = (props) => {
       const hour_24 = datetime.getHours()
       let hour = hour_24
       let period = "AM"
-      if (hour_24 > 12) {
+      if (hour_24 === 0) {
+        hour = 12
+        period = "AM"
+      } else if (hour_24 == 12) {
+        period = "PM"
+      } else if (hour_24 > 12) {
         hour -= 12
         period = "PM"
       }
@@ -63,25 +68,19 @@ const CalendarTime = (props) => {
       } else if (props.role === BUYER_TYPE) {
         newDeadline.buyer.date = newDate
       }
-      props.editDeadline(newDeadline)
-      setMinute(e.target.value)
-
-      if (timeoutId !== -1) {
-        clearTimeout(timeoutId);
-      }
-      const id = setTimeout(function(){
-        props.saveDeadlines()
-        setTimeoutId(-1)
-      },1000)
-      setTimeoutId(id)
+      props.changeDate(newDeadline)
     }
   }
 
   const handleHourChange = (e) => {
     let hour_24 = parseInt(e.target.value)
-    if (period === "PM") {
+    console.log("Hour change to: " + hour_24)
+    if (period === "PM" && hour_24 < 12) {
       hour_24 += 12
+    } else if (hour_24 === 12 && period === "AM") {
+      hour_24 = 0
     }
+    console.log("Now the hour is" +hour_24)
     let newDate = yourDate
     newDate.setHours(hour_24)
     
@@ -95,16 +94,17 @@ const CalendarTime = (props) => {
       newDeadline.buyer.date = newDate
     }
     setHour(e.target.value)
-    props.editDeadline(newDeadline)
-    props.saveDeadlines()
+    props.changeDate(newDeadline)
   }
 
   const handlePeriodChange = (e) => {
     const period = e.target.value
     
     let hour_24 = parseInt(hour)
-    if (period === "PM") {
+    if (period === "PM" && hour_24 < 12) {
       hour_24 += 12
+    } else if (hour_24 === 12 && period === "AM") {
+      hour_24 = 0
     }
     let newDate = yourDate
     newDate.setHours(hour_24)
@@ -124,8 +124,8 @@ const CalendarTime = (props) => {
     } else if (props.role === BUYER_TYPE) {
       newDeadline.buyer.date = newDate
     }
-    props.editDeadline(newDeadline)
-    props.saveDeadlines()
+    props.changeDate(newDeadline)
+
     setPeriod(period)
   }
 

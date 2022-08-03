@@ -1,4 +1,4 @@
-import { CurrencyDollarIcon } from '@heroicons/react/outline'
+import { CalendarIcon } from '@heroicons/react/outline'
 import ChatLabel from "../chat_label"
 import {editTypes, decisionTypes} from "../../../../../services/chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
@@ -54,18 +54,12 @@ const PayoutMsg = (props) => {
 
   useEffect( () => {
     if (props.msg) {
-      console.log("New Status for " + props.msg.id)
-      console.log(props.msg)
       if (props.yourRole == WORKER_TYPE) {
         setStatus(props.msg.body.workerStatus)
         setOtherStatus(props.msg.body.buyerStatus)
-        // console.log("You: "+props.msg.body.workerStatus)
-        // console.log("Par: "+props.msg.body.buyerStatus)
       } else if (props.yourRole == BUYER_TYPE) {
         setStatus(props.msg.body.buyerStatus)
         setOtherStatus(props.msg.body.workerStatus)
-        // console.log("You: "+props.msg.body.buyerStatus)
-        // console.log("Par: "+props.msg.body.workerStatus)
       } 
     }
     
@@ -92,7 +86,7 @@ const PayoutMsg = (props) => {
         />
 
         <span className="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-          <CurrencyDollarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </span>
       </div>
       <div className="min-w-0 flex-1">

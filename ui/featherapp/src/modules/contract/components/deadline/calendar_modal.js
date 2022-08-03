@@ -3,8 +3,7 @@ import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 
 
-import Calendar from "./calendar"
-import CalendarTime from "./calendar_time"
+import CalendarBundle from "./calendar_bundle"
 import DeadlineDisplay from "./deadline_display"
 import DeadlineSummary from "./deadline_summary"
 import DeadlineChoice from "./deadline_choice"
@@ -135,17 +134,7 @@ const CalendarModal = (props) => {
                             />
                           </div>
                           <div className="p-2 flex flex-col ml-1">
-                            <Calendar 
-                              role={props.role} 
-                              editDeadline={props.editDeadline}
-                              saveDeadlines={props.saveDeadlines}
-                              deadlines = {props.deadlines}
-                              deadline={props.deadlines[selected]}
-                              setErrorMsg={setErrorMsg}
-                              reloadFlag={props.reloadFlag}
-                              createMode={props.createMode}
-                            />
-                            <CalendarTime
+                            <CalendarBundle
                               role={props.role} 
                               editDeadline={props.editDeadline}
                               saveDeadlines={props.saveDeadlines}

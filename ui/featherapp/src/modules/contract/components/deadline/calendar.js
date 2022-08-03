@@ -68,8 +68,7 @@ const Calendar = (props) => {
         } else if (props.role === BUYER_TYPE) {
           newDeadline.buyer.date = newDate
         }
-        props.editDeadline(newDeadline)
-        props.saveDeadlines()
+        props.changeDate(newDeadline)
       } 
     }
     
@@ -86,12 +85,12 @@ const Calendar = (props) => {
       let prev = props.deadlines[props.deadline.idx - 1]
       if (props.role === WORKER_TYPE) {
         if (prev.worker.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + (prev.idx+1)))
           return
         }
       } else if (props.role === BUYER_TYPE) {
         if (prev.buyer.date > newDate) {
-          props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
+          props.setErrorMsg(("You can't make this deadline due before Deadline " + (prev.idx+1)))
           return
         }
       }
@@ -101,12 +100,12 @@ const Calendar = (props) => {
       let next = props.deadlines[props.deadline.idx + 1]
       if (props.role === WORKER_TYPE) {
         if (next.worker.date < newDate) {
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + (next.idx+1)))
           return
         }
       } else if (props.role === BUYER_TYPE) {
         if (next.buyer.date < newDate) {
-          props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
+          props.setErrorMsg(("You can't make this deadline due after Deadline " + (next.idx+1)))
           return
         }
       }

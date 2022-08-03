@@ -18,7 +18,6 @@ const DeadlineItems = (props) => {
     const updateNubs = (new_nubs) => {
       setDeadlineItemNubs(new_nubs)
       if (props.editDeadline) {
-        console.log("UPDATING DEADLINE NUBS")
         const newDeadline = props.deadline
         newDeadline.itemsList = new_nubs
         props.editDeadline(newDeadline)
@@ -34,10 +33,7 @@ const DeadlineItems = (props) => {
     })
 
     useEffect( () => {
-      console.log("REFRESHING CONTRACT ITEMS")
       if (props.contractItems && Object.keys(props.contractItems).length > 0) {
-        console.log("Checking for new contract items")
-        console.log(deadlineItemNubs)
         const contractItems = []
         const deadlineItems = []
 
@@ -63,21 +59,11 @@ const DeadlineItems = (props) => {
           toggleShowAdd(false)
         } else {
           toggleShowAdd(true)
-          console.log("Contained: " + contained + " Total: " + Object.keys(props.contractItems).length)
         }
-
-        console.log("Finished check ")
-        console.log(deadlineItems)
       }
     }, [Object.keys(props.contractItems).length, props.contractItemsChanged, deadlineItemNubs.length])
 
-    useEffect( () => {
-      console.log("Items changed")
-    }, [props.contractItemsChanged])
-
     useEffect(() => {
-      console.log("DEADLINE")
-      console.log(props.deadline)
       if (props.deadline) {
         const newDeadlineNubs = []
         for (let i = 0; i < props.deadline.itemsList.length; i++) {
@@ -155,7 +141,6 @@ const DeadlineItems = (props) => {
       for (let i = 0; i < contractItems.length; i++) {
         if (contractItems[i].id === id) {
           setSelectedItem(contractItems[i])
-          console.log(contractItems[i])
         }
       }
     }

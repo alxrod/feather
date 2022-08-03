@@ -105,8 +105,6 @@ const DeadlineSummary = (props) => {
     useEffect(() => {
       
       if (props.deadline) {
-        console.log("DEADLINE")
-        console.log(props.deadline)
 
         if (props.deadline.payoutAwaitingApproval !== true) {
           if (props.role === WORKER_TYPE) {
@@ -155,7 +153,6 @@ const DeadlineSummary = (props) => {
     useEffect(() => {
       let total = 0.0
       for (let i = 0; i < props.deadline.idx; i++) {
-        console.log(props.deadlines[i])
         if (props.role === WORKER_TYPE) {
           total += props.deadlines[i].worker.payout
         } else if (props.role === BUYER_TYPE) {

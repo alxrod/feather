@@ -109,9 +109,7 @@ const DeadlineField = (props) => {
   const [openModal, setOpenModal] = useState(false)
 
   const handleOpenCalendar = (e) => {
-    console.log("Openign")
     if (props.disabled !== true) {
-      console.log("Opening")
       setOpenModal(true)
     }
   }
