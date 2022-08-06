@@ -189,3 +189,23 @@ func DeadlineSuggestPayout(deadline *Deadline, user *User, userRole uint32, newP
 	}
 	return nil
 }
+
+func DeadlineSuggestDate(deadline *Deadline, user *User, userRole uint32, newDate time.Time, database *mongo.Database) error {
+	if deadline.PayoutAwaitingApproval == true {
+		return errors.New(fmt.Sprintf("The deadline %s is already awaiting approval of a different payout change", deadline.Id.Hex()))
+	}
+
+	deadline.DateProposerId = user.Id
+	deadline.DateAwaitingApproval = true
+	if userRole == WORKER {
+		deadline.WorkerDate = newDate
+	} else if userRole == BUYER {
+		deadline.BuyerDate = newDate
+	}
+
+	err := DeadlineReplace(deadline, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}

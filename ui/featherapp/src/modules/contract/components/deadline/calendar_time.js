@@ -4,6 +4,9 @@ import { connect } from 'react-redux'
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 
+import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
+import { LockClosedIcon } from '@heroicons/react/solid'
+
 function isNumeric(num){
   return !isNaN(num)
 }
@@ -45,7 +48,7 @@ const CalendarTime = (props) => {
       setMinute(datetime.getMinutes())
       setPeriod(period)
     }
-  }, [props.deadline, props.reloadFlag])
+  }, [props.deadline, props.reloadFlag, props.calRefresh])
 
   const handleMinuteChange = (e) => {
     let minutes = parseInt(e.target.value)
@@ -171,8 +174,16 @@ const CalendarTime = (props) => {
   return (
     <>
       <div className="flex items-center flex-row justify-end">
-        <div>
-            <p className="text-gray-500 text mt-6 mr-2">Time: </p>
+        <div className="flex items-center">
+            <p className="text-gray-500 text mt-6">Time </p>
+            <span className="mx-1 text-gray-500 mt-6 h-full" id="price-currency">
+              {props.dateLock && (
+                <LockClosedIcon className="w-4 h-4"/>
+              )}
+              {!props.dateLock && (
+                <LockOpenIcon className="w-4 h-4"/>
+              )}
+            </span>
         </div>
         <div className="mr-10">
             <label htmlFor="location" className="block text-sm font-medium text-gray-700">
@@ -181,7 +192,8 @@ const CalendarTime = (props) => {
             <select
                 id="location"
                 name="location"
-                className="mt-1 block w-full pl-3 pr-10 mr-10py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                disabled={props.dateLock}
+                className="cursor-pointer mt-1 block w-full pl-3 pr-10 mr-10py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 value={hour}
                 onChange={handleHourChange}
             >
@@ -204,10 +216,11 @@ const CalendarTime = (props) => {
                 Minutes
             </label>
             <input
+                disabled={props.dateLock}
                 type="text"
                 name="minutes"
                 id="minutes"
-                className="focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md w-12"
+                className="cursor-pointer focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md w-12"
                 value={minute}
                 onChange={handleMinuteChange}
                 aria-describedby="time-minutes"
@@ -220,7 +233,8 @@ const CalendarTime = (props) => {
             <select
                 id="location"
                 name="location"
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                disabled={props.dateLock}
+                className="cursor-pointer mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 value={period}
                 onChange={handlePeriodChange}
             >

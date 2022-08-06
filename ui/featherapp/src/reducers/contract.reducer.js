@@ -435,6 +435,72 @@ export const reactPayout = (contract_id, message_id, deadline_id, status) => {
     }
 }
 
+export const suggestDate = (contract_id, deadline_id, new_date) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.suggestDate(creds.access_token, creds.user_id, contract_id, deadline_id, new_date).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
+
+export const reactDate = (contract_id, message_id, deadline_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactDate(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+}
+
 export const claimContract = (contract_id, password) => {
     return dispatch => {
         return authChecker(true).then(creds => {

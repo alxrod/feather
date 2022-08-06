@@ -166,6 +166,61 @@ func (s *BackServer) SendPayoutMessage(
 	return nil
 }
 
+func (s *BackServer) SendDateMessage(
+	contract *db.Contract,
+	user *db.User,
+	deadline *db.Deadline,
+	newDate time.Time,
+	oldDate time.Time,
+	editType uint32) error {
+
+	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
+		return errors.New("You must provide both user and contract with 2 users to change price with")
+	}
+	body := &db.MessageBody{
+		Type:         editType,
+		DateNew:      newDate,
+		DateOld:      oldDate,
+		DeadlineId:   deadline.Id,
+		Resolved:     false,
+		ResolStatus:  db.RESOL_UNDECIDED,
+		WorkerStatus: db.DECISION_UNDECIDED,
+		BuyerStatus:  db.DECISION_UNDECIDED,
+	}
+	if contract.Worker.Id == user.Id {
+		log.Println("Sender is worker")
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer.Id == user.Id {
+		log.Println("Sender is buyer")
+		body.BuyerStatus = db.DECISION_YES
+	}
+	label_name := deadline.Name
+	if label_name == "" {
+		label_name = "Deadline"
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.DATE,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_DEADLINE,
+			Name: label_name,
+		},
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)

@@ -3,6 +3,9 @@ import React, {useState, useEffect} from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
 import {Tooltip} from "flowbite-react"
 
+import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
+import { LockClosedIcon } from '@heroicons/react/solid'
+
 import * as dayjs from 'dayjs'
 var isoWeek = require('dayjs/plugin/isoWeek')
 var isToday = require('dayjs/plugin/isToday')
@@ -74,7 +77,7 @@ const Calendar = (props) => {
         }
       }
     }
-  }, [props.deadline, props.reloadFlag])
+  }, [props.deadline, props.reloadFlag, props.calRefresh])
 
   useEffect( () => {
     if (yourDate !== undefined) {
@@ -86,7 +89,7 @@ const Calendar = (props) => {
       setSelDay(yourDate.getDate())
     }
     
-  }, [yourDate])
+  }, [yourDate, props.calRefresh])
 
   useEffect( () => {
     if (yourDate !== undefined) {
@@ -113,6 +116,9 @@ const Calendar = (props) => {
   }, [selMonth, selYear, selDay])
 
   const handleDateChange = (e) => {
+    if (props.dateLock) {
+      return
+    }
     const newDate = new Date(year, month, parseInt(e.target.innerHTML), yourDate.getHours(), yourDate.getMinutes())
     const now = new Date()
     if (newDate < now) {
@@ -203,7 +209,7 @@ const Calendar = (props) => {
   }
 
   const isOrig = (day) => {
-    if (props.decisionMode === true) {
+    if (props.decisionMode === true || props.dateLock) {
       if (month === origMonth) {
         if (day === origDay) {
           return true
@@ -225,8 +231,10 @@ const Calendar = (props) => {
   }
 
   const genTooltip = (day) => {
-    if (isSel(day) && props.decisionMode == false) {
+    if (isSel(day) && props.decisionMode === false && props.dateLock === false) {
       return ("Deadline " + (props.deadline.idx+1))
+    } else if (isSel(day) && props.dateLock) {
+      return ("Proposed Deadline " + (props.deadline.idx+1))
     } else if (isSel(day) && props.decisionMode) {
       return ("New Deadline " + (props.deadline.idx+1))
     }
@@ -241,8 +249,16 @@ const Calendar = (props) => {
   return (
     <div>
       <div className="flex items-center mt-5">
-        <div className="w-full flex justify-start ml-1">
+        <div className="w-full flex justify-start ml-1 items-center">
             <h2 className="font-semibold text-gray-900">{today.set("month", month).format("MMMM")} {year}</h2>
+            <span className="ml-1 text-gray-900 sm:text-sm" id="price-currency">
+              {props.dateLock && (
+                <LockClosedIcon className="w-5 h-5"/>
+              )}
+              {!props.dateLock && (
+                <LockOpenIcon className="w-5 h-5"/>
+              )}
+            </span>
         </div>
         <button
           type="button"
@@ -286,8 +302,8 @@ const Calendar = (props) => {
                     isSel(day+1) && 'text-white',
                     isSel(day+1) && isDay(day+1) && 'bg-indigo-600',
 
-                    isSel(day+1) && !isDay(day+1) && (!props.decisionMode) && 'bg-gray-500',
-                    isSel(day+1) && !isDay(day+1) && (props.decisionMode) && 'bg-green',
+                    isSel(day+1) && !isDay(day+1) && (!props.decisionMode && !props.dateLock) && 'bg-gray-500',
+                    isSel(day+1) && !isDay(day+1) && (props.decisionMode || props.dateLock) && 'bg-green',
 
                     !isSel(day+1) && isOrig(day+1) && 'text-white',
                     !isSel(day+1) && isOrig(day+1) && 'bg-gray-400',

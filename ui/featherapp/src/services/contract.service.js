@@ -18,9 +18,12 @@ import {
     ContractSuggestPayout,
     ContractSuggestDate,
 
-    ClaimContractRequest,
     ContractReactPrice,
     ContractReactPayout,
+    ContractReactDate,
+
+    ClaimContractRequest,
+    
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -187,6 +190,7 @@ class ContractService {
             });
         });
     }
+
     reactPrice(token, user_id, contract_id, message_id, status) {
         let reactRequest = new ContractReactPrice();
         reactRequest.setUserId(user_id);
@@ -205,7 +209,6 @@ class ContractService {
         });
 
     }
-
 
     suggestPayout(token, user_id, contract_id, deadline_id, new_payout) {
         let suggestRequest = new ContractSuggestPayout();
@@ -243,6 +246,66 @@ class ContractService {
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.reactPayout(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
+            });
+        });
+
+    }
+
+    suggestDate(token, user_id, contract_id, deadline_id, new_date) {
+
+        console.log("Trying to suggest the date")
+        console.log(token)
+        console.log(user_id)
+        console.log(contract_id)
+        console.log(deadline_id)
+        console.log(new_date)
+
+        console.log("Testing suggest date before request")
+        let suggestRequest = new ContractSuggestDate();
+        console.log("Testing suggest date")
+
+        suggestRequest.setUserId(user_id);
+        suggestRequest.setContractId(contract_id);
+        suggestRequest.setDeadlineId(deadline_id);
+        const new_stamp = new google_protobuf_timestamp_pb.Timestamp()
+        new_stamp.fromDate(new_date)
+        suggestRequest.setNewDate(new_stamp);
+
+        console.log("HELLOWOWO!?")
+        console.log("Sending date")
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestDate(suggestRequest, metadata, function(error, response) {
+                console.log("...Received")
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
+    }
+
+    reactDate(token, user_id, contract_id, deadline_id, message_id, status) {
+        let reactRequest = new ContractReactDate();
+        console.log("Reacting to date...");
+        console.log(user_id)
+        console.log(contract_id)
+        console.log(deadline_id)
+        console.log(message_id)
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setDeadlineId(deadline_id);
+        reactRequest.setStatus(status);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactDate(reactRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
