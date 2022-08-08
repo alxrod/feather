@@ -14,6 +14,7 @@ export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 export const CONTRACT_SEND_EDIT = "contract/contract/SEND_EDIT"
 export const CONTRACT_UPDATE_PRICE = "contract/price/UPDATE_PRICE"
 export const CONTRACT_UPDATE_PAYOUT = "contract/deadline/UPDATE_PAYOUT"
+export const CONTRACT_UPDATE_DATE = "contract/deadline/UPDATE_DATE"
 
 export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
 
@@ -138,8 +139,21 @@ export default (state = initialState, action) => {
                                 )
             }
         
+        case CONTRACT_UPDATE_DATE:
+            return {
+                ...state,
+                awaitingEdit: false,
+                cachedContracts: editContract(
+                                    state.cachedContracts, 
+                                    editDeadlineDate(
+                                        state.cachedContracts[state.selectedId], 
+                                        action.payload
+                                    )
+                                )
+            }
+        
         case CONTRACT_DEADLINE_RELOAD:
-            console.log("TRIGGERING A RELOAD IN THE REUCER")
+            console.log("TRIGGERING A RELOAD IN THE REDUCER")
             return {
                 ...state,
                 reloadDeadlinesFlag: !state.reloadDeadlinesFlag,
@@ -177,9 +191,35 @@ const editDeadlinePayout = (contract, payout_info) => {
     deadline.payoutProposerId = payout_info.proposerId
 
     contract.deadlinesList[i] = deadline
+    return contract   
+}
+
+const editDeadlineDate = (contract, date_info) => {
+    console.log("Date edit info is")
+    console.log(date_info)
+    let deadline = {}
+    let i=0;
+    while (i<contract.deadlinesList.length) {
+        if (contract.deadlinesList[i].id === date_info.deadlineId) {
+            deadline = contract.deadlinesList[i]
+            break
+        }
+        i++
+    }
+
+    deadline.dateAwaitingApproval = date_info.awaitingApproval
+    deadline.workerDate = date_info.worker
+    deadline.buyerDate = date_info.buyer
+    deadline.currentDate = date_info.current
+    deadline.dateProposerId = date_info.proposerId
+
+    contract.deadlinesList[i] = deadline
+    console.log("New deadline is")
+    console.log(deadline)
     return contract
     
 }
+
 export const clearSelected = () => {
     return dispatch => {
         dispatch({
@@ -585,6 +625,36 @@ export const updateLocalPayout = (msg) => {
         dispatch({
             type: CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
+        });
+        dispatch({
+            type: CONTRACT_DEADLINE_RELOAD,
+        });
+    }
+}
+
+export const updateLocalDate = (msg) => {
+    return dispatch => {
+        const newDate = {
+            proposerId: msg.user.id,
+            deadlineId: msg.body.deadlineId,
+            current: new Date(msg.body.oldVersion.seconds*1000),
+            awaitingApproval: !msg.body.resolved,
+            buyer: new Date(msg.body.oldVersion.seconds*1000),
+            worker: new Date(msg.body.oldVersion.seconds*1000),
+        }
+    
+        if (msg.body.resolStatus === resolTypes.APPROVED) {
+            newDate.current = new Date(msg.body.newVersion.seconds*1000)
+            newDate.buyer = new Date(msg.body.newVersion.seconds*1000)
+            newDate.worker = new Date(msg.body.newVersion.seconds*1000)
+        }
+    
+        console.log("New date:")
+        console.log(msg)
+        console.log(newDate)
+        dispatch({
+            type: CONTRACT_UPDATE_DATE,
+            payload: newDate,
         });
         dispatch({
             type: CONTRACT_DEADLINE_RELOAD,

@@ -256,17 +256,7 @@ class ContractService {
     }
 
     suggestDate(token, user_id, contract_id, deadline_id, new_date) {
-
-        console.log("Trying to suggest the date")
-        console.log(token)
-        console.log(user_id)
-        console.log(contract_id)
-        console.log(deadline_id)
-        console.log(new_date)
-
-        console.log("Testing suggest date before request")
         let suggestRequest = new ContractSuggestDate();
-        console.log("Testing suggest date")
 
         suggestRequest.setUserId(user_id);
         suggestRequest.setContractId(contract_id);
@@ -275,12 +265,9 @@ class ContractService {
         new_stamp.fromDate(new_date)
         suggestRequest.setNewDate(new_stamp);
 
-        console.log("HELLOWOWO!?")
-        console.log("Sending date")
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.suggestDate(suggestRequest, metadata, function(error, response) {
-                console.log("...Received")
                 if (error) {
                     reject(error)
                 }
@@ -291,11 +278,6 @@ class ContractService {
 
     reactDate(token, user_id, contract_id, deadline_id, message_id, status) {
         let reactRequest = new ContractReactDate();
-        console.log("Reacting to date...");
-        console.log(user_id)
-        console.log(contract_id)
-        console.log(deadline_id)
-        console.log(message_id)
 
         reactRequest.setUserId(user_id);
         reactRequest.setContractId(contract_id);

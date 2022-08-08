@@ -74,7 +74,6 @@ const CalendarBundle = (props) => {
   }
 
   const rejectDate = () => {
-    console.log("Reseting date")
     props.setErrorMsg("")
     props.editDeadline(origDeadline)
     setDecisionMode(false)
@@ -85,8 +84,6 @@ const CalendarBundle = (props) => {
 
   useEffect( () => {
     if (props.deadline) {
-      console.log("Calendar Bundle Detecting Deadline:")
-      console.log(props.deadline)
       if (props.deadline.dateAwaitingApproval) {
         setDateLock(true)
       } else {

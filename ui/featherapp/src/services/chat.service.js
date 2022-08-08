@@ -16,6 +16,8 @@ import {
     CONTRACT_SEND_EDIT,
     CONTRACT_UPDATE_PAYOUT,
     CONTRACT_DEADLINE_RELOAD,
+    CONTRACT_UPDATE_DATE,
+    internalUpdateLocalDate,
 } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -214,6 +216,41 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         dispatch({
             type: CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
+        })
+        dispatch({
+            type: CONTRACT_DEADLINE_RELOAD,
+        })
+
+    } else if (msg.method === msgMethods.DATE) {
+        console.log("Received date message")
+        console.log(msg)
+
+        const newDate = {
+            proposerId: msg.user.id,
+            deadlineId: msg.body.deadlineId,
+            current: new Date(msg.body.oldVersion.seconds*1000),
+            awaitingApproval: !msg.body.resolved,
+            buyer: new Date(msg.body.oldVersion.seconds*1000),
+            worker: new Date(msg.body.oldVersion.seconds*1000),
+        }
+        if (this_user_id === msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newDate.worker = new Date(msg.body.newVersion.seconds*1000)
+            } else {
+                newDate.buyer = new Date(msg.body.newVersion.seconds*1000)
+            }   
+        } else if (this_user_id !== msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newDate.buyer = new Date(msg.body.newVersion.seconds*1000)
+            } else {
+                newDate.worker = new Date(msg.body.newVersion.seconds*1000)
+            }   
+        }
+        console.log("Suggestion new date:")
+        console.log(newDate)
+        dispatch({
+            type: CONTRACT_UPDATE_DATE,
+            payload: newDate,
         })
         dispatch({
             type: CONTRACT_DEADLINE_RELOAD,

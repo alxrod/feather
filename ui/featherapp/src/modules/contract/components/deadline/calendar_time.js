@@ -77,13 +77,11 @@ const CalendarTime = (props) => {
 
   const handleHourChange = (e) => {
     let hour_24 = parseInt(e.target.value)
-    console.log("Hour change to: " + hour_24)
     if (period === "PM" && hour_24 < 12) {
       hour_24 += 12
     } else if (hour_24 === 12 && period === "AM") {
       hour_24 = 0
     }
-    console.log("Now the hour is" +hour_24)
     let newDate = yourDate
     newDate.setHours(hour_24)
     

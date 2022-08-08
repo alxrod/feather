@@ -20,9 +20,11 @@ const DeadlineField = (props) => {
       const newDeadlines = importDeadlines(props.deadlines)
       setLocalDeadlines(newDeadlines)
     } else if (props.createMode !== true && props.selectedId !== "") {
-      console.log("TRIGGING A DEALDINE RELOAD")
+      console.log("TRIGGING A DEADLINE RELOAD")
       const contract = props.cachedContracts[props.selectedId]
       const importedDeadlines = importDeadlines(contract.deadlinesList)
+      console.log("New Imported Deadliens are:")
+      console.log(importedDeadlines)
       setLocalDeadlines(importedDeadlines)
     }
   }, [props.deadlines, props.selectedId, props.reloadDeadlines])
@@ -59,7 +61,6 @@ const DeadlineField = (props) => {
     const lastDeadline = localDeadlines[localDeadlines.length-1]
     const newDate = addWeeks(lastDeadline.current.date,1)
     const new_deadline = genEmptyDeadline(newDate)
-    console.log("New deadline")
     new_deadline.id = localDeadlines.length +1
     new_deadline.idx = lastDeadline.idx+1
     let newDeadlines = localDeadlines
@@ -94,7 +95,6 @@ const DeadlineField = (props) => {
   }
 
   const submitPayout = (deadline_id, new_payout) => {
-    console.log('Trying to submit payment for ' + deadline_id + " at " + new_payout)
     props.suggestPayout(props.selectedId, deadline_id, new_payout)
   }
 

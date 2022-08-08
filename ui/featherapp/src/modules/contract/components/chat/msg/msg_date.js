@@ -5,7 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactDate, updateLocalPayout } from "../../../../../reducers/contract.reducer"
+import { reactDate, updateLocalDate } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
@@ -33,7 +33,7 @@ const DateMsg = (props) => {
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
-        props.updateLocalPayout(props.msg)
+        props.updateLocalDate(props.msg)
       }
       setVersion(version+1)
       props.finishedReload()
@@ -190,7 +190,7 @@ const mapStateToProps = ({ user, contract }) => ({
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   reactDate,
-  updateLocalPayout,
+  updateLocalDate,
   finishedReload,
 }, dispatch)
   

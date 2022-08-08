@@ -41,11 +41,11 @@ const Calendar = (props) => {
 
   const [yourDate, setYourDate] = useState(datePlaceholder)
   const [partnerDate, setPartnerDate] = useState(datePlaceholder)
+  const [newDate, setNewDate] = useState(datePlaceholder)
 
   useEffect( () => {
-    console.log("REFRESH HAPPENING!")
+    console.log("REFRESH HAPPENING IN CALENDAR!")
     if (props.deadline !== undefined) {
-      console.log(props.deadline)
       let yD = props.deadline.current.date
       let pD = props.deadline.current.date
 
@@ -56,9 +56,11 @@ const Calendar = (props) => {
         yD = props.deadline.worker.date
         pD = props.deadline.buyer.date
       }
-
-      setYourDate(yD)
       setPartnerDate(pD)
+      // Make sel date the others if we are locked in propose mode. 
+      setYourDate(yD)
+
+      
 
       setOrigMonth(props.deadline.current.date.getMonth())
       setOrigYear(props.deadline.current.date.getFullYear())
@@ -78,6 +80,13 @@ const Calendar = (props) => {
       }
     }
   }, [props.deadline, props.reloadFlag, props.calRefresh])
+
+  useEffect( () => {
+    if (yourDate.getTime() === props.deadline.current.date.getTime() && props.dateLock) {
+      console.log("Setting the partner as main date")
+      setYourDate(partnerDate)
+    } 
+  }, [props.dateLock])
 
   useEffect( () => {
     if (yourDate !== undefined) {

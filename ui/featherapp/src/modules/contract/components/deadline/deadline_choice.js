@@ -17,7 +17,6 @@ const DeadlineChoice = (props) => {
     setSelected(new_deadline)
     props.setErrorMsg("")
     props.setSelected(new_deadline.idx)
-    console.log(new_deadline)
   }
   return (
     <Listbox value={selected} onChange={changeSelected}>
