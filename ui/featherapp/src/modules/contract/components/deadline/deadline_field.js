@@ -142,10 +142,7 @@ const DeadlineField = (props) => {
         saveDeadlines={saveDeadlines}
         createMode={props.createMode}
 
-        contractItems={props.contractItems}
-        addContractItem={props.addContractItem}
-        contractItemsChanged={props.contractItemsChanged}
-        changeItem={props.changeItem}
+        contractItemIds={props.contractItemIds}
         
         submitPayout={submitPayout}
       />

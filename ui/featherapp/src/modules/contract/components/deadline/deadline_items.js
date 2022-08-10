@@ -1,18 +1,21 @@
 import {useEffect, useState, useMemo, Fragment } from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
+import {addContractItem} from '../../../../reducers/contract.reducer'
 import {Tooltip, Button} from "flowbite-react"
 import DeadlineItemBadge from  "./deadline_item_badge"
 import { Listbox, Transition } from '@headlessui/react'
 import ContractItem from "../contract_item/contract_item"
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 const DeadlineItems = (props) => {
-    const [deadlineItems, setDeadlineItems] = useState([])
+    const [deadlineItemIds, setDeadlineItemIds] = useState([])
     const [deadlineItemNubs, setDeadlineItemNubs] = useState([])
-    const [contractItems, setContractItems] = useState([])
+    const [contractItemIds, setContractItemIds] = useState([])
     const [showAdd, toggleShowAdd] = useState(true)
 
     const updateNubs = (new_nubs) => {
@@ -25,36 +28,40 @@ const DeadlineItems = (props) => {
     }
 
     const [selectedId, setSelectedId] = useState("")
-    const [selectedItem, setSelectedItem] = useState({
+    const [selectedNub, setSelectedNub] = useState({
       id: "",
       name: "",
-      text: "",
       default: true,
     })
 
     useEffect( () => {
       if (props.contractItems && Object.keys(props.contractItems).length > 0) {
-        const contractItems = []
-        const deadlineItems = []
+        console.log("Modifying this")
+        const contractItemIds = []
+        const deadlineItemIds = []
 
         let i = 0
         let contained = 0 
         for (const [_, item] of Object.entries(props.contractItems)) {
-          contractItems.push(item)
+          contractItemIds.push(item.id)
           if (item.id === selectedId) {
             setSelectedId(item.id)
-            setSelectedItem(item)
+            setSelectedNub({
+              id: item.id,
+              name: item.name,
+              default: false,
+            })
           }
           i++;
           for (let i = 0; i < deadlineItemNubs.length; i++) {
             if (item.id === deadlineItemNubs[i].id) {
-              deadlineItems.push(item)
+              deadlineItemIds.push(item.id)
               contained += 1
             }
           }
         }
-        setContractItems(contractItems)
-        setDeadlineItems(deadlineItems)
+        setContractItemIds(contractItemIds)
+        setDeadlineItemIds(deadlineItemIds)
         if (contained === Object.keys(props.contractItems).length || props.contractItems === undefined) {
           toggleShowAdd(false)
         } else {
@@ -71,10 +78,9 @@ const DeadlineItems = (props) => {
         }
         setDeadlineItemNubs(newDeadlineNubs)
         if (props.deadline.itemsList.length === 0) {
-          setSelectedItem({
+          setSelectedNub({
             id: "",
             name: "",
-            text: "",
             default: true,
           })
           setSelectedId("")
@@ -86,26 +92,29 @@ const DeadlineItems = (props) => {
     const createItem = () => {
       if (props.createMode === true) {
         console.log("Creating new item")
-        props.addContractItem().then((item) => {
+        const new_id = (contractItemIds.length + 1).toString()
+        props.addContractItem(props.createMode, new_id).then((item) => {
           console.log("Contract item added with id " + item.id)
           updateNubs([...deadlineItemNubs, item])
           setSelectedId(item.id)    
-          setSelectedItem(item)  
+          setSelectedNub({
+            id: item.id, name: item.name, default: false,
+          })  
         })
       }
     }
 
     useEffect( () => {
-      const newDeadlineItems = []
+      const newDeadlineItemIds = []
       for (let i = 0; i < deadlineItemNubs.length; i++) {
         const nub = deadlineItemNubs[i]
-        for (let i = 0; i < contractItems.length; i++) {
-          if (contractItems[i].id === nub.id) {
-            newDeadlineItems.push(contractItems[i])
+        for (let i = 0; i < props.contractItems.length; i++) {
+          if (props.contractItems[i].id === nub.id) {
+            newDeadlineItemIds.push(props.contractItems[i].id)
           }
         }
       }
-      setDeadlineItems(newDeadlineItems)
+      setDeadlineItemIds(newDeadlineItemIds)
       
     }, [deadlineItemNubs.length])
 
@@ -116,11 +125,11 @@ const DeadlineItems = (props) => {
         }
       }
       updateNubs([...deadlineItemNubs, nub])
-      for (let i = 0; i < contractItems.length; i++) {
-        if (contractItems[i].id === nub.id) {
-          setDeadlineItems([...deadlineItems, contractItems[i]])
+      for (let i = 0; i < contractItemIds.length; i++) {
+        if (contractItemIds[i] === nub.id) {
+          setDeadlineItemIds([...deadlineItemIds, contractItemIds[i]])
           setSelectedId(nub.id)
-          setSelectedItem(contractItems[i])
+          setSelectedNub(nub)
         }
       }
     }
@@ -138,9 +147,11 @@ const DeadlineItems = (props) => {
 
     const selectItem = (id) => {
       setSelectedId(id)
-      for (let i = 0; i < contractItems.length; i++) {
-        if (contractItems[i].id === id) {
-          setSelectedItem(contractItems[i])
+      for (let i = 0; i < props.contractItems.length; i++) {
+        if (props.contractItems[i].id === id) {
+          setSelectedNub({
+            id:props.contractItems[i].id, name:props.contractItems[i].id,
+          })
         }
       }
     }
@@ -153,7 +164,7 @@ const DeadlineItems = (props) => {
             Click one to edit, <b className="text-indigo-500">add</b> to add from existing or <b className="text-indigo-500">create</b> to make a new one.
           </p>
           <div className="flex flex-wrap">
-            {deadlineItems.map((item) => (
+            {deadlineItemNubs.map((item) => (
               <DeadlineItemBadge item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
             ))}
             {showAdd && (
@@ -172,7 +183,7 @@ const DeadlineItems = (props) => {
                         leaveTo="opacity-0"
                       >
                         <Listbox.Options className="absolute z-10 mt-1 bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                          {contractItems.map((item) => (
+                          {props.contractItems.map((item) => (
                             <Fragment key={item.id}>
                             {!containsNub({id: item.id, name: item.name}, deadlineItemNubs) && (
                               <Listbox.Option
@@ -181,7 +192,7 @@ const DeadlineItems = (props) => {
                                   classNames(
                                     active ? 'text-indigo-600' : 'text-gray-900',
                                     'cursor-default select-none relative p-0 px-4 text-xs',
-                                    (contractItems.length > 1) ? "py-2 border-b-1 border-gray-700" : ""
+                                    (props.contractItems.length > 1) ? "py-2 border-b-1 border-gray-700" : ""
                                   )
                                 }
                                 value={{id: item.id, name: item.name}}
@@ -215,15 +226,12 @@ const DeadlineItems = (props) => {
         </div>
         <div className="flex grow w-full">
           
-          {selectedItem.default !== true ? ( 
+          {selectedNub.default !== true ? ( 
             <ContractItem 
               embedded={true}
               override={props.createMode}
               disabled={false}
-              contract_info={
-                selectedItem
-              }
-              changeItem={props.changeItem}
+              id={selectedId}
             />
           ) : (
             <div className="flex justify-center items-center">
@@ -261,4 +269,18 @@ const genTestSet = () => {
     }
   ]
 }
-export default DeadlineItems
+const mapStateToProps = ({ user, contract, chat }) => ({
+  selectedId: contract.selectedId,
+  cachedContracts: contract.cachedContracts,
+  reloadDeadlines: contract.reloadDeadlinesFlag,
+  contractItems: contract.curConItems,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  addContractItem
+}, dispatch)
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(DeadlineItems) 

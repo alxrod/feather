@@ -70,10 +70,7 @@ const CriticalCriteria = (props) => {
                           changeDeadlines={props.changeDeadlines} 
                           disabled={!props.active} 
     
-                          contractItems={props.contractItems}
-                          addContractItem={props.addContractItem}
-                          contractItemsChanged={props.contractItemsChanged}
-                          changeItem={props.changeItem}
+                          contractItemIds={props.contractItemIds}
                         />
                       </div>
                       {/* <ApprovalSign item_state={props.deadline_state}/>

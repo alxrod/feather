@@ -35,41 +35,20 @@ const ContractNegotiate = (props) => {
     } 
   }, [reload])
   
-  const [contractItems, setContractItems] = useState({})
+  const [contractItemIds, setContractItemIds] = useState([])
   const [deadlines, setDeadlines] = useState({})
 
-
-  const [contractItemsChanged, toggleItemsChanged] = useState(false)
-
   useEffect(() => {
-    if (contractItems !== undefined) {
+    if (contractItemIds !== undefined) {
       console.log("UPDATING CONTRACT")
-      setContractItems(contract.itemsList)
+      let ids = []
+      for (let i = 0; i < contract.itemsList.length; i++) {
+        ids.push(contract.itemsList[i].id)
+      }
+      setContractItemIds(ids)
       setDeadlines(contract.deadlinesList)
     }
-    
   }, [contract])
-
-
-  const updateContractItem = (newInfo) => {
-    console.log("Calling update contract")
-		var new_contracts = {...contractItems}
-		new_contracts[newInfo.id] = newInfo
-		setContractItems(new_contracts)
-    toggleItemsChanged(!contractItemsChanged)
-	}
-
-  const addContractItem = () => {
-    console.log("CALL BACK FOR NEW CONTRACT ITEM")
-  }
-  
-  const changeDeadlines = () => {
-    console.log("CALL BACK FOR CHANGE DEADLINES")
-  }
-
-  const changeItem = () => {
-    console.log("CALL BACK FOR CHANGE ITEM")
-  }
 
 	return (
 		<div className="p-4 sm:p-6 lg:p-8 m-auto">
@@ -80,16 +59,10 @@ const ContractNegotiate = (props) => {
 					</div>
 					<div> 
 						<CriticalCriteria
-               deadlines={deadlines}
-
-               contractItems={contractItems}
-               addContractItem={addContractItem}
-               contractItemsChanged={contractItemsChanged}
-
-               createMode={false}
-               changeDeadlines={changeDeadlines}
-               changeItem={updateContractItem}
-               active={true}
+                deadlines={deadlines}
+                contractItemIds={contractItemIds}
+                createMode={false}
+                active={true}
             />
 					</div>
 				</div>
@@ -101,9 +74,9 @@ const ContractNegotiate = (props) => {
 				<SignContract/>
 			</div>
 			<div className="mt-5">
-        {Object.entries(contractItems).map((contract_and_key) => (
-          <div className="min-h-[100px] w-full mb-5" key={contract_and_key[0]}>
-            <ContractItem override={false} contract_info={contract_and_key[1]} changeItem={updateContractItem} />
+        {contractItemIds.map((item_id) => (
+          <div className="min-h-[100px] w-full mb-5" key={item_id}>
+            <ContractItem override={false} id={item_id}/>
           </div>
         ))}
 			</div>

@@ -74,10 +74,14 @@ const Calendar = (props) => {
           setNextDay(props.deadlines[i].current.date.getDate())
           toggleNextExists(true)
         }
-        if (props.deadlines[i].id == props.deadline.id) {
+        if (props.deadlines[i].id == props.deadline.id && i !== (props.deadlines.length-1)) {
           takeNext = true
         }
       }
+      if (takeNext) {
+        toggleNextExists(false)
+      }
+  
     }
   }, [props.deadline, props.reloadFlag, props.calRefresh])
 

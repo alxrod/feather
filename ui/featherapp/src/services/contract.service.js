@@ -418,8 +418,8 @@ class ContractService {
     generateItemEntity(item) {
         let entity = new ItemEntity()
         entity.setName(item.name)
-        for (let i=0; i<item.text.length; i++) {
-            entity.addBody(this.generateChunkEntity(item.text[i], i))
+        for (let i=0; i<item.bodyList.length; i++) {
+            entity.addBody(this.generateChunkEntity(item.bodyList[i], i))
         }
         return entity
     }

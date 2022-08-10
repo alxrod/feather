@@ -126,13 +126,10 @@ const CalendarModal = (props) => {
                               submitPayout={props.submitPayout}
                             />
                             <DeadlineItems
-                              contractItems={props.contractItems}
-                              addContractItem={props.addContractItem}
+                              contractItemIds={props.contractItems}
                               createMode={props.createMode}
                               deadline={props.deadlines[selected]}
                               editDeadline={props.editDeadline}
-                              contractItemsChanged={props.contractItemsChanged}
-                              changeItem={props.changeItem}
                             />
                           </div>
                           <div className="p-2 flex flex-col ml-1">

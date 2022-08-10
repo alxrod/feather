@@ -75,6 +75,8 @@ const CalendarBundle = (props) => {
 
   const rejectDate = () => {
     props.setErrorMsg("")
+    console.log("Orig deadline")
+    console.log(origDeadline)
     props.editDeadline(origDeadline)
     setDecisionMode(false)
     setTimeoutId(-1)
@@ -90,8 +92,8 @@ const CalendarBundle = (props) => {
         setDateLock(false)
       }
       if (origDeadline === undefined) {
-
-        setOrigDeadline(props.deadline)
+        const orig = structuredClone(props.deadline)
+        setOrigDeadline(orig)
       }
       setDecisionMode(false)
     }

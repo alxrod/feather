@@ -1,6 +1,8 @@
 import ContractService from "../services/contract.service";
 import {AUTH_FAILED} from "./user.reducer";
 import {WORKER_TYPE, BUYER_TYPE, authChecker} from "../services/user.service";
+import { ITEM_AGREED } from "../custom_encodings";
+
 import {resolTypes} from "../services/chat.service";
 
 export const CONTRACT_CREATE = "contract/contract/CREATE"
@@ -15,8 +17,11 @@ export const CONTRACT_SEND_EDIT = "contract/contract/SEND_EDIT"
 export const CONTRACT_UPDATE_PRICE = "contract/price/UPDATE_PRICE"
 export const CONTRACT_UPDATE_PAYOUT = "contract/deadline/UPDATE_PAYOUT"
 export const CONTRACT_UPDATE_DATE = "contract/deadline/UPDATE_DATE"
-
 export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
+
+export const CONTRACT_ITEM_ADD = "contract/item/ADD"
+export const CONTRACT_ITEM_EDIT = "contract/item/EDIT"
+export const CONTRACT_ITEM_LOAD = "contract/item/LOAD"
 
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
@@ -33,8 +38,11 @@ const initialState = {
     awaitingEdit: false,
     loadingContract: false,
     contractClaimed: false,
-    
+
     reloadDeadlinesFlag: false,
+
+    curConItems: [],
+    contractItemsChanged: false,
     
 }
 
@@ -158,12 +166,41 @@ export default (state = initialState, action) => {
                 ...state,
                 reloadDeadlinesFlag: !state.reloadDeadlinesFlag,
             }
+
+        case CONTRACT_ITEM_ADD:
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: [...state.curConItems, action.payload]
+            }
+        
+        case CONTRACT_ITEM_EDIT:
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: replaceContractItem(state.curConItems, action.payload)
+            }
+        
+        case CONTRACT_ITEM_LOAD:
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: [...action.payload],
+            }
         default:
             return state
     }
 
 }
 
+const replaceContractItem = (items, new_item) => {
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id === new_item.id) {
+            items[i] = new_item
+        }
+    }
+    return items
+}
 const editContract = (contracts, new_contract) => {
     contracts[new_contract.id] = new_contract
     return contracts
@@ -220,10 +257,43 @@ const editDeadlineDate = (contract, date_info) => {
     
 }
 
+export const addContractItem = (create_mode, new_id) => {
+    return dispatch => {
+        if (create_mode) {
+            const new_item = {
+                name: "Item " + new_id,
+                id: new_id,
+                bodyList: [{type: 0, text: "", author: ""}],
+                recip_status: ITEM_AGREED,
+                sender_status: ITEM_AGREED,
+                chats: [],
+            }
+            dispatch({
+                type: CONTRACT_ITEM_ADD,
+                payload: new_item,
+            })
+            return Promise.resolve(new_item)
+        }
+    }
+}
+
+export const editContractItem = (item) => {
+    return dispatch => {
+        dispatch({
+            type: CONTRACT_ITEM_EDIT,
+            payload: item,
+        })
+    }
+}
+
 export const clearSelected = () => {
     return dispatch => {
         dispatch({
             type: CONTRACT_CLEAR_SELECTED,
+        });
+        dispatch({
+            type: CONTRACT_ITEM_LOAD,
+            payload: [],
         });
     }
 }
@@ -247,6 +317,10 @@ export const queryContract = (contract_id) => {
                         type: CONTRACT_PULL_CURRENT,
                         payload: data,
                     });
+                    dispatch({
+                        type: CONTRACT_ITEM_LOAD,
+                        payload: data.itemsList,
+                    })
                     return Promise.resolve();
                 },
                 (error) => {

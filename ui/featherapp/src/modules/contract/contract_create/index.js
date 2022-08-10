@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { createContract, clearSelected } from "../../../reducers/contract.reducer";
+import { createContract, clearSelected, addContractItem } from "../../../reducers/contract.reducer";
 
 import { ownership_format, WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
 
@@ -20,29 +20,30 @@ import { ITEM_AGREED } from "../../../custom_encodings"
 
 import { genEmptyDeadline } from '../../../services/contract.service';
 
-const ContractCreate= (props) => {
-  useEffect( () => {
-    props.clearSelected()
-  })
+const ContractCreate = (props) => {
   const [price, setPrice] = useState(0.0)
   const [priceObj, setPriceObj] = useState({
     current: 0.0,
     worker: 0.0,
     buyer: 0.0,
   })
-  const [contractItems, setContractItems] = useState({})
-  const [contractItemsChanged, toggleItemsChanged] = useState(false)
+  const [contractItemIds, setContractItemIds] = useState([])
+  useEffect( () => {
+    if (props.contractItems.length > 0) {
+      let ids = []
+      for (let i = 0; i < props.contractItems.length; i++) {
+        ids.push(props.contractItems[i].id)
+      }
+      setContractItemIds(ids)
+    }
+  }, [props.contractItems.length])
 
+  useEffect( () => {
+    console.log("NEw Change:")
+    console.log(props.contractItems)
+  }, [props.contractItemsChanged])
   const [error, setError] = useState("")
   const [openBanner, setOpenBanner] = useState(false)
-
-  const updateContractItem = (newInfo) => {
-    console.log("Calling update contract")
-		var new_contracts = {...contractItems}
-		new_contracts[newInfo.id] = newInfo
-		setContractItems(new_contracts)
-    toggleItemsChanged(!contractItemsChanged)
-	}
   
   const now = new Date()
   const [deadlines, setDeadlines] = useState([
@@ -98,11 +99,11 @@ const ContractCreate= (props) => {
     console.log(conMessage)
     console.log(priceObj)
     console.log(deadlines)
-    console.log(contractItems)
+    console.log(props.contractItems)
     console.log(conPassword)
     console.log(conRole)
-
-    props.createContract(conTitle, conDescript, conMessage, priceObj, deadlines, contractItems, conPassword, conRole).then(
+    const conItems = JSON.parse(JSON.stringify(props.contractItems))
+    props.createContract(conTitle, conDescript, conMessage, priceObj, deadlines, conItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
       }, (error) => {
@@ -144,21 +145,9 @@ const ContractCreate= (props) => {
     
     // console.log("Adding item with value " + nextId)
     // console.log(contractItems)
-    let old_cons = contractItems
     let new_id = nextId.toString()
-    const new_item = {
-      name: "Item " + nextId.toString(),
-      id: new_id,
-			text: [],
-			recip_status: ITEM_AGREED,
-			sender_status: ITEM_AGREED,
-			chats: [],
-    }
-    old_cons[nextId.toString()] = new_item
     setNextId(nextId+1)
-    setContractItems(old_cons)
-    toggleItemsChanged(!contractItemsChanged)
-    return Promise.resolve(new_item)
+    return props.addContractItem(true, new_id)
   }
 
 
@@ -176,14 +165,13 @@ const ContractCreate= (props) => {
                 deadlines={deadlines}
                 price={price}
 
-                contractItems={contractItems}
+                contractItemIds={contractItemIds}
                 addContractItem={addContractItem}
-                contractItemsChanged={contractItemsChanged}
+
 
                 createMode={true}
                 changePrice={changePrice}
                 changeDeadlines={changeDeadlines}
-                changeItem={updateContractItem}
                 
 
                 active={true}
@@ -216,9 +204,9 @@ const ContractCreate= (props) => {
           </div>
         </div>
         <div className="mt-5 flex flex-col justify-start items-center">
-          {Object.entries(contractItems).map((contract_and_key) => (
-            <div className="min-h-[100px] w-full mb-5" key={contract_and_key[0]}>
-              <ContractItem override={true} contract_info={contract_and_key[1]} changeItem={updateContractItem} disabled={false} />
+          {contractItemIds.map((item_id) => (
+            <div className="min-h-[100px] w-full mb-5" key={item_id}>
+              <ContractItem override={true} id={item_id} disabled={false} />
             </div>
           ))}
           <NewContractItem addContractItem={addContractItem}/>
@@ -235,13 +223,16 @@ const ContractCreate= (props) => {
 	)
 }
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, contract }) => ({
   user: user,
+  contractItems: contract.curConItems,
+  contractItemsChanged: contract.contractItemsChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
   clearSelected,
+  addContractItem,
   push,
 }, dispatch)
 

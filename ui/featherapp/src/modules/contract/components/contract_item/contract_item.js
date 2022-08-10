@@ -3,43 +3,56 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
+import { editContractItem } from "../../../../reducers/contract.reducer"
 
 
+const SAVE_TIME = 350
 
-const ContractItem = (props) => {
-  
+const ContractItem = (props) => {  
   const [contract_info, setContractInfo] = useState({
     id: "",
     name: "",
-    text: "",
+    bodyList: [{type: 0, text: "", author: ""}],
     default: true,
   })
+
+  const [saveFlag, setSaveFlag] = useState(false)
+  const [saveTimeoutId, setSaveTimeoutId] = useState(-1)
+
+  
   useEffect(() => {
-    if (props.contract_info.default !== true) {
-      const new_info = props.contract_info
-      
-      // Conversion:
-      if (new_info.bodyList) {
-        new_info.text = new_info.bodyList
+    // console.log("Refreshing contract item")
+    if (props.id && props.curItems && props.curItems.length > 0) {
+      for (let i = 0; i < props.curItems.length; i++) {
+        if (props.curItems[i].id === props.id) {
+          // console.log(props.curItems[i])
+          setContractInfo(props.curItems[i])
+        }
       }
-      
-      setContractInfo(props.contract_info)
     }
-  }, [props.contract_info.text])
+  }, [props.curItems, props.id, props.contractItemsChanged])
 
 
   const setContractText = (new_text) => {
-    if (new_text !== contract_info.text) {
-      var new_contract_info = {...contract_info}
-      new_contract_info.text = new_text
-      props.changeItem(new_contract_info);
+    let new_contract_info = JSON.parse(JSON.stringify(contract_info));
+    new_contract_info.bodyList = new_text
+    setContractInfo(new_contract_info);
+
+    if (saveTimeoutId !== -1) {
+      clearTimeout(saveTimeoutId);
     }
+    const id = setTimeout(function() {
+      // console.log("Saving the contract item...")
+      props.editContractItem(new_contract_info);
+      setSaveTimeoutId(-1)
+    },SAVE_TIME)
+    setSaveTimeoutId(id)
   }
   
 
   if (props.embedded === true) {
     return (
-        <ItemTextArea embedded={props.embedded} override={props.override} text_body={contract_info.text} disabled={props.disabled} set_text={setContractText}/>
+        <ItemTextArea embedded={props.embedded} override={props.override} text_body={contract_info.bodyList} disabled={props.disabled} set_text={setContractText}/>
     )
   }
   return (
@@ -59,20 +72,24 @@ const ContractItem = (props) => {
             </a>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
-            <ItemTextArea override={props.override} text_body={contract_info.text} disabled={props.disabled} set_text={setContractText}/>
+            <ItemTextArea override={props.override} text_body={contract_info.bodyList} disabled={props.disabled} set_text={setContractText}/>
           </div>
       </div>
     </div>
   )
 }
 
-const mapStateToProps = ({ }) => ({
+const mapStateToProps = ({ contract }) => ({
+  curItems: contract.curConItems,
+  contractItemsChanged: contract.contractItemsChanged
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  editContractItem,
 }, dispatch)
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(ContractItem)
+

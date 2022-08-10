@@ -43,12 +43,42 @@ const CalendarTime = (props) => {
         hour -= 12
         period = "PM"
       }
-
       setHour(hour)
       setMinute(datetime.getMinutes())
       setPeriod(period)
     }
   }, [props.deadline, props.reloadFlag, props.calRefresh])
+
+  useEffect( () => {
+    if (yourDate.getTime() === props.deadline.current.date.getTime() && props.dateLock) {
+      console.log("Setting the partner as main date")
+      let datetime = props.deadline.current.date
+      if (props.role === WORKER_TYPE) {
+        datetime = props.deadline.buyer.date
+      }
+      if (props.role == BUYER_TYPE) {
+        datetime = props.deadline.worker.date
+      }
+      setYourDate(datetime)
+      const hour_24 = datetime.getHours()
+      let hour = hour_24
+      let period = "AM"
+      if (hour_24 === 0) {
+        hour = 12
+        period = "AM"
+      } else if (hour_24 == 12) {
+        period = "PM"
+      } else if (hour_24 > 12) {
+        hour -= 12
+        period = "PM"
+      }
+
+      setHour(hour)
+      setMinute(datetime.getMinutes())
+      setPeriod(period)
+
+    } 
+  }, [props.dateLock])
 
   const handleMinuteChange = (e) => {
     let minutes = parseInt(e.target.value)

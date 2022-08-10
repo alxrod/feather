@@ -5,7 +5,7 @@ import ContentEditable from 'react-contenteditable'
 import {UNEDITED, ADDED, REMOVED} from '../../../../custom_encodings'
 import patienceDiffPlus from './PatienceDiff'
 import { renderToString } from 'react-dom/server'
-import ContractTextComponent from './contract_text_component'
+import { generateContractText } from './contract_text_component'
 import DecideButton from '../decide_button'
 import Loading from "../../../general_components/loading"
 
@@ -42,6 +42,7 @@ const ContractTextArea = (props) => {
             let range = document.createRange();
             
             const relOffset = globalOffset - total_offset
+            // console.log("rel offset: " + relOffset)
             range.setStart(contentEditable.current.children[i].firstChild, relOffset);
             range.collapse(true);
             sel.removeAllRanges();
@@ -73,14 +74,17 @@ const ContractTextArea = (props) => {
   const convertStateToHtml = (text_body) => {
     var html_string = "";
     if (text_body.length == 0) {
-      return renderToString(<ContractTextComponent type={UNEDITED} text={""} index={0}/>)
+      return generateContractText(0, "", UNEDITED)
     }
     
+    // console.log(text_body)
     for (const [key, chunk] of Object.entries(text_body)) {
-      if (chunk.type === REMOVED) {
-      }
-      html_string += renderToString(<ContractTextComponent type={chunk.type} text={chunk.text} index={key}/>)
+      let text = chunk.text
+      text = text.replaceAll(" ", "&nbsp;")
+      html_string += generateContractText(key, text, chunk.type)
     }
+    // console.log("HTML STRING:")
+    // console.log(html_string)
     return html_string;
   };
 
@@ -213,11 +217,13 @@ const ContractTextArea = (props) => {
     set_to_total_offset()
   }, [contentState, updateCursorFlag])
 
+  // Bulk of live editing logic
   const handleChange = (e) => {
     const newValue = removeTags(e.target.value)
     var total_string = []
     var total_string_concated = ""
 
+    // If we are in creation mode, everything goes, text will be added as a singular chunk
     if (overrideMode == true) {
       const new_text = [{text: newValue, type: UNEDITED, author: props.cur_id}]
       setGlobOff(newValue.length)
@@ -226,18 +232,21 @@ const ContractTextArea = (props) => {
       return 
     }
 
-    var cur_index = 0
+    // Iterate through all of the chunks in the current text body and 
+    // add individual character chunks to the total string array
     for (const [key, chunk] of Object.entries(props.text_body)) {
       for (var i = 0; i < chunk.text.length; i++) { 
         total_string.push({text: chunk.text[i], type: chunk.type})
         total_string_concated += chunk.text[i]
       }
-      cur_index += chunk.text.length
     }
 
+    // If the previous total string is empty, we are going to simplify by just
+    // adding the text as a single chunk and setting the offset to that location.
     if (total_string.length === 0) {
       if (newValue != "") {
         const new_text = mergeTextArea([{text: newValue, type: ADDED, author: props.cur_id}])
+        console.log("ADVANCING TO END")
         setGlobOff(newValue.length)
         props.set_text(new_text)
         return
@@ -246,52 +255,70 @@ const ContractTextArea = (props) => {
       }
     }
 
-    let diffs = patienceDiffPlus(total_string_concated, newValue).lines
-    let insert_index = 0;
-    let established_changes = 0
+    if (total_string.length === newValue.length) {
+      return
+    }
 
-    let need_to_remove = []
-    for (var i = 0; i < diffs.length; i++) { 
-      if (diffs[i].aIndex !== -1) {
-        insert_index = diffs[i].aIndex
-      } else if (diffs[i].aIndex === -1) {
-        established_changes++
-        total_string.splice(insert_index+1, 0, {text: diffs[i].line, type: ADDED, author: props.cur_id})
-        insert_index += 1
+    // New strategy: identify location of the new offset
+    // Use the length of the string to identify if text has been added or deleted
+    // if it has been added select the text from cursor + length diff and insert it into our total string
+    // If it has been deleted alter those indices of the total string to:
+    // deleted if they are unedited, or remove them if they are delete mode or add mode.
+    
+    // First get the offset.
+    const oldSelNode = document.getSelection().anchorNode
+    const oldSelOff = document.getSelection().focusOffset
+
+    let newOff = get_total_offset(oldSelNode, oldSelOff)
+    console.log("New off is: " + newOff)
+
+    const len_dif = newValue.length - total_string.length 
+    // true is added, false is deleted
+    let added = true
+    if (len_dif < 0) {
+      added = false
+    }
+
+    // console.log("Changes made:")
+    // console.log("An " + (added ? "addition" : "deletion") + " was made of " + len_dif + " characters")
+    if (added === true) {
+      // console.log("Total string now is " + newValue.length + " characters and addition was from " + (newOff-1) + " to " + (newOff+len_dif-1))
+      // console.log("Added: " + newValue.substring((newOff-1), (newOff+len_dif-1)))
+    } else {
+      // console.log("Deleted: " + total_string_concated.substring(newOff+1, (newOff+len_dif+1)))
+    }
+
+    let changeStart = (newOff-1)
+    let changeEnd = (newOff+len_dif-1)
+    if (!added) {
+      // console.log("SWITCHING MODE TO DELTE")
+      changeStart = (newOff+1)
+      changeEnd = (newOff+len_dif+1)
+    }
+
+    if (added) {
+      for (let i = changeStart; i < changeEnd; i++) {
+        // console.log("New Value: " + newValue +", i: " +i)
+        // console.log("Adding " + newValue[i])
+        total_string.splice(i, 0, {text: newValue[i], type: ADDED, author: props.cur_id})
       }
-      if (diffs[i].bIndex === -1) {
-        established_changes++
-        
-        const char_mode = get_char_mode(diffs[i].aIndex)
-        if (char_mode == ADDED) {
-          need_to_remove.push(diffs[i].aIndex)
-        } else if (char_mode == UNEDITED) {
-          total_string[diffs[i].aIndex] = {text: diffs[i].line, type: REMOVED, author: props.cur_id}
+    } else {
+      let removalI = changeStart;
+      for (let i = changeStart-1; i >= changeEnd; i-=1) {
+        // console.log("Removing element "+i+" from "+total_string_concated+" of length" + total_string.length)
+        if (total_string[i].type === UNEDITED) {
+          total_string[i].type = REMOVED
+          total_string[i].author = props.cur_id
+          removalI -= 1
         } else {
-          setUpdateCursor(!updateCursorFlag)
+          total_string.splice(removalI, 1)
         }
       }
     }
 
-    let offset = 0
-    for (let i = 0; i < need_to_remove.length; i++) {
-      total_string.splice(need_to_remove[i] - offset, 1)
-    }
-
-    if (established_changes > 0) {
-      // console.log("We have found " + established_changes + " changes from the last version")
-      const oldSelNode = document.getSelection().anchorNode
-      const oldSelOff = document.getSelection().focusOffset
-
-      let newOff = get_total_offset(oldSelNode, oldSelOff)
-      setGlobOff(newOff)
-      // console.log("New glob offset: " + newOff)
-
-      const new_text = mergeTextArea(total_string)
-
-      props.set_text(new_text)
-    }
-    
+    const new_text = mergeTextArea(total_string)
+    setGlobOff(newOff)
+    props.set_text(new_text)    
   };
 
   

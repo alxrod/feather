@@ -57,7 +57,7 @@ const routes = {
   
 }
 
-const select_routes = ["/negotiate", "/view", "/settle"]
+const select_routes = ["/negotiate", "/view", "/settle", "/create"]
 const no_nav_routes = ["/login", "/register", "/invite"]
 
 const App = (props) => {
