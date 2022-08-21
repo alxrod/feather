@@ -1,9 +1,10 @@
-import React, {Fragment, useState, useEffect} from 'react';
+import React, {Fragment, useState, useEffect, useMemo} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
 import { editContractItem } from "../../../../reducers/contract.reducer"
+import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 
 
 const SAVE_TIME = 350
@@ -12,20 +13,54 @@ const ContractItem = (props) => {
   const [contract_info, setContractInfo] = useState({
     id: "",
     name: "",
-    bodyList: [{type: 0, text: "", author: ""}],
+
+    current_body: "",
+    worker_body: "",
+    buyer_body: "",
+
     default: true,
   })
 
-  const [saveFlag, setSaveFlag] = useState(false)
+
+  const [role, setRole] = useState(-1)
   const [saveTimeoutId, setSaveTimeoutId] = useState(-1)
 
+  const item_text = useMemo(() => {
+    if (props.override) {
+      return contract_info.currentBody
+    } else if (role === WORKER_TYPE) {
+      return contract_info.workerBody
+    } else if (role === BUYER_TYPE) {
+      return contract_info.buyerBody
+    } else {
+      return contract_info.currentBody
+    }
+  })
+
+  useEffect( () => {
+    console.log("Item text changed in contract_item")
+  }, [item_text])
+
+  useEffect( () => {
+    if (props.override) {
+      return
+    }
+    if (props.user !== null && props.selectedId !== "") {
+      let contract = props.cachedContracts[props.selectedId]
+      if (props.user.user_id === contract.worker.id) {
+        setRole(WORKER_TYPE)
+      } else if (props.user.user_id === contract.buyer.id) {
+        setRole(BUYER_TYPE)
+      }
+    }
+  }, [props.selectedId, props.cachedContracts, props.user])
   
   useEffect(() => {
-    // console.log("Refreshing contract item")
+    console.log("Refreshing contract item")
+    console.log(props.curItems)
     if (props.id && props.curItems && props.curItems.length > 0) {
       for (let i = 0; i < props.curItems.length; i++) {
         if (props.curItems[i].id === props.id) {
-          // console.log(props.curItems[i])
           setContractInfo(props.curItems[i])
         }
       }
@@ -35,7 +70,15 @@ const ContractItem = (props) => {
 
   const setContractText = (new_text) => {
     let new_contract_info = JSON.parse(JSON.stringify(contract_info));
-    new_contract_info.bodyList = new_text
+    if (props.override === true) {
+      new_contract_info.currentBody = new_text;
+      new_contract_info.workerBody = new_text;
+      new_contract_info.buyerBody = new_text;
+    } else if (role === WORKER_TYPE) {
+      new_contract_info.workerBody = new_text;
+    } else if (role === BUYER_TYPE) {
+      new_contract_info.buyerBody = new_text;
+    }
     setContractInfo(new_contract_info);
 
     if (saveTimeoutId !== -1) {
@@ -52,7 +95,7 @@ const ContractItem = (props) => {
 
   if (props.embedded === true) {
     return (
-        <ItemTextArea embedded={props.embedded} override={props.override} text_body={contract_info.bodyList} disabled={props.disabled} set_text={setContractText}/>
+        <ItemTextArea item_id={props.id} embedded={props.embedded} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
     )
   }
   return (
@@ -72,16 +115,20 @@ const ContractItem = (props) => {
             </a>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
-            <ItemTextArea override={props.override} text_body={contract_info.bodyList} disabled={props.disabled} set_text={setContractText}/>
+            <ItemTextArea item_id={props.id} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
           </div>
       </div>
     </div>
   )
 }
 
-const mapStateToProps = ({ contract }) => ({
+const mapStateToProps = ({ user, contract }) => ({
   curItems: contract.curConItems,
-  contractItemsChanged: contract.contractItemsChanged
+  contractItemsChanged: contract.contractItemsChanged,
+  user: user.user,
+  selectedId: contract.selectedId, 
+  cachedContracts: contract.cachedContracts,
+
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

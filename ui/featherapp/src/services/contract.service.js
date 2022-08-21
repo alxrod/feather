@@ -4,7 +4,6 @@ import {
     PriceEntity,
     ContractEntity,
     ItemEntity,
-    ItemChunk,
     ItemNub,
     
     
@@ -403,24 +402,14 @@ class ContractService {
         return entity
     }
 
-    generateChunkEntity(chunk) {
-        let entity = new ItemChunk();
-        entity.setType(chunk.type)
-        entity.setAuthorId(chunk.author)
-
-        // For now we're faking this
-        entity.setWorkerApprove(true)
-        entity.setBuyerApprove(true)
-        entity.setText(chunk.text);
-        return entity
-    }
-
     generateItemEntity(item) {
         let entity = new ItemEntity()
+
         entity.setName(item.name)
-        for (let i=0; i<item.bodyList.length; i++) {
-            entity.addBody(this.generateChunkEntity(item.bodyList[i], i))
-        }
+        entity.setCurrentBody(item.currentBody)
+        entity.setBuyerBody(item.buyerBody)
+        entity.setWorkerBody(item.workerBody)
+
         return entity
     }
 

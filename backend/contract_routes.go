@@ -134,6 +134,9 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
 		return nil, err
 	}
+
+	log.Println("Contracts queried successfully")
+
 	contractNubs := make([]*comms.ContractNub, len(contracts))
 	for idx, contract := range contracts {
 		conNub, err := contract.NubProto(user_id)
@@ -142,6 +145,7 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 		}
 		contractNubs[idx] = conNub
 	}
+	log.Println("Contracts nubbed successfully")
 	return &comms.ContractNubSet{
 		UserId:       user_id.Hex(),
 		ContractNubs: contractNubs,

@@ -263,10 +263,9 @@ export const addContractItem = (create_mode, new_id) => {
             const new_item = {
                 name: "Item " + new_id,
                 id: new_id,
-                bodyList: [{type: 0, text: "", author: ""}],
-                recip_status: ITEM_AGREED,
-                sender_status: ITEM_AGREED,
-                chats: [],
+                currentBody: "",
+                workerBody: "",
+                buyerBody: "",
             }
             dispatch({
                 type: CONTRACT_ITEM_ADD,

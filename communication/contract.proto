@@ -86,8 +86,10 @@ message UserNubEntity {
 message ItemEntity {
     string id = 1;
     string contract_id = 2;
-    string name = 4;
-    repeated ItemChunk body = 3;
+    string name = 4;   
+    string current_body = 5;
+    string worker_body = 6;
+    string buyer_body = 7;
 }
 
 message ItemNub {
@@ -95,13 +97,6 @@ message ItemNub {
     string name = 2;
 }
 
-message ItemChunk {
-    uint32 type = 1;
-    string author_id = 2;
-    bool worker_approve = 3;
-    bool buyer_approve = 4;
-    string text = 5;
-}
 message ContractCreateRequest {
     string user_id = 1;
     string title = 2;

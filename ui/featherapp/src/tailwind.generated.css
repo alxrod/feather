@@ -1124,10 +1124,6 @@ input:checked + .toggle-bg {
   margin-left: 1rem;
   margin-right: 1rem;
 }
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-}
 .mt-8 {
   margin-top: 2rem;
 }
@@ -3078,6 +3074,9 @@ input:checked + .toggle-bg {
 }
 .focus\:z-10:focus {
   z-index: 10;
+}
+.focus\:border-0:focus {
+  border-width: 0px;
 }
 .focus\:border-indigo-500:focus {
   --tw-border-opacity: 1;

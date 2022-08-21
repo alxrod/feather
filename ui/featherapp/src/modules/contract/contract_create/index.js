@@ -39,7 +39,7 @@ const ContractCreate = (props) => {
   }, [props.contractItems.length])
 
   useEffect( () => {
-    console.log("NEw Change:")
+    console.log("New Change:")
     console.log(props.contractItems)
   }, [props.contractItemsChanged])
   const [error, setError] = useState("")
