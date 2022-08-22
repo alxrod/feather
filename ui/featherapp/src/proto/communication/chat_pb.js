@@ -1538,6 +1538,7 @@ proto.main.ItemMsgBody.prototype.toObject = function(opt_includeInstance) {
  */
 proto.main.ItemMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
+    itemId: jspb.Message.getFieldWithDefault(msg, 8, ""),
     newVersion: jspb.Message.getFieldWithDefault(msg, 1, ""),
     oldVersion: jspb.Message.getFieldWithDefault(msg, 2, ""),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
@@ -1581,6 +1582,10 @@ proto.main.ItemMsgBody.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setItemId(value);
+      break;
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setNewVersion(value);
@@ -1638,6 +1643,13 @@ proto.main.ItemMsgBody.prototype.serializeBinary = function() {
  */
 proto.main.ItemMsgBody.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getItemId();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
   f = message.getNewVersion();
   if (f.length > 0) {
     writer.writeString(
@@ -1687,6 +1699,24 @@ proto.main.ItemMsgBody.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+};
+
+
+/**
+ * optional string item_id = 8;
+ * @return {string}
+ */
+proto.main.ItemMsgBody.prototype.getItemId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ItemMsgBody} returns this
+ */
+proto.main.ItemMsgBody.prototype.setItemId = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 

@@ -20,12 +20,14 @@ const (
 )
 
 type ContractItem struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty"`
-	ContractId  primitive.ObjectID `bson:"contract_id"`
-	Name        string             `bson:"name"`
-	CurrentBody string             `bson:"current_body"`
-	WorkerBody  string             `bson:"worker_body"`
-	BuyerBody   string             `bson:"buyer_body"`
+	Id               primitive.ObjectID `bson:"_id,omitempty"`
+	ContractId       primitive.ObjectID `bson:"contract_id"`
+	Name             string             `bson:"name"`
+	CurrentBody      string             `bson:"current_body"`
+	WorkerBody       string             `bson:"worker_body"`
+	BuyerBody        string             `bson:"buyer_body"`
+	AwaitingApproval bool               `bson:"awaiting_approval"`
+	Proposer         primitive.ObjectID `bson:"proposer_id"`
 }
 
 func (ci *ContractItem) Proto() *comms.ItemEntity {
@@ -92,4 +94,34 @@ func ContractItemById(item_id primitive.ObjectID, collection *mongo.Collection) 
 		return nil, errors.New("Contract Item Not Found")
 	}
 	return contractItem, nil
+}
+
+func ContractItemReplace(item *ContractItem, database *mongo.Database) error {
+	filter := bson.D{{"_id", item.Id}}
+	_, err := database.Collection(ITEM_COL).ReplaceOne(context.TODO(), filter, item)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractItemSuggestBody(item *ContractItem, contract *Contract, user *User, newBody string, database *mongo.Database) error {
+	if item.AwaitingApproval == true {
+		return errors.New(fmt.Sprintf("The contract item %s is already awaiting approval of a different body change", item.Id.Hex()))
+	}
+
+	if user.Id == contract.Worker.Id {
+		item.WorkerBody = newBody
+	} else if user.Id == contract.Buyer.Id {
+		item.BuyerBody = newBody
+	}
+
+	item.Proposer = user.Id
+	item.AwaitingApproval = true
+
+	err := ContractItemReplace(item, database)
+	if err != nil {
+		return err
+	}
+	return nil
 }

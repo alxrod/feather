@@ -16,6 +16,7 @@ import {
     ContractSuggestPrice,
     ContractSuggestPayout,
     ContractSuggestDate,
+    ContractSuggestItem,
 
     ContractReactPrice,
     ContractReactPayout,
@@ -294,6 +295,24 @@ class ContractService {
             });
         });
 
+    }
+
+    suggestItem(token, user_id, contract_id, item_id, new_body) {
+        let suggestRequest = new ContractSuggestItem();
+
+        suggestRequest.setUserId(user_id);
+        suggestRequest.setContractId(contract_id);
+        suggestRequest.setItemId(item_id);
+        suggestRequest.setNewBody(new_body);
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestItem(suggestRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
     }
 
     claimContract(token, user_id, contract_id, password) {

@@ -34,6 +34,7 @@ message CommentMsgBody {
 }
 
 message ItemMsgBody {
+    string item_id = 8;
     string new_version = 1;
     string old_version = 2;
     uint32 type = 3;

@@ -81,8 +81,9 @@ type MessageBody struct {
 	BuyerStatus  uint32 `bson:"buyer_status,omitempty"`
 
 	// Item messages
-	ItemNew string `bson:"item_new,omitempty"`
-	ItemOld string `bson:"item_old,omitempty"`
+	ItemId      primitive.ObjectID `bson:"item_id,omitempty"`
+	ItemBodyNew string             `bson:"item_new,omitempty"`
+	ItemBodyOld string             `bson:"item_old,omitempty"`
 
 	// Deadline messages
 	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
@@ -156,8 +157,8 @@ func (b *MessageBody) PriceProto() *comms.ChatMessage_PriceBody {
 func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
 	return &comms.ChatMessage_ItemBody{
 		ItemBody: &comms.ItemMsgBody{
-			NewVersion:   b.ItemNew,
-			OldVersion:   b.ItemNew,
+			NewVersion:   b.ItemBodyNew,
+			OldVersion:   b.ItemBodyOld,
 			Resolved:     b.Resolved,
 			ResolStatus:  b.ResolStatus,
 			WorkerStatus: b.WorkerStatus,
@@ -322,8 +323,8 @@ func ParseBody(req *comms.SendRequest) *MessageBody {
 		body.Message = req.GetCommentBody().Message
 	} else if req.Method == ITEM {
 		body.Type = req.GetItemBody().Type
-		body.ItemNew = req.GetItemBody().NewVersion
-		body.ItemOld = req.GetItemBody().OldVersion
+		body.ItemBodyNew = req.GetItemBody().NewVersion
+		body.ItemBodyOld = req.GetItemBody().OldVersion
 	} else if req.Method == PAYOUT {
 		body.Type = req.GetPayoutBody().Type
 		body.DeadlineId, _ = primitive.ObjectIDFromHex(req.GetPayoutBody().DeadlineId)

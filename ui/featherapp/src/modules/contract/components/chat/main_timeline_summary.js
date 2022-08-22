@@ -11,6 +11,7 @@ import CommentMsg from "./msg/msg_comment"
 import PriceMsg from "./msg/msg_price"
 import PayoutMsg from "./msg/msg_payout"
 import DateMsg from "./msg/msg_date"
+import ItemBodyMsg from "./msg/msg_item_body"
 
 const MainTimeline = (props) => {
   const bottomOfChat = useRef(null)
@@ -36,6 +37,8 @@ const MainTimeline = (props) => {
                   <PayoutMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DATE) ? (
                   <DateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.ITEM) ? (
+                  <ItemBodyMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

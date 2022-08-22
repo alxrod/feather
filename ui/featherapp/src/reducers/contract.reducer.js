@@ -614,6 +614,39 @@ export const reactDate = (contract_id, message_id, deadline_id, status) => {
     }
 }
 
+export const suggestItem = (contract_id, item_id, new_body) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.suggestItem(creds.access_token, creds.user_id, contract_id, item_id, new_body).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
+
 export const claimContract = (contract_id, password) => {
     return dispatch => {
         return authChecker(true).then(creds => {

@@ -153,6 +153,20 @@ message ContractReactPayout {
     uint32 status = 3;
 }
 
+message ContractSuggestItem {
+    string user_id = 1;
+    string contract_id = 2;
+    string item_id = 4;
+    string new_body = 3;
+}
+message ContractReactItem {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string item_id = 5;
+    uint32 status = 3;
+}
+
 message ContractAddItemRequest {
     string user_id = 1;
     string contract_id = 2;
@@ -204,6 +218,9 @@ service Contract {
     rpc ReactDate(ContractReactDate) returns (ContactEditResponse) {};
     rpc SuggestPayout(ContractSuggestPayout) returns (ContactEditResponse) {};
     rpc ReactPayout(ContractReactPayout) returns (ContactEditResponse) {};
+
+    rpc SuggestItem(ContractSuggestItem) returns (ContactEditResponse) {};
+    rpc ReactItem(ContractReactItem) returns (ContactEditResponse) {};
 
     rpc AddItem(ContractAddItemRequest) returns (ContractAddItemResponse) {};
     rpc DeleteItem(ContractDelItemRequest) returns (ContractResponse) {};
