@@ -22,6 +22,8 @@ export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
 export const CONTRACT_ITEM_ADD = "contract/item/ADD"
 export const CONTRACT_ITEM_EDIT = "contract/item/EDIT"
 export const CONTRACT_ITEM_LOAD = "contract/item/LOAD"
+export const CONTRACT_ITEM_UPDATE_BODY = "contract/item/UPDATE_BODY"
+export const CONTRACT_ITEM_RELOAD = "contract/item/RELOAD"
 
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
@@ -187,10 +189,50 @@ export default (state = initialState, action) => {
                 contractItemsChanged: !state.contractItemsChanged,
                 curConItems: [...action.payload],
             }
+        case CONTRACT_ITEM_RELOAD:
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+            }
+        case CONTRACT_ITEM_UPDATE_BODY:
+            const newItem = contractItemUpdateBody(getContractItem(state.curConItems, action.payload.itemId), action.payload)
+            const newItemsList = replaceContractItem(state.curConItems, newItem)
+            return {
+                ...state,
+                curConItems: newItemsList,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateContractItems(
+                        state.cachedContracts[state.selectedId], 
+                        newItemsList
+                    )
+                )
+
+            }
         default:
             return state
     }
 
+}
+
+const getContractItem = (items, id) => {
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id === id) {
+            return items[i]
+        }
+    }
+}
+const contractItemUpdateBody = (item, newBody) => {
+    item.currentBody = newBody.current
+    item.workerBody = newBody.worker
+    item.buyerBody = newBody.buyer
+    item.awaitingApproval = newBody.awaitingApproval      
+    return item
+}
+
+const updateContractItems = (contract, newItemsList) => {
+    contract.itemsList = newItemsList
+    return contract
 }
 
 const replaceContractItem = (items, new_item) => {
@@ -647,6 +689,39 @@ export const suggestItem = (contract_id, item_id, new_body) => {
     }
 };
 
+export const reactItem = (contract_id, message_id, item_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+}
+
 export const claimContract = (contract_id, password) => {
     return dispatch => {
         return authChecker(true).then(creds => {
@@ -764,6 +839,36 @@ export const updateLocalDate = (msg) => {
         });
         dispatch({
             type: CONTRACT_DEADLINE_RELOAD,
+        });
+    }
+}
+
+export const updateLocalItemBody = (msg) => {
+    return dispatch => {
+        const newBody = {
+            proposerId: msg.user.id,
+            itemId: msg.body.itemId,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
+        }
+    
+        if (msg.body.resolStatus === resolTypes.APPROVED) {
+            newBody.current = msg.body.newVersion
+            newBody.buyer = msg.body.newVersion
+            newBody.worker = msg.body.newVersion
+        }
+
+        console.log("New body:")
+        console.log(msg)
+        console.log(newBody)
+        dispatch({
+            type: CONTRACT_ITEM_UPDATE_BODY,
+            payload: newBody,
+        });
+        dispatch({
+            type: CONTRACT_ITEM_RELOAD,
         });
     }
 }

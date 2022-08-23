@@ -157,6 +157,7 @@ func (b *MessageBody) PriceProto() *comms.ChatMessage_PriceBody {
 func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
 	return &comms.ChatMessage_ItemBody{
 		ItemBody: &comms.ItemMsgBody{
+			ItemId:       b.ItemId.Hex(),
 			NewVersion:   b.ItemBodyNew,
 			OldVersion:   b.ItemBodyOld,
 			Resolved:     b.Resolved,

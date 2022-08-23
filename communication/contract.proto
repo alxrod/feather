@@ -90,6 +90,7 @@ message ItemEntity {
     string current_body = 5;
     string worker_body = 6;
     string buyer_body = 7;
+    bool awaiting_approval = 8;
 }
 
 message ItemNub {

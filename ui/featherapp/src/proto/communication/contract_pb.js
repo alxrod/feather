@@ -3307,7 +3307,8 @@ proto.main.ItemEntity.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
     currentBody: jspb.Message.getFieldWithDefault(msg, 5, ""),
     workerBody: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    buyerBody: jspb.Message.getFieldWithDefault(msg, 7, "")
+    buyerBody: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
   };
 
   if (includeInstance) {
@@ -3367,6 +3368,10 @@ proto.main.ItemEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setBuyerBody(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAwaitingApproval(value);
       break;
     default:
       reader.skipField();
@@ -3436,6 +3441,13 @@ proto.main.ItemEntity.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = message.getAwaitingApproval();
+  if (f) {
+    writer.writeBool(
+      8,
       f
     );
   }
@@ -3547,6 +3559,24 @@ proto.main.ItemEntity.prototype.getBuyerBody = function() {
  */
 proto.main.ItemEntity.prototype.setBuyerBody = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional bool awaiting_approval = 8;
+ * @return {boolean}
+ */
+proto.main.ItemEntity.prototype.getAwaitingApproval = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.ItemEntity} returns this
+ */
+proto.main.ItemEntity.prototype.setAwaitingApproval = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 

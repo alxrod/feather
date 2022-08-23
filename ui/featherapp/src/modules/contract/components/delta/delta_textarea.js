@@ -17,8 +17,6 @@ export default (props) => {
     const contentEditable = useRef(null)
 
     useEffect(() => {
-        console.log("Old text: " + props.old_text)
-        console.log("New text: " + props.new_text)
         changeText(props.old_text, props.new_text)
     }, [props.old_text, props.new_text])
 
@@ -72,7 +70,6 @@ export default (props) => {
         }
         
         let diffs = patienceDiffPlus(oldValue, newValue).lines
-        console.log(diffs)
         let insert_index = 0;
 
         for (var i = 0; i < diffs.length; i++) { 
@@ -93,8 +90,6 @@ export default (props) => {
     }
 
     const convertStateToHtml = (text_body) => {
-        console.log('Reloading w text body')
-        console.log(text_body)
         var html_string = "";
         if (text_body.length == 0) {
           return generateContractText(0, "", UNEDITED)

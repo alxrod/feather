@@ -12,6 +12,7 @@ export const generateContractText = (index, text, type) => {
   const start = '<b index="'+index+'" class="'+classes+'">'
   const end = '</b>'
   let out_str = ""
+  
   for (let i = 0; i < text.length; i++) {
     out_str += start + text[i] + end
   }

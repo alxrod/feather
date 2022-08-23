@@ -17,7 +17,8 @@ import {
     CONTRACT_UPDATE_PAYOUT,
     CONTRACT_DEADLINE_RELOAD,
     CONTRACT_UPDATE_DATE,
-    internalUpdateLocalDate,
+    CONTRACT_ITEM_UPDATE_BODY,
+    CONTRACT_ITEM_RELOAD
 } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -254,6 +255,41 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         })
         dispatch({
             type: CONTRACT_DEADLINE_RELOAD,
+        })
+
+    } else if (msg.method === msgMethods.ITEM) {
+        console.log("Received item body message")
+        console.log(msg)
+
+        const newBody = {
+            proposerId: msg.user.id,
+            itemId: msg.body.itemId,
+            current: msg.body.oldVersion,
+            awaitingApproval: !msg.body.resolved,
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
+        }
+        if (this_user_id === msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newBody.worker = msg.body.newVersion
+            } else {
+                newBody.buyer = msg.body.newVersion
+            }   
+        } else if (this_user_id !== msg.user.id) {
+            if (role === WORKER_TYPE) {
+                newBody.buyer = msg.body.newVersion
+            } else {
+                newBody.worker = msg.body.newVersion
+            }   
+        }
+        console.log("Suggestion new item body:")
+        console.log(newBody)
+        dispatch({
+            type: CONTRACT_ITEM_UPDATE_BODY,
+            payload: newBody,
+        })
+        dispatch({
+            type: CONTRACT_ITEM_RELOAD,
         })
 
     } else if (msg.method === msgMethods.REVISION) {

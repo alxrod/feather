@@ -1,9 +1,22 @@
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
+import { useState, useEffect} from "react"
+import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import DeltaBody from "../delta/delta_textarea"
 
 const ContractTextArea = (props) => {
-
+  const [oldText, setOldText] = useState("")
+  const [newText, setNewText] = useState("")
+  useEffect( () => {
+    if (props.lock) {
+      setOldText(props.contract_info.currentBody)
+      if (props.contract_info.workerBody === props.contract_info.currentBody) {
+        setNewText(props.contract_info.buyerBody)
+      } else {
+        setNewText(props.contract_info.workerBody)
+      }
+    }
+  }, [props.lock, props.contractItemsChanged])
   // const set_to_total_offset = () => {
   //   if (contentEditable.current.children.length < curOffset) {
   //     return
@@ -56,14 +69,18 @@ const ContractTextArea = (props) => {
             <label htmlFor="comment" className="sr-only">
               Add your comment
             </label>
-            <textarea
-                name="intro_msg"
-                id="intro_msg"
-                className="grow w-full text-gray-700 inline-block focus:border-0 focus:ring-0 focus:outline-none w-full border-0 border-b border-transparent p-0 pb-2 resize-none sm:text-sm"
-                placeholder="Add the description for this contract item..."
-                value={props.text_body}
-                onChange={handleChange}
-            />
+            {props.lock ? (
+              <DeltaBody old_text={oldText} new_text={newText}/>
+            ) : (
+              <textarea
+                  name="intro_msg"
+                  id="intro_msg"
+                  className="grow w-full text-gray-700 inline-block focus:border-0 focus:ring-0 focus:outline-none w-full border-0 border-b border-transparent p-0 pb-2 resize-none sm:text-sm"
+                  placeholder="Add the description for this contract item..."
+                  value={props.text_body}
+                  onChange={handleChange}
+              />
+            )}
           </div>
       </div>
      
@@ -71,11 +88,13 @@ const ContractTextArea = (props) => {
   )
 }
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, contract }) => ({
   cur_id: (user.user !== null) ? user.user.user_id : "",
+  contractItemsChanged: contract.contractItemsChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  
 }, dispatch)
 
 export default connect(

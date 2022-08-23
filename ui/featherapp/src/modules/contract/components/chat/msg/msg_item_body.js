@@ -5,7 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactPayout, updateLocalPayout } from "../../../../../reducers/contract.reducer"
+import { reactItem, updateLocalItemBody } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
@@ -30,15 +30,15 @@ const ItemBodyMsg = (props) => {
   const [otherStatus, setOtherStatus] = useState(0)
 
   const [version, setVersion] = useState(1)
-//   useEffect( () => {
-//     if (props.reloaded === true) {
-//       if ((version+1) > 1) {
-//         props.updateLocalPayout(props.msg)
-//       }
-//       setVersion(version+1)
-//       props.finishedReload()
-//     }
-//   }, [props.reloaded])
+  useEffect( () => {
+    if (props.reloaded === true) {
+      if ((version+1) > 1) {
+        props.updateLocalItemBody(props.msg)
+      }
+      setVersion(version+1)
+      props.finishedReload()
+    }
+  }, [props.reloaded])
 
   useEffect( () => {
     if (props.selectedId !== "") {
@@ -66,12 +66,12 @@ const ItemBodyMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    // props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
-    // console.log("Accepting change")
+    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.YES)
+    console.log("Accepting change")
   }
   const rejectChange = () => {
-    // props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
-    // console.log("Rejecting change")
+    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.NO)
+    console.log("Rejecting change")
   }
   
   
@@ -156,6 +156,8 @@ const mapStateToProps = ({ user, contract }) => ({
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+	updateLocalItemBody,
+	reactItem,
   finishedReload,
 }, dispatch)
   

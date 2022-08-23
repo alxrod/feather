@@ -32,6 +32,10 @@ const ContractItem = (props) => {
   const [decideMode, toggleDecideMode] = useState(false)
 
   const item_text = useMemo(() => {
+    let i = 0
+    if (props.contractItemsChanged) {
+      i += 1
+    }
     if (props.override) {
       return contract_info.currentBody
     } else if (role === WORKER_TYPE) {
@@ -44,7 +48,7 @@ const ContractItem = (props) => {
   })
 
   useEffect( () => {
-    if (item_text !== contract_info.currentBody) {
+    if (item_text !== contract_info.currentBody && !lock) {
       toggleDecideMode(true)
     } else {
       toggleDecideMode(false)
@@ -70,6 +74,11 @@ const ContractItem = (props) => {
       for (let i = 0; i < props.curItems.length; i++) {
         if (props.curItems[i].id === props.id) {
           setContractInfo(props.curItems[i])
+          if (props.curItems[i].awaitingApproval) {
+            setLock(true)
+          } else {
+            setLock(false)
+          }
         }
       }
     }
@@ -116,7 +125,7 @@ const ContractItem = (props) => {
 
   if (props.embedded === true) {
     return (
-        <ItemTextArea item_id={props.id} embedded={props.embedded} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
+        <ItemTextArea item_id={props.id} embedded={props.embedded} role={role} contract_info={contract_info} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
     )
   }
   return (
@@ -152,7 +161,7 @@ const ContractItem = (props) => {
             </div>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
-            <ItemTextArea item_id={props.id} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
+            <ItemTextArea item_id={props.id} lock={lock} override={props.override} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
           </div>
       </div>
     </div>

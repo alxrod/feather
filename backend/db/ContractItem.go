@@ -35,7 +35,10 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		return &comms.ItemEntity{}
 	}
 	proto := &comms.ItemEntity{
-		Name:        ci.Name,
+		Name: ci.Name,
+
+		AwaitingApproval: ci.AwaitingApproval,
+
 		CurrentBody: ci.CurrentBody,
 		WorkerBody:  ci.WorkerBody,
 		BuyerBody:   ci.BuyerBody,
@@ -64,9 +67,10 @@ func ItemInsert(item *comms.ItemEntity, contract_id primitive.ObjectID, collecti
 		Name:       item.Name,
 		ContractId: contract_id,
 
-		CurrentBody: item.CurrentBody,
-		WorkerBody:  item.WorkerBody,
-		BuyerBody:   item.BuyerBody,
+		AwaitingApproval: false,
+		CurrentBody:      item.CurrentBody,
+		WorkerBody:       item.WorkerBody,
+		BuyerBody:        item.BuyerBody,
 	}
 
 	res, err := collection.InsertOne(context.TODO(), contract_item)
