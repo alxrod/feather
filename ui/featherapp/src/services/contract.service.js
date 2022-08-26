@@ -412,6 +412,7 @@ class ContractService {
         entity.setWorkerPayout(deadline_info.workerPayout);
         entity.setBuyerPayout(deadline_info.buyerPayout)
         entity.setPayoutAwaitingApproval(deadline_info.payoutAwaitingApproval);
+        entity.setDraftRequired(deadline_info.draftRequired);
 
         const current = new google_protobuf_timestamp_pb.Timestamp()
         current.fromDate(deadline_info.currentDate)

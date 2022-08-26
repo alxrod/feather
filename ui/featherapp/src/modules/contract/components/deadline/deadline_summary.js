@@ -5,6 +5,7 @@ import {Tooltip, Button} from "flowbite-react"
 import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import DecideButton from '../decide_button'
+import DraftToggle from "./draft_toggle"
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -101,6 +102,14 @@ const DeadlineSummary = (props) => {
     }
 
     // End edit mode only
+    const changeDraftRequired = () => {
+      console.log("HELLO")
+      let newDeadline = props.deadline
+      newDeadline.draftRequired = !newDeadline.draftRequired
+      console.log("Switching deadline to ")
+      console.log(newDeadline)
+      props.editDeadline(newDeadline)
+    }
 
     useEffect(() => {
       
@@ -284,6 +293,8 @@ const DeadlineSummary = (props) => {
                   )}  
                   
                 </div>
+
+                <DraftToggle required={props.deadline.draftRequired} changeRequired={changeDraftRequired}/>
               </div>
             </div>
   

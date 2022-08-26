@@ -919,6 +919,7 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
     buyerDate: (f = msg.getBuyerDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     dateAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     dateProposerId: jspb.Message.getFieldWithDefault(msg, 17, ""),
+    draftRequired: jspb.Message.getBooleanFieldWithDefault(msg, 19, false),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
     proto.main.ItemNub.toObject, includeInstance),
     itemsAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
@@ -1012,6 +1013,10 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 17:
       var value = /** @type {string} */ (reader.readString());
       msg.setDateProposerId(value);
+      break;
+    case 19:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDraftRequired(value);
       break;
     case 14:
       var value = new proto.main.ItemNub;
@@ -1142,6 +1147,13 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       17,
+      f
+    );
+  }
+  f = message.getDraftRequired();
+  if (f) {
+    writer.writeBool(
+      19,
       f
     );
   }
@@ -1451,6 +1463,24 @@ proto.main.DeadlineEntity.prototype.getDateProposerId = function() {
  */
 proto.main.DeadlineEntity.prototype.setDateProposerId = function(value) {
   return jspb.Message.setProto3StringField(this, 17, value);
+};
+
+
+/**
+ * optional bool draft_required = 19;
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.getDraftRequired = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setDraftRequired = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 19, value);
 };
 
 

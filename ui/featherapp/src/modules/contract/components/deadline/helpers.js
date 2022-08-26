@@ -23,6 +23,7 @@ export const exportDeadlines = (incoming) => {
         itemsList: in_d.itemsList,
         
       }
+      out_d.draftRequired = in_d.draftRequired
       out_d.id = in_d.id
       outgoing.push(out_d)
     }
@@ -59,6 +60,7 @@ export const importDeadlines = (incoming) => {
     } else {
       out_d.id = in_d.id
     }
+    out_d.draftRequired = in_d.draftRequired
     if (i === incoming.length - 1) {
       out_d.lastDeadline = true
     } else {
@@ -147,6 +149,7 @@ export const genEmptyDeadline = (date) => {
       payoutAwaitingApproval: false,
       dateAwaitingApproval: false,
       itemsAwaitingApproval: false,
+      draftRequired: false,
   
       proposerId: "",
       itemsList: [],

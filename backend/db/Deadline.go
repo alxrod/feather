@@ -25,6 +25,8 @@ type Deadline struct {
 	BuyerPayout            float32            `bson:"buyer_payout"`
 	PayoutProposerId       primitive.ObjectID `bson:"payout_proposer_id"`
 	PayoutAwaitingApproval bool               `bson:"payout_awaiting_approval"`
+	DraftRequired          bool               `bson:"draft_required"`
+	DraftPath              string             `bson:"draft_path"`
 
 	CurrentDate          time.Time          `bson:"current_date"`
 	WorkerDate           time.Time          `bson:"worker_date"`
@@ -80,6 +82,8 @@ func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.
 
 		DateProposerId:   user_id,
 		PayoutProposerId: user_id,
+
+		DraftRequired: proto.DraftRequired,
 
 		CurrentPayout:          proto.CurrentPayout,
 		WorkerPayout:           proto.WorkerPayout,

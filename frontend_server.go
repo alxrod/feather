@@ -88,6 +88,10 @@ func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
 		path := fmt.Sprintf("%v", r.URL)
+
+		// NOTE TO PAUL, for t3.p5, this is where you need to check the url path to test if the incoming request is a file upload
+		// path, if it is, use the file upload handler that is used in the tutorial you implemented in t3.p4
+
 		for _, route := range routes {
 			if (strings.Contains(path, route) && route != "/") || path == "/" {
 				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", r.URL)))

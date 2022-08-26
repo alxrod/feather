@@ -23,12 +23,13 @@ message DeadlineEntity {
     bool payout_awaiting_approval = 12;
     string payout_proposer_id = 13;
 
-
     google.protobuf.Timestamp current_date = 5;
     google.protobuf.Timestamp worker_date = 8;
     google.protobuf.Timestamp buyer_date = 11;
     bool date_awaiting_approval = 16;
     string date_proposer_id = 17;
+
+    bool draft_required = 19;
 
     repeated ItemNub items = 14;
     bool items_awaiting_approval = 15;
