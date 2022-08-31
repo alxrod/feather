@@ -7,7 +7,9 @@ import { genEmptyDeadline } from "./helpers"
 import Calendar from "./calendar"
 import CalendarTime from "./calendar_time"
 import DecideButton from '../decide_button'
-import { suggestDate } from '../../../../reducers/contract.reducer'
+import { reactDate, suggestDate } from '../../../../reducers/contract.reducer'
+import { msgMethods, decisionTypes } from "../../../../services/chat.service"
+
 
 
 const CalendarBundle = (props) => {
@@ -23,6 +25,21 @@ const CalendarBundle = (props) => {
   const [origDeadline, setOrigDeadline] = useState(undefined)
   
   const [calRefresh, toggleCalRefresh] = useState(false)
+
+  const [proposedByPartner, setProposedByPartner] = useState(false)
+  const [dateMsgId, setDateMsgId] = useState("")
+
+  useEffect(() => {
+    let final_date_id = ""
+    for (let i = 0; i < props.messages.length; i++) {
+      if (props.messages[i].method === msgMethods.DATE) {
+        if (props.messages[i].dateBody.deadlineId === props.deadline.id) {
+          final_date_id = props.messages[i].id
+        }
+      }
+    }
+    setDateMsgId(final_date_id)
+  }, [props.messages.length, props.deadline])
 
   const changeDate = (new_deadline) => {
     console.log("Changing the deadline date!")
@@ -87,7 +104,13 @@ const CalendarBundle = (props) => {
   useEffect( () => {
     if (props.deadline) {
       if (props.deadline.dateAwaitingApproval) {
+        if (props.deadline.dateProposerId === props.user.user_id) {
+          setProposedByPartner(false)
+        } else {
+          setProposedByPartner(true)
+        }
         setDateLock(true)
+        
       } else {
         setDateLock(false)
       }
@@ -99,6 +122,13 @@ const CalendarBundle = (props) => {
     }
   }, [props.deadline])
 
+  const approveChange = () => {
+    props.reactDate(props.selectedId, dateMsgId, props.deadline.id, decisionTypes.YES)
+  }
+  const denyChange = () => {
+    props.reactDate(props.selectedId, dateMsgId, props.deadline.id, decisionTypes.NO)
+  }
+
   return (
     <div className="w-full h-full">
       <div className="w-full h-6">
@@ -107,6 +137,12 @@ const CalendarBundle = (props) => {
               <p className={" "+dateMsgColor}>{dateMsg}</p>
               <DecideButton approve={submitDate} reject={rejectDate} />
             </div>   
+        )}
+        {(proposedByPartner && dateLock) && (
+          <div className="w-full flex flex-wrap justify-between">
+            <p className={" "+dateMsgColor}>Approve your partner's change</p>
+            <DecideButton approve={approveChange} reject={denyChange}/>
+          </div> 
         )}
       </div>
       
@@ -139,10 +175,13 @@ const CalendarBundle = (props) => {
 
 const mapStateToProps = ({ user, contract, chat }) => ({
   selectedId: contract.selectedId,
+  user: user.user,
+  messages: chat.messages,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  suggestDate
+  suggestDate,
+  reactDate,
 }, dispatch)
 
 export default connect(

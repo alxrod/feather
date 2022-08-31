@@ -9,6 +9,9 @@ import { LockOpenIcon } from "@heroicons/react/outline"
 import { LockClosedIcon } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
 
+import { reactItem } from '../../../../reducers/contract.reducer'
+import { msgMethods, decisionTypes } from "../../../../services/chat.service"
+
 
 const SAVE_TIME = 350
 
@@ -53,7 +56,27 @@ const ContractItem = (props) => {
     } else {
       toggleDecideMode(false)
     }
-  }, [item_text])
+  }, [item_text, props.contractItemsChanged])
+
+  const [proposedByPartner, setProposedByPartner] = useState(false)
+  const [itemMsgId, setItemMsgId] = useState("")
+  
+  useEffect(() => {
+    let final_item_id = ""
+    for (let i = 0; i < props.messages.length; i++) {
+      if (props.messages[i].method === msgMethods.ITEM) {
+        if (props.messages[i].itemBody.itemId === props.id) {
+          final_item_id = props.messages[i].id
+          if (props.messages[i].user.id === props.user.user_id) {
+            setProposedByPartner(false)
+          } else {
+            setProposedByPartner(true)
+          }
+        }
+      }
+    }
+    setItemMsgId(final_item_id)
+  }, [props.messages.length, props.deadline])
 
   useEffect( () => {
     if (props.override) {
@@ -122,6 +145,12 @@ const ContractItem = (props) => {
     setContractText(contract_info.currentBody)
   }
   
+  const approveChange = () => {
+    props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
+  }
+  const denyChange = () => {
+    props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
+  }
 
   if (props.embedded === true) {
     return (
@@ -158,6 +187,12 @@ const ContractItem = (props) => {
                     <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
                   </div>
                 )}
+                {(lock && proposedByPartner) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
+                    <DecideButton approve={approveChange} reject={denyChange}/>
+                  </div>
+                )}
             </div>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
@@ -168,18 +203,20 @@ const ContractItem = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, contract, chat }) => ({
   curItems: contract.curConItems,
   contractItemsChanged: contract.contractItemsChanged,
   user: user.user,
   selectedId: contract.selectedId, 
   cachedContracts: contract.cachedContracts,
+  messages: chat.messages,
 
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   editContractItem,
   suggestItem,
+  reactItem,
 }, dispatch)
 
 export default connect(

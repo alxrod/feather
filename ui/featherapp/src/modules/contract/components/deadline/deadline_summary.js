@@ -9,6 +9,8 @@ import DraftToggle from "./draft_toggle"
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { reactPayout } from '../../../../reducers/contract.reducer'
+import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 const DeadlineSummary = (props) => {
   
@@ -22,6 +24,21 @@ const DeadlineSummary = (props) => {
     
     const [oldPayout, setOldPayout] = useState(0)
     // End editing mode variables
+
+    const [proposedByPartner, setProposedByPartner] = useState(false)
+    const [payoutMsgId, setPayoutMsgId] = useState("")
+  
+    useEffect(() => {
+      let final_date_id = ""
+      for (let i = 0; i < props.messages.length; i++) {
+        if (props.messages[i].method === msgMethods.PAYOUT) {
+          if (props.messages[i].payoutBody.deadlineId === props.deadline.id) {
+            final_date_id = props.messages[i].id
+          }
+        }
+      }
+      setPayoutMsgId(final_date_id)
+    }, [props.messages.length, props.deadline])
 
     
     
@@ -132,12 +149,14 @@ const DeadlineSummary = (props) => {
           setPayoutTextColor("text-green")
           setOldPayout(props.deadline.current.payout)
           if (props.deadline.payoutProposerId == props.user.user_id) {
+            setProposedByPartner(false)
             if (props.role === BUYER_TYPE) {
               setPayout(props.deadline.buyer.payout)
             } else if (props.role === WORKER_TYPE) {
               setPayout(props.deadline.worker.payout)
             }
           } else {
+            setProposedByPartner(true)
             if (props.role === BUYER_TYPE) {
               setPayout(props.deadline.worker.payout)
             } else if (props.role === WORKER_TYPE) {
@@ -176,7 +195,12 @@ const DeadlineSummary = (props) => {
       setPrevPayout(total)
     }, [props.deadlines, curPayout])
     
-
+    const approveChange = () => {
+      props.reactPayout(props.selectedId, payoutMsgId, props.deadline.id, decisionTypes.YES)
+    }
+    const denyChange = () => {
+      props.reactPayout(props.selectedId, payoutMsgId, props.deadline.id, decisionTypes.NO)
+    }
     
 
     return (
@@ -291,6 +315,12 @@ const DeadlineSummary = (props) => {
                     </div>
                     
                   )}  
+
+                  {(payoutLock && proposedByPartner) && (
+                    <div className="mt-1 ml-2 ">
+                      <DecideButton approve={approveChange} reject={denyChange}/>
+                    </div>
+                  )}
                   
                 </div>
 
@@ -305,12 +335,15 @@ const DeadlineSummary = (props) => {
     )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, contract, chat }) => ({
   user: user.user,
-  reloadDeadlines: contract.reloadDeadlinesFlag
+  reloadDeadlines: contract.reloadDeadlinesFlag,
+  selectedId: contract.selectedId,
+  messages: chat.messages,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  reactPayout
 }, dispatch)
 
 export default connect(

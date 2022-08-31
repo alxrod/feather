@@ -2,9 +2,11 @@ import React, {useState, useEffect} from "react";
 import {LockOpenIcon, ExclamationCircleIcon} from "@heroicons/react/outline"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { suggestPrice } from '../../../../reducers/contract.reducer'
+import { suggestPrice, reactPrice } from '../../../../reducers/contract.reducer'
 import DecideButton from "../decide_button";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import { msgMethods, decisionTypes } from "../../../../services/chat.service"
+
 import EditLock from "../../../general_components/edit_lock"
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useLocation } from 'react-router-dom'
@@ -25,7 +27,20 @@ const PriceField = (props) => {
   const [textColor, setTextColor] = useState("text-gray-500")
   const [proposing, toggleProposing] = useState(false)
   const [lock, toggleLock] = useState(false)
+  const [proposedByPartner, setProposedByPartner] = useState(false)
   const [oldPrice, setOldPrice] = useState("")
+
+  const [priceMsgId, setPriceMsgId] = useState("")
+
+  useEffect(() => {
+    let final_price_id = ""
+    for (let i = 0; i < props.messages.length; i++) {
+      if (props.messages[i].method === msgMethods.PRICE) {
+        final_price_id = props.messages[i].id
+      }
+    }
+    setPriceMsgId(final_price_id)
+  }, [props.messages.length])
 
   let user_type = WORKER_TYPE
 
@@ -50,13 +65,19 @@ const PriceField = (props) => {
         console.log("Receiving")
         console.log(price)
         setOldPrice(price.current)
+        console.log("Loading the price info for awaiting")
         if (price.proposerId === props.user.user_id) {
+          setProposedByPartner(false)
+
           if (user_type === WORKER_TYPE) {
             newPrice = price.worker
+            
           } else {
             newPrice = price.buyer
+            
           }
         } else {
+          setProposedByPartner(true)
           if (user_type === WORKER_TYPE) {
             newPrice = price.buyer
             
@@ -80,7 +101,6 @@ const PriceField = (props) => {
         toggleLock(true)
       }
     }
-
   }, [props.selectedId, props.cachedContracts, props.awaitingEdit])
 
 
@@ -117,7 +137,13 @@ const PriceField = (props) => {
     toggleProposing(false)
     setFieldValue(origPrice)
   }
-  
+
+  const approveChange = () => {
+    props.reactPrice(props.selectedId, priceMsgId, decisionTypes.YES)
+  }
+  const denyChange = () => {
+    props.reactPrice(props.selectedId, priceMsgId, decisionTypes.NO)
+  }
 
   return (
     <>
@@ -181,6 +207,12 @@ const PriceField = (props) => {
             <DecideButton approve={submitChange} reject={rejectChange}/>
           </div>
         )}
+
+        {(proposedByPartner && lock) && (
+          <div className="ml-1 pt-1 my-auto">
+            <DecideButton approve={approveChange} reject={denyChange}/>
+          </div>
+        )}
       </div>
     </>
   )
@@ -192,10 +224,12 @@ const mapStateToProps = ({ user, contract, chat }) => ({
   reloadMsg: chat.reloadMsg,
   cachedContracts: contract.cachedContracts,
   user: user.user,
+  messages: chat.messages,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   suggestPrice,
+  reactPrice,
 }, dispatch)
 
 export default connect(
