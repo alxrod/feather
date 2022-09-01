@@ -24,7 +24,6 @@ import {
     ContractReactItem,
 
     ClaimContractRequest,
-    
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -99,7 +98,6 @@ class ContractService {
                 
                 // Change times
                 let contractObj = cleanDeadlines(response.getContract())
-
                 contractObj.role = resp.role
                 resolve(contractObj)
             });

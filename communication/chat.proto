@@ -116,6 +116,7 @@ message ChatMessageSet{
     string room_id = 1;
     repeated ChatMessage messages = 2;
 }
+
 service Chat {
     rpc PullChatHistory(ChatPullRequest) returns (ChatMessageSet);
     rpc JoinChat(UserJoin) returns (stream ChatMessage);

@@ -53,10 +53,33 @@ const DeadlineSummary = (props) => {
       } else if (!isNumeric(e.target.value) || newVal < 0 || newVal > 100) {
         setPayoutError("Payout must be between 0-100%")
         return
+      }
+
+      let payout_sum = 0
+      for (let i = 0; i < props.deadlines.length; i++) {
+        if (props.deadline.id !== props.deadlines[i].id) {
+          if (props.role === WORKER_TYPE) {
+            payout_sum += props.deadlines[i].worker.payout
+          } else if (props.role === BUYER_TYPE) {
+            payout_sum += props.deadlines[i].buyer.payout
+          } else {
+            payout_sum += props.deadlines[i].current.payout
+          }
+        } else {
+          payout_sum += newVal
+        }
+      }
+      console.log("Payout value sum is")
+      console.log(payout_sum)
+      if (payout_sum > 100) {
+        setPayoutError("The sum of all payouts must be 100% or less")
+        return
       } else {
         setPayoutError("")
       }
-      let newDeadline = props.deadline
+
+      
+      let newDeadline = JSON.parse(JSON.stringify(props.deadline))
       if (props.createMode === true) {
         newDeadline.worker.payout = newVal
         newDeadline.current.payout = newVal
@@ -92,6 +115,28 @@ const DeadlineSummary = (props) => {
       }
       
     }
+    useEffect( () => {
+      let payout_sum = 0
+      console.log(props.deadlines)
+      for (let i = 0; i < props.deadlines.length; i++) {
+        if (props.deadline.id !== props.deadlines[i].id) {
+          if (props.role === WORKER_TYPE) {
+            payout_sum += props.deadlines[i].worker.payout
+          } else if (props.role === BUYER_TYPE) {
+            payout_sum += props.deadlines[i].buyer.payout
+          } else {
+            payout_sum += props.deadlines[i].current.payout
+          }
+        } else {
+          payout_sum += payoutValue
+        }
+      }
+      if (payout_sum < 100) {
+        setPayoutError("you still have " + (100 - payout_sum) + "% of contract to allocate")
+      } else {
+        setPayoutError("")
+      }
+    }, [payoutValue])
 
     // Edit Mode Only
     useEffect( () => {
@@ -113,9 +158,11 @@ const DeadlineSummary = (props) => {
     }
 
     const rejectPayout = () => {
+      setCurPayout(oldPayout)
       setPayout(oldPayout)
       togglePayoutEditInProgress(false)
       setPayoutTextColor("text-gray-500")
+      setPayoutError("")
     }
 
     // End edit mode only
@@ -167,18 +214,25 @@ const DeadlineSummary = (props) => {
       }
     }, [props.deadline, props.reloadDeadlines])
 
-    const curPayout = useMemo(() => {
-      if (props.role === WORKER_TYPE) {
-        return props.deadline.worker.payout
-      } else if (props.role === BUYER_TYPE) {
-        return props.deadline.buyer.payout
-      } else {
-        return props.deadline.current.payout
-      }
-    })
+    const [curPayout, setCurPayout] = useState(0)
+    useEffect(() => {
+      console.log("CHANINGING CUR PAYOUT")
+      // let cur = 0
+      // if (props.role === WORKER_TYPE) {
+      //   cur = props.deadline.worker.payout
+      // } else if (props.role === BUYER_TYPE) {
+      //   cur = props.deadline.buyer.payout
+      // } else {
+      //   cur = props.deadline.current.payout
+      // }
+      // console.log(props.deadline)
+      // console.log(cur)
+      setCurPayout(payoutValue)
+    }, [props.deadline, payoutValue])
     const [prevPayout, setPrevPayout] = useState(0)
 
     useEffect(() => {
+      console.log("RELOADING THE PREV PAYMENTS")
       let total = 0.0
       for (let i = 0; i < props.deadline.idx; i++) {
         if (props.role === WORKER_TYPE) {
@@ -193,7 +247,7 @@ const DeadlineSummary = (props) => {
         setPrevPayout(100 - curPayout)
       }
       setPrevPayout(total)
-    }, [props.deadlines, curPayout])
+    }, [props.deadlines, curPayout, props.deadline])
     
     const approveChange = () => {
       props.reactPayout(props.selectedId, payoutMsgId, props.deadline.id, decisionTypes.YES)
