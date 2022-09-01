@@ -161,3 +161,9 @@ export const addWeeks = (date, weeks) => {
     newDate.setDate(newDate.getDate() + weeks * 7)
     return newDate
 }
+
+export const inBetweenDates = (first, second) => {
+  let inBetweenTime = ((second.getTime() - first.getTime()) / 2) + first.getTime()
+  let newDate = new Date(inBetweenTime);
+  return newDate
+}

@@ -111,6 +111,8 @@ class ContractService {
             var metadata = {"authorization": token}
             contractClient.queryByUser(queryRequest, metadata, function(error, response) {
                 if (error) {
+                    console.log("Error:")
+                    console.log(error)
                     reject(error)
                 }
                 console.log("RESPONSE")

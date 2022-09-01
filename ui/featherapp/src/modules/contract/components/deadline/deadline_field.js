@@ -4,7 +4,7 @@ import CalendarModal from "./calendar_modal";
 import DeadlineDisplay from "./deadline_display"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { exportDeadlines, importDeadlines, genTestSet, genEmptyDeadline, addWeeks } from "./helpers"
+import { exportDeadlines, importDeadlines, genTestSet, genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import {suggestPayout} from "../../../../reducers/contract.reducer"
 
@@ -57,14 +57,34 @@ const DeadlineField = (props) => {
     toggleReloadFlag(!reloadFlag)
   }
 
-  const addDeadline = () => {
-    const lastDeadline = localDeadlines[localDeadlines.length-1]
-    const newDate = addWeeks(lastDeadline.current.date,1)
+  const addDeadline = (curSelected) => {
+    const curDeadline = localDeadlines[curSelected]
+    let curDate = curDeadline.current.date
+    if (role === WORKER_TYPE) {
+      curDate = curDeadline.worker.date
+    } else if (role === BUYER_TYPE) {
+      curDate = curDeadline.buyer.date
+    }
+
+    let newDate = addWeeks(curDate,1)
+    if (curSelected < (localDeadlines.length - 1) ) {
+      const nextDeadline = localDeadlines[curSelected + 1] 
+      let nextDate = nextDeadline.current.date
+      if (role === WORKER_TYPE) {
+        nextDate = nextDeadline.worker.date
+      } else if (role === BUYER_TYPE) {
+        nextDate = nextDeadline.buyer.date
+      }
+      newDate = inBetweenDates(curDate, nextDate)
+    }
+
     const new_deadline = genEmptyDeadline(newDate)
-    new_deadline.id = localDeadlines.length +1
-    new_deadline.idx = lastDeadline.idx+1
+    new_deadline.id = (localDeadlines.length +1).toString()
+    new_deadline.idx = localDeadlines.length
     let newDeadlines = localDeadlines
     newDeadlines.push(new_deadline)
+    console.log("Before sort new deadlines look like")
+    console.log(newDeadlines)
     setLocalDeadlines(sortDeadlines(newDeadlines))
     toggleReloadFlag(!reloadFlag)
     for (let i = 0; i < newDeadlines.length; i++) {
@@ -75,6 +95,8 @@ const DeadlineField = (props) => {
   }
 
   const sortDeadlines = (deadlines) => {
+    console.log("Inspecting Deadlines")
+    console.log(deadlines)
     if (role === WORKER_TYPE) {
       deadlines.sort((a, b) => (a.worker.date > b.worker.date) ? 1 : -1)
     } else if (role === BUYER_TYPE) {
@@ -82,14 +104,17 @@ const DeadlineField = (props) => {
     } else {
       deadlines.sort((a, b) => (a.current.date > b.current.date) ? 1 : -1)
     }
+    console.log("Checking in resort")
     for (let i = 0; i < deadlines.length; i++) {
       deadlines[i].idx = i
       deadlines[i].relDate = deadlines[i].current.date
       if (role === WORKER_TYPE) {
+        
         deadlines[i].relDate = deadlines[i].worker.date
       } else if (role === BUYER_TYPE) {
         deadlines[i].relDate = deadlines[i].buyer.date
       }
+      console.log(deadlines[i].relDate)
     }
     return deadlines
   }

@@ -78,8 +78,12 @@ const DeadlineSummary = (props) => {
         setPayoutError("")
       }
 
-      
+      // remember when cloning object dates get messed up
       let newDeadline = JSON.parse(JSON.stringify(props.deadline))
+      newDeadline.current.date = new Date(newDeadline.current.date)
+      newDeadline.worker.date = new Date(newDeadline.worker.date)
+      newDeadline.buyer.date = new Date(newDeadline.buyer.date)
+
       if (props.createMode === true) {
         newDeadline.worker.payout = newVal
         newDeadline.current.payout = newVal

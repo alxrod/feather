@@ -161,6 +161,7 @@ func (contract *Contract) NextDeadline() (*time.Time, error) {
 			}
 		}
 	}
+	earliest = &contract.Deadlines[len(contract.Deadlines)-1].CurrentDate
 	if earliest == nil {
 		return nil, errors.New("This contract is missing deadlines")
 	}

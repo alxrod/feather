@@ -21,7 +21,7 @@ const CalendarModal = (props) => {
   const [selected, setSelected] = useState(0)
 
   const handleAddDeadline = () => {
-    const newSelect = props.addDeadline()
+    const newSelect = props.addDeadline(selected)
     setSelected(newSelect)
   }
 
