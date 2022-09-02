@@ -481,3 +481,24 @@ func ContractSavePrice(contract *Contract, database *mongo.Database) error {
 	}
 	return nil
 }
+
+func ContractSaveItems(contract *Contract, database *mongo.Database) error {
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"item_ids", contract.ItemIds}}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractSuggestItemAdd(item *ContractItem, contract *Contract, user *User, database *mongo.Database) error {
+	contract.ItemIds = append(contract.ItemIds, item.Id)
+	contract.Items = append(contract.Items, item)
+	err := ContractSaveItems(contract, database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

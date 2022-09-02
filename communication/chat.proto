@@ -3,6 +3,8 @@ package main;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 
+import "communication/contract.proto";
+
 message UserHandle {
     string id = 1;
     string username = 2;
@@ -21,6 +23,7 @@ message ChatMessage {
         PriceMsgBody price_body = 8;
         ItemMsgBody item_body = 9;
         RevMsgBody rev_body = 10;
+        ItemCreateMsgBody item_create_body = 12;
     }   
 }
 message ChatLabel {
@@ -31,6 +34,15 @@ message ChatLabel {
 }
 message CommentMsgBody {
     string message = 1;
+}
+
+message ItemCreateMsgBody {
+    ItemEntity item = 1;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
 }
 
 message ItemMsgBody {

@@ -17,12 +17,13 @@ import (
 
 // Methods
 const (
-	COMMENT  = 0
-	ITEM     = 1
-	DATE     = 2
-	PAYOUT   = 5
-	PRICE    = 3
-	REVISION = 4
+	COMMENT     = 0
+	ITEM        = 1
+	DATE        = 2
+	PAYOUT      = 5
+	ITEM_CREATE = 6
+	PRICE       = 3
+	REVISION    = 4
 )
 
 // Editing Typs
@@ -84,6 +85,7 @@ type MessageBody struct {
 	ItemId      primitive.ObjectID `bson:"item_id,omitempty"`
 	ItemBodyNew string             `bson:"item_new,omitempty"`
 	ItemBodyOld string             `bson:"item_old,omitempty"`
+	Item        *ContractItem      `bson:"-"`
 
 	// Deadline messages
 	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
@@ -169,6 +171,19 @@ func (b *MessageBody) ItemProto() *comms.ChatMessage_ItemBody {
 	}
 }
 
+func (b *MessageBody) ItemCreateProto() *comms.ChatMessage_ItemCreateBody {
+	return &comms.ChatMessage_ItemCreateBody{
+		ItemCreateBody: &comms.ItemCreateMsgBody{
+			Item:         b.Item.Proto(),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -205,6 +220,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.PriceProto()
 	} else if m.Method == REVISION {
 		proto.Body = m.Body.RevProto()
+	} else if m.Method == ITEM_CREATE {
+		proto.Body = m.Body.ItemCreateProto()
 	}
 
 	return proto
@@ -303,6 +320,18 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("Contract Not Found")
 	}
+	user, err := UserQueryId(message.UserId, database.Collection(USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+	message.User = user
+	if message.Method == ITEM_CREATE && !message.Body.ItemId.IsZero() {
+		item, err := ContractItemById(message.Body.ItemId, database.Collection(ITEM_COL))
+		if err != nil {
+			return nil, err
+		}
+		message.Body.Item = item
+	}
 	return message, nil
 }
 
@@ -342,22 +371,4 @@ func ParseBody(req *comms.SendRequest) *MessageBody {
 		body.PriceOld = req.GetPriceBody().OldVersion
 	}
 	return body
-}
-
-func MessageQueryById(id primitive.ObjectID, database *mongo.Database) (*Message, error) {
-	var msg *Message
-	filter := bson.M{"_id": id}
-	var err error
-	err = database.Collection(MSG_COL).FindOne(context.TODO(), filter).Decode(&msg)
-	if err != nil {
-		log.Println(color.Ize(color.Red, err.Error()))
-		return nil, err
-	}
-	user, err := UserQueryId(msg.UserId, database.Collection(USERS_COL))
-	if err != nil {
-		return nil, err
-	}
-	msg.User = user
-	return msg, err
-
 }

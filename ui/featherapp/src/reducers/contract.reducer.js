@@ -25,6 +25,9 @@ export const CONTRACT_ITEM_LOAD = "contract/item/LOAD"
 export const CONTRACT_ITEM_UPDATE_BODY = "contract/item/UPDATE_BODY"
 export const CONTRACT_ITEM_RELOAD = "contract/item/RELOAD"
 
+export const CONTRACT_SUGGEST_ITEM_REMOVE = "contract/item/SUGGEST_REMOVE"
+export const CONTRACT_ITEM_REPLACE_SUGGEST = "contract/item/REPLACE_SUGGEST"
+
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
     for (let i = 0; i < initialNubs.length; i++) {
@@ -170,6 +173,8 @@ export default (state = initialState, action) => {
             }
 
         case CONTRACT_ITEM_ADD:
+            console.log("At core reducer includiong payload: ")
+            console.log(action.payload)
             return {
                 ...state,
                 contractItemsChanged: !state.contractItemsChanged,
@@ -209,11 +214,45 @@ export default (state = initialState, action) => {
                 )
 
             }
+        case CONTRACT_SUGGEST_ITEM_REMOVE:
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: deleteContractItem(state.curConItems, action.payload)
+            }
+        
+        case CONTRACT_ITEM_REPLACE_SUGGEST:
+            const replacementList = replaceSuggestItemCurCon(state.curConItems, action.payload)
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: replacementList,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateContractItems(
+                        state.cachedContracts[state.selectedId], 
+                        replacementList
+                    )
+                )
+            }
+
         default:
             return state
     }
 
 }
+
+const replaceSuggestItemCurCon = (items, replacement) => {
+    let newItems = []
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id !== "new_negotiate") {
+            newItems.push(items[i])
+        }
+    }
+    newItems.push(replacement)
+    return newItems
+}
+
 
 const getContractItem = (items, id) => {
     for (let i = 0; i < items.length; i++) {
@@ -242,6 +281,15 @@ const replaceContractItem = (items, new_item) => {
         }
     }
     return items
+}
+const deleteContractItem = (items, remove_id) => {
+    let new_items = []
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id !== remove_id) {
+            new_items.push(items[i])
+        }
+    }
+    return new_items
 }
 const editContract = (contracts, new_contract) => {
     contracts[new_contract.id] = new_contract
@@ -299,7 +347,7 @@ const editDeadlineDate = (contract, date_info) => {
     
 }
 
-export const addContractItem = (create_mode, new_id) => {
+export const addContractItem = (create_mode, new_id, new_name) => {
     return dispatch => {
         if (create_mode) {
             const new_item = {
@@ -314,7 +362,28 @@ export const addContractItem = (create_mode, new_id) => {
                 payload: new_item,
             })
             return Promise.resolve(new_item)
+        } else {
+            const new_item = {
+                name: "Item " + new_name,
+                id: new_id,
+                currentBody: "",
+                workerBody: "",
+                buyerBody: "",
+            }
+            dispatch({
+                type: CONTRACT_ITEM_ADD,
+                payload: new_item,
+            })
+            return Promise.resolve(new_item)
         }
+    }
+}
+export const deleteSuggestContractItem = (id) => {
+    return dispatch => {
+        dispatch({
+            type: CONTRACT_SUGGEST_ITEM_REMOVE,
+            payload: id,
+        })
     }
 }
 
@@ -721,6 +790,39 @@ export const reactItem = (contract_id, message_id, item_id, status) => {
         });
     }
 }
+
+export const addItem = (contract_id, item_name, item_body) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+            return ContractService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
+                (data) => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
 
 export const claimContract = (contract_id, password) => {
     return dispatch => {

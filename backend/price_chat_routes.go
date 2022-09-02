@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSuggestPrice) (*comms.ContactEditResponse, error) {
+func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSuggestPrice) (*comms.ContractEditResponse, error) {
 	log.Println(fmt.Sprintf("Suggesting a price %d", req.NewPrice))
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
@@ -47,10 +47,10 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 		return nil, err
 	}
 	log.Println("Price Message Broadcast")
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPrice) (*comms.ContactEditResponse, error) {
+func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPrice) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
 		return nil, err
@@ -142,5 +142,5 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	if err = s.SendRevMessage(revMsg); err != nil {
 		return nil, err
 	}
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }

@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import {queryContract} from "../../../reducers/contract.reducer"
+import {queryContract, addContractItem} from "../../../reducers/contract.reducer"
 import { genEmptyContract } from '../../../services/contract.service';
 
 import ContractItem from "../components/contract_item/contract_item";
@@ -37,18 +37,28 @@ const ContractNegotiate = (props) => {
   
   const [contractItemIds, setContractItemIds] = useState([])
   const [deadlines, setDeadlines] = useState({})
+  const [addItemMode, toggleAddItemMode] = useState(false)
 
   useEffect(() => {
     if (contractItemIds !== undefined) {
       console.log("UPDATING CONTRACT")
+      console.log(props.curConItems)
       let ids = []
-      for (let i = 0; i < contract.itemsList.length; i++) {
-        ids.push(contract.itemsList[i].id)
+      for (let i = 0; i < props.curConItems.length; i++) {
+        ids.push(props.curConItems[i].id)
       }
+      console.log("THe new ids are")
+      console.log(ids)
       setContractItemIds(ids)
       setDeadlines(contract.deadlinesList)
     }
-  }, [contract])
+  }, [contract, props.contractItemsChanged])
+
+  const addContractItem = () => {
+    console.log("TESTING CONTRACT ITEM")
+    props.addContractItem(false, "new_negotiate", (contractItemIds.length+1).toString())
+    toggleAddItemMode(true)
+  }
 
 	return (
 		<div className="p-4 sm:p-6 lg:p-8 m-auto">
@@ -76,11 +86,14 @@ const ContractNegotiate = (props) => {
 			<div className="mt-5">
         {contractItemIds.map((item_id) => (
           <div className="min-h-[100px] w-full mb-5" key={item_id}>
-            <ContractItem override={false} id={item_id}/>
+            <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
           </div>
         ))}
 			</div>
-			<NewContractItem/>
+      {(!addItemMode) && (
+        <NewContractItem addContractItem={addContractItem}/>
+      )}
+			
 		</div>
 	)
 }
@@ -88,11 +101,14 @@ const ContractNegotiate = (props) => {
 const mapStateToProps = ({ user, contract }) => ({
   selectedId: contract.selectedId,
   cachedContracts: contract.cachedContracts,
+  contractItemsChanged: contract.contractItemsChanged,
+  curConItems: contract.curConItems,
   user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  queryContract
+  queryContract,
+  addContractItem,
 }, dispatch)
 
 export default connect(

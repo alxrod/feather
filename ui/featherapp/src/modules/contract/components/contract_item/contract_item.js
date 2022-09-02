@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
-import { editContractItem, suggestItem } from "../../../../reducers/contract.reducer"
+import { editContractItem, suggestItem, addItem, deleteSuggestContractItem } from "../../../../reducers/contract.reducer"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import { LockOpenIcon } from "@heroicons/react/outline"
 import { LockClosedIcon } from '@heroicons/react/solid'
@@ -60,6 +60,7 @@ const ContractItem = (props) => {
 
   const [proposedByPartner, setProposedByPartner] = useState(false)
   const [itemMsgId, setItemMsgId] = useState("")
+  const [suggestMode, toggleSuggestMode] = useState(false)
   
   useEffect(() => {
     let final_item_id = ""
@@ -152,6 +153,21 @@ const ContractItem = (props) => {
     props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
   }
 
+  const addItem = () => {
+    if (props.suggestMode) {
+      console.log("Adding item")
+      props.addItem(props.selectedId, contract_info.name, item_text).then( () => {
+        props.createCallback()
+      })
+    }
+  }
+
+  const deleteItem = () => {
+    if (props.suggestMode) {
+      props.deleteSuggestContractItem(props.id)
+    }
+  }
+
   if (props.embedded === true) {
     return (
         <ItemTextArea item_id={props.id} embedded={props.embedded} role={role} contract_info={contract_info} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
@@ -181,7 +197,13 @@ const ContractItem = (props) => {
                   <LockOpenIcon className="ml-1 w-6 h-6 text-gray-500"/>
                 )}
               </div>
-                {(!props.override && decideMode) && (
+                {(!props.override && props.suggestMode) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
+                    <DecideButton approve={addItem} reject={deleteItem}/>
+                  </div>
+                )}
+                {(!props.override && decideMode && !props.suggestMode) && (
                   <div className="flex items-center">
                     <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
                     <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
@@ -217,6 +239,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   editContractItem,
   suggestItem,
   reactItem,
+  addItem,
+  deleteSuggestContractItem,
 }, dispatch)
 
 export default connect(

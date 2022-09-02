@@ -16,7 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggestItem) (*comms.ContactEditResponse, error) {
+func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggestItem) (*comms.ContractEditResponse, error) {
 	log.Println(fmt.Sprintf("Suggesting a item %d", req.NewBody))
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
@@ -63,10 +63,10 @@ func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggest
 	// 	return nil, err
 	// }
 	// log.Println("Price Message Broadcast")
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem) (*comms.ContactEditResponse, error) {
+func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
 		return nil, err
@@ -155,5 +155,49 @@ func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem
 	if err = s.SendRevMessage(revMsg); err != nil {
 		return nil, err
 	}
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
+}
+
+func (s *BackServer) AddItem(ctx context.Context, req *comms.ContractAddItem) (*comms.ContractEditResponse, error) {
+	log.Println(fmt.Sprintf("Suggesting creating a item %d", req.Item.Name))
+	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, err
+	}
+
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Item.AwaitingApproval = true
+	req.Item.AwaitingCreation = true
+	item, err := db.ItemInsert(req.Item, contract_id, database.Collection(db.ITEM_COL))
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.ContractSuggestItemAdd(item, contract, user, database)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Item Updated, attempting to send message")
+
+	err = s.SendItemCreateMessage(item, contract, user, db.SUGGEST)
+	// log.Println("Finished attempting to send message")
+	if err != nil {
+		return nil, err
+	}
+	// log.Println("Price Message Broadcast")
+	return &comms.ContractEditResponse{}, nil
 }

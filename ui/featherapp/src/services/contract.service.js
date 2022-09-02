@@ -23,6 +23,8 @@ import {
     ContractReactDate,
     ContractReactItem,
 
+    ContractAddItem,
+
     ClaimContractRequest,
 
 } from "../proto/communication/contract_pb";
@@ -337,6 +339,31 @@ class ContractService {
                     reject(error)
                 }
                 resolve(response)
+            });
+        });
+
+    }
+
+    addItem(token, user_id, contract_id, item_name, item_body) {
+        let addRequest = new ContractAddItem();
+        const item = {
+            name: item_name,
+            currentBody: item_body,
+            workerBody: item_body,
+            buyerBody: item_body,
+        }
+        let itemEntity = this.generateItemEntity(item)
+        addRequest.setItem(itemEntity)
+        addRequest.setUserId(user_id)
+        addRequest.setContractId(contract_id)
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.addItem(addRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
             });
         });
 

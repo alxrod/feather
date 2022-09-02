@@ -92,6 +92,7 @@ message ItemEntity {
     string worker_body = 6;
     string buyer_body = 7;
     bool awaiting_approval = 8;
+    bool awaiting_creation = 9;
 }
 
 message ItemNub {
@@ -169,17 +170,16 @@ message ContractReactItem {
     uint32 status = 3;
 }
 
-message ContractAddItemRequest {
+message ContractAddItem {
     string user_id = 1;
     string contract_id = 2;
-    string item_title = 3;
-    string item_body = 4;
+    ItemEntity item = 3;
 }
 
-message ContractDelItemRequest {
+message ContractDelItem {
     string user_id = 1;
     string contract_id = 2;
-    string item_id = 3;
+    ItemEntity item = 3;
 }
 
 message ContractResponse {
@@ -202,7 +202,7 @@ message ClaimContractRequest {
     string password = 3;
 }
 
-message ContactEditResponse {}
+message ContractEditResponse {}
 
 service Contract {
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
@@ -213,17 +213,17 @@ service Contract {
     rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
 
-    rpc SuggestPrice(ContractSuggestPrice) returns (ContactEditResponse) {};
-    rpc ReactPrice(ContractReactPrice) returns (ContactEditResponse) {};
+    rpc SuggestPrice(ContractSuggestPrice) returns (ContractEditResponse) {};
+    rpc ReactPrice(ContractReactPrice) returns (ContractEditResponse) {};
 
-    rpc SuggestDate(ContractSuggestDate) returns (ContactEditResponse) {};
-    rpc ReactDate(ContractReactDate) returns (ContactEditResponse) {};
-    rpc SuggestPayout(ContractSuggestPayout) returns (ContactEditResponse) {};
-    rpc ReactPayout(ContractReactPayout) returns (ContactEditResponse) {};
+    rpc SuggestDate(ContractSuggestDate) returns (ContractEditResponse) {};
+    rpc ReactDate(ContractReactDate) returns (ContractEditResponse) {};
+    rpc SuggestPayout(ContractSuggestPayout) returns (ContractEditResponse) {};
+    rpc ReactPayout(ContractReactPayout) returns (ContractEditResponse) {};
 
-    rpc SuggestItem(ContractSuggestItem) returns (ContactEditResponse) {};
-    rpc ReactItem(ContractReactItem) returns (ContactEditResponse) {};
+    rpc SuggestItem(ContractSuggestItem) returns (ContractEditResponse) {};
+    rpc ReactItem(ContractReactItem) returns (ContractEditResponse) {};
 
-    rpc AddItem(ContractAddItemRequest) returns (ContractAddItemResponse) {};
-    rpc DeleteItem(ContractDelItemRequest) returns (ContractResponse) {};
+    rpc AddItem(ContractAddItem) returns (ContractEditResponse) {};
+    rpc DeleteItem(ContractDelItem) returns (ContractEditResponse) {};
 }

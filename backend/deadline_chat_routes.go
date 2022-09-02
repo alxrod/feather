@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSuggestPayout) (*comms.ContactEditResponse, error) {
+func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSuggestPayout) (*comms.ContractEditResponse, error) {
 	log.Println(fmt.Sprintf("Suggesting a payout %d for %s", req.NewPayout, req.DeadlineId))
 
 	// Collect Ids:
@@ -67,10 +67,10 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 		return nil, err
 	}
 	log.Println("Payout Message Broadcast")
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPayout) (*comms.ContactEditResponse, error) {
+func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPayout) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
 		return nil, err
@@ -159,10 +159,10 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 	if err = s.SendRevMessage(revMsg); err != nil {
 		return nil, err
 	}
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggestDate) (*comms.ContactEditResponse, error) {
+func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggestDate) (*comms.ContractEditResponse, error) {
 	log.Println(fmt.Sprintf("Suggesting a date %d for %s", req.NewDate, req.DeadlineId))
 
 	// Collect Ids:
@@ -217,10 +217,10 @@ func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggest
 		return nil, err
 	}
 	log.Println("Date Message Broadcast")
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate) (*comms.ContactEditResponse, error) {
+func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
 		return nil, err
@@ -309,6 +309,6 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 	if err = s.SendRevMessage(revMsg); err != nil {
 		return nil, err
 	}
-	return &comms.ContactEditResponse{}, nil
+	return &comms.ContractEditResponse{}, nil
 
 }

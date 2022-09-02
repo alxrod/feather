@@ -28,6 +28,7 @@ type ContractItem struct {
 	BuyerBody        string             `bson:"buyer_body"`
 	AwaitingApproval bool               `bson:"awaiting_approval"`
 	Proposer         primitive.ObjectID `bson:"proposer_id"`
+	AwaitingCreation bool               `bson:"awaiting_creation"`
 }
 
 func (ci *ContractItem) Proto() *comms.ItemEntity {
@@ -38,6 +39,7 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		Name: ci.Name,
 
 		AwaitingApproval: ci.AwaitingApproval,
+		AwaitingCreation: ci.AwaitingCreation,
 
 		CurrentBody: ci.CurrentBody,
 		WorkerBody:  ci.WorkerBody,
@@ -67,7 +69,8 @@ func ItemInsert(item *comms.ItemEntity, contract_id primitive.ObjectID, collecti
 		Name:       item.Name,
 		ContractId: contract_id,
 
-		AwaitingApproval: false,
+		AwaitingApproval: item.AwaitingApproval,
+		AwaitingCreation: item.AwaitingCreation,
 		CurrentBody:      item.CurrentBody,
 		WorkerBody:       item.WorkerBody,
 		BuyerBody:        item.BuyerBody,

@@ -18,7 +18,8 @@ import {
     CONTRACT_DEADLINE_RELOAD,
     CONTRACT_UPDATE_DATE,
     CONTRACT_ITEM_UPDATE_BODY,
-    CONTRACT_ITEM_RELOAD
+    CONTRACT_ITEM_RELOAD,
+    CONTRACT_ITEM_REPLACE_SUGGEST,
 } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -42,6 +43,7 @@ export const msgMethods = {
 	PAYOUT:    5,
 	PRICE:     3,
 	REVISION:  4,
+    ITEM_CREATE: 6,
 }
 
 export const editTypes = {
@@ -292,6 +294,11 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_ITEM_RELOAD,
         })
 
+    } else if (msg.method === msgMethods.ITEM_CREATE) {
+        dispatch({
+            type: CONTRACT_ITEM_REPLACE_SUGGEST,
+            payload: msg.body.item,
+        });
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CONTRACT_SEND_EDIT,
@@ -300,7 +307,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CHAT_MESSAGE_UPDATE,
             payload: msg.body,
         })
-        
     }
 }
 
@@ -317,9 +323,12 @@ const reformatBody = (msg) => {
         msg.body = msg.priceBody
     } else if (msg.method === msgMethods.REVISION) {
         msg.body = msg.revBody
+    } else if (msg.method === msgMethods.ITEM_CREATE) {
+        msg.body = msg.itemCreateBody
     } else {
         msg.body = {}
     }
+
     return msg
 }
 export default new ChatService();
