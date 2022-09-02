@@ -23,7 +23,8 @@ const ContractItem = (props) => {
     currentBody: "",
     workerBody: "",
     buyerBody: "",
-
+    awaitingApproval: false,
+    awaitingCreation: false,
     default: true,
   })
 
@@ -174,13 +175,13 @@ const ContractItem = (props) => {
     )
   }
   return (
-    <div className="bg-white shadow sm:rounded-lg">
+    <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green" : "")}>
         <div className="px-2 py-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <a
                   href="#"
-                  className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-lg"
+                  className={"relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-lg "}
                 >
                   <span className="absolute flex-shrink-0 flex items-center justify-center">
                   <span
