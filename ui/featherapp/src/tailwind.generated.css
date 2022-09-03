@@ -1978,6 +1978,10 @@ input:checked + .toggle-bg {
   --tw-border-opacity: 1;
   border-color: rgb(88 80 236 / var(--tw-border-opacity));
 }
+.border-green {
+  --tw-border-opacity: 1;
+  border-color: rgb(100 226 145 / var(--tw-border-opacity));
+}
 .border-gray-700 {
   --tw-border-opacity: 1;
   border-color: rgb(55 65 81 / var(--tw-border-opacity));
@@ -2013,10 +2017,6 @@ input:checked + .toggle-bg {
 .border-blue-600 {
   --tw-border-opacity: 1;
   border-color: rgb(28 100 242 / var(--tw-border-opacity));
-}
-.border-green {
-  --tw-border-opacity: 1;
-  border-color: rgb(100 226 145 / var(--tw-border-opacity));
 }
 .bg-gray-200 {
   --tw-bg-opacity: 1;

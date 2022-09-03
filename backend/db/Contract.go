@@ -502,3 +502,21 @@ func ContractSuggestItemAdd(item *ContractItem, contract *Contract, user *User, 
 
 	return nil
 }
+
+func ContractRemoveItem(item *ContractItem, contract *Contract, database *mongo.Database) error {
+	newIds := make([]primitive.ObjectID, len(contract.ItemIds)-1)
+	newItems := make([]*ContractItem, len(contract.Items)-1)
+	for idx, id := range contract.ItemIds {
+		if id != item.Id {
+			newIds[idx] = id
+			newItems[idx] = newItems[idx]
+		}
+	}
+	contract.ItemIds = newIds
+	contract.Items = newItems
+	err := ContractSaveItems(contract, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}

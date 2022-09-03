@@ -872,16 +872,16 @@ proto.main.ContractPromiseClient.prototype.reactItem =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.main.ContractAddItem,
+ *   !proto.main.ContractSuggestAddItem,
  *   !proto.main.ContractEditResponse>}
  */
-const methodDescriptor_Contract_AddItem = new grpc.web.MethodDescriptor(
-  '/main.Contract/AddItem',
+const methodDescriptor_Contract_SuggestAddItem = new grpc.web.MethodDescriptor(
+  '/main.Contract/SuggestAddItem',
   grpc.web.MethodType.UNARY,
-  proto.main.ContractAddItem,
+  proto.main.ContractSuggestAddItem,
   proto.main.ContractEditResponse,
   /**
-   * @param {!proto.main.ContractAddItem} request
+   * @param {!proto.main.ContractSuggestAddItem} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -892,7 +892,7 @@ const methodDescriptor_Contract_AddItem = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.main.ContractAddItem} request The
+ * @param {!proto.main.ContractSuggestAddItem} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -901,48 +901,48 @@ const methodDescriptor_Contract_AddItem = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ContractClient.prototype.addItem =
+proto.main.ContractClient.prototype.suggestAddItem =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Contract/AddItem',
+      '/main.Contract/SuggestAddItem',
       request,
       metadata || {},
-      methodDescriptor_Contract_AddItem,
+      methodDescriptor_Contract_SuggestAddItem,
       callback);
 };
 
 
 /**
- * @param {!proto.main.ContractAddItem} request The
+ * @param {!proto.main.ContractSuggestAddItem} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.main.ContractEditResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ContractPromiseClient.prototype.addItem =
+proto.main.ContractPromiseClient.prototype.suggestAddItem =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Contract/AddItem',
+      '/main.Contract/SuggestAddItem',
       request,
       metadata || {},
-      methodDescriptor_Contract_AddItem);
+      methodDescriptor_Contract_SuggestAddItem);
 };
 
 
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.main.ContractDelItem,
+ *   !proto.main.ContractReactAddItem,
  *   !proto.main.ContractEditResponse>}
  */
-const methodDescriptor_Contract_DeleteItem = new grpc.web.MethodDescriptor(
-  '/main.Contract/DeleteItem',
+const methodDescriptor_Contract_ReactAddItem = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactAddItem',
   grpc.web.MethodType.UNARY,
-  proto.main.ContractDelItem,
+  proto.main.ContractReactAddItem,
   proto.main.ContractEditResponse,
   /**
-   * @param {!proto.main.ContractDelItem} request
+   * @param {!proto.main.ContractReactAddItem} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -953,7 +953,7 @@ const methodDescriptor_Contract_DeleteItem = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.main.ContractDelItem} request The
+ * @param {!proto.main.ContractReactAddItem} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -962,32 +962,154 @@ const methodDescriptor_Contract_DeleteItem = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ContractClient.prototype.deleteItem =
+proto.main.ContractClient.prototype.reactAddItem =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Contract/DeleteItem',
+      '/main.Contract/ReactAddItem',
       request,
       metadata || {},
-      methodDescriptor_Contract_DeleteItem,
+      methodDescriptor_Contract_ReactAddItem,
       callback);
 };
 
 
 /**
- * @param {!proto.main.ContractDelItem} request The
+ * @param {!proto.main.ContractReactAddItem} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
  * @return {!Promise<!proto.main.ContractEditResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ContractPromiseClient.prototype.deleteItem =
+proto.main.ContractPromiseClient.prototype.reactAddItem =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Contract/DeleteItem',
+      '/main.Contract/ReactAddItem',
       request,
       metadata || {},
-      methodDescriptor_Contract_DeleteItem);
+      methodDescriptor_Contract_ReactAddItem);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractSuggestDelItem,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_SuggestDeleteItem = new grpc.web.MethodDescriptor(
+  '/main.Contract/SuggestDeleteItem',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractSuggestDelItem,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractSuggestDelItem} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractSuggestDelItem} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.suggestDeleteItem =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/SuggestDeleteItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestDeleteItem,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractSuggestDelItem} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.suggestDeleteItem =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/SuggestDeleteItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestDeleteItem);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractReactDelItem,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_ReactDeleteItem = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactDeleteItem',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractReactDelItem,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractReactDelItem} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractReactDelItem} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.reactDeleteItem =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ReactDeleteItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactDeleteItem,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractReactDelItem} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.reactDeleteItem =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ReactDeleteItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactDeleteItem);
 };
 
 

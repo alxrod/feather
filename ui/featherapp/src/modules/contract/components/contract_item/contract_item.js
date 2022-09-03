@@ -9,7 +9,7 @@ import { LockOpenIcon } from "@heroicons/react/outline"
 import { LockClosedIcon } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
 
-import { reactItem } from '../../../../reducers/contract.reducer'
+import { reactItem, reactAddItem } from '../../../../reducers/contract.reducer'
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 
@@ -60,14 +60,17 @@ const ContractItem = (props) => {
   }, [item_text, props.contractItemsChanged])
 
   const [proposedByPartner, setProposedByPartner] = useState(false)
+  const [creationProposedByPartner, setCreationProposedByPartner] = useState(false)
   const [itemMsgId, setItemMsgId] = useState("")
+  const [itemAddMsgId, setItemAddMsgId] = useState("")
   const [suggestMode, toggleSuggestMode] = useState(false)
   
   useEffect(() => {
     let final_item_id = ""
+    let final_item_add_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.ITEM) {
-        if (props.messages[i].itemBody.itemId === props.id) {
+        if (props.messages[i].body.itemId === props.id) {
           final_item_id = props.messages[i].id
           if (props.messages[i].user.id === props.user.user_id) {
             setProposedByPartner(false)
@@ -76,8 +79,21 @@ const ContractItem = (props) => {
           }
         }
       }
+
+      if (props.messages[i].method === msgMethods.ITEM_CREATE) {
+        if (props.messages[i].body.item.id === props.id) {
+          final_item_add_id = props.messages[i].id
+          if (props.messages[i].user.id === props.user.user_id) {
+            setCreationProposedByPartner(false)
+          } else {
+            setCreationProposedByPartner(true)
+          }
+        }
+      }
     }
     setItemMsgId(final_item_id)
+    setItemAddMsgId(final_item_add_id)
+
   }, [props.messages.length, props.deadline])
 
   useEffect( () => {
@@ -154,6 +170,13 @@ const ContractItem = (props) => {
     props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
   }
 
+  const approveCreate = () => {
+    props.reactAddItem(props.selectedId, itemAddMsgId, props.id, decisionTypes.YES)
+  }
+  const denyCreate = () => {
+    props.reactAddItem(props.selectedId, itemAddMsgId, props.id, decisionTypes.NO)
+  }
+
   const addItem = () => {
     if (props.suggestMode) {
       console.log("Adding item")
@@ -216,6 +239,12 @@ const ContractItem = (props) => {
                     <DecideButton approve={approveChange} reject={denyChange}/>
                   </div>
                 )}
+                {(lock && contract_info.awaitingCreation && creationProposedByPartner) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
+                    <DecideButton approve={approveCreate} reject={denyCreate}/>
+                  </div>
+                )}
             </div>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
@@ -240,6 +269,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   editContractItem,
   suggestItem,
   reactItem,
+  reactAddItem,
   addItem,
   deleteSuggestContractItem,
 }, dispatch)

@@ -170,16 +170,30 @@ message ContractReactItem {
     uint32 status = 3;
 }
 
-message ContractAddItem {
+message ContractSuggestAddItem {
     string user_id = 1;
     string contract_id = 2;
     ItemEntity item = 3;
 }
-
-message ContractDelItem {
+message ContractReactAddItem {
     string user_id = 1;
     string contract_id = 2;
-    ItemEntity item = 3;
+    string message_id = 4;
+    string item_id = 3;
+    uint32 status = 5;
+}
+
+message ContractSuggestDelItem {
+    string user_id = 1;
+    string contract_id = 2;
+    string item_id = 3;
+}
+message ContractReactDelItem {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string item_id = 3;
+    uint32 status = 5;
 }
 
 message ContractResponse {
@@ -224,6 +238,9 @@ service Contract {
     rpc SuggestItem(ContractSuggestItem) returns (ContractEditResponse) {};
     rpc ReactItem(ContractReactItem) returns (ContractEditResponse) {};
 
-    rpc AddItem(ContractAddItem) returns (ContractEditResponse) {};
-    rpc DeleteItem(ContractDelItem) returns (ContractEditResponse) {};
+    rpc SuggestAddItem(ContractSuggestAddItem) returns (ContractEditResponse) {};
+    rpc ReactAddItem(ContractReactAddItem) returns (ContractEditResponse) {};
+
+    rpc SuggestDeleteItem(ContractSuggestDelItem) returns (ContractEditResponse) {};
+    rpc ReactDeleteItem(ContractReactDelItem) returns (ContractEditResponse) {};
 }

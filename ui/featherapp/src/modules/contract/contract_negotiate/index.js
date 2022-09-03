@@ -52,7 +52,12 @@ const ContractNegotiate = (props) => {
       setContractItemIds(ids)
       setDeadlines(contract.deadlinesList)
     }
-  }, [contract, props.contractItemsChanged])
+  }, [contract, props.contractItemsChanged, props.curConItems.length])
+
+  useEffect( () => {
+    console.log("CONTRACT FLAG FLIPPED")
+  }, [props.contractItemsChanged])
+
 
   const addContractItem = () => {
     console.log("TESTING CONTRACT ITEM")

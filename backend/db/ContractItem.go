@@ -112,6 +112,15 @@ func ContractItemReplace(item *ContractItem, database *mongo.Database) error {
 	return nil
 }
 
+func ContractItemDelete(item *ContractItem, database *mongo.Database) error {
+	filter := bson.D{{"_id", item.Id}}
+	_, err := database.Collection(ITEM_COL).DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ContractItemSuggestBody(item *ContractItem, contract *Contract, user *User, newBody string, database *mongo.Database) error {
 	if item.AwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The contract item %s is already awaiting approval of a different body change", item.Id.Hex()))

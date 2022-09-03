@@ -28,6 +28,9 @@ export const CONTRACT_ITEM_RELOAD = "contract/item/RELOAD"
 export const CONTRACT_SUGGEST_ITEM_REMOVE = "contract/item/SUGGEST_REMOVE"
 export const CONTRACT_ITEM_REPLACE_SUGGEST = "contract/item/REPLACE_SUGGEST"
 
+export const CONTRACT_CONFIRM_ITEM_ADD = "contract/item/CONFIRM_ADD"
+export const CONTRACT_REJECT_ITEM_ADD = "contract/item/REJECT_ADD"
+
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
     for (let i = 0; i < initialNubs.length; i++) {
@@ -236,6 +239,36 @@ export default (state = initialState, action) => {
                 )
             }
 
+        case CONTRACT_CONFIRM_ITEM_ADD:
+            const addReplacementList = replaceItemCurCon(state.curConItems, action.payload)
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: addReplacementList,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateContractItems(
+                        state.cachedContracts[state.selectedId], 
+                        addReplacementList
+                    )
+                )
+            }
+            
+        case CONTRACT_REJECT_ITEM_ADD:
+            const removeReplacementList = removeItemCurCon(state.curConItems, action.payload)
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: removeReplacementList,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateContractItems(
+                        state.cachedContracts[state.selectedId], 
+                        removeReplacementList
+                    )
+                )
+            }
+
         default:
             return state
     }
@@ -250,6 +283,28 @@ const replaceSuggestItemCurCon = (items, replacement) => {
         }
     }
     newItems.push(replacement)
+    return newItems
+}
+
+const replaceItemCurCon = (items, replacement) => {
+    let newItems = []
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id !== replacement.id) {
+            newItems.push(items[i])
+        }
+    }
+    newItems.push(replacement)
+    return newItems
+}
+const removeItemCurCon = (items, remove) => {
+    let newItems = []
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id !== remove.id) {
+            newItems.push(items[i])
+        }
+    }
+    console.log("new items leaving: ")
+    console.log(newItems)
     return newItems
 }
 
@@ -824,6 +879,40 @@ export const addItem = (contract_id, item_name, item_body) => {
     }
 };
 
+export const reactAddItem = (contract_id, message_id, item_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactAddItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+}
+
+
 export const claimContract = (contract_id, password) => {
     return dispatch => {
         return authChecker(true).then(creds => {
@@ -969,6 +1058,33 @@ export const updateLocalItemBody = (msg) => {
             type: CONTRACT_ITEM_UPDATE_BODY,
             payload: newBody,
         });
+        dispatch({
+            type: CONTRACT_ITEM_RELOAD,
+        });
+    }
+}
+
+export const updateLocalItemAdd = (msg) => {
+    return dispatch => {
+        console.log("DISPATCH HAPPENING")
+        console.log(msg)
+        if (msg.body.resolStatus == resolTypes.APPROVED) {
+            console.log("DISPATCH CALLED FOR APPROVED")
+            msg.body.item.awaitingApproval = false
+            msg.body.item.awaitingCreation = false
+            dispatch({
+                type: CONTRACT_CONFIRM_ITEM_ADD,
+                payload: msg.body.item,
+            });
+        } else {
+            console.log("DISPATCH CALLED FOR REJECTED")
+            dispatch({
+                type: CONTRACT_REJECT_ITEM_ADD,
+                payload: msg.body.item,
+            });
+        }
+
+        
         dispatch({
             type: CONTRACT_ITEM_RELOAD,
         });

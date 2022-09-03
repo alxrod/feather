@@ -23,7 +23,8 @@ import {
     ContractReactDate,
     ContractReactItem,
 
-    ContractAddItem,
+    ContractSuggestAddItem,
+    ContractReactAddItem,
 
     ClaimContractRequest,
 
@@ -345,7 +346,7 @@ class ContractService {
     }
 
     addItem(token, user_id, contract_id, item_name, item_body) {
-        let addRequest = new ContractAddItem();
+        let addRequest = new ContractSuggestAddItem();
         const item = {
             name: item_name,
             currentBody: item_body,
@@ -359,11 +360,33 @@ class ContractService {
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
-            contractClient.addItem(addRequest, metadata, function(error, response) {
+            contractClient.suggestAddItem(addRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
                 resolve(response.toObject())
+            });
+        });
+
+    }
+
+    reactAddItem(token, user_id, contract_id, item_id, message_id, status) {
+        let reactRequest = new ContractReactAddItem();
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setItemId(item_id);
+        reactRequest.setStatus(status);
+        console.log("attempting to send")
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactAddItem(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
             });
         });
 
