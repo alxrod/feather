@@ -96,7 +96,7 @@ const PayoutMsg = (props) => {
               {props.msg.user.username}
             </a>
           </div>
-          <div className="flex">
+          <div className="flex flex-wrap">
             <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={props.msg.label}/>
           </div>
         </div>

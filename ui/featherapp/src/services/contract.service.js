@@ -26,6 +26,9 @@ import {
     ContractSuggestAddItem,
     ContractReactAddItem,
 
+    ContractSuggestDelItem,
+    ContractReactDelItem,
+
     ClaimContractRequest,
 
 } from "../proto/communication/contract_pb";
@@ -392,6 +395,36 @@ class ContractService {
 
     }
 
+    deleteItem(token, user_id, contract_id, item_id, item_name, item_body) {
+        let delRequest = new ContractSuggestDelItem();
+        const item = {
+            id: item_id,
+            name: item_name,
+            currentBody: item_body,
+            workerBody: item_body,
+            buyerBody: item_body,
+        }
+        let itemEntity = this.generateItemEntity(item)
+        delRequest.setItem(itemEntity)
+        delRequest.setUserId(user_id)
+        delRequest.setContractId(contract_id)
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestDeleteItem(delRequest, metadata, function(error, response) {
+                console.log("Call back")
+                console.log(error)
+                console.log(response)
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+
+    }
+
+
     claimContract(token, user_id, contract_id, password) {
         let claimRequest = new ClaimContractRequest();
         claimRequest.setUserId(user_id);
@@ -502,6 +535,9 @@ class ContractService {
     generateItemEntity(item) {
         let entity = new ItemEntity()
 
+        if (item.id) {
+            entity.setId(item.id)
+        }
         entity.setName(item.name)
         entity.setCurrentBody(item.currentBody)
         entity.setBuyerBody(item.buyerBody)

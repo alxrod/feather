@@ -93,6 +93,7 @@ message ItemEntity {
     string buyer_body = 7;
     bool awaiting_approval = 8;
     bool awaiting_creation = 9;
+    bool awaiting_deletion = 10;
 }
 
 message ItemNub {
@@ -186,7 +187,7 @@ message ContractReactAddItem {
 message ContractSuggestDelItem {
     string user_id = 1;
     string contract_id = 2;
-    string item_id = 3;
+    ItemEntity item = 3;
 }
 message ContractReactDelItem {
     string user_id = 1;

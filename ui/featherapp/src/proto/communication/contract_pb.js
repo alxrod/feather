@@ -3383,7 +3383,8 @@ proto.main.ItemEntity.toObject = function(includeInstance, msg) {
     workerBody: jspb.Message.getFieldWithDefault(msg, 6, ""),
     buyerBody: jspb.Message.getFieldWithDefault(msg, 7, ""),
     awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false)
+    awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
+    awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -3451,6 +3452,10 @@ proto.main.ItemEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAwaitingCreation(value);
+      break;
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAwaitingDeletion(value);
       break;
     default:
       reader.skipField();
@@ -3534,6 +3539,13 @@ proto.main.ItemEntity.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       9,
+      f
+    );
+  }
+  f = message.getAwaitingDeletion();
+  if (f) {
+    writer.writeBool(
+      10,
       f
     );
   }
@@ -3681,6 +3693,24 @@ proto.main.ItemEntity.prototype.getAwaitingCreation = function() {
  */
 proto.main.ItemEntity.prototype.setAwaitingCreation = function(value) {
   return jspb.Message.setProto3BooleanField(this, 9, value);
+};
+
+
+/**
+ * optional bool awaiting_deletion = 10;
+ * @return {boolean}
+ */
+proto.main.ItemEntity.prototype.getAwaitingDeletion = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.ItemEntity} returns this
+ */
+proto.main.ItemEntity.prototype.setAwaitingDeletion = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 
@@ -6784,7 +6814,7 @@ proto.main.ContractSuggestDelItem.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 3, "")
+    item: (f = msg.getItem()) && proto.main.ItemEntity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -6830,8 +6860,9 @@ proto.main.ContractSuggestDelItem.deserializeBinaryFromReader = function(msg, re
       msg.setContractId(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
+      var value = new proto.main.ItemEntity;
+      reader.readMessage(value,proto.main.ItemEntity.deserializeBinaryFromReader);
+      msg.setItem(value);
       break;
     default:
       reader.skipField();
@@ -6876,11 +6907,12 @@ proto.main.ContractSuggestDelItem.serializeBinaryToWriter = function(message, wr
       f
     );
   }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getItem();
+  if (f != null) {
+    writer.writeMessage(
       3,
-      f
+      f,
+      proto.main.ItemEntity.serializeBinaryToWriter
     );
   }
 };
@@ -6923,20 +6955,39 @@ proto.main.ContractSuggestDelItem.prototype.setContractId = function(value) {
 
 
 /**
- * optional string item_id = 3;
- * @return {string}
+ * optional ItemEntity item = 3;
+ * @return {?proto.main.ItemEntity}
  */
-proto.main.ContractSuggestDelItem.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.main.ContractSuggestDelItem.prototype.getItem = function() {
+  return /** @type{?proto.main.ItemEntity} */ (
+    jspb.Message.getWrapperField(this, proto.main.ItemEntity, 3));
 };
 
 
 /**
- * @param {string} value
+ * @param {?proto.main.ItemEntity|undefined} value
+ * @return {!proto.main.ContractSuggestDelItem} returns this
+*/
+proto.main.ContractSuggestDelItem.prototype.setItem = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.main.ContractSuggestDelItem} returns this
  */
-proto.main.ContractSuggestDelItem.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+proto.main.ContractSuggestDelItem.prototype.clearItem = function() {
+  return this.setItem(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.main.ContractSuggestDelItem.prototype.hasItem = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

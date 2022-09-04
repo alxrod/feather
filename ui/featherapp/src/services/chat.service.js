@@ -20,6 +20,7 @@ import {
     CONTRACT_ITEM_UPDATE_BODY,
     CONTRACT_ITEM_RELOAD,
     CONTRACT_ITEM_REPLACE_SUGGEST,
+    CONTRACT_ITEM_SUGGEST_DELETE,
 } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -44,6 +45,7 @@ export const msgMethods = {
 	PRICE:     3,
 	REVISION:  4,
     ITEM_CREATE: 6,
+    ITEM_DELETE: 7,
 }
 
 export const editTypes = {
@@ -299,6 +301,11 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_ITEM_REPLACE_SUGGEST,
             payload: msg.body.item,
         });
+    } else if (msg.method === msgMethods.ITEM_DELETE) {
+        dispatch({
+            type: CONTRACT_ITEM_SUGGEST_DELETE,
+            payload: msg.body.item.id,
+        });
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CONTRACT_SEND_EDIT,
@@ -325,6 +332,8 @@ const reformatBody = (msg) => {
         msg.body = msg.revBody
     } else if (msg.method === msgMethods.ITEM_CREATE) {
         msg.body = msg.itemCreateBody
+    } else if (msg.method === msgMethods.ITEM_DELETE) {
+        msg.body = msg.itemDeleteBody
     } else {
         msg.body = {}
     }

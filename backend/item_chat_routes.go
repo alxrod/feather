@@ -298,3 +298,51 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 	}
 	return &comms.ContractEditResponse{}, nil
 }
+
+func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractSuggestDelItem) (*comms.ContractEditResponse, error) {
+	log.Println(fmt.Sprintf("Suggesting deleting a item %s", req.Item.Name))
+	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, err
+	}
+
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("Item Id: %s", req.Item.Id)
+	item_id, err := primitive.ObjectIDFromHex(req.Item.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+
+	item, err := db.ContractItemById(item_id, database.Collection(db.ITEM_COL))
+	if err != nil {
+		return nil, err
+	}
+	item.AwaitingApproval = true
+	item.AwaitingDeletion = true
+	err = db.ContractItemReplace(item, database)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Item Updated, attempting to send message")
+
+	err = s.SendItemDeleteMessage(item, contract, user, db.SUGGEST)
+	// log.Println("Finished attempting to send message")
+	if err != nil {
+		return nil, err
+	}
+	// log.Println("Price Message Broadcast")
+	return &comms.ContractEditResponse{}, nil
+}

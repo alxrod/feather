@@ -31,6 +31,8 @@ export const CONTRACT_ITEM_REPLACE_SUGGEST = "contract/item/REPLACE_SUGGEST"
 export const CONTRACT_CONFIRM_ITEM_ADD = "contract/item/CONFIRM_ADD"
 export const CONTRACT_REJECT_ITEM_ADD = "contract/item/REJECT_ADD"
 
+export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
+
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
     for (let i = 0; i < initialNubs.length; i++) {
@@ -268,6 +270,21 @@ export default (state = initialState, action) => {
                     )
                 )
             }
+        
+        case CONTRACT_ITEM_SUGGEST_DELETE:
+            const deletedItemInList = activateDeletionOfItem(state.curConItems, action.payload)
+            return {
+                ...state,
+                contractItemsChanged: !state.contractItemsChanged,
+                curConItems: deletedItemInList,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateContractItems(
+                        state.cachedContracts[state.selectedId], 
+                        deletedItemInList,
+                    )
+                )
+            }
 
         default:
             return state
@@ -284,6 +301,17 @@ const replaceSuggestItemCurCon = (items, replacement) => {
     }
     newItems.push(replacement)
     return newItems
+}
+
+const activateDeletionOfItem = (items, id) => {
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].id === id) {
+            console.log("Updating the deletion")
+            items[i].awaitingDeletion = true
+        }
+    }
+    console.log(items)
+    return items
 }
 
 const replaceItemCurCon = (items, replacement) => {
@@ -912,6 +940,38 @@ export const reactAddItem = (contract_id, message_id, item_id, status) => {
     }
 }
 
+export const deleteItem = (contract_id, item_id, item_name, item_body) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+            return ContractService.deleteItem(creds.access_token, creds.user_id, contract_id, item_id, item_name, item_body).then(
+                (data) => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
 
 export const claimContract = (contract_id, password) => {
     return dispatch => {

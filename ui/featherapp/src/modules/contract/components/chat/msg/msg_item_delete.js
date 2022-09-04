@@ -4,16 +4,16 @@ import {editTypes, decisionTypes} from "../../../../../services/chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
-import { useEffect, useState } from "react";
-import { reactItem, updateLocalItemBody } from "../../../../../reducers/contract.reducer"
+import { useEffect, useState, useMemo } from "react";
+import { reactAddItem, updateLocalItemAdd } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import DeltaBody from "../../delta/delta_textarea"
 
-const ItemBodyMsg = (props) => {
-  let editString = "Suggested"
+const ItemCreateMsg = (props) => {
+
+  let editString = "Deleted"
   if (props.msg.type === editTypes.APPROVE) {
     editString = "Approved"
   } else if (props.msg.type === editTypes.REJECT) {
@@ -30,10 +30,11 @@ const ItemBodyMsg = (props) => {
   const [otherStatus, setOtherStatus] = useState(0)
 
   const [version, setVersion] = useState(1)
+
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
-        props.updateLocalItemBody(props.msg)
+        props.updateLocalItemAdd(props.msg)
       }
       setVersion(version+1)
       props.finishedReload()
@@ -66,15 +67,13 @@ const ItemBodyMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.YES)
-    console.log("Accepting change")
+    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
+    // console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.NO)
-    console.log("Rejecting change")
+    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
+    // console.log("Rejecting change")
   }
-  
-  
 
   return (
     <>
@@ -102,7 +101,7 @@ const ItemBodyMsg = (props) => {
         </div>
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
-						<p className="text-gray-400 text-lg mr-2">{"Text Change"}</p>
+						<p className="text-gray-400 text-lg mr-2">{"Deleted " + props.msg.body.item.name}</p>
             <div className="w-2"></div>
             <div className="w-16">
               {(yourStatus == decisionTypes.UNDECIDED) && (
@@ -114,7 +113,7 @@ const ItemBodyMsg = (props) => {
             </div>
           </div>
 					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
-            <DeltaBody old_text={props.msg.body.oldVersion} new_text={props.msg.body.newVersion}/>
+            <p className="text-red">{props.msg.body.item.currentBody}</p>
           </div>
           <div className="flex">
             {(yourStatus == decisionTypes.YES) && (
@@ -152,16 +151,17 @@ const ItemBodyMsg = (props) => {
 const mapStateToProps = ({ user, contract }) => ({
   selectedId: contract.selectedId,
   cachedContracts: contract.cachedContracts,
+  curConItems: contract.curConItems,
   user: user.user,
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-	updateLocalItemBody,
-	reactItem,
+	updateLocalItemAdd,
+	reactAddItem,
   finishedReload,
 }, dispatch)
   
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ItemBodyMsg)
+)(ItemCreateMsg)

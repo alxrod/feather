@@ -321,6 +321,54 @@ func (s *BackServer) SendItemCreateMessage(
 	return nil
 }
 
+func (s *BackServer) SendItemDeleteMessage(
+	item *db.ContractItem,
+	contract *db.Contract,
+	user *db.User,
+	editType uint32) error {
+
+	body := &db.MessageBody{
+		Type:         editType,
+		Item:         item,
+		ItemId:       item.Id,
+		Resolved:     false,
+		ResolStatus:  db.RESOL_UNDECIDED,
+		WorkerStatus: db.DECISION_UNDECIDED,
+		BuyerStatus:  db.DECISION_UNDECIDED,
+	}
+	if contract.Worker.Id == user.Id {
+		log.Println("Sender is worker")
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer.Id == user.Id {
+		log.Println("Sender is buyer")
+		body.BuyerStatus = db.DECISION_YES
+	}
+	label_name := item.Name
+	if label_name == "" {
+		label_name = "Item"
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.ITEM_DELETE,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_ITEM,
+			Name: label_name,
+		},
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)

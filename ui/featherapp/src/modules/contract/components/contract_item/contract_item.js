@@ -3,10 +3,10 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
-import { editContractItem, suggestItem, addItem, deleteSuggestContractItem } from "../../../../reducers/contract.reducer"
+import { editContractItem, suggestItem, addItem, deleteItem, deleteSuggestContractItem } from "../../../../reducers/contract.reducer"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
-import { LockOpenIcon } from "@heroicons/react/outline"
-import { LockClosedIcon } from '@heroicons/react/solid'
+import { LockOpenIcon, TrashIcon} from "@heroicons/react/outline"
+import { LockClosedIcon, } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
 
 import { reactItem, reactAddItem } from '../../../../reducers/contract.reducer'
@@ -192,13 +192,19 @@ const ContractItem = (props) => {
     }
   }
 
+  const suggestDeleteItem = () => {
+    console.log(props.selectedId)
+    console.log(contract_info)
+    props.deleteItem(props.selectedId, contract_info.id, contract_info.name, contract_info.currentBody)
+  }
+
   if (props.embedded === true) {
     return (
         <ItemTextArea item_id={props.id} embedded={props.embedded} role={role} contract_info={contract_info} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
     )
   }
   return (
-    <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green" : "")}>
+    <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green" : "") + (contract_info.awaitingDeletion ? "border-2 border-red" : "")}>
         <div className="px-2 py-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
@@ -221,30 +227,37 @@ const ContractItem = (props) => {
                   <LockOpenIcon className="ml-1 w-6 h-6 text-gray-500"/>
                 )}
               </div>
-                {(!props.override && props.suggestMode) && (
-                  <div className="flex items-center">
-                    <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
-                    <DecideButton approve={addItem} reject={deleteItem}/>
-                  </div>
-                )}
-                {(!props.override && decideMode && !props.suggestMode) && (
-                  <div className="flex items-center">
-                    <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
-                    <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
-                  </div>
-                )}
-                {(lock && proposedByPartner) && (
-                  <div className="flex items-center">
-                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
-                    <DecideButton approve={approveChange} reject={denyChange}/>
-                  </div>
-                )}
-                {(lock && contract_info.awaitingCreation && creationProposedByPartner) && (
-                  <div className="flex items-center">
-                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
-                    <DecideButton approve={approveCreate} reject={denyCreate}/>
-                  </div>
-                )}
+                <div>
+                  {(!props.override && props.suggestMode) && (
+                    <div className="flex items-center">
+                      <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
+                      <DecideButton approve={addItem} reject={deleteItem}/>
+                    </div>
+                  )}
+                  {(!props.override && decideMode && !props.suggestMode) && (
+                    <div className="flex items-center">
+                      <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
+                      <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
+                    </div>
+                  )}
+                  {(lock && proposedByPartner) && (
+                    <div className="flex items-center">
+                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
+                      <DecideButton approve={approveChange} reject={denyChange}/>
+                    </div>
+                  )}
+                  {(lock && contract_info.awaitingCreation && creationProposedByPartner) && (
+                    <div className="flex items-center">
+                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
+                      <DecideButton approve={approveCreate} reject={denyCreate}/>
+                    </div>
+                  )}
+                  {(!lock && !props.suggestMode) && (
+                    <button onClick={suggestDeleteItem}>
+                      <TrashIcon className="text-indigo-400 hover:text-indigo-500 hover:text-indigo-600 w-6 h-6"/>
+                    </button>
+                  )}
+                </div>
             </div>
 
           <div className="mt-2 mr-2 text-sm text-gray-500">
@@ -271,6 +284,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   reactItem,
   reactAddItem,
   addItem,
+  deleteItem,
   deleteSuggestContractItem,
 }, dispatch)
 

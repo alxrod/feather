@@ -24,6 +24,7 @@ message ChatMessage {
         ItemMsgBody item_body = 9;
         RevMsgBody rev_body = 10;
         ItemCreateMsgBody item_create_body = 12;
+        ItemDeleteMsgBody item_delete_body = 13;
     }   
 }
 message ChatLabel {
@@ -37,6 +38,14 @@ message CommentMsgBody {
 }
 
 message ItemCreateMsgBody {
+    ItemEntity item = 1;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+message ItemDeleteMsgBody {
     ItemEntity item = 1;
     uint32 type = 3;
     bool resolved = 4;

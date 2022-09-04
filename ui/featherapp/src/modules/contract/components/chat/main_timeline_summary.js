@@ -13,6 +13,7 @@ import PayoutMsg from "./msg/msg_payout"
 import DateMsg from "./msg/msg_date"
 import ItemBodyMsg from "./msg/msg_item_body"
 import ItemCreateMsg from "./msg/msg_item_create"
+import ItemDeleteMsg from "./msg/msg_item_delete"
 
 const MainTimeline = (props) => {
   const bottomOfChat = useRef(null)
@@ -42,6 +43,8 @@ const MainTimeline = (props) => {
                   <ItemBodyMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.ITEM_CREATE) ? (
                   <ItemCreateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
+                ) : (msg.method === msgMethods.ITEM_DELETE) ? (
+                  <ItemDeleteMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
                 ) : null}
               </div>
             </div>

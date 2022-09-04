@@ -22,6 +22,7 @@ const (
 	DATE        = 2
 	PAYOUT      = 5
 	ITEM_CREATE = 6
+	ITEM_DELETE = 7
 	PRICE       = 3
 	REVISION    = 4
 )
@@ -183,6 +184,18 @@ func (b *MessageBody) ItemCreateProto() *comms.ChatMessage_ItemCreateBody {
 		},
 	}
 }
+func (b *MessageBody) ItemDeleteProto() *comms.ChatMessage_ItemDeleteBody {
+	return &comms.ChatMessage_ItemDeleteBody{
+		ItemDeleteBody: &comms.ItemDeleteMsgBody{
+			Item:         b.Item.Proto(),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
 
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
@@ -222,6 +235,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.RevProto()
 	} else if m.Method == ITEM_CREATE {
 		proto.Body = m.Body.ItemCreateProto()
+	} else if m.Method == ITEM_DELETE {
+		proto.Body = m.Body.ItemDeleteProto()
 	}
 
 	return proto
@@ -325,7 +340,7 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		return nil, err
 	}
 	message.User = user
-	if message.Method == ITEM_CREATE && !message.Body.ItemId.IsZero() {
+	if (message.Method == ITEM_CREATE || message.Method == ITEM_DELETE) && !message.Body.ItemId.IsZero() {
 		item, err := ContractItemById(message.Body.ItemId, database.Collection(ITEM_COL))
 		if err != nil {
 			return nil, err
