@@ -204,6 +204,11 @@ const ContractItem = (props) => {
   }
 
   const suggestDeleteItem = () => {
+    if (props.override) {
+      console.log("DELETING IN CREATE MODE")
+      props.deleteSuggestContractItem(props.id)
+      return
+    }
     console.log(props.selectedId)
     console.log(contract_info)
     props.deleteItem(props.selectedId, contract_info.id, contract_info.name, contract_info.currentBody)
@@ -269,7 +274,7 @@ const ContractItem = (props) => {
                       <DecideButton approve={approveDelete} reject={denyDelete}/>
                     </div>
                   )}
-                  {(!lock && !props.suggestMode && !decideMode && !props.override) && (
+                  {(!lock && !props.suggestMode && !decideMode) && (
                     <button onClick={suggestDeleteItem}>
                       <TrashIcon className="text-indigo-400 hover:text-indigo-500 hover:text-indigo-600 w-6 h-6"/>
                     </button>

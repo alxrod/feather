@@ -3,7 +3,7 @@ import { CheckIcon, XIcon, QuestionMarkCircleIcon } from '@heroicons/react/outli
 import ChatLabel from "./chat_label"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import {useEffect, useRef } from 'react'
+import {useEffect, useRef, useState } from 'react'
 
 import {msgMethods} from "../../../../services/chat.service"
 
@@ -15,15 +15,36 @@ import ItemBodyMsg from "./msg/msg_item_body"
 import ItemCreateMsg from "./msg/msg_item_create"
 import ItemDeleteMsg from "./msg/msg_item_delete"
 
+function useOnScreen(ref) {
+
+  const [isIntersecting, setIntersecting] = useState(false)
+
+  const observer = new IntersectionObserver(
+    ([entry]) => setIntersecting(entry.isIntersecting)
+  )
+
+  useEffect(() => {
+    observer.observe(ref.current)
+    // Remove the observer as soon as the component is unmounted
+    return () => { observer.disconnect() }
+  }, [])
+
+  return isIntersecting
+}
+
 const MainTimeline = (props) => {
+  const chat = useRef(null)
   const bottomOfChat = useRef(null)
+  const isVisible = useOnScreen(chat)
+
   useEffect( () => {
-    bottomOfChat.current?.scrollIntoView({behavior: 'auto', block: 'nearest', inline: 'start' });
-    
-  }, [props.messages])
+    if (isVisible) {
+      bottomOfChat.current?.scrollIntoView({behavior: 'auto', block: 'nearest', inline: 'start' });
+    }
+  }, [props.messages, isVisible])
 
   return (
-    <div className="flow-root overflow-y-scroll grow h-[45vh]">
+    <div ref={chat} className="flow-root overflow-y-scroll grow h-[45vh]">
       <ul role="list" className="-mb-8">
         {props.messages.map((msg, msgIdx) => (
           <li key={msgIdx}>
@@ -51,8 +72,8 @@ const MainTimeline = (props) => {
             </div>
           </li>
         ))}
+        <div ref={bottomOfChat} className="h-10"></div>
       </ul>
-      <div ref={bottomOfChat} className="h-10"></div>
     </div>
   )
 }

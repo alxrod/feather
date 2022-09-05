@@ -28,20 +28,21 @@ const ContractCreate = (props) => {
     buyer: 0.0,
   })
   const [contractItemIds, setContractItemIds] = useState([])
+  const [nextContractName, setNextContractName] = useState("")
   useEffect( () => {
-    if (props.contractItems.length > 0) {
-      let ids = []
-      for (let i = 0; i < props.contractItems.length; i++) {
-        ids.push(props.contractItems[i].id)
+    let ids = []
+    let max = 0
+    for (let i = 0; i < props.contractItems.length; i++) {
+      const num = parseInt(props.contractItems[i].name.split(" ")[1])
+      if (num > max) {
+        max = num
       }
-      setContractItemIds(ids)
+      ids.push(props.contractItems[i].id)
     }
-  }, [props.contractItems.length])
+    setNextContractName((max+1).toString())
+    setContractItemIds(ids)
+  }, [props.contractItems.length, props.contractItemsChanged])
 
-  useEffect( () => {
-    console.log("New Change:")
-    console.log(props.contractItems)
-  }, [props.contractItemsChanged])
   const [error, setError] = useState("")
   const [openBanner, setOpenBanner] = useState(false)
   
@@ -147,7 +148,7 @@ const ContractCreate = (props) => {
     // console.log(contractItems)
     let new_id = nextId.toString()
     setNextId(nextId+1)
-    return props.addContractItem(true, new_id)
+    return props.addContractItem(true, new_id, nextContractName)
   }
 
 

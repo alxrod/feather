@@ -435,7 +435,7 @@ export const addContractItem = (create_mode, new_id, new_name) => {
     return dispatch => {
         if (create_mode) {
             const new_item = {
-                name: "Item " + new_id,
+                name: "Item " + new_name,
                 id: new_id,
                 currentBody: "",
                 workerBody: "",
@@ -1204,6 +1204,7 @@ export const updateLocalItemDelete = (msg) => {
                 payload: msg.body.item,
             });
         }
+
 
         dispatch({
             type: CONTRACT_ITEM_RELOAD,

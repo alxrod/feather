@@ -17,6 +17,7 @@ import SignContract from "../components/sign_contract"
 const ContractNegotiate = (props) => {
   let [reload, setReload] = useState(true)
 
+  const [nextContractName, setNextContractName] = useState("")
   const contract = useMemo(() => {
     if (props.selectedId !== "") {
       return props.cachedContracts[props.selectedId]
@@ -44,9 +45,16 @@ const ContractNegotiate = (props) => {
       console.log("UPDATING CONTRACT")
       console.log(props.curConItems)
       let ids = []
+      let max = 0
       for (let i = 0; i < props.curConItems.length; i++) {
+        const num = parseInt(props.curConItems[i].name.split(" ")[1])
+        if (num > max) {
+          max = num
+        }
+        
         ids.push(props.curConItems[i].id)
       }
+      setNextContractName((max+1).toString())
       console.log("THe new ids are")
       console.log(ids)
       setContractItemIds(ids)
@@ -61,7 +69,7 @@ const ContractNegotiate = (props) => {
 
   const addContractItem = () => {
     console.log("TESTING CONTRACT ITEM")
-    props.addContractItem(false, "new_negotiate", (contractItemIds.length+1).toString())
+    props.addContractItem(false, "new_negotiate", nextContractName)
     toggleAddItemMode(true)
   }
 
