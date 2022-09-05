@@ -18,7 +18,8 @@ import ItemDeleteMsg from "./msg/msg_item_delete"
 const MainTimeline = (props) => {
   const bottomOfChat = useRef(null)
   useEffect( () => {
-    bottomOfChat.current?.scrollIntoView({behavior: 'auto', block: 'nearest', inline: 'start'});
+    bottomOfChat.current?.scrollIntoView({behavior: 'auto', block: 'nearest', inline: 'start' });
+    
   }, [props.messages])
 
   return (

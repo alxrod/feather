@@ -9,7 +9,7 @@ import { LockOpenIcon, TrashIcon} from "@heroicons/react/outline"
 import { LockClosedIcon, } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
 
-import { reactItem, reactAddItem } from '../../../../reducers/contract.reducer'
+import { reactItem, reactAddItem, reactDeleteItem } from '../../../../reducers/contract.reducer'
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 
@@ -60,14 +60,11 @@ const ContractItem = (props) => {
   }, [item_text, props.contractItemsChanged])
 
   const [proposedByPartner, setProposedByPartner] = useState(false)
-  const [creationProposedByPartner, setCreationProposedByPartner] = useState(false)
   const [itemMsgId, setItemMsgId] = useState("")
-  const [itemAddMsgId, setItemAddMsgId] = useState("")
   const [suggestMode, toggleSuggestMode] = useState(false)
   
   useEffect(() => {
     let final_item_id = ""
-    let final_item_add_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.ITEM) {
         if (props.messages[i].body.itemId === props.id) {
@@ -78,21 +75,27 @@ const ContractItem = (props) => {
             setProposedByPartner(true)
           }
         }
-      }
-
-      if (props.messages[i].method === msgMethods.ITEM_CREATE) {
+      } else if (props.messages[i].method === msgMethods.ITEM_CREATE) {
         if (props.messages[i].body.item.id === props.id) {
-          final_item_add_id = props.messages[i].id
+          final_item_id = props.messages[i].id
           if (props.messages[i].user.id === props.user.user_id) {
-            setCreationProposedByPartner(false)
+            setProposedByPartner(false)
           } else {
-            setCreationProposedByPartner(true)
+            setProposedByPartner(true)
           }
         }
-      }
+      } else if (props.messages[i].method === msgMethods.ITEM_DELETE) {
+        if (props.messages[i].body.item.id === props.id) {
+          final_item_id = props.messages[i].id
+          if (props.messages[i].user.id === props.user.user_id) {
+            setProposedByPartner(false)
+          } else {
+            setProposedByPartner(true)
+          }
+        }
+      } 
     }
     setItemMsgId(final_item_id)
-    setItemAddMsgId(final_item_add_id)
 
   }, [props.messages.length, props.deadline])
 
@@ -171,11 +174,19 @@ const ContractItem = (props) => {
   }
 
   const approveCreate = () => {
-    props.reactAddItem(props.selectedId, itemAddMsgId, props.id, decisionTypes.YES)
+    props.reactAddItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
   }
   const denyCreate = () => {
-    props.reactAddItem(props.selectedId, itemAddMsgId, props.id, decisionTypes.NO)
+    props.reactAddItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
   }
+
+  const approveDelete = () => {
+    props.reactDeleteItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
+  }
+  const denyDelete = () => {
+    props.reactDeleteItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
+  }
+
 
   const addItem = () => {
     if (props.suggestMode) {
@@ -234,25 +245,31 @@ const ContractItem = (props) => {
                       <DecideButton approve={addItem} reject={deleteItem}/>
                     </div>
                   )}
-                  {(!props.override && decideMode && !props.suggestMode) && (
+                  {(!props.override && !lock && decideMode && !props.suggestMode) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
                       <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
                     </div>
                   )}
-                  {(lock && proposedByPartner) && (
+                  {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
                       <DecideButton approve={approveChange} reject={denyChange}/>
                     </div>
                   )}
-                  {(lock && contract_info.awaitingCreation && creationProposedByPartner) && (
+                  {(lock && contract_info.awaitingCreation && proposedByPartner) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
                       <DecideButton approve={approveCreate} reject={denyCreate}/>
                     </div>
                   )}
-                  {(!lock && !props.suggestMode) && (
+                  {(lock && contract_info.awaitingDeletion && proposedByPartner) && (
+                    <div className="flex items-center">
+                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's deleting this item</h3>
+                      <DecideButton approve={approveDelete} reject={denyDelete}/>
+                    </div>
+                  )}
+                  {(!lock && !props.suggestMode && !decideMode && !props.override) && (
                     <button onClick={suggestDeleteItem}>
                       <TrashIcon className="text-indigo-400 hover:text-indigo-500 hover:text-indigo-600 w-6 h-6"/>
                     </button>
@@ -283,6 +300,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   suggestItem,
   reactItem,
   reactAddItem,
+  reactDeleteItem,
   addItem,
   deleteItem,
   deleteSuggestContractItem,

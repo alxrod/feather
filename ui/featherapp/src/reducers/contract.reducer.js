@@ -28,8 +28,8 @@ export const CONTRACT_ITEM_RELOAD = "contract/item/RELOAD"
 export const CONTRACT_SUGGEST_ITEM_REMOVE = "contract/item/SUGGEST_REMOVE"
 export const CONTRACT_ITEM_REPLACE_SUGGEST = "contract/item/REPLACE_SUGGEST"
 
-export const CONTRACT_CONFIRM_ITEM_ADD = "contract/item/CONFIRM_ADD"
-export const CONTRACT_REJECT_ITEM_ADD = "contract/item/REJECT_ADD"
+export const CONTRACT_ITEM_REMOVE = "contract/item/REMOVE"
+export const CONTRACT_ITEM_REPLACE = "contract/item/REPLACE"
 
 export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
 
@@ -241,7 +241,7 @@ export default (state = initialState, action) => {
                 )
             }
 
-        case CONTRACT_CONFIRM_ITEM_ADD:
+        case CONTRACT_ITEM_REPLACE:
             const addReplacementList = replaceItemCurCon(state.curConItems, action.payload)
             return {
                 ...state,
@@ -256,7 +256,7 @@ export default (state = initialState, action) => {
                 )
             }
             
-        case CONTRACT_REJECT_ITEM_ADD:
+        case CONTRACT_ITEM_REMOVE:
             const removeReplacementList = removeItemCurCon(state.curConItems, action.payload)
             return {
                 ...state,
@@ -308,6 +308,7 @@ const activateDeletionOfItem = (items, id) => {
         if (items[i].id === id) {
             console.log("Updating the deletion")
             items[i].awaitingDeletion = true
+            items[i].awaitingApproval = true
         }
     }
     console.log(items)
@@ -973,6 +974,39 @@ export const deleteItem = (contract_id, item_id, item_name, item_body) => {
     }
 };
 
+export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactDeleteItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+}
+
 export const claimContract = (contract_id, password) => {
     return dispatch => {
         return authChecker(true).then(creds => {
@@ -1133,18 +1167,44 @@ export const updateLocalItemAdd = (msg) => {
             msg.body.item.awaitingApproval = false
             msg.body.item.awaitingCreation = false
             dispatch({
-                type: CONTRACT_CONFIRM_ITEM_ADD,
+                type: CONTRACT_ITEM_REPLACE,
                 payload: msg.body.item,
             });
         } else {
             console.log("DISPATCH CALLED FOR REJECTED")
             dispatch({
-                type: CONTRACT_REJECT_ITEM_ADD,
+                type: CONTRACT_ITEM_REMOVE,
                 payload: msg.body.item,
             });
         }
 
         
+        dispatch({
+            type: CONTRACT_ITEM_RELOAD,
+        });
+    }
+}
+
+export const updateLocalItemDelete = (msg) => {
+    return dispatch => {
+        console.log("DISPATCH HAPPENING")
+        console.log(msg)
+        if (msg.body.resolStatus == resolTypes.APPROVED) {
+            console.log("DISPATCH CALLED FOR APPROVED")
+            dispatch({
+                type: CONTRACT_ITEM_REMOVE,
+                payload: msg.body.item,
+            });
+        } else {
+            console.log("DISPATCH CALLED FOR REJECTED")
+            msg.body.item.awaitingApproval = false
+            msg.body.item.awaitingDeletion = false
+            dispatch({
+                type: CONTRACT_ITEM_REPLACE,
+                payload: msg.body.item,
+            });
+        }
+
         dispatch({
             type: CONTRACT_ITEM_RELOAD,
         });

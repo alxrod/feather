@@ -424,6 +424,28 @@ class ContractService {
 
     }
 
+    reactDeleteItem(token, user_id, contract_id, item_id, message_id, status) {
+        let reactRequest = new ContractReactDelItem();
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setItemId(item_id);
+        reactRequest.setStatus(status);
+        console.log("attempting to send")
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactDeleteItem(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
+            });
+        });
+
+    }
+
 
     claimContract(token, user_id, contract_id, password) {
         let claimRequest = new ClaimContractRequest();

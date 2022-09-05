@@ -5,7 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState, useMemo } from "react";
-import { reactAddItem, updateLocalItemAdd } from "../../../../../reducers/contract.reducer"
+import { reactDeleteItem, updateLocalItemDelete } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
@@ -34,7 +34,7 @@ const ItemCreateMsg = (props) => {
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
-        props.updateLocalItemAdd(props.msg)
+        props.updateLocalItemDelete(props.msg)
       }
       setVersion(version+1)
       props.finishedReload()
@@ -67,11 +67,11 @@ const ItemCreateMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
+    props.reactDeleteItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
     // console.log("Accepting change")
   }
   const rejectChange = () => {
-    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
+    props.reactDeleteItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
     // console.log("Rejecting change")
   }
 
@@ -156,8 +156,8 @@ const mapStateToProps = ({ user, contract }) => ({
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-	updateLocalItemAdd,
-	reactAddItem,
+	updateLocalItemDelete,
+	reactDeleteItem,
   finishedReload,
 }, dispatch)
   
