@@ -21,7 +21,7 @@ type Deadline struct {
 	Name       string             `bson:"name"`
 
 	AwaitingCreation bool `bson:"awaiting_creation"`
-	AwaitingDeletion bool `bson:"awaiting_creation"`
+	AwaitingDeletion bool `bson:"awaiting_deletion"`
 
 	CurrentPayout          float32            `bson:"current_payout"`
 	WorkerPayout           float32            `bson:"worker_payout"`
