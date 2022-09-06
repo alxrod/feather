@@ -17,14 +17,16 @@ import (
 
 // Methods
 const (
-	COMMENT     = 0
-	ITEM        = 1
-	DATE        = 2
-	PAYOUT      = 5
-	ITEM_CREATE = 6
-	ITEM_DELETE = 7
-	PRICE       = 3
-	REVISION    = 4
+	COMMENT         = 0
+	ITEM            = 1
+	DATE            = 2
+	PAYOUT          = 5
+	ITEM_CREATE     = 6
+	ITEM_DELETE     = 7
+	DEADLINE_CREATE = 8
+	DEADLINE_DELETE = 9
+	PRICE           = 3
+	REVISION        = 4
 )
 
 // Editing Typs
@@ -90,6 +92,7 @@ type MessageBody struct {
 
 	// Deadline messages
 	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
+	Deadline   *Deadline          `bson:"-"`
 
 	PayoutNew float32   `bson:"payout_new,omitempty"`
 	PayoutOld float32   `bson:"payout_old,omitempty"`
@@ -197,6 +200,32 @@ func (b *MessageBody) ItemDeleteProto() *comms.ChatMessage_ItemDeleteBody {
 	}
 }
 
+func (b *MessageBody) DeadlineCreateProto() *comms.ChatMessage_DeadlineCreateBody {
+	return &comms.ChatMessage_DeadlineCreateBody{
+		DeadlineCreateBody: &comms.DeadlineCreateMsgBody{
+			Deadline:     b.Deadline.Proto(),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
+
+func (b *MessageBody) DeadlineDeleteProto() *comms.ChatMessage_DeadlineDeleteBody {
+	return &comms.ChatMessage_DeadlineDeleteBody{
+		DeadlineDeleteBody: &comms.DeadlineDeleteMsgBody{
+			Deadline:     b.Deadline.Proto(),
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
+		},
+	}
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -237,6 +266,10 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ItemCreateProto()
 	} else if m.Method == ITEM_DELETE {
 		proto.Body = m.Body.ItemDeleteProto()
+	} else if m.Method == DEADLINE_CREATE {
+		proto.Body = m.Body.DeadlineCreateProto()
+	} else if m.Method == DEADLINE_DELETE {
+		proto.Body = m.Body.DeadlineDeleteProto()
 	}
 
 	return proto

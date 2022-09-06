@@ -17,6 +17,9 @@ message DeadlineEntity {
     string contract_id = 2;
     string name = 18;
     
+    bool awaiting_creation = 20;
+    bool awaiting_deletion = 21;
+
     float current_payout = 4;
     float worker_payout = 7;
     float buyer_payout = 10;
@@ -197,6 +200,32 @@ message ContractReactDelItem {
     uint32 status = 5;
 }
 
+message ContractSuggestAddDeadline {
+    string user_id = 1;
+    string contract_id = 2;
+    DeadlineEntity deadline = 3;
+}
+message ContractReactAddDeadline {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string deadline_id = 3;
+    uint32 status = 5;
+}
+
+message ContractSuggestDelDeadline {
+    string user_id = 1;
+    string contract_id = 2;
+    DeadlineEntity deadline = 3;
+}
+message ContractReactDelDeadline {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string deadline_id = 3;
+    uint32 status = 5;
+}
+
 message ContractResponse {
     ContractEntity contract = 2;
     uint32 role = 3;
@@ -244,4 +273,10 @@ service Contract {
 
     rpc SuggestDeleteItem(ContractSuggestDelItem) returns (ContractEditResponse) {};
     rpc ReactDeleteItem(ContractReactDelItem) returns (ContractEditResponse) {};
+
+    rpc SuggestAddDeadline(ContractSuggestAddDeadline) returns (ContractEditResponse) {};
+    rpc ReactAddDeadline(ContractReactAddDeadline) returns (ContractEditResponse) {};
+
+    rpc SuggestDeleteDeadline(ContractSuggestDelDeadline) returns (ContractEditResponse) {};
+    rpc ReactDeleteDeadline(ContractReactDelDeadline) returns (ContractEditResponse) {};
 }

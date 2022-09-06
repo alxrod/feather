@@ -491,6 +491,15 @@ func ContractSaveItems(contract *Contract, database *mongo.Database) error {
 	}
 	return nil
 }
+func ContractSaveDeadlines(contract *Contract, database *mongo.Database) error {
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"deadline_ids", contract.DeadlineIds}}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func ContractSuggestItemAdd(item *ContractItem, contract *Contract, user *User, database *mongo.Database) error {
 	contract.ItemIds = append(contract.ItemIds, item.Id)
@@ -500,6 +509,16 @@ func ContractSuggestItemAdd(item *ContractItem, contract *Contract, user *User, 
 		return err
 	}
 
+	return nil
+}
+
+func ContractSuggestDeadlineAdd(deadline *Deadline, contract *Contract, user *User, database *mongo.Database) error {
+	contract.DeadlineIds = append(contract.DeadlineIds, deadline.Id)
+	contract.Deadlines = append(contract.Deadlines, deadline)
+	err := ContractSaveDeadlines(contract, database)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -514,6 +533,24 @@ func ContractRemoveItem(item *ContractItem, contract *Contract, database *mongo.
 	}
 	contract.ItemIds = newIds
 	contract.Items = newItems
+	err := ContractSaveItems(contract, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractRemoveDeadline(deadline *Deadline, contract *Contract, database *mongo.Database) error {
+	newIds := make([]primitive.ObjectID, 0)
+	newDeadlines := make([]*Deadline, 0)
+	for idx, id := range contract.DeadlineIds {
+		if id != deadline.Id {
+			newIds = append(newIds, id)
+			newDeadlines = append(newDeadlines, contract.Deadlines[idx])
+		}
+	}
+	contract.DeadlineIds = newIds
+	contract.Deadlines = newDeadlines
 	err := ContractSaveItems(contract, database)
 	if err != nil {
 		return err

@@ -1113,5 +1113,249 @@ proto.main.ContractPromiseClient.prototype.reactDeleteItem =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractSuggestAddDeadline,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_SuggestAddDeadline = new grpc.web.MethodDescriptor(
+  '/main.Contract/SuggestAddDeadline',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractSuggestAddDeadline,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractSuggestAddDeadline} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractSuggestAddDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.suggestAddDeadline =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/SuggestAddDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestAddDeadline,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractSuggestAddDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.suggestAddDeadline =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/SuggestAddDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestAddDeadline);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractReactAddDeadline,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_ReactAddDeadline = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactAddDeadline',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractReactAddDeadline,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractReactAddDeadline} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractReactAddDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.reactAddDeadline =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ReactAddDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactAddDeadline,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractReactAddDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.reactAddDeadline =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ReactAddDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactAddDeadline);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractSuggestDelDeadline,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_SuggestDeleteDeadline = new grpc.web.MethodDescriptor(
+  '/main.Contract/SuggestDeleteDeadline',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractSuggestDelDeadline,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractSuggestDelDeadline} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractSuggestDelDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.suggestDeleteDeadline =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/SuggestDeleteDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestDeleteDeadline,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractSuggestDelDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.suggestDeleteDeadline =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/SuggestDeleteDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SuggestDeleteDeadline);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractReactDelDeadline,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_ReactDeleteDeadline = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactDeleteDeadline',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractReactDelDeadline,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractReactDelDeadline} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractReactDelDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.reactDeleteDeadline =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ReactDeleteDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactDeleteDeadline,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractReactDelDeadline} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.reactDeleteDeadline =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ReactDeleteDeadline',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactDeleteDeadline);
+};
+
+
 module.exports = proto.main;
 

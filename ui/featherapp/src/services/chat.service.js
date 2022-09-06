@@ -46,6 +46,8 @@ export const msgMethods = {
 	REVISION:  4,
     ITEM_CREATE: 6,
     ITEM_DELETE: 7,
+    DEADLINE_CREATE: 8,
+    DEADLINE_DELETE: 9,
 }
 
 export const editTypes = {
