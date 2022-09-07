@@ -30,6 +30,8 @@ const DateMsg = (props) => {
   const [otherStatus, setOtherStatus] = useState(0)
 
   const [version, setVersion] = useState(1)
+  const [deadlineName, setDeadlineName] = useState("Deadline")
+
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
@@ -47,6 +49,11 @@ const DateMsg = (props) => {
         setOtherUsername(contract.buyer.username)
       } else {
         setOtherUsername(contract.worker.username)
+      }
+      for (let i = 0; i < contract.deadlinesList.length; i++) {
+        if (contract.deadlinesList[i].id === props.msg.body.deadlineId) {
+          setDeadlineName(contract.deadlinesList[i].name)
+        }
       }
     }
     
@@ -97,7 +104,7 @@ const DateMsg = (props) => {
             </a>
           </div>
           <div className="flex flex-wrap">
-            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={props.msg.label}/>
+            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={{name: deadlineName}}/>
           </div>
         </div>
         <div className="mt-2 text-sm text-gray-700">

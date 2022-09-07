@@ -64,8 +64,10 @@ const DeadlineDisplay = (props) => {
                         href="#"
                         data-tooltip-target="tooltip-light" 
                         data-tooltip-style="light"
-                        className={"cursor-pointer relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-indigo-600 rounded-full hover:bg-indigo-900"+
-                                  ((idx == props.selected) ? "border-2 border-indigo-500" : "")
+                        className={"cursor-pointer relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center rounded-full "+
+                                  ((idx === props.selected && !deadline.awaitingCreation) ? "border-2 border-indigo-300 bg-indigo-500 hover:bg-indigo-900" : 
+                                   (deadline.awaitingCreation) ? "border-2 bg-green border-green" : 
+                                   "bg-indigo-600 hover:bg-indigo-900")
                         }
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
@@ -102,7 +104,7 @@ const DeadlineDisplay = (props) => {
                       <p
                         href="#"
                         className={"cursor-pointer group relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-white rounded-full " +
-                                  ((idx == props.selected) ? "border-2 border-indigo-500" : "border-2 border-gray-300 hover:border-indigo-400")}
+                                  ((idx == props.selected && !deadline.awaitingCreation) ? "border-2 border-indigo-500" : (deadline.awaitingCreation) ? "border-2 border-green" : "border-2 border-gray-300 hover:border-indigo-400")}
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
                         <span

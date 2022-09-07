@@ -42,8 +42,6 @@ const ContractNegotiate = (props) => {
 
   useEffect(() => {
     if (contractItemIds !== undefined) {
-      console.log("UPDATING CONTRACT")
-      console.log(props.curConItems)
       let ids = []
       let max = 0
       for (let i = 0; i < props.curConItems.length; i++) {
@@ -55,20 +53,14 @@ const ContractNegotiate = (props) => {
         ids.push(props.curConItems[i].id)
       }
       setNextContractName((max+1).toString())
-      console.log("THe new ids are")
-      console.log(ids)
       setContractItemIds(ids)
       setDeadlines(contract.deadlinesList)
     }
   }, [contract, props.contractItemsChanged, props.curConItems.length])
 
-  useEffect( () => {
-    console.log("CONTRACT FLAG FLIPPED")
-  }, [props.contractItemsChanged])
 
 
   const addContractItem = () => {
-    console.log("TESTING CONTRACT ITEM")
     props.addContractItem(false, "new_negotiate", nextContractName)
     toggleAddItemMode(true)
   }

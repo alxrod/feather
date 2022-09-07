@@ -30,6 +30,13 @@ const CalendarBundle = (props) => {
   const [dateMsgId, setDateMsgId] = useState("")
 
   useEffect(() => {
+    if (props.newDeadlineMode) {
+      setDateLock(true)
+    }
+  }, [props.newDeadlineMode])
+
+
+  useEffect(() => {
     let final_date_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.DATE) {
@@ -109,6 +116,7 @@ const CalendarBundle = (props) => {
         } else {
           setProposedByPartner(true)
         }
+        console.log("SHOULD BE TRIGGERED")
         setDateLock(true)
         
       } else {

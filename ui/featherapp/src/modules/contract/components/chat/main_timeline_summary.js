@@ -14,6 +14,7 @@ import DateMsg from "./msg/msg_date"
 import ItemBodyMsg from "./msg/msg_item_body"
 import ItemCreateMsg from "./msg/msg_item_create"
 import ItemDeleteMsg from "./msg/msg_item_delete"
+import DeadlineCreateMsg from "./msg/msg_deadline_create"
 
 function useOnScreen(ref) {
 
@@ -67,6 +68,8 @@ const MainTimeline = (props) => {
                   <ItemCreateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
                 ) : (msg.method === msgMethods.ITEM_DELETE) ? (
                   <ItemDeleteMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
+                ) : (msg.method === msgMethods.DEADLINE_CREATE) ? (
+                  <DeadlineCreateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

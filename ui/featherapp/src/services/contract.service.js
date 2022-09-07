@@ -25,9 +25,13 @@ import {
 
     ContractSuggestAddItem,
     ContractReactAddItem,
-
     ContractSuggestDelItem,
     ContractReactDelItem,
+
+    ContractSuggestAddDeadline,
+    ContractReactAddDeadline,
+    ContractSuggestDelDeadline,
+    ContractReactDelDeadline,
 
     ClaimContractRequest,
 
@@ -437,6 +441,48 @@ class ContractService {
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.reactDeleteItem(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
+            });
+        });
+
+    }
+
+
+    addDeadline(token, user_id, contract_id, deadline) {
+        let addRequest = new ContractSuggestAddDeadline();
+        let deadlineEntity = this.generateDeadlineEntity(deadline)
+        addRequest.setDeadline(deadlineEntity)
+        addRequest.setUserId(user_id)
+        addRequest.setContractId(contract_id)
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestAddDeadline(addRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+
+    }
+
+    reactAddDeadline(token, user_id, contract_id, deadline_id, message_id, status) {
+        let reactRequest = new ContractReactAddDeadline();
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setDeadlineId(deadline_id);
+        reactRequest.setStatus(status);
+        console.log("attempting to send")
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactAddDeadline(reactRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }

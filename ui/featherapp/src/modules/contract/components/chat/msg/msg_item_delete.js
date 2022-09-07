@@ -11,7 +11,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-const ItemCreateMsg = (props) => {
+const ItemDeleteMsg = (props) => {
 
   let editString = "Deleted"
   if (props.msg.type === editTypes.APPROVE) {
@@ -164,4 +164,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ItemCreateMsg)
+)(ItemDeleteMsg)

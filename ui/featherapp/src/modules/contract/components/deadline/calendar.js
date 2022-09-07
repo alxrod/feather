@@ -44,7 +44,6 @@ const Calendar = (props) => {
   const [newDate, setNewDate] = useState(datePlaceholder)
 
   useEffect( () => {
-    console.log("REFRESH HAPPENING IN CALENDAR!")
     if (props.deadline !== undefined) {
       let yD = props.deadline.current.date
       let pD = props.deadline.current.date

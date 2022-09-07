@@ -380,6 +380,14 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		}
 		message.Body.Item = item
 	}
+
+	if (message.Method == DEADLINE_CREATE || message.Method == DEADLINE_DELETE) && !message.Body.DeadlineId.IsZero() {
+		deadline, err := DeadlineById(message.Body.DeadlineId, database)
+		if err != nil {
+			return nil, err
+		}
+		message.Body.Deadline = deadline
+	}
 	return message, nil
 }
 

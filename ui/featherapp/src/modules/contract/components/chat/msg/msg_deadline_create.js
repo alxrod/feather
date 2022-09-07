@@ -4,16 +4,16 @@ import {editTypes, decisionTypes} from "../../../../../services/chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
-import { useEffect, useState } from "react";
-import { reactPayout, updateLocalPayout } from "../../../../../reducers/contract.reducer"
+import { useEffect, useState, useMemo } from "react";
+import { reactAddDeadline, updateLocalItemAdd } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-const PayoutMsg = (props) => {
+const DeadlineCreateMsg = (props) => {
 
-  let editString = "Suggested"
+  let editString = "Created"
   if (props.msg.type === editTypes.APPROVE) {
     editString = "Approved"
   } else if (props.msg.type === editTypes.REJECT) {
@@ -29,13 +29,14 @@ const PayoutMsg = (props) => {
   const [otherUsername, setOtherUsername] = useState("")
   const [otherStatus, setOtherStatus] = useState(0)
 
+  const [version, setVersion] = useState(1)
+
   const [deadlineName, setDeadlineName] = useState("Deadline")
 
-  const [version, setVersion] = useState(1)
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
-        props.updateLocalPayout(props.msg)
+        // props.updateLocalItemAdd(props.msg)
       }
       setVersion(version+1)
       props.finishedReload()
@@ -51,7 +52,7 @@ const PayoutMsg = (props) => {
         setOtherUsername(contract.worker.username)
       }
       for (let i = 0; i < contract.deadlinesList.length; i++) {
-        if (contract.deadlinesList[i].id === props.msg.body.deadlineId) {
+        if (contract.deadlinesList[i].id === props.msg.body.deadline.id) {
           setDeadlineName(contract.deadlinesList[i].name)
         }
       }
@@ -73,14 +74,13 @@ const PayoutMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
+    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
+    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
     console.log("Rejecting change")
   }
-  
   
 
   return (
@@ -109,45 +109,8 @@ const PayoutMsg = (props) => {
         </div>
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
-            <div className="flex items-center">
-                <p className="text-gray-400 text-lg mr-2">{"Payout"}</p>
-                {(props.msg.body.resolStatus === resolTypes.CANCELED || props.msg.body.resolStatus === resolTypes.REJECTED) ? (
-                    <>
-                    {(yourStatus === decisionTypes.NO) ? (
-                        <>
-                        <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
-                        <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                        <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
-                        </>
-                    ) : (
-                        <>
-                        <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
-                        <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                        <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
-                        </>
-                    )}
-                    </>
-                ) : (
-                    <>
-                    {(yourStatus === decisionTypes.NO) ? (
-                        <>
-                        <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
-                        <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                        <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
-                        </>
-                    ) : (
-                        <>
-                        <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
-                        <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                        <p className="ml-1 text-green text-lg font-medium">{props.msg.body.newVersion}%</p>
-                        </>
-                    )}
-                    </>
-                )}
-
-              
-            </div>
-            <div className="w-6"></div>
+						<p className="text-gray-400 text-lg mr-2">{"Created " + deadlineName}</p>
+            <div className="w-2"></div>
             <div className="w-16">
               {(yourStatus == decisionTypes.UNDECIDED) && (
                 <DecideButton 
@@ -156,6 +119,12 @@ const PayoutMsg = (props) => {
                 />
               )} 
             </div>
+          </div>
+					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
+            <div className="flex">
+              <p className="text-gray-400 text-lg mr-2">{"Payout"}</p><p className="mr-1 text-lg">{props.msg.body.deadline.currentPayout}%</p>
+            </div>
+            <p>on {genTimeString(props.msg.body.deadline.currentDate)}</p>
           </div>
           <div className="flex">
             {(yourStatus == decisionTypes.YES) && (
@@ -193,16 +162,17 @@ const PayoutMsg = (props) => {
 const mapStateToProps = ({ user, contract }) => ({
   selectedId: contract.selectedId,
   cachedContracts: contract.cachedContracts,
+  curConItems: contract.curConItems,
   user: user.user,
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  reactPayout,
-  updateLocalPayout,
+	updateLocalItemAdd,
+	reactAddDeadline,
   finishedReload,
 }, dispatch)
   
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PayoutMsg)
+)(DeadlineCreateMsg)

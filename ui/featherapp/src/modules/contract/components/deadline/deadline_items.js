@@ -36,7 +36,6 @@ const DeadlineItems = (props) => {
 
     useEffect( () => {
       if (props.contractItems && Object.keys(props.contractItems).length > 0) {
-        console.log("Modifying this")
         const contractItemIds = []
         const deadlineItemIds = []
 
@@ -91,7 +90,6 @@ const DeadlineItems = (props) => {
 
     const createItem = () => {
       if (props.createMode === true) {
-        console.log("Creating new item")
         const new_id = (contractItemIds.length + 1).toString()
         props.addContractItem(props.createMode, new_id).then((item) => {
           console.log("Contract item added with id " + item.id)
@@ -167,7 +165,7 @@ const DeadlineItems = (props) => {
             {deadlineItemNubs.map((item) => (
               <DeadlineItemBadge item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
             ))}
-            {showAdd && (
+            {(showAdd && !props.newDeadlineMode) && (
               <Listbox onChange={addItem}>
                 {({ open }) => (
                   <>
@@ -215,13 +213,15 @@ const DeadlineItems = (props) => {
                 )}
               </Listbox>
             )}
-            <button
-              key="create"
-              className="relative inline-flex items-center rounded-full bg-indigo-400 hover:bg-indigo-500 px-2 py-0.5 mt-1 mx-1 text-sm"
-              onClick={createItem}
-            >
-                <span className="text-xs font-medium text-white">create</span>
-            </button>
+            {!props.newDeadlineMode && (
+              <button
+                key="create"
+                className="relative inline-flex items-center rounded-full bg-indigo-400 hover:bg-indigo-500 px-2 py-0.5 mt-1 mx-1 text-sm"
+                onClick={createItem}
+              >
+                  <span className="text-xs font-medium text-white">create</span>
+              </button>
+            )}
           </div>
         </div>
         <div className="flex grow w-full">

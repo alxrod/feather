@@ -4,9 +4,9 @@ import CalendarModal from "./calendar_modal";
 import DeadlineDisplay from "./deadline_display"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { exportDeadlines, importDeadlines, genTestSet, genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
+import { exportDeadlines, exportDeadline, importDeadlines, genTestSet, genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
-import {suggestPayout} from "../../../../reducers/contract.reducer"
+import {suggestPayout, addLocalDeadline, addDeadline, renameDeadlines} from "../../../../reducers/contract.reducer"
 
 const DeadlineField = (props) => {
 
@@ -14,18 +14,30 @@ const DeadlineField = (props) => {
   const [errorVisibility, setErrorVisibility] = useState("hidden")
   const [reloadFlag, toggleReloadFlag] = useState(false)
   const [localDeadlines, setLocalDeadlines] = useState([])
+  const [nextDeadlineName, setNextDeadlineName] = useState("Deadline")
 
   useEffect( () => {
+    if (props.deadlines.length > 0) {
+      let max = 1
+      for (let i = 0; i < props.deadlines.length; i++) {
+        if (props.deadlines[i].name) {
+          const num = parseInt(props.deadlines[i].name.split(" ")[1])
+          if (num > max) {
+            max = num
+          }
+        }
+        
+      }
+      setNextDeadlineName("Deadline "+(max+1).toString())
+    }
+
     if (props.createMode === true && props.deadlines && props.deadlines.length >= 2) {
       const newDeadlines = importDeadlines(props.deadlines)
-      setLocalDeadlines(newDeadlines)
+      setLocalDeadlines(sortDeadlines(newDeadlines))
     } else if (props.createMode !== true && props.selectedId !== "") {
-      console.log("TRIGGING A DEADLINE RELOAD")
       const contract = props.cachedContracts[props.selectedId]
       const importedDeadlines = importDeadlines(contract.deadlinesList)
-      console.log("New Imported Deadliens are:")
-      console.log(importedDeadlines)
-      setLocalDeadlines(importedDeadlines)
+      setLocalDeadlines(sortDeadlines(importedDeadlines))
     }
   }, [props.deadlines, props.selectedId, props.reloadDeadlines])
 
@@ -79,13 +91,26 @@ const DeadlineField = (props) => {
     }
 
     const new_deadline = genEmptyDeadline(newDate)
+    new_deadline.name = nextDeadlineName
+    if (!props.createMode) {
+      new_deadline.awaitingCreation = true
+    }
     new_deadline.id = (localDeadlines.length +1).toString()
+    if (!props.createMode) {
+      new_deadline.id = "TEMPORARY"
+    }
+  
     new_deadline.idx = localDeadlines.length
+    new_deadline.temporary = true
+    
     let newDeadlines = localDeadlines
     newDeadlines.push(new_deadline)
-    console.log("Before sort new deadlines look like")
-    console.log(newDeadlines)
+    
     setLocalDeadlines(sortDeadlines(newDeadlines))
+
+    if (!props.createMode) {
+      props.addLocalDeadline(exportDeadline(new_deadline))
+    }
     toggleReloadFlag(!reloadFlag)
     for (let i = 0; i < newDeadlines.length; i++) {
       if (newDeadlines[i].id === new_deadline.id) {
@@ -94,9 +119,11 @@ const DeadlineField = (props) => {
     }
   }
 
+  const confirmNewDeadline = (deadline) => {
+    props.addDeadline(props.selectedId, exportDeadline(deadline))
+  }
+
   const sortDeadlines = (deadlines) => {
-    console.log("Inspecting Deadlines")
-    console.log(deadlines)
     if (role === WORKER_TYPE) {
       deadlines.sort((a, b) => (a.worker.date > b.worker.date) ? 1 : -1)
     } else if (role === BUYER_TYPE) {
@@ -104,9 +131,9 @@ const DeadlineField = (props) => {
     } else {
       deadlines.sort((a, b) => (a.current.date > b.current.date) ? 1 : -1)
     }
-    console.log("Checking in resort")
     for (let i = 0; i < deadlines.length; i++) {
       deadlines[i].idx = i
+      deadlines[i].name = "Deadline "+(i+1).toString()
       deadlines[i].relDate = deadlines[i].current.date
       if (role === WORKER_TYPE) {
         
@@ -114,8 +141,12 @@ const DeadlineField = (props) => {
       } else if (role === BUYER_TYPE) {
         deadlines[i].relDate = deadlines[i].buyer.date
       }
-      console.log(deadlines[i].relDate)
     }
+
+    const exported = exportDeadlines(deadlines)
+    props.renameDeadlines(exported)
+
+
     return deadlines
   }
 
@@ -166,6 +197,7 @@ const DeadlineField = (props) => {
         sortDeadlines={sortDeadlines}
         saveDeadlines={saveDeadlines}
         createMode={props.createMode}
+        confirmNewDeadline={confirmNewDeadline}
 
         contractItemIds={props.contractItemIds}
         
@@ -183,7 +215,10 @@ const mapStateToProps = ({ user, contract, chat }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  suggestPayout
+  suggestPayout,
+  addLocalDeadline,
+  renameDeadlines,
+  addDeadline,
 }, dispatch)
 
 export default connect(

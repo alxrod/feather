@@ -33,6 +33,11 @@ export const CONTRACT_ITEM_REPLACE = "contract/item/REPLACE"
 
 export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
 
+export const DEADLINE_ADD_TEMPORARY = "contract/deadline/ADD_TEMPORARY"
+
+export const CONTRACT_ADD_DEADLINE_FROM_DB = "contract/deadline/ADD_FROM_DB"
+export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
+
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
 if (initialNubs) {
     for (let i = 0; i < initialNubs.length; i++) {
@@ -53,6 +58,7 @@ const initialState = {
 
     curConItems: [],
     contractItemsChanged: false,
+    deadlinesChanged: false,
     
 }
 
@@ -148,6 +154,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 awaitingEdit: false,
+                deadlinesChanged: !state.deadlinesChanged,
                 cachedContracts: editContract(
                                     state.cachedContracts, 
                                     editDeadlinePayout(
@@ -161,6 +168,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 awaitingEdit: false,
+                deadlinesChanged: !state.deadlinesChanged,
                 cachedContracts: editContract(
                                     state.cachedContracts, 
                                     editDeadlineDate(
@@ -174,6 +182,7 @@ export default (state = initialState, action) => {
             console.log("TRIGGERING A RELOAD IN THE REDUCER")
             return {
                 ...state,
+                deadlinesChanged: !state.deadlinesChanged,
                 reloadDeadlinesFlag: !state.reloadDeadlinesFlag,
             }
 
@@ -285,11 +294,90 @@ export default (state = initialState, action) => {
                     )
                 )
             }
+        
+        case DEADLINE_ADD_TEMPORARY:
+            const newDeadlinesWTemp = addDeadlineLocally(state.cachedContracts[state.selectedId].deadlinesList, action.payload)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateDeadlinesLocally(
+                        state.cachedContracts[state.selectedId], 
+                        newDeadlinesWTemp,
+                    )
+                )
+            }
+        
+        case CONTRACT_ADD_DEADLINE_FROM_DB:
+            const newDeadlinesWDB = addOrReplaceDeadline(state.cachedContracts[state.selectedId].deadlinesList, action.payload)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateDeadlinesLocally(
+                        state.cachedContracts[state.selectedId], 
+                        newDeadlinesWDB,
+                    )
+                )
+            }
+        
+        case CONTRACT_DEADLINE_NAMES_UPDATE:
+            const renamedDeadlines = applyRenameDeadlines(state.cachedContracts[state.selectedId].deadlinesList, action.payload)
+            console.log("Names UPDATED")
+            console.log(renamedDeadlines)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateDeadlinesLocally(
+                        state.cachedContracts[state.selectedId], 
+                        renamedDeadlines,
+                    )
+                )
+            }
 
         default:
             return state
     }
 
+}
+
+const applyRenameDeadlines = (mainDeadlines, newDeadlines) => {
+    for (let i = 0; i < mainDeadlines.length; i++) {
+        for (let j = 0; j < newDeadlines.length; j++) {
+            if (newDeadlines[j].id === mainDeadlines[i].id) {
+                mainDeadlines[i].name = newDeadlines[j].name
+                j = newDeadlines.length
+            }
+        }
+    }
+    return mainDeadlines
+}
+
+const addDeadlineLocally = (deadlines, newDeadline) => {
+    deadlines.push(newDeadline)
+    return deadlines
+}
+
+const addOrReplaceDeadline = (deadlines, newDeadline) => {
+    let found = false
+    for (let i = 0; i < deadlines.length; i++) {
+        if (deadlines[i].id === "TEMPORARY") {
+            deadlines[i] = newDeadline
+            found = true
+        }
+    }
+    if (found) {
+        deadlines.push(newDeadline)
+    }
+    return deadlines
+}
+const updateDeadlinesLocally = (contract, deadlines) => {
+    contract.deadlinesList = deadlines
+    return contract
 }
 
 const replaceSuggestItemCurCon = (items, replacement) => {
@@ -345,6 +433,7 @@ const getContractItem = (items, id) => {
         }
     }
 }
+
 const contractItemUpdateBody = (item, newBody) => {
     item.currentBody = newBody.current
     item.workerBody = newBody.worker
@@ -430,36 +519,41 @@ const editDeadlineDate = (contract, date_info) => {
     return contract
     
 }
+export const renameDeadlines = (new_deadlines) => {
+    return dispatch => {
+        dispatch({
+            type: CONTRACT_DEADLINE_NAMES_UPDATE,
+            payload: new_deadlines,
+        })
+        return Promise.resolve()
+    }
+}
+
+export const addLocalDeadline = (new_deadline) => {
+    return dispatch => {
+        dispatch({
+            type: DEADLINE_ADD_TEMPORARY,
+            payload: new_deadline,
+        })
+        return Promise.resolve(new_deadline)
+    }
+    
+}
 
 export const addContractItem = (create_mode, new_id, new_name) => {
     return dispatch => {
-        if (create_mode) {
-            const new_item = {
-                name: "Item " + new_name,
-                id: new_id,
-                currentBody: "",
-                workerBody: "",
-                buyerBody: "",
-            }
-            dispatch({
-                type: CONTRACT_ITEM_ADD,
-                payload: new_item,
-            })
-            return Promise.resolve(new_item)
-        } else {
-            const new_item = {
-                name: "Item " + new_name,
-                id: new_id,
-                currentBody: "",
-                workerBody: "",
-                buyerBody: "",
-            }
-            dispatch({
-                type: CONTRACT_ITEM_ADD,
-                payload: new_item,
-            })
-            return Promise.resolve(new_item)
+        const new_item = {
+            name: "Item " + new_name,
+            id: new_id,
+            currentBody: "",
+            workerBody: "",
+            buyerBody: "",
         }
+        dispatch({
+            type: CONTRACT_ITEM_ADD,
+            payload: new_item,
+        })
+        return Promise.resolve(new_item)
     }
 }
 export const deleteSuggestContractItem = (id) => {
@@ -919,6 +1013,72 @@ export const reactAddItem = (contract_id, message_id, item_id, status) => {
         }).then((creds) => {
 
             return ContractService.reactAddItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+}
+
+export const addDeadline = (contract_id, deadline) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+            return ContractService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
+                () => {
+                    dispatch({
+                        type: CONTRACT_SEND_EDIT,
+                    });
+
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Error:")
+                    const message = 
+                        (error.response &&
+                        error.response.data &&
+                        error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                    console.log(message)
+                    return Promise.reject(message);
+                }
+            );
+        });
+    }
+};
+
+export const reactAddDeadline = (contract_id, message_id, deadline_id, status) => {
+    return dispatch => {
+        return authChecker(true).then(creds => {
+            if (creds === undefined) {
+                dispatch({ type: AUTH_FAILED})
+                return Promise.reject("You must be logged in")
+            }
+            return Promise.resolve(creds)
+        }).then((creds) => {
+
+            return ContractService.reactAddDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
                 () => {
                     dispatch({
                         type: CONTRACT_SEND_EDIT,

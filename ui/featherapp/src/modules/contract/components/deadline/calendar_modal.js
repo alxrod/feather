@@ -19,10 +19,56 @@ const CalendarModal = (props) => {
   const cancelButtonRef = useRef(null)
   const [errorMsg, setErrorMsg] = useState("")
   const [selected, setSelected] = useState(0)
+  const [newDeadlineIndex, setNewDeadlineIndex] = useState(-1)
+  const [newDeadlineMode, toggleNewDeadlineMode] = useState(false)
+  const [newDeadlineSelected, toggleNewDeadlineSelected] = useState(false)
 
   const handleAddDeadline = () => {
     const newSelect = props.addDeadline(selected)
+    
     setSelected(newSelect)
+    if (!props.createMode) {
+      setNewDeadlineIndex(newSelect)
+      toggleNewDeadlineMode(true)
+    }
+    
+  }
+
+  useEffect( () => {
+    if (props.deadlines.length > 0 && props.deadlines[selected].awaitingCreation) {
+      toggleNewDeadlineSelected(true)
+      toggleNewDeadlineMode(true)
+      return
+    }
+    if (selected === newDeadlineIndex) {
+      toggleNewDeadlineSelected(true)
+      toggleNewDeadlineMode(true)
+    } else {
+      toggleNewDeadlineSelected(false)
+    }
+  }, [selected])
+
+  useEffect( () => {
+    if (props.deadlines.length > 0) {
+      for (let i = 0; i < props.deadlines.length; i++) {
+        if (props.deadlines[i].awaitingCreation) {
+          toggleNewDeadlineMode(true)
+          return
+        }
+      }
+    }
+  }, [props.deadlines])
+
+  const confirmNewDeadline = () => {
+    setNewDeadlineIndex(-1)
+    toggleNewDeadlineMode(false)
+    const new_deadline = props.deadlines[newDeadlineIndex]
+    props.confirmNewDeadline(new_deadline)
+  } 
+
+  const cancelNewDeadline = () => {
+    setNewDeadlineIndex(-1)
+    toggleNewDeadlineMode(false)
   }
 
   return (
@@ -98,16 +144,43 @@ const CalendarModal = (props) => {
                           </div>
                         </div>
                         <div className="sm:my-auto">
-                          <button
-                          type="submit"
-                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                          onClick={handleAddDeadline}>
-                            <span className="flex items-center font-light">
-                              <PlusIcon className="w-4 h-4"/>
-                              Deadline
-                            </span>
-                          </button>
-                          </div>
+                          {(!newDeadlineMode) && (
+                            <button
+                            type="submit"
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={handleAddDeadline}>
+                              <span className="flex items-center font-light">
+                                <PlusIcon className="w-4 h-4"/>
+                                Deadline
+                              </span>
+                            </button>
+                          )}
+                          {(newDeadlineMode && !newDeadlineSelected) && (
+                            <div className="w-full flex justify-end">
+                               <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before creating another deadline</h3>
+                            </div>
+                          )}
+                          {(newDeadlineSelected && newDeadlineMode) && (
+                            <div className="flex">
+                              <button
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              onClick={confirmNewDeadline}>
+                                <span className="flex items-center font-light">
+                                  <PlusIcon className="w-4 h-4"/>
+                                  Confirm
+                                </span>
+                              </button>
+                              <button
+                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              onClick={cancelNewDeadline}>
+                                <span className="flex items-center font-light">
+                                  <XIcon className="w-4 h-4"/>
+                                  Cancel
+                                </span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                         
                       </div>
                       
@@ -122,12 +195,14 @@ const CalendarModal = (props) => {
                               saveDeadlines={props.saveDeadlines}
                               setErrorMsg={setErrorMsg}
                               createMode={props.createMode}
+                              newDeadlineMode={newDeadlineSelected}
 
                               submitPayout={props.submitPayout}
                             />
                             <DeadlineItems
                               contractItemIds={props.contractItems}
                               createMode={props.createMode}
+                              newDeadlineMode={newDeadlineSelected}
                               deadline={props.deadlines[selected]}
                               editDeadline={props.editDeadline}
                             />
@@ -142,6 +217,7 @@ const CalendarModal = (props) => {
                               setErrorMsg={setErrorMsg}
                               reloadFlag={props.reloadFlag}
                               createMode={props.createMode}
+                              newDeadlineMode={newDeadlineSelected}
                             />
                           </div>
                         </div>

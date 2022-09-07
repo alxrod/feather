@@ -21,6 +21,7 @@ import {
     CONTRACT_ITEM_RELOAD,
     CONTRACT_ITEM_REPLACE_SUGGEST,
     CONTRACT_ITEM_SUGGEST_DELETE,
+    CONTRACT_ADD_DEADLINE_FROM_DB,
 } from "../reducers/contract.reducer"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -308,6 +309,16 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_ITEM_SUGGEST_DELETE,
             payload: msg.body.item.id,
         });
+    } else if (msg.method === msgMethods.DEADLINE_CREATE) {
+        dispatch({
+            type: CONTRACT_ADD_DEADLINE_FROM_DB,
+            payload: msg.body.deadline,
+        });
+    } else if (msg.method === msgMethods.DEADLINE_DELETE) {
+        // dispatch({
+        //     type: CONTRACT_ITEM_SUGGEST_DELETE,
+        //     payload: msg.body.item.id,
+        // });
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CONTRACT_SEND_EDIT,
@@ -336,6 +347,10 @@ const reformatBody = (msg) => {
         msg.body = msg.itemCreateBody
     } else if (msg.method === msgMethods.ITEM_DELETE) {
         msg.body = msg.itemDeleteBody
+    } else if (msg.method === msgMethods.DEADLINE_CREATE) {
+        msg.body = msg.deadlineCreateBody
+    } else if (msg.method === msgMethods.DEADLINE_DELETE) {
+        msg.body = msg.deadlineDeleteBody
     } else {
         msg.body = {}
     }

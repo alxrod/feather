@@ -4,9 +4,13 @@ export const exportDeadlines = (incoming) => {
       let in_d = incoming[i]
       let out_d = {
         idx: i,
+        name: in_d.name,
+
+        awaitingCreation: in_d.awaitingCreation,
         payoutAwaitingApproval: in_d.payoutAwaitingApproval,
         dateAwaitingApproval: in_d.dateAwaitingApproval,
         itemsAwaitingApproval: in_d.itemsAwaitingApproval,
+
         
         payoutProposerId: in_d.payoutProposerId,
         dateProposerId: in_d.dateProposerId,
@@ -35,6 +39,7 @@ export const importDeadlines = (incoming) => {
     let in_d = incoming[i]
     let out_d = {
       idx: i,
+      name: in_d.name,
       current: {
         payout: in_d.currentPayout,
         date: in_d.currentDate,
@@ -47,6 +52,9 @@ export const importDeadlines = (incoming) => {
         payout: in_d.buyerPayout,
         date: in_d.buyerDate,
       },
+
+      awaitingCreation: in_d.awaitingCreation,
+
       payoutAwaitingApproval: in_d.payoutAwaitingApproval,
       dateAwaitingApproval: in_d.dateAwaitingApproval,
       itemsAwaitingApproval: in_d.itemsAwaitingApproval,
@@ -69,6 +77,37 @@ export const importDeadlines = (incoming) => {
     outgoing.push(out_d)
   }
   return outgoing
+}
+
+export const exportDeadline = (in_d) => {
+  let out_d = {
+    idx: in_d.idx,
+    name: in_d.name,
+
+    awaitingCreation: in_d.awaitingCreation,
+    payoutAwaitingApproval: in_d.payoutAwaitingApproval,
+    dateAwaitingApproval: in_d.dateAwaitingApproval,
+    itemsAwaitingApproval: in_d.itemsAwaitingApproval,
+
+    
+    payoutProposerId: in_d.payoutProposerId,
+    dateProposerId: in_d.dateProposerId,
+
+    currentPayout: in_d.current.payout,
+    currentDate: in_d.current.date,
+
+    workerPayout: in_d.worker.payout,
+    workerDate: in_d.worker.date,
+
+    buyerPayout: in_d.buyer.payout,
+    buyerDate: in_d.buyer.date,
+
+    itemsList: in_d.itemsList,
+  }
+  out_d.draftRequired = in_d.draftRequired
+  out_d.id = in_d.id
+  
+  return out_d
 }
 
   
@@ -145,6 +184,8 @@ export const genEmptyDeadline = (date) => {
         payout: 0,
         date: date,
       },
+
+      awaitingCreation: false,
   
       payoutAwaitingApproval: false,
       dateAwaitingApproval: false,
