@@ -1043,6 +1043,7 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 18, ""),
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
+    deadlineProposerId: jspb.Message.getFieldWithDefault(msg, 22, ""),
     currentPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     workerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
     buyerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
@@ -1112,6 +1113,10 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 21:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAwaitingDeletion(value);
+      break;
+    case 22:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDeadlineProposerId(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readFloat());
@@ -1230,6 +1235,13 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       21,
+      f
+    );
+  }
+  f = message.getDeadlineProposerId();
+  if (f.length > 0) {
+    writer.writeString(
+      22,
       f
     );
   }
@@ -1418,6 +1430,24 @@ proto.main.DeadlineEntity.prototype.getAwaitingDeletion = function() {
  */
 proto.main.DeadlineEntity.prototype.setAwaitingDeletion = function(value) {
   return jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional string deadline_proposer_id = 22;
+ * @return {string}
+ */
+proto.main.DeadlineEntity.prototype.getDeadlineProposerId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setDeadlineProposerId = function(value) {
+  return jspb.Message.setProto3StringField(this, 22, value);
 };
 
 

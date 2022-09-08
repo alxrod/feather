@@ -30,7 +30,7 @@ const CalendarBundle = (props) => {
   const [dateMsgId, setDateMsgId] = useState("")
 
   useEffect(() => {
-    if (props.newDeadlineMode) {
+    if (props.newDeadlineMode && !props.newDeadlineLocalMode) {
       setDateLock(true)
     }
   }, [props.newDeadlineMode])
@@ -52,16 +52,19 @@ const CalendarBundle = (props) => {
     console.log("Changing the deadline date!")
 
     // props.editDeadline(newDeadline)
-    if (props.createMode === true) {
+    if (props.createMode || props.newDeadlineMode) {
       props.editDeadline(new_deadline)
       if (timeoutId !== -1) {
         clearTimeout(timeoutId);
       }
-      const id = setTimeout(function(){
-        props.saveDeadlines()
-        setTimeoutId(-1)
-      },1000)
-      setTimeoutId(id)
+      if (props.createMode) {
+        const id = setTimeout(function(){
+          props.saveDeadlines()
+          setTimeoutId(-1)
+        },1000)
+        setTimeoutId(id)
+      }
+      
     } else {
       let your_date = new_deadline.current.date
       let main_date = new_deadline.current.date

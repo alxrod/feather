@@ -29,7 +29,8 @@ const DeadlineSummary = (props) => {
     const [payoutMsgId, setPayoutMsgId] = useState("")
 
     useEffect(() => {
-      if (props.newDeadlineMode) {
+      console.log("testing " + props.newDeadlineLocalMode)
+      if (props.newDeadlineMode && !props.newDeadlineLocalMode) {
         setPayoutLock(true)
       }
     }, [props.newDeadlineMode])
@@ -214,7 +215,11 @@ const DeadlineSummary = (props) => {
             }
           }
         }
-        setPayoutLock(payoutLockShould)
+
+        if (!props.newDeadlineLocalMode) {
+          setPayoutLock(payoutLockShould)
+        }
+        
       }
     }, [props.deadline, props.reloadDeadlines])
 

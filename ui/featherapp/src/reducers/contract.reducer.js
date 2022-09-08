@@ -36,6 +36,10 @@ export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
 export const DEADLINE_ADD_TEMPORARY = "contract/deadline/ADD_TEMPORARY"
 
 export const CONTRACT_ADD_DEADLINE_FROM_DB = "contract/deadline/ADD_FROM_DB"
+
+export const CONTRACT_DEADLINE_REPLACE = "contract/deadline/REPLACE"
+export const CONTRACT_DEADLINE_REMOVE = "contract/deadline/REMOVE"
+
 export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
 
 let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
@@ -329,12 +333,39 @@ export default (state = initialState, action) => {
             console.log(renamedDeadlines)
             return {
                 ...state,
-                deadlinesChanged: !state.deadlinesChanged,
                 cachedContracts: editContract(
                     state.cachedContracts, 
                     updateDeadlinesLocally(
                         state.cachedContracts[state.selectedId], 
                         renamedDeadlines,
+                    )
+                )
+            }
+        
+        case CONTRACT_DEADLINE_REPLACE:
+            const replacedDeadlines = replaceDeadline(state.cachedContracts[state.selectedId].deadlinesList, action.payload)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateDeadlinesLocally(
+                        state.cachedContracts[state.selectedId], 
+                        replacedDeadlines,
+                    )
+                )
+            }
+
+        case CONTRACT_DEADLINE_REMOVE:
+            const removedDeadlines = removeDeadline(state.cachedContracts[state.selectedId].deadlinesList, action.payload.id)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                cachedContracts: editContract(
+                    state.cachedContracts, 
+                    updateDeadlinesLocally(
+                        state.cachedContracts[state.selectedId], 
+                        removedDeadlines,
                     )
                 )
             }
@@ -370,11 +401,37 @@ const addOrReplaceDeadline = (deadlines, newDeadline) => {
             found = true
         }
     }
-    if (found) {
+    if (!found) {
         deadlines.push(newDeadline)
     }
     return deadlines
 }
+
+const replaceDeadline = (deadlines, newDeadline) => {
+    let found = false
+    for (let i = 0; i < deadlines.length; i++) {
+        if (deadlines[i].id === newDeadline.id) {
+            deadlines[i] = newDeadline
+            found = true
+        }
+    }
+    if (!found) {
+        deadlines.push(newDeadline)
+    }
+    return deadlines
+}
+
+const removeDeadline = (deadlines, removal) => {
+    const newDeadlines = []
+    for (let i = 0; i < deadlines.length; i++) {
+        if (deadlines[i].id !== removal) {
+            newDeadlines.push(deadlines[i])
+        }
+    }
+    return newDeadlines
+}
+
+
 const updateDeadlinesLocally = (contract, deadlines) => {
     contract.deadlinesList = deadlines
     return contract
@@ -538,6 +595,15 @@ export const addLocalDeadline = (new_deadline) => {
         return Promise.resolve(new_deadline)
     }
     
+}
+export const deleteLocalDeadline = () => {
+    console.log("DELETING LOCAL DEADLINE")
+    return dispatch => {
+        dispatch({
+            type: CONTRACT_DEADLINE_REMOVE,
+            payload: {id: "TEMPORARY"},
+        })
+    }
 }
 
 export const addContractItem = (create_mode, new_id, new_name) => {
@@ -1371,3 +1437,22 @@ export const updateLocalItemDelete = (msg) => {
         });
     }
 }
+
+export const updateLocalDeadline = (msg) => {
+    console.log("UPDATING LOCAL DEADLINE")
+    return dispatch => {
+        if (msg.body.resolStatus == resolTypes.APPROVED) {
+            msg.body.deadline.awaitingCreation = false
+            dispatch({
+                type: CONTRACT_DEADLINE_REPLACE,
+                payload: msg.body.deadline,
+            });
+        } else {
+            dispatch({
+                type: CONTRACT_DEADLINE_REMOVE,
+                payload: msg.body.deadline,
+            });
+        }
+    }
+}
+

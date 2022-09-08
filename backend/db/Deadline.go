@@ -20,8 +20,9 @@ type Deadline struct {
 	ContractId primitive.ObjectID `bson:"contract_id"`
 	Name       string             `bson:"name"`
 
-	AwaitingCreation bool `bson:"awaiting_creation"`
-	AwaitingDeletion bool `bson:"awaiting_deletion"`
+	DeadlineProposerId primitive.ObjectID `bson:"deadline_proposer_id`
+	AwaitingCreation   bool               `bson:"awaiting_creation"`
+	AwaitingDeletion   bool               `bson:"awaiting_deletion"`
 
 	CurrentPayout          float32            `bson:"current_payout"`
 	WorkerPayout           float32            `bson:"worker_payout"`
@@ -57,6 +58,9 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	if !d.DateProposerId.IsZero() {
 		proto.DateProposerId = d.DateProposerId.Hex()
 	}
+	if !d.DeadlineProposerId.IsZero() {
+		proto.DeadlineProposerId = d.DeadlineProposerId.Hex()
+	}
 
 	proto.AwaitingCreation = d.AwaitingCreation
 	proto.AwaitingDeletion = d.AwaitingDeletion
@@ -86,8 +90,9 @@ func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.
 		ContractId: contract_id,
 		Name:       proto.Name,
 
-		DateProposerId:   user_id,
-		PayoutProposerId: user_id,
+		DateProposerId:     user_id,
+		PayoutProposerId:   user_id,
+		DeadlineProposerId: user_id,
 
 		DraftRequired: proto.DraftRequired,
 

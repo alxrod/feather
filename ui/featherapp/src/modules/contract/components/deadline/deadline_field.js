@@ -6,7 +6,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { exportDeadlines, exportDeadline, importDeadlines, genTestSet, genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
-import {suggestPayout, addLocalDeadline, addDeadline, renameDeadlines} from "../../../../reducers/contract.reducer"
+import {
+  suggestPayout, 
+  addLocalDeadline, 
+  addDeadline, 
+  renameDeadlines, 
+  deleteLocalDeadline
+} from "../../../../reducers/contract.reducer"
 
 const DeadlineField = (props) => {
 
@@ -18,6 +24,8 @@ const DeadlineField = (props) => {
 
   useEffect( () => {
     if (props.deadlines.length > 0) {
+      console.log("Deadlines changed to")
+      console.log(props.deadlines)
       let max = 1
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadlines[i].name) {
@@ -39,7 +47,7 @@ const DeadlineField = (props) => {
       const importedDeadlines = importDeadlines(contract.deadlinesList)
       setLocalDeadlines(sortDeadlines(importedDeadlines))
     }
-  }, [props.deadlines, props.selectedId, props.reloadDeadlines])
+  }, [props.deadlines, props.selectedId, props.reloadDeadlines, props.deadlinesChanged])
 
   const saveDeadlines = () => {
     props.changeDeadlines(exportDeadlines(localDeadlines))
@@ -136,16 +144,16 @@ const DeadlineField = (props) => {
       deadlines[i].name = "Deadline "+(i+1).toString()
       deadlines[i].relDate = deadlines[i].current.date
       if (role === WORKER_TYPE) {
-        
         deadlines[i].relDate = deadlines[i].worker.date
       } else if (role === BUYER_TYPE) {
         deadlines[i].relDate = deadlines[i].buyer.date
       }
     }
 
-    const exported = exportDeadlines(deadlines)
-    props.renameDeadlines(exported)
-
+    if (!props.createMode) {
+      const exported = exportDeadlines(deadlines)
+      props.renameDeadlines(exported)
+    }
 
     return deadlines
   }
@@ -194,12 +202,14 @@ const DeadlineField = (props) => {
         editDeadline={editDeadline}
         addDeadline={addDeadline}
         removeDeadline={removeDeadline}
+        deleteLocalDeadline={props.deleteLocalDeadline}
         sortDeadlines={sortDeadlines}
         saveDeadlines={saveDeadlines}
         createMode={props.createMode}
         confirmNewDeadline={confirmNewDeadline}
 
         contractItemIds={props.contractItemIds}
+        user={props.user}
         
         submitPayout={submitPayout}
       />
@@ -209,9 +219,11 @@ const DeadlineField = (props) => {
 
 
 const mapStateToProps = ({ user, contract, chat }) => ({
+  user: user.user,
   selectedId: contract.selectedId,
   cachedContracts: contract.cachedContracts,
   reloadDeadlines: contract.reloadDeadlinesFlag,
+  deadlinesChanged: contract.deadlinesChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -219,6 +231,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   addLocalDeadline,
   renameDeadlines,
   addDeadline,
+  deleteLocalDeadline,
 }, dispatch)
 
 export default connect(

@@ -348,8 +348,14 @@ const reformatBody = (msg) => {
     } else if (msg.method === msgMethods.ITEM_DELETE) {
         msg.body = msg.itemDeleteBody
     } else if (msg.method === msgMethods.DEADLINE_CREATE) {
+        msg.deadlineCreateBody.deadline.currentDate = new Date(1000 * msg.deadlineCreateBody.deadline.currentDate.seconds)
+        msg.deadlineCreateBody.deadline.workerDate = new Date(1000 * msg.deadlineCreateBody.deadline.workerDate.seconds)
+        msg.deadlineCreateBody.deadline.buyerDate = new Date(1000 * msg.deadlineCreateBody.deadline.buyerDate.seconds)
         msg.body = msg.deadlineCreateBody
     } else if (msg.method === msgMethods.DEADLINE_DELETE) {
+        msg.deadlineDeleteBody.deadline.currentDate = new Date(1000 * msg.deadlineDeleteBody.deadline.currentDate.seconds)
+        msg.deadlineDeleteBody.deadline.workerDate = new Date(1000 * msg.deadlineDeleteBody.deadline.workerDate.seconds)
+        msg.deadlineDeleteBody.deadline.buyerDate = new Date(1000 * msg.deadlineDeleteBody.deadline.buyerDate.seconds)
         msg.body = msg.deadlineDeleteBody
     } else {
         msg.body = {}

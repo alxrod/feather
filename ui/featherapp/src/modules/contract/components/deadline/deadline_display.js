@@ -18,14 +18,15 @@ const DeadlineDisplay = (props) => {
   useEffect(() => {
     if (props.deadlines !== undefined) {
       const sortedDeadlines = props.deadlines
+      // console.log("Sorting dates ")
       const now = new Date()
       for (let i = 0; i < sortedDeadlines.length; i++) {
-        sortedDeadlines[i].relDate = sortedDeadlines[i].current.date
-        if (props.role === WORKER_TYPE) {
-          sortedDeadlines[i].relDate = sortedDeadlines[i].worker.date
-        } else if (props.role === BUYER_TYPE) {
-          sortedDeadlines[i].relDate = sortedDeadlines[i].buyer.date
-        }
+        // sortedDeadlines[i].relDate = sortedDeadlines[i].current.date
+        // if (props.role === WORKER_TYPE) {
+        //   sortedDeadlines[i].relDate = sortedDeadlines[i].worker.date
+        // } else if (props.role === BUYER_TYPE) {
+        //   sortedDeadlines[i].relDate = sortedDeadlines[i].buyer.date
+        // }
 
         if (sortedDeadlines[i].relDate < now) {
           sortedDeadlines[i].status = "past"

@@ -21,11 +21,12 @@ const CalendarModal = (props) => {
   const [selected, setSelected] = useState(0)
   const [newDeadlineIndex, setNewDeadlineIndex] = useState(-1)
   const [newDeadlineMode, toggleNewDeadlineMode] = useState(false)
+  const [newDeadlineLocalMode, toggleNewDeadlineLocalMode] = useState(false)
   const [newDeadlineSelected, toggleNewDeadlineSelected] = useState(false)
+  const [proposedByPartner, setProposedByPartner] = useState(false)
 
   const handleAddDeadline = () => {
     const newSelect = props.addDeadline(selected)
-    
     setSelected(newSelect)
     if (!props.createMode) {
       setNewDeadlineIndex(newSelect)
@@ -38,26 +39,31 @@ const CalendarModal = (props) => {
     if (props.deadlines.length > 0 && props.deadlines[selected].awaitingCreation) {
       toggleNewDeadlineSelected(true)
       toggleNewDeadlineMode(true)
+      if (props.deadlines[selected].deadlineProposerId !== props.user.user_id) {
+        setProposedByPartner(true)
+      } else {
+        setProposedByPartner(false)
+      }
       return
     }
-    if (selected === newDeadlineIndex) {
-      toggleNewDeadlineSelected(true)
-      toggleNewDeadlineMode(true)
-    } else {
-      toggleNewDeadlineSelected(false)
-    }
+    toggleNewDeadlineSelected(false)
   }, [selected])
 
   useEffect( () => {
     if (props.deadlines.length > 0) {
+      let foundLocalAdd = false
       for (let i = 0; i < props.deadlines.length; i++) {
+        if (props.deadlines[i].id === "TEMPORARY") {
+          console.log("Located a local add")
+          foundLocalAdd = true
+        }
         if (props.deadlines[i].awaitingCreation) {
           toggleNewDeadlineMode(true)
-          return
         }
       }
+      toggleNewDeadlineLocalMode(foundLocalAdd)
     }
-  }, [props.deadlines])
+  }, [props.deadlines.length])
 
   const confirmNewDeadline = () => {
     setNewDeadlineIndex(-1)
@@ -69,6 +75,7 @@ const CalendarModal = (props) => {
   const cancelNewDeadline = () => {
     setNewDeadlineIndex(-1)
     toggleNewDeadlineMode(false)
+    props.deleteLocalDeadline()
   }
 
   return (
@@ -160,7 +167,7 @@ const CalendarModal = (props) => {
                                <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before creating another deadline</h3>
                             </div>
                           )}
-                          {(newDeadlineSelected && newDeadlineMode) && (
+                          {(newDeadlineSelected && newDeadlineMode && (newDeadlineLocalMode || !proposedByPartner)) && (
                             <div className="flex">
                               <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
@@ -196,6 +203,7 @@ const CalendarModal = (props) => {
                               setErrorMsg={setErrorMsg}
                               createMode={props.createMode}
                               newDeadlineMode={newDeadlineSelected}
+                              newDeadlineLocalMode={newDeadlineLocalMode}
 
                               submitPayout={props.submitPayout}
                             />
@@ -203,6 +211,7 @@ const CalendarModal = (props) => {
                               contractItemIds={props.contractItems}
                               createMode={props.createMode}
                               newDeadlineMode={newDeadlineSelected}
+                              newDeadlineLocalMode={newDeadlineLocalMode}
                               deadline={props.deadlines[selected]}
                               editDeadline={props.editDeadline}
                             />
@@ -218,6 +227,7 @@ const CalendarModal = (props) => {
                               reloadFlag={props.reloadFlag}
                               createMode={props.createMode}
                               newDeadlineMode={newDeadlineSelected}
+                              newDeadlineLocalMode={newDeadlineLocalMode}
                             />
                           </div>
                         </div>

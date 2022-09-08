@@ -19,6 +19,7 @@ message DeadlineEntity {
     
     bool awaiting_creation = 20;
     bool awaiting_deletion = 21;
+    string deadline_proposer_id = 22;
 
     float current_payout = 4;
     float worker_payout = 7;

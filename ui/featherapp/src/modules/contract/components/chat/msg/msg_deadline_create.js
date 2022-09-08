@@ -5,7 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState, useMemo } from "react";
-import { reactAddDeadline, updateLocalItemAdd } from "../../../../../reducers/contract.reducer"
+import { reactAddDeadline, updateLocalDeadline } from "../../../../../reducers/contract.reducer"
 import { finishedReload } from '../../../../../reducers/chat.reducer'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
@@ -36,7 +36,7 @@ const DeadlineCreateMsg = (props) => {
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
-        // props.updateLocalItemAdd(props.msg)
+        props.updateLocalDeadline(props.msg)
       }
       setVersion(version+1)
       props.finishedReload()
@@ -74,11 +74,11 @@ const DeadlineCreateMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
+    props.reactAddDeadline(props.selectedId, props.msg.id, props.msg.body.deadline.id, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    // props.reactAddItem(props.selectedId, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
+    props.reactAddDeadline(props.selectedId, props.msg.id, props.msg.body.deadline.id, decisionTypes.NO)
     console.log("Rejecting change")
   }
   
@@ -167,7 +167,7 @@ const mapStateToProps = ({ user, contract }) => ({
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-	updateLocalItemAdd,
+	updateLocalDeadline,
 	reactAddDeadline,
   finishedReload,
 }, dispatch)
