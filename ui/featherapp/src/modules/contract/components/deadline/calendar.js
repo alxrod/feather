@@ -45,32 +45,29 @@ const Calendar = (props) => {
 
   useEffect( () => {
     if (props.deadline !== undefined) {
-      let yD = props.deadline.current.date
-      let pD = props.deadline.current.date
+      let yD = props.deadline.currentDate
+      let pD = props.deadline.currentDate
 
-      if (props.role == BUYER_TYPE) {
-        yD = props.deadline.buyer.date
-        pD = props.deadline.worker.date
+      if (props.role === BUYER_TYPE) {
+        yD = props.deadline.buyerDate
+        pD = props.deadline.workerDate
       } else {
-        yD = props.deadline.worker.date
-        pD = props.deadline.buyer.date
+        yD = props.deadline.workerDate
+        pD = props.deadline.buyerDate
       }
       setPartnerDate(pD)
-      // Make sel date the others if we are locked in propose mode. 
       setYourDate(yD)
 
-      
-
-      setOrigMonth(props.deadline.current.date.getMonth())
-      setOrigYear(props.deadline.current.date.getFullYear())
-      setOrigDay(props.deadline.current.date.getDate())
+      setOrigMonth(props.deadline.currentDate.getMonth())
+      setOrigYear(props.deadline.currentDate.getFullYear())
+      setOrigDay(props.deadline.currentDate.getDate())
 
       let takeNext = false
       for (let i = 0; i < props.deadlines.length; i++) {
         if (takeNext === true) {
-          setNextMonth(props.deadlines[i].current.date.getMonth())
-          setNextYear(props.deadlines[i].current.date.getFullYear())
-          setNextDay(props.deadlines[i].current.date.getDate())
+          setNextMonth(props.deadlines[i].currentDate.getMonth())
+          setNextYear(props.deadlines[i].currentDate.getFullYear())
+          setNextDay(props.deadlines[i].currentDate.getDate())
           toggleNextExists(true)
         }
         if (props.deadlines[i].id == props.deadline.id && i !== (props.deadlines.length-1)) {
@@ -85,7 +82,7 @@ const Calendar = (props) => {
   }, [props.deadline, props.reloadFlag, props.calRefresh])
 
   useEffect( () => {
-    if (yourDate.getTime() === props.deadline.current.date.getTime() && props.dateLock) {
+    if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
       console.log("Setting the partner as main date")
       setYourDate(partnerDate)
     } 
@@ -113,13 +110,13 @@ const Calendar = (props) => {
         const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
         const newDeadline = structuredClone(props.deadline)
         if (props.createMode === true) {
-          newDeadline.worker.date = newDate
-          newDeadline.current.date = newDate
-          newDeadline.buyer.date = newDate
+          newDeadline.workerDate = newDate
+          newDeadline.currentDate = newDate
+          newDeadline.buyerDate = newDate
         } else if (props.role === WORKER_TYPE) {
-          newDeadline.worker.date = newDate
+          newDeadline.workerDate = newDate
         } else if (props.role === BUYER_TYPE) {
-          newDeadline.buyer.date = newDate
+          newDeadline.buyerDate = newDate
         }
         props.changeDate(newDeadline)
       } 
@@ -140,12 +137,12 @@ const Calendar = (props) => {
     if (props.deadline.idx > 0) {
       let prev = props.deadlines[props.deadline.idx - 1]
       if (props.role === WORKER_TYPE) {
-        if (prev.worker.date > newDate) {
+        if (prev.workerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + (prev.idx+1)))
           return
         }
       } else if (props.role === BUYER_TYPE) {
-        if (prev.buyer.date > newDate) {
+        if (prev.buyerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + (prev.idx+1)))
           return
         }
@@ -155,12 +152,12 @@ const Calendar = (props) => {
     if (props.deadline.idx < props.deadlines.length-1) {
       let next = props.deadlines[props.deadline.idx + 1]
       if (props.role === WORKER_TYPE) {
-        if (next.worker.date < newDate) {
+        if (next.workerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + (next.idx+1)))
           return
         }
       } else if (props.role === BUYER_TYPE) {
-        if (next.buyer.date < newDate) {
+        if (next.buyerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + (next.idx+1)))
           return
         }

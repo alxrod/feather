@@ -13,7 +13,8 @@ import { reactPayout } from '../../../../reducers/deadlines/dispatchers/deadline
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 const DeadlineSummary = (props) => {
-  
+
+
     const [timeoutId, setTimeoutId] = useState(-1)
     const [payoutValue, setPayout] = useState(0)
 
@@ -29,7 +30,6 @@ const DeadlineSummary = (props) => {
     const [payoutMsgId, setPayoutMsgId] = useState("")
 
     useEffect(() => {
-      console.log("testing " + props.newDeadlineLocalMode)
       if (props.newDeadlineMode && !props.newDeadlineLocalMode) {
         setPayoutLock(true)
       }
@@ -51,6 +51,8 @@ const DeadlineSummary = (props) => {
       return !isNaN(num)
     }
     const [payoutError, setPayoutError] = useState("")
+
+
     const changePayout = (e) => {
       let newVal = parseInt(e.target.value)
       if (e.target.value === "") {
@@ -64,11 +66,11 @@ const DeadlineSummary = (props) => {
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadline.id !== props.deadlines[i].id) {
           if (props.role === WORKER_TYPE) {
-            payout_sum += props.deadlines[i].worker.payout
+            payout_sum += props.deadlines[i].workerPayout
           } else if (props.role === BUYER_TYPE) {
-            payout_sum += props.deadlines[i].buyer.payout
+            payout_sum += props.deadlines[i].buyerPayout
           } else {
-            payout_sum += props.deadlines[i].current.payout
+            payout_sum += props.deadlines[i].currentPayout
           }
         } else {
           payout_sum += newVal
@@ -83,20 +85,20 @@ const DeadlineSummary = (props) => {
 
       // remember when cloning object dates get messed up
       let newDeadline = JSON.parse(JSON.stringify(props.deadline))
-      newDeadline.current.date = new Date(newDeadline.current.date)
-      newDeadline.worker.date = new Date(newDeadline.worker.date)
-      newDeadline.buyer.date = new Date(newDeadline.buyer.date)
+      newDeadline.currentDate = new Date(newDeadline.currentDate)
+      newDeadline.workerDate = new Date(newDeadline.workerDate)
+      newDeadline.buyerDate = new Date(newDeadline.buyerDate)
 
       if (props.createMode === true || props.newDeadlineMode) {
-        newDeadline.worker.payout = newVal
-        newDeadline.current.payout = newVal
-        newDeadline.buyer.payout = newVal
+        newDeadline.workerPayout = newVal
+        newDeadline.currentPayout = newVal
+        newDeadline.buyerPayout = newVal
       } else if (props.role === WORKER_TYPE) {
-        newDeadline.worker.payout = newVal
+        newDeadline.workerPayout = newVal
       } else if (props.role === BUYER_TYPE) {
-        newDeadline.buyer.payout = newVal
+        newDeadline.buyerPayout = newVal
       } else {
-        newDeadline.current.payout = newVal
+        newDeadline.currentPayout = newVal
       }
       if ((props.createMode !== true || props.newDeadlineMode) && payoutEditInProgress === false) {
         setOldPayout(payoutValue)
@@ -129,11 +131,11 @@ const DeadlineSummary = (props) => {
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadline.id !== props.deadlines[i].id) {
           if (props.role === WORKER_TYPE) {
-            payout_sum += props.deadlines[i].worker.payout
+            payout_sum += props.deadlines[i].workerPayout
           } else if (props.role === BUYER_TYPE) {
-            payout_sum += props.deadlines[i].buyer.payout
+            payout_sum += props.deadlines[i].buyerPayout
           } else {
-            payout_sum += props.deadlines[i].current.payout
+            payout_sum += props.deadlines[i].currentPayout
           }
         } else {
           payout_sum += payoutValue
@@ -185,11 +187,11 @@ const DeadlineSummary = (props) => {
         let payoutLockShould = false
         if (props.deadline.payoutAwaitingApproval !== true) {
           if (props.role === WORKER_TYPE) {
-            setPayout(props.deadline.worker.payout)
+            setPayout(props.deadline.workerPayout)
           } else if (props.role === BUYER_TYPE) {
-            setPayout(props.deadline.buyer.payout)
+            setPayout(props.deadline.buyerPayout)
           } else {
-            setPayout(props.deadline.current.payout)
+            setPayout(props.deadline.currentPayout)
           }
           payoutLockShould = false
           setPayoutTextColor("text-gray-500")
@@ -198,20 +200,20 @@ const DeadlineSummary = (props) => {
         } else {
           payoutLockShould = true
           setPayoutTextColor("text-green")
-          setOldPayout(props.deadline.current.payout)
+          setOldPayout(props.deadline.currentPayout)
           if (props.deadline.payoutProposerId == props.user.user_id) {
             setProposedByPartner(false)
             if (props.role === BUYER_TYPE) {
-              setPayout(props.deadline.buyer.payout)
+              setPayout(props.deadline.buyerPayout)
             } else if (props.role === WORKER_TYPE) {
-              setPayout(props.deadline.worker.payout)
+              setPayout(props.deadline.workerPayout)
             }
           } else {
             setProposedByPartner(true)
             if (props.role === BUYER_TYPE) {
-              setPayout(props.deadline.worker.payout)
+              setPayout(props.deadline.workerPayout)
             } else if (props.role === WORKER_TYPE) {
-              setPayout(props.deadline.buyer.payout)
+              setPayout(props.deadline.buyerPayout)
             }
           }
         }
@@ -225,16 +227,6 @@ const DeadlineSummary = (props) => {
 
     const [curPayout, setCurPayout] = useState(0)
     useEffect(() => {
-      // let cur = 0
-      // if (props.role === WORKER_TYPE) {
-      //   cur = props.deadline.worker.payout
-      // } else if (props.role === BUYER_TYPE) {
-      //   cur = props.deadline.buyer.payout
-      // } else {
-      //   cur = props.deadline.current.payout
-      // }
-      // console.log(props.deadline)
-      // console.log(cur)
       setCurPayout(payoutValue)
     }, [props.deadline, payoutValue])
     const [prevPayout, setPrevPayout] = useState(0)
@@ -243,11 +235,11 @@ const DeadlineSummary = (props) => {
       let total = 0.0
       for (let i = 0; i < props.deadline.idx; i++) {
         if (props.role === WORKER_TYPE) {
-          total += props.deadlines[i].worker.payout
+          total += props.deadlines[i].workerPayout
         } else if (props.role === BUYER_TYPE) {
-          total += props.deadlines[i].buyer.payout
+          total += props.deadlines[i].buyerPayout
         } else {
-          total += props.deadlines[i].current.payout
+          total += props.deadlines[i].currentPayout
         }
       }
       if (curPayout && (total + curPayout > 100)) {
@@ -257,13 +249,12 @@ const DeadlineSummary = (props) => {
     }, [props.deadlines, curPayout, props.deadline])
     
     const approveChange = () => {
-      props.reactPayout(props.selectedId, payoutMsgId, props.deadline.id, decisionTypes.YES)
+      props.reactPayout(props.curContract.id, payoutMsgId, props.deadline.id, decisionTypes.YES)
     }
     const denyChange = () => {
-      props.reactPayout(props.selectedId, payoutMsgId, props.deadline.id, decisionTypes.NO)
+      props.reactPayout(props.curContract.id, payoutMsgId, props.deadline.id, decisionTypes.NO)
     }
     
-
     return (
       <div className="flex flex-col">
         <div className="flex flex-col mt-0 md:col-span-2">
@@ -412,10 +403,10 @@ const DeadlineSummary = (props) => {
     )
 }
 
-const mapStateToProps = ({ user, contract, chat }) => ({
+const mapStateToProps = ({ user, contract, chat, deadlines }) => ({
   user: user.user,
-  reloadDeadlines: contract.reloadDeadlinesFlag,
-  selectedId: contract.selectedId,
+  reloadDeadlines: deadlines.deadlinesChanged,
+  curContract: contract.curContract,
   messages: chat.messages,
 })
 

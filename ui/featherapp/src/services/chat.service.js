@@ -229,9 +229,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
         })
-        dispatch({
-            type: CONTRACT_DEADLINE_RELOAD,
-        })
 
     } else if (msg.method === msgMethods.DATE) {
         console.log("Received date message")
@@ -264,10 +261,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_UPDATE_DATE,
             payload: newDate,
         })
-        dispatch({
-            type: CONTRACT_DEADLINE_RELOAD,
-        })
-
     } else if (msg.method === msgMethods.ITEM) {
         console.log("Received item body message")
         console.log(msg)

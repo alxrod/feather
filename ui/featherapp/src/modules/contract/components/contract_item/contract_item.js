@@ -297,7 +297,6 @@ const mapStateToProps = ({ user, contract, items, chat }) => ({
   user: user.user,
   curContract: contract.curContract,
   messages: chat.messages,
-
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

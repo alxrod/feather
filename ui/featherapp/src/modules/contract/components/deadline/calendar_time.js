@@ -22,12 +22,12 @@ const CalendarTime = (props) => {
 
   useEffect( () => {
     if (props.deadline !== undefined) {
-      let datetime = props.deadline.current.date
+      let datetime = props.deadline.currentDate
       if (props.role === WORKER_TYPE) {
-        datetime = props.deadline.worker.date
+        datetime = props.deadline.workerDate
       }
       if (props.role == BUYER_TYPE) {
-        datetime = props.deadline.buyer.date
+        datetime = props.deadline.buyerDate
       }
       setYourDate(datetime)
 
@@ -50,14 +50,14 @@ const CalendarTime = (props) => {
   }, [props.deadline, props.reloadFlag, props.calRefresh])
 
   useEffect( () => {
-    if (yourDate.getTime() === props.deadline.current.date.getTime() && props.dateLock) {
+    if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
       console.log("Setting the partner as main date")
-      let datetime = props.deadline.current.date
+      let datetime = props.deadline.currentDate
       if (props.role === WORKER_TYPE) {
-        datetime = props.deadline.buyer.date
+        datetime = props.deadline.buyerDate
       }
       if (props.role == BUYER_TYPE) {
-        datetime = props.deadline.worker.date
+        datetime = props.deadline.workerDate
       }
       setYourDate(datetime)
       const hour_24 = datetime.getHours()
@@ -97,9 +97,9 @@ const CalendarTime = (props) => {
       }
       const newDeadline = props.deadline
       if (props.role === WORKER_TYPE) {
-        newDeadline.worker.date = newDate
+        newDeadline.workerDate = newDate
       } else if (props.role === BUYER_TYPE) {
-        newDeadline.buyer.date = newDate
+        newDeadline.buyerDate = newDate
       }
       props.changeDate(newDeadline)
     }
@@ -120,9 +120,9 @@ const CalendarTime = (props) => {
     }
     const newDeadline = props.deadline
     if (props.role === WORKER_TYPE) {
-      newDeadline.worker.date = newDate
+      newDeadline.workerDate = newDate
     } else if (props.role === BUYER_TYPE) {
-      newDeadline.buyer.date = newDate
+      newDeadline.buyerDate = newDate
     }
     setHour(e.target.value)
     props.changeDate(newDeadline)
@@ -147,13 +147,13 @@ const CalendarTime = (props) => {
 
     const newDeadline = props.deadline
     if (props.createMode === true) {
-      newDeadline.worker.date = newDate
-      newDeadline.current.date = newDate
-      newDeadline.buyer.date = newDate
+      newDeadline.workerDate = newDate
+      newDeadline.currentDate = newDate
+      newDeadline.buyerDate = newDate
     } else if (props.role === WORKER_TYPE) {
-      newDeadline.worker.date = newDate
+      newDeadline.workerDate = newDate
     } else if (props.role === BUYER_TYPE) {
-      newDeadline.buyer.date = newDate
+      newDeadline.buyerDate = newDate
     }
     props.changeDate(newDeadline)
 
@@ -169,12 +169,12 @@ const CalendarTime = (props) => {
     if (props.deadline.idx > 0) {
       let prev = props.deadlines[props.deadline.idx - 1]
       if (props.role === WORKER_TYPE) {
-        if (prev.worker.date > newDate) {
+        if (prev.workerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return false
         }
       } else if (props.role === BUYER_TYPE) {
-        if (prev.buyer.date > newDate) {
+        if (prev.buyerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
           return false
         }
@@ -184,12 +184,12 @@ const CalendarTime = (props) => {
     if (props.deadline.idx < props.deadlines.length-1) {
       let next = props.deadlines[props.deadline.idx + 1]
       if (props.role === WORKER_TYPE) {
-        if (next.worker.date < newDate) {
+        if (next.workerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return false
         }
       } else if (props.role === BUYER_TYPE) {
-        if (next.buyer.date < newDate) {
+        if (next.buyerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))
           return false
         }

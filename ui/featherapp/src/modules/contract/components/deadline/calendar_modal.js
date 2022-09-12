@@ -1,7 +1,8 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 import CalendarBundle from "./calendar_bundle"
 import DeadlineDisplay from "./deadline_display"
@@ -32,9 +33,8 @@ const CalendarModal = (props) => {
 
   const handleAddDeadline = () => {
     const newSelect = props.addDeadline(selected)
-    setSelected(newSelect)
+    // setSelected(newSelect)
     if (!props.createMode) {
-      setNewDeadlineIndex(newSelect)
       toggleNewDeadlineMode(true)
     }
     
@@ -66,7 +66,6 @@ const CalendarModal = (props) => {
           foundNew = true
         }
       }
-      console.log("Reassessing flags with mode " + foundNew + " and local " + foundLocalAdd)
       toggleNewDeadlineMode(foundNew)
       toggleNewDeadlineLocalMode(foundLocalAdd)
     }
@@ -76,8 +75,12 @@ const CalendarModal = (props) => {
     setNewDeadlineIndex(-1)
     toggleNewDeadlineLocalMode(false)
     toggleNewDeadlineSelected(true)
-    const new_deadline = props.deadlines[newDeadlineIndex]
-    props.confirmNewDeadline(new_deadline)
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.deadlines[i].id === "TEMPORARY") {
+        props.confirmNewDeadline(props.deadlines[i])
+      }
+    }
+    
   } 
 
   const cancelNewDeadline = () => {
@@ -89,6 +92,7 @@ const CalendarModal = (props) => {
     props.deleteLocalDeadline()
     
   }
+
 
   return (
     <Transition.Root show={props.open} as={Fragment}>
@@ -264,4 +268,14 @@ const CalendarModal = (props) => {
   )
 }
 
-export default CalendarModal
+const mapStateToProps = ({ deadlines }) => ({
+  deadlinesChanged: deadlines.deadlinesChanged,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+}, dispatch)
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(CalendarModal)

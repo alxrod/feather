@@ -56,8 +56,5 @@ export const updateLocalPayout = (msg) => {
             type: deadlineActions.CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
         });
-        dispatch({
-            type: deadlineActions.CONTRACT_DEADLINE_RELOAD,
-        });
     }
 }

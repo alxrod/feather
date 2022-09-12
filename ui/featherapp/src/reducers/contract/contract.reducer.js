@@ -13,7 +13,7 @@ if (initialNubs) {
 const initialState = {
     contractNubs: initialNubs,
 
-    curContract: {},
+    curContract: {id: null},
     contractChanged: false,
     contractClaimed: false,   
 }
@@ -78,14 +78,11 @@ export default (state = initialState, action) => {
         case actions.CONTRACT_UPDATE_PRICE:
             return {
                 ...state,
-                awaitingEdit: false,
-                cachedContracts: helpers.editContract(
-                                    state.cachedContracts, 
-                                    helpers.editPrice(
-                                        state.cachedContracts[state.selectedId], 
-                                        action.payload
-                                    )
-                                )
+                contractChanged: !state.contractChanged,
+                curContract: helpers.editPrice(
+                                state.curContract, 
+                                action.payload
+                            )
             }
 
         default:

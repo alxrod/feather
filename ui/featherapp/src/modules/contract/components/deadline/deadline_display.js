@@ -1,9 +1,11 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { CheckIcon } from '@heroicons/react/solid'
 import {Fragment} from "react"
-import {useState, useEffect} from "react"
+import {useState, useEffect, useCallback} from "react"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import {Tooltip} from "flowbite-react"
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 
 function classNames(...classes) {
@@ -14,6 +16,9 @@ const DeadlineDisplay = (props) => {
 
   const [fDeadlines, setFormatedDeadlines] = useState([])
   const [updateFlag, toggleUpdateFlag] = useState(false)
+
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
 
   useEffect(() => {
     if (props.deadlines !== undefined) {
@@ -53,13 +58,13 @@ const DeadlineDisplay = (props) => {
       <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
         <ol role="list" className="flex grow w-full items-center">
           {fDeadlines.map((deadline, idx) => (
-            <Fragment key={deadline.id}>
-              <li >
+            <Fragment key={idx}>
+              <li>
                 {deadline.status === 'past' ? (
                   <>
                     <Tooltip 
                       style="light" 
-                      content={"Deadline "+(deadline.idx+1)+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
+                      content={"Deadline "+(deadline.idx+1)+": " + (deadline.relDate || deadline.currentDate).toLocaleTimeString([], {timeStyle: 'short'}) + ", " +(deadline.relDate || deadline.currentDate).toLocaleDateString()}
                     >
                       <p
                         href="#"
@@ -100,7 +105,7 @@ const DeadlineDisplay = (props) => {
                   <>
                     <Tooltip 
                       style="light" 
-                      content={"Deadline "+(deadline.idx+1)+": " + deadline.relDate.toLocaleTimeString([], {timeStyle: 'short'}) + ", " +deadline.relDate.toLocaleDateString()}
+                      content={"Deadline "+(deadline.idx+1)+": " + (deadline.relDate || deadline.currentDate).toLocaleTimeString([], {timeStyle: 'short'}) + ", " +(deadline.relDate || deadline.currentDate).toLocaleDateString()}
                     >
                       <p
                         href="#"
@@ -120,12 +125,12 @@ const DeadlineDisplay = (props) => {
                 )}
               </li>
               {((idx !== props.deadlines.length - 1) && deadline.status === "past" ) && (
-                <div key={deadline.id*3-1} className="grow" aria-hidden="true">
+                <div key={idx*3-1} className="grow" aria-hidden="true">
                   <div className="h-0.5 w-full border-b-2 border-indigo-600" />
                 </div>
               )}
-              {((idx !== props.deadlines.length - 1) && deadline.status === "future" ) && (
-                <div key={deadline.id*3} className="grow" aria-hidden="true">
+              {((idx !== props.deadlines.length - 1) ) && (
+                <div key={idx*3} className="grow" aria-hidden="true">
                   <div className="h-0.5 border-b-2 border-grey-300" />
                 </div>
               )}
@@ -138,7 +143,7 @@ const DeadlineDisplay = (props) => {
       <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
         <ol role="list" className="flex grow w-full justify-between items-center">
           {fDeadlines.map((deadline, idx) => (
-            <p key={deadline.id} className="text-xs text-gray-400">{deadline.relDate.toLocaleDateString('en-us', { day:"numeric", month:"numeric"})}</p>
+            <p key={deadline.id} className="text-xs text-gray-400">{(deadline.relDate || deadline.currentDate).toLocaleDateString('en-us', { day:"numeric", month:"numeric"})}</p>
 
           ))}
         </ol>
@@ -147,4 +152,13 @@ const DeadlineDisplay = (props) => {
   )
 }
 
-export default DeadlineDisplay
+const mapStateToProps = ({ }) => ({
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+}, dispatch)
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(DeadlineDisplay) 

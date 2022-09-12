@@ -58,8 +58,6 @@ const CriticalCriteria = (props) => {
                         <DeadlineField
                         // Useful syntax if create mode undefined
                           createMode={props.createMode ? true : false} 
-                          deadlines={props.deadlines} 
-                          changeDeadlines={props.changeDeadlines} 
                           disabled={!props.active} 
     
                           contractItemIds={props.contractItemIds}

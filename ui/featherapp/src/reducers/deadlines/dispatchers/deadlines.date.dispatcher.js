@@ -55,9 +55,6 @@ export const updateLocalDate = (msg) => {
             type: deadlineActions.CONTRACT_UPDATE_DATE,
             payload: newDate,
         });
-        dispatch({
-            type: deadlineActions.CONTRACT_DEADLINE_RELOAD,
-        });
     }
 }
 

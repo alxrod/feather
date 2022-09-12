@@ -94,7 +94,7 @@ const PriceField = (props) => {
       setOrigPrice(newPrice)
       setFieldValue(newPrice)
     }
-  }, [props.curContract])
+  }, [props.curContract, props.contractChanged])
 
   useEffect( () => {
     if (props.curContract.id) {
@@ -102,7 +102,7 @@ const PriceField = (props) => {
         toggleLock(true)
       }
     }
-  }, [props.curContract])
+  }, [props.curContract, props.contractChanged])
 
 
   
@@ -221,7 +221,7 @@ const PriceField = (props) => {
 
 const mapStateToProps = ({ user, contract, chat }) => ({
   curContract: contract.curContract,
-
+  contractChanged: contract.contractChanged,
   reloadMsg: chat.reloadMsg,
   user: user.user,
   messages: chat.messages,

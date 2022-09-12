@@ -269,11 +269,11 @@ const genTestSet = () => {
     }
   ]
 }
-const mapStateToProps = ({ user, contract, chat }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
-  reloadDeadlines: contract.reloadDeadlinesFlag,
-  contractItems: contract.curConItems,
+const mapStateToProps = ({ contract, items, deadlines }) => ({
+  curContract: contract,
+  reloadDeadlines: deadlines.deadlinesChanged,
+  contractItems: items.items,
+  contractItemsChanged: items.itemsChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

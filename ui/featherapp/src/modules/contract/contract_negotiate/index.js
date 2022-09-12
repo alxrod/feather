@@ -38,7 +38,6 @@ const ContractNegotiate = (props) => {
   }, [reload])
   
   const [contractItemIds, setContractItemIds] = useState([])
-  const [deadlines, setDeadlines] = useState({})
   const [addItemMode, toggleAddItemMode] = useState(false)
 
   useEffect(() => {
@@ -55,7 +54,6 @@ const ContractNegotiate = (props) => {
       }
       setNextContractName((max+1).toString())
       setContractItemIds(ids)
-      setDeadlines(contract.deadlinesList)
     }
   }, [contract, props.contractItemsChanged, props.curConItems.length])
 
@@ -75,7 +73,6 @@ const ContractNegotiate = (props) => {
 					</div>
 					<div> 
 						<CriticalCriteria
-                deadlines={deadlines}
                 contractItemIds={contractItemIds}
                 createMode={false}
                 active={true}

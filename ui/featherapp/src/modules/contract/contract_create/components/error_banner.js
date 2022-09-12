@@ -1,4 +1,5 @@
 import { ExclamationIcon, XIcon } from '@heroicons/react/outline'
+import { useEffect } from "react"
 
 const ErrorBanner = (props) => {
   return (

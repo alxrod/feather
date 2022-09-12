@@ -149,7 +149,7 @@ const ItemCreateMsg = (props) => {
 }
 
 const mapStateToProps = ({ user, contract }) => ({
-  contract: contract.curContract,
+  curContract: contract.curContract,
   user: user.user,
 })
   

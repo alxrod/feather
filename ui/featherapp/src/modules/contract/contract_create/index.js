@@ -20,6 +20,7 @@ import ErrorBanner from "./components/error_banner.js"
 import { ITEM_AGREED } from "../../../custom_encodings"
 
 import { genEmptyDeadline } from '../../../services/contract.service';
+import { loadLocalDeadlines } from "../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
 
 const ContractCreate = (props) => {
   const [price, setPrice] = useState(0.0)
@@ -48,10 +49,16 @@ const ContractCreate = (props) => {
   const [openBanner, setOpenBanner] = useState(false)
   
   const now = new Date()
-  const [deadlines, setDeadlines] = useState([
-    genEmptyDeadline(new Date(now.getTime() + 1*86400000)),
-    genEmptyDeadline(new Date(now.getTime() + 8*86400000))
-  ])
+  useEffect( () => {
+    if (props.deadlines.length === 0) {
+      let d1 = genEmptyDeadline(new Date(now.getTime() + 1*86400000))
+      let d2 = genEmptyDeadline(new Date(now.getTime() + 8*86400000))
+      d1.id = "1"
+      d2.id = "2"
+      let new_deadlines = [d1, d2]
+      props.loadLocalDeadlines(new_deadlines)
+    }
+  })
 
   const changePrice = (new_price) => {
     const fl = parseFloat(new_price)
@@ -61,10 +68,6 @@ const ContractCreate = (props) => {
     newPriceObj.buyer = fl
     setPriceObj(newPriceObj)
     setPrice(new_price)
-  }
-  const changeDeadlines = (new_deadlines) => {
-    // console.log("changing deadline to " + new_date)
-    setDeadlines(new_deadlines)
   }
 
   const changePassword = (new_password) => {
@@ -95,17 +98,8 @@ const ContractCreate = (props) => {
       setError(errors)
       return
     }
-    console.log("Made it to contract creation")
-    console.log(conTitle)
-    console.log(conDescript)
-    console.log(conMessage)
-    console.log(priceObj)
-    console.log(deadlines)
-    console.log(props.contractItems)
-    console.log(conPassword)
-    console.log(conRole)
-    const conItems = JSON.parse(JSON.stringify(props.contractItems))
-    props.createContract(conTitle, conDescript, conMessage, priceObj, deadlines, conItems, conPassword, conRole).then(
+
+    props.createContract(conTitle, conDescript, conMessage, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
       }, (error) => {
@@ -118,10 +112,10 @@ const ContractCreate = (props) => {
 
   const checkErrors = () => {
     let errors = ""
-    if (deadlines.length < 2) {
+    if (props.deadlines.length < 2) {
       errors += "You must choose 2 future deadlines for start and end"
       console.log("deadlines:")
-      console.log(deadlines)
+      console.log(props.deadlines)
     }
     if (price.you <= 0) {
       console.log("Price issue:");
@@ -164,17 +158,13 @@ const ContractCreate = (props) => {
           <div className="flex flex-col grow min-w-[45vw] mr-10">
             <div className="mb-5"> 
               <CombinedCriteria 
-                deadlines={deadlines}
                 price={price}
 
                 contractItemIds={contractItemIds}
                 addContractItem={addContractItem}
 
-
                 createMode={true}
-                changePrice={changePrice}
-                changeDeadlines={changeDeadlines}
-                
+                changePrice={changePrice}                
 
                 active={true}
               />
@@ -225,9 +215,10 @@ const ContractCreate = (props) => {
 	)
 }
 
-const mapStateToProps = ({ user, items }) => ({
+const mapStateToProps = ({ user, items, deadlines }) => ({
   user: user,
   contractItems: items.items,
+  deadlines: deadlines.deadlines,
   contractItemsChanged: items.itemsChanged,
 })
 
@@ -235,6 +226,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
   clearSelected,
   addContractItem,
+  loadLocalDeadlines,
   push,
 }, dispatch)
 

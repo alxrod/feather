@@ -35,6 +35,15 @@ export const deleteLocalDeadline = () => {
     }
 }
 
+export const loadLocalDeadlines = (new_deadlines) => {
+    return dispatch => {
+        dispatch({
+            type: deadlineActions.CONTRACT_DEADLINE_LOAD,
+            payload: new_deadlines,
+        })
+    }
+}
+
 
 export const addDeadline = (contract_id, deadline) => {
     return dispatch => {

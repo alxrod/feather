@@ -69,8 +69,5 @@ export const updateLocalItemBody = (msg) => {
             type: itemActions.CONTRACT_ITEM_UPDATE_BODY,
             payload: newBody,
         });
-        dispatch({
-            type: itemActions.CONTRACT_ITEM_RELOAD,
-        });
     }
 }

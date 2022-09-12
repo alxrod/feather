@@ -69,13 +69,13 @@ const CalendarBundle = (props) => {
       }
       
     } else {
-      let your_date = new_deadline.current.date
-      let main_date = new_deadline.current.date
+      let your_date = new_deadline.currentDate
+      let main_date = new_deadline.currentDate
       if (props.role === WORKER_TYPE) {
-        your_date = new_deadline.worker.date
+        your_date = new_deadline.workerDate
       }
       if (props.role === BUYER_TYPE) {
-        your_date = new_deadline.buyer.date
+        your_date = new_deadline.buyerDate
       }
 
       your_date.setSeconds(0)
@@ -99,7 +99,7 @@ const CalendarBundle = (props) => {
       setDecisionMode(false)
       // props.editDeadline(newDeadline)
       // props.saveDeadlines()
-      props.suggestDate(props.selectedId, newDeadline.id, newDate)
+      props.suggestDate(props.curContract.id, newDeadline.id, newDate)
     }
   }
 
@@ -134,13 +134,13 @@ const CalendarBundle = (props) => {
       }
       setDecisionMode(false)
     }
-  }, [props.deadline])
+  }, [props.deadline, props.deadlinesChanged])
 
   const approveChange = () => {
-    props.reactDate(props.selectedId, dateMsgId, props.deadline.id, decisionTypes.YES)
+    props.reactDate(props.curContract.id, dateMsgId, props.deadline.id, decisionTypes.YES)
   }
   const denyChange = () => {
-    props.reactDate(props.selectedId, dateMsgId, props.deadline.id, decisionTypes.NO)
+    props.reactDate(props.curContract.id, dateMsgId, props.deadline.id, decisionTypes.NO)
   }
 
   return (
@@ -166,7 +166,7 @@ const CalendarBundle = (props) => {
         deadlines = {props.deadlines}
         deadline={props.deadline}
         setErrorMsg={props.setErrorMsg}
-        reloadFlag={props.reloadFlag}
+        reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
         decisionMode={decisionMode}
         calRefresh={calRefresh}
@@ -178,7 +178,7 @@ const CalendarBundle = (props) => {
         deadlines = {props.deadlines}
         deadline={props.deadline}
         setErrorMsg={props.setErrorMsg}
-        reloadFlag={props.reloadFlag}
+        reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
         calRefresh={calRefresh}
         dateLock={dateLock}
@@ -187,10 +187,11 @@ const CalendarBundle = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract, chat }) => ({
-  selectedId: contract.selectedId,
+const mapStateToProps = ({ user, contract, chat, deadlines }) => ({
+  curContract: contract.curContract,
   user: user.user,
   messages: chat.messages,
+  deadlinesChanged: deadlines.deadlinesChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

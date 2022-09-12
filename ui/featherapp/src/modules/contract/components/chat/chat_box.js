@@ -21,7 +21,7 @@ const ChatBox = (props) => {
   const [labelled, setLabelled] = useState(labels[0])
   const [message, setMessage] = useState("")
   useEffect( () => {
-    if (prosp.curContract.id) {
+    if (props.curContract.id) {
       let items = [...labels]
       for (let i = 0; i<props.curContract.itemsList.length; i++) {
         const item = props.curContract.itemsList[i]
