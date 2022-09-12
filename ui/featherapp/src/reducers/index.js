@@ -1,10 +1,14 @@
 import { combineReducers } from 'redux'
 import { connectRouter } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
-import user from './user.reducer'
-import contract from './contract.reducer'
-import chat from './chat.reducer'
-import site from './site.reducer'
+
+
+import user from './user/user.reducer'
+import contract from './contract/contract.reducer'
+import items from './items/items.reducer'
+import deadlines from './deadlines/deadlines.reducer'
+import chat from './chat/chat.reducer'
+import site from './site/site.reducer'
 
 export const history = createBrowserHistory()
 
@@ -13,6 +17,8 @@ export default combineReducers({
     user,
     site,
     contract,
+    items,
+    deadlines,
     chat,
     
 })

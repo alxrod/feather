@@ -3,7 +3,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import {queryContract, addContractItem} from "../../../reducers/contract.reducer"
+import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
+import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { genEmptyContract } from '../../../services/contract.service';
 
 import ContractItem from "../components/contract_item/contract_item";
@@ -19,12 +20,12 @@ const ContractNegotiate = (props) => {
 
   const [nextContractName, setNextContractName] = useState("")
   const contract = useMemo(() => {
-    if (props.selectedId !== "") {
-      return props.cachedContracts[props.selectedId]
+    if (props.curContract.id) {
+      return props.curContract
     } else {
       return genEmptyContract()
     }
-  }, [props.selectedId])
+  }, [props.curContract])
 
   const { params: { contractId } } = props.match;
 
@@ -103,11 +104,10 @@ const ContractNegotiate = (props) => {
 	)
 }
 
-const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
-  contractItemsChanged: contract.contractItemsChanged,
-  curConItems: contract.curConItems,
+const mapStateToProps = ({ user, contract, items}) => ({
+  curContract: contract.curContract,
+  contractItemsChanged: items.items,
+  curConItems: items.items,
   user: user.user,
 })
 

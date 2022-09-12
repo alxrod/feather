@@ -20,9 +20,14 @@ const CalendarModal = (props) => {
   const [errorMsg, setErrorMsg] = useState("")
   const [selected, setSelected] = useState(0)
   const [newDeadlineIndex, setNewDeadlineIndex] = useState(-1)
+
+  // Indicates if there is a new deadline in the array
   const [newDeadlineMode, toggleNewDeadlineMode] = useState(false)
+  // Indicates whether there is a new local, non db uploaded deadline
   const [newDeadlineLocalMode, toggleNewDeadlineLocalMode] = useState(false)
+  // Indicates if selected current new deadline
   const [newDeadlineSelected, toggleNewDeadlineSelected] = useState(false)
+  // If the new deadline is proposed by you,
   const [proposedByPartner, setProposedByPartner] = useState(false)
 
   const handleAddDeadline = () => {
@@ -52,22 +57,25 @@ const CalendarModal = (props) => {
   useEffect( () => {
     if (props.deadlines.length > 0) {
       let foundLocalAdd = false
+      let foundNew = false
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadlines[i].id === "TEMPORARY") {
-          console.log("Located a local add")
           foundLocalAdd = true
         }
         if (props.deadlines[i].awaitingCreation) {
-          toggleNewDeadlineMode(true)
+          foundNew = true
         }
       }
+      console.log("Reassessing flags with mode " + foundNew + " and local " + foundLocalAdd)
+      toggleNewDeadlineMode(foundNew)
       toggleNewDeadlineLocalMode(foundLocalAdd)
     }
-  }, [props.deadlines.length])
+  }, [props.deadlines.length, props.deadlinesChanged])
 
   const confirmNewDeadline = () => {
     setNewDeadlineIndex(-1)
-    toggleNewDeadlineMode(false)
+    toggleNewDeadlineLocalMode(false)
+    toggleNewDeadlineSelected(true)
     const new_deadline = props.deadlines[newDeadlineIndex]
     props.confirmNewDeadline(new_deadline)
   } 
@@ -75,7 +83,11 @@ const CalendarModal = (props) => {
   const cancelNewDeadline = () => {
     setNewDeadlineIndex(-1)
     toggleNewDeadlineMode(false)
+    if (selected === props.deadlines.length - 1) {
+      setSelected(props.deadlines.length - 2)
+    }
     props.deleteLocalDeadline()
+    
   }
 
   return (

@@ -5,8 +5,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactPayout, updateLocalPayout } from "../../../../../reducers/contract.reducer"
-import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { reactPayout, updateLocalPayout } from "../../../../../reducers/deadlines/dispatchers/deadlines.payout.dispatcher"
+import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.dispatcher'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -43,21 +43,14 @@ const PayoutMsg = (props) => {
   }, [props.reloaded])
 
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
-      if (contract.worker.username === props.user.username) {
-        setOtherUsername(contract.buyer.username)
+    if (props.curContract.id) {
+      if (props.curContract.worker.username === props.user.username) {
+        setOtherUsername(props.curContract.buyer.username)
       } else {
-        setOtherUsername(contract.worker.username)
-      }
-      for (let i = 0; i < contract.deadlinesList.length; i++) {
-        if (contract.deadlinesList[i].id === props.msg.body.deadlineId) {
-          setDeadlineName(contract.deadlinesList[i].name)
-        }
+        setOtherUsername(props.curContract.worker.username)
       }
     }
-    
-  }, [props.selectedId])
+  }, [props.curContract])
 
   useEffect( () => {
     if (props.msg) {
@@ -73,11 +66,11 @@ const PayoutMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
+    props.reactPayout(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactPayout(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
+    props.reactPayout(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
     console.log("Rejecting change")
   }
   
@@ -191,8 +184,7 @@ const PayoutMsg = (props) => {
 }
 
 const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   user: user.user,
 })
   

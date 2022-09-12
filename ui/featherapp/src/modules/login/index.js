@@ -5,7 +5,7 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { login } from "../../reducers/user.reducer";
+import { login } from "../../reducers/user/user.reducer";
 import { push } from 'connected-react-router'
 import { Link } from 'react-router-dom'
 

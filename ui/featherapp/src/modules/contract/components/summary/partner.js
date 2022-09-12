@@ -12,8 +12,8 @@ const CriticalCriteria = (props) => {
 
   const [partnerMsg, setPartnerMsg] = useState("")
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
+    if (props.curContract.id) {
+      const contract = props.curContract
       if (contract.role === WORKER_TYPE) {
         setPartnerRole(BUYER_TYPE)
         if (contract.buyer.id === "") {
@@ -36,7 +36,7 @@ const CriticalCriteria = (props) => {
         }
       }
     }
-  }, [props.selectedId])
+  }, [props.curContract])
 
   useEffect( () => {
     if (partnerRole === WORKER_TYPE) {
@@ -64,7 +64,7 @@ const CriticalCriteria = (props) => {
                         {partnerMsg}
                         { !havePartner && (
                           <>
-                            {" "}<Link className="text-indigo-500" to={"/invite/"+props.selectedId}>click to view invite</Link>{" "}
+                            {" "}<Link className="text-indigo-500" to={"/invite/"+props.curContract.id}>click to view invite</Link>{" "}
                           </>
                         ) }
                       </p>
@@ -83,9 +83,8 @@ const CriticalCriteria = (props) => {
   )
 }
 
-const mapStateToProps = ({ contract, user }) => ({
-  cachedContracts: contract.cachedContracts,
-  selectedId: contract.selectedId,
+const mapStateToProps = ({ contract }) => ({
+  curContract: contract.curContract,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

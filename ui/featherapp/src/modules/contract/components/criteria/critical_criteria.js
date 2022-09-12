@@ -12,14 +12,6 @@ import DeadlineField from "../deadline/deadline_field";
 
 const CriticalCriteria = (props) => {
 
-  const contract = useMemo(() => {
-    if (props.selectedId !== "") {
-      return props.cachedContracts[props.selectedId]
-    } else {
-      return genEmptyContract()
-    }
-  }, [props.selectedId])
-
   const formatDate = (date) => {
     return date.toLocaleTimeString('en-US', {timeStyle: "short"}) + " " + date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
   }
@@ -91,9 +83,7 @@ const CriticalCriteria = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+const mapStateToProps = ({ user }) => ({
   user: user.user,
 })
 

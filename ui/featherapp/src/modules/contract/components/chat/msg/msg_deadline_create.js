@@ -5,8 +5,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState, useMemo } from "react";
-import { reactAddDeadline, updateLocalDeadline } from "../../../../../reducers/contract.reducer"
-import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { reactAddDeadline, updateLocalDeadline } from "../../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.dispatcher'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -24,6 +24,9 @@ const DeadlineCreateMsg = (props) => {
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
 
+  const genTimeStringDate = (date) => {
+    return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
+  }
   const [yourStatus, setStatus] = useState(decisionTypes.UNDECIDED)
 
   const [otherUsername, setOtherUsername] = useState("")
@@ -44,21 +47,22 @@ const DeadlineCreateMsg = (props) => {
   }, [props.reloaded])
 
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
-      if (contract.worker.username === props.user.username) {
-        setOtherUsername(contract.buyer.username)
+    if (props.curContract.id) {
+      if (props.curContract.worker.username === props.user.username) {
+        setOtherUsername(props.curContract.buyer.username)
       } else {
-        setOtherUsername(contract.worker.username)
-      }
-      for (let i = 0; i < contract.deadlinesList.length; i++) {
-        if (contract.deadlinesList[i].id === props.msg.body.deadline.id) {
-          setDeadlineName(contract.deadlinesList[i].name)
-        }
+        setOtherUsername(props.curContract.worker.username)
       }
     }
-    
-  }, [props.selectedId])
+  }, [props.curContract])
+
+  useEffect( () => {
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.deadlines[i].id === props.msg.body.deadlineId) {
+        setDeadlineName(props.deadlines[i].name)
+      }
+    }
+  }, [props.deadlines.length])
 
   useEffect( () => {
     if (props.msg) {
@@ -74,14 +78,13 @@ const DeadlineCreateMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactAddDeadline(props.selectedId, props.msg.id, props.msg.body.deadline.id, decisionTypes.YES)
+    props.reactAddDeadline(props.curContract.id, props.msg.id, props.msg.body.deadline.id, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactAddDeadline(props.selectedId, props.msg.id, props.msg.body.deadline.id, decisionTypes.NO)
+    props.reactAddDeadline(props.curContract.id, props.msg.id, props.msg.body.deadline.id, decisionTypes.NO)
     console.log("Rejecting change")
   }
-  
 
   return (
     <>
@@ -124,7 +127,7 @@ const DeadlineCreateMsg = (props) => {
             <div className="flex">
               <p className="text-gray-400 text-lg mr-2">{"Payout"}</p><p className="mr-1 text-lg">{props.msg.body.deadline.currentPayout}%</p>
             </div>
-            <p>on {genTimeString(props.msg.body.deadline.currentDate)}</p>
+            <p>on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
           </div>
           <div className="flex">
             {(yourStatus == decisionTypes.YES) && (
@@ -159,10 +162,9 @@ const DeadlineCreateMsg = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
-  curConItems: contract.curConItems,
+const mapStateToProps = ({ user, contract, deadlines }) => ({
+  curContract: contract.curContract,
+  deadlines: deadlines.deadlines,
   user: user.user,
 })
   

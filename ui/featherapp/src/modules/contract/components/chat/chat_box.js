@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Listbox, Transition } from '@headlessui/react'
 import { TagIcon } from '@heroicons/react/solid'
 
-import { sendMessage } from '../../../../reducers/chat.reducer';
+import { sendMessage } from '../../../../reducers/chat/dispatchers/chat.dispatcher';
 import { labelTypes } from '../../../../services/chat.service';
 
 function classNames(...classes) {
@@ -21,11 +21,10 @@ const ChatBox = (props) => {
   const [labelled, setLabelled] = useState(labels[0])
   const [message, setMessage] = useState("")
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const curContract = props.cachedContracts[props.selectedId]
+    if (prosp.curContract.id) {
       let items = [...labels]
-      for (let i = 0; i<curContract.itemsList.length; i++) {
-        const item = curContract.itemsList[i]
+      for (let i = 0; i<props.curContract.itemsList.length; i++) {
+        const item = props.curContract.itemsList[i]
         items.push({name: item.name, id: item.id, type: labelTypes.ITEM})
       }
       setLabels(items)
@@ -148,8 +147,7 @@ const ChatBox = (props) => {
   )
 }
 const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   user: user.user,
 })
 

@@ -11,22 +11,29 @@ import {
     ChatLabel,
 
 } from "../proto/communication/chat_pb";
+
 import { 
     CONTRACT_UPDATE_PRICE, 
-    CONTRACT_SEND_EDIT,
+} from "../reducers/contract/contract.actions"
+
+import { 
     CONTRACT_UPDATE_PAYOUT,
     CONTRACT_DEADLINE_RELOAD,
     CONTRACT_UPDATE_DATE,
+    CONTRACT_ADD_DEADLINE_FROM_DB,
+} from "../reducers/deadlines/deadlines.actions"
+
+import { 
     CONTRACT_ITEM_UPDATE_BODY,
     CONTRACT_ITEM_RELOAD,
     CONTRACT_ITEM_REPLACE_SUGGEST,
     CONTRACT_ITEM_SUGGEST_DELETE,
-    CONTRACT_ADD_DEADLINE_FROM_DB,
-} from "../reducers/contract.reducer"
+} from "../reducers/items/items.actions"
+
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat.reducer"
+import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat/chat.actions"
 
 
 export const chatClient = new ChatClient("https://localhost:8080");
@@ -165,9 +172,6 @@ class ChatService {
 
 const parseMessage = (msg, role, this_user_id, dispatch) => {
     if (msg.method === msgMethods.PRICE) {
-        dispatch({
-            type: CONTRACT_SEND_EDIT,
-        })
         const newPrice = {
             proposerId: msg.user.id,
             current: msg.body.oldVersion,
@@ -320,9 +324,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         //     payload: msg.body.item.id,
         // });
     } else if (msg.method === msgMethods.REVISION) {
-        dispatch({
-            type: CONTRACT_SEND_EDIT,
-        })
         dispatch({
             type: CHAT_MESSAGE_UPDATE,
             payload: msg.body,

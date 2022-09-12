@@ -8,7 +8,7 @@ import f_logo from "../../style/logo/f_logo.svg";
 import feather_logo from "../../style/logo/feather_logo.svg";
 
 import { bindActionCreators } from 'redux'
-import { logout } from "../../reducers/user.reducer";
+import { logout } from "../../reducers/user/user.reducer";
 import { connect } from "react-redux";
 
 function classNames(...classes) {

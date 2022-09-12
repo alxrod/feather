@@ -1,0 +1,95 @@
+import * as actions from "./contract.actions";
+import * as helpers from "./contract.helpers";
+
+let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
+if (initialNubs) {
+    for (let i = 0; i < initialNubs.length; i++) {
+        initialNubs[i].deadline = new Date(initialNubs[i].deadline)
+    }
+} else {
+    initialNubs = []
+}
+
+const initialState = {
+    contractNubs: initialNubs,
+
+    curContract: {},
+    contractChanged: false,
+    contractClaimed: false,   
+}
+
+export default (state = initialState, action) => {
+    switch (action.type) {
+        case actions.CONTRACT_CREATE:
+            return {
+                ...state,
+                contractNubs: {
+                    ...state.contractNubs,
+                    [action.payload.id]: {
+                        id: action.payload.id,
+                        title: action.payload.title,
+                        deadline: action.payload.deadlinesList[0],
+                        price: action.payload.price.current,
+                        stage: action.payload.stage,
+                        user_type: action.payload.user_type,
+                    }
+                },
+                curContract: action.payload
+            }
+        case actions.CONTRACT_CLAIM:
+            return {
+                ...state,
+                contractClaimed: true
+            }
+
+        case actions.CONTRACT_NUB_PULL_ALL:
+            return {
+                ...state,
+                contractNubs: action.payload,
+            }
+
+        case actions.CONTRACT_CLEAR_SELECTED:
+            return {
+                ...state,
+                curContract: {},
+                contractChanged: !state.contractChanged,
+                contractClaimed: false,
+            }
+
+        case actions.CONTRACT_PULL_CURRENT:
+            return {
+                ...state,
+                loadingContract: false,
+                selectedId: action.payload.id,
+                contractNubs: {
+                    ...state.contractNubs,
+                    [action.payload.id]: {
+                        id: action.payload.id,
+                        title: action.payload.title,
+                        deadline: action.payload.deadlinesList[0],
+                        price: action.payload.price.current,
+                        stage: action.payload.stage,
+                        user_type: action.payload.user_type,
+                    }
+                },
+                curContract: action.payload
+            }
+
+        case actions.CONTRACT_UPDATE_PRICE:
+            return {
+                ...state,
+                awaitingEdit: false,
+                cachedContracts: helpers.editContract(
+                                    state.cachedContracts, 
+                                    helpers.editPrice(
+                                        state.cachedContracts[state.selectedId], 
+                                        action.payload
+                                    )
+                                )
+            }
+
+        default:
+            return state
+    }
+
+}

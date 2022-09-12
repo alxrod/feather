@@ -5,8 +5,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactDate, updateLocalDate } from "../../../../../reducers/contract.reducer"
-import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { reactDate, updateLocalDate } from "../../../../../reducers/deadlines/dispatchers/deadlines.date.dispatcher"
+import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.dispatcher'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -43,21 +43,22 @@ const DateMsg = (props) => {
   }, [props.reloaded])
 
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
-      if (contract.worker.username === props.user.username) {
-        setOtherUsername(contract.buyer.username)
+    if (props.curContract.id) {
+      if (props.curContract.worker.username === props.user.username) {
+        setOtherUsername(props.curContract.buyer.username)
       } else {
-        setOtherUsername(contract.worker.username)
-      }
-      for (let i = 0; i < contract.deadlinesList.length; i++) {
-        if (contract.deadlinesList[i].id === props.msg.body.deadlineId) {
-          setDeadlineName(contract.deadlinesList[i].name)
-        }
+        setOtherUsername(props.curContract.worker.username)
       }
     }
-    
-  }, [props.selectedId])
+  }, [props.curContract])
+
+  useEffect( () => {
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.deadlines[i].id === props.msg.body.deadlineId) {
+        setDeadlineName(props.deadlines[i].name)
+      }
+    }
+  }, [props.deadlines.length])
 
   useEffect( () => {
     if (props.msg) {
@@ -73,11 +74,11 @@ const DateMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactDate(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
+    props.reactDate(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactDate(props.selectedId, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
+    props.reactDate(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
     console.log("Rejecting change")
   }
   
@@ -189,9 +190,9 @@ const DateMsg = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+const mapStateToProps = ({ user, contract, deadlines}) => ({
+  curContract: contract.curContract,
+  deadlines: deadlines.deadlines,
   user: user.user,
 })
   

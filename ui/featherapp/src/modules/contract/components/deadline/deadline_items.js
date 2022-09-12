@@ -1,6 +1,6 @@
 import {useEffect, useState, useMemo, Fragment } from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
-import {addContractItem} from '../../../../reducers/contract.reducer'
+import {addContractItem} from '../../../../reducers/items/dispatchers/items.add.dispatcher'
 import {Tooltip, Button} from "flowbite-react"
 import DeadlineItemBadge from  "./deadline_item_badge"
 import { Listbox, Transition } from '@headlessui/react'

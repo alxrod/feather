@@ -9,7 +9,7 @@ import DraftToggle from "./draft_toggle"
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { reactPayout } from '../../../../reducers/contract.reducer'
+import { reactPayout } from '../../../../reducers/deadlines/dispatchers/deadlines.payout.dispatcher'
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 const DeadlineSummary = (props) => {

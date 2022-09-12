@@ -10,7 +10,7 @@ import {
         verifyInstagram,
         verifyTiktok,
         addPayment,
-} from "../../reducers/user.reducer";
+} from "../../reducers/user/user.reducer";
 
 import PersonalInfo from "./personal_info"
 import PaymentSetup from "./payment_setup"

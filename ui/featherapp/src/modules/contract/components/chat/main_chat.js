@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { joinChat, pullRecord } from '../../../../reducers/chat.reducer';
+import { joinChat, pullRecord } from '../../../../reducers/chat/dispatchers/chat.dispatcher';
 
 import Timeline from "./main_timeline_summary"
 import ChatBox from "./chat_box"
@@ -13,18 +13,15 @@ const MainChat = (props) => {
     let localRoomId = ""
     const [role, setRole] = useState(WORKER_TYPE)
     useEffect( () => {
-        if (props.roomId === undefined || props.user === undefined || props.selectedId === undefined) {
+        if (props.roomId === undefined || props.user === undefined || props.curContract.id === undefined) {
             return
         }
-        if (props.loadingContract === false) {
-            if (props.roomId !== undefined && props.roomId !== localRoomId) {
-                const contract = props.cachedContracts[props.selectedId]
-                setRole(contract.role)
-                props.joinChat(props.roomId, contract.role)
-                props.pullRecord(props.roomId)
-            }
+        if (props.roomId !== undefined && props.roomId !== localRoomId) {
+            setRole(props.curContract.role)
+            props.joinChat(props.roomId, props.curContract.role)
+            props.pullRecord(props.roomId)
         }
-    }, [props.user, props.selectedId])
+    }, [props.user, props.curContract])
     
     return (
         <div className="flex flex-col grow">
@@ -36,10 +33,8 @@ const MainChat = (props) => {
    
 
 const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   user: user.user,
-  loadingContract: contract.loadingContract,
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({

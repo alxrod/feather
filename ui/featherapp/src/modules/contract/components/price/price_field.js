@@ -2,7 +2,7 @@ import React, {useState, useEffect} from "react";
 import {LockOpenIcon, ExclamationCircleIcon} from "@heroicons/react/outline"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { suggestPrice, reactPrice } from '../../../../reducers/contract.reducer'
+import { suggestPrice, reactPrice } from '../../../../reducers/contract/dispatchers/contract.price.dispatcher'
 import DecideButton from "../decide_button";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
@@ -44,11 +44,12 @@ const PriceField = (props) => {
 
   let user_type = WORKER_TYPE
 
+  // Should probably be a useMemo
   useEffect( () => {
     
-    if (props.createMode !== true && props.selectedId !== "" && props.selectedId != cur_contract.id) {   
+    if (props.createMode !== true && props.curContract.id && props.curContract.id != cur_contract.id) {   
       
-      cur_contract = props.cachedContracts[props.selectedId]
+      cur_contract = props.curContract
       let price = cur_contract.price
 
       if (cur_contract.worker && cur_contract.worker.id === props.user.user_id) {
@@ -93,15 +94,15 @@ const PriceField = (props) => {
       setOrigPrice(newPrice)
       setFieldValue(newPrice)
     }
-  }, [props.selectedId, props.cachedContracts, props.awaitingEdit])
+  }, [props.curContract])
 
   useEffect( () => {
-    if (props.selectedId !== "" && props.cachedContracts !== undefined) {
-      if (props.cachedContracts[props.selectedId].price.awaitingApproval === true) {
+    if (props.curContract.id) {
+      if (props.curContract.price.awaitingApproval === true) {
         toggleLock(true)
       }
     }
-  }, [props.selectedId, props.cachedContracts, props.awaitingEdit])
+  }, [props.curContract])
 
 
   
@@ -125,7 +126,7 @@ const PriceField = (props) => {
 
   const submitChange = () => {
     console.log("Approving change")
-    props.suggestPrice(props.selectedId, parseFloat(fieldValue)).then(() => {
+    props.suggestPrice(props.curContract.id, parseFloat(fieldValue)).then(() => {
       toggleProposing(false)
       setTextColor("text-green")
     })
@@ -139,10 +140,10 @@ const PriceField = (props) => {
   }
 
   const approveChange = () => {
-    props.reactPrice(props.selectedId, priceMsgId, decisionTypes.YES)
+    props.reactPrice(props.curContract.id, priceMsgId, decisionTypes.YES)
   }
   const denyChange = () => {
-    props.reactPrice(props.selectedId, priceMsgId, decisionTypes.NO)
+    props.reactPrice(props.curContract.id, priceMsgId, decisionTypes.NO)
   }
 
   return (
@@ -219,10 +220,9 @@ const PriceField = (props) => {
 }
 
 const mapStateToProps = ({ user, contract, chat }) => ({
-  selectedId: contract.selectedId,
-  awaitingEdit: contract.awaitingEdit,
+  curContract: contract.curContract,
+
   reloadMsg: chat.reloadMsg,
-  cachedContracts: contract.cachedContracts,
   user: user.user,
   messages: chat.messages,
 })

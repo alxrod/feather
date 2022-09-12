@@ -2,7 +2,8 @@ import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { createContract, clearSelected, addContractItem } from "../../../reducers/contract.reducer";
+import { createContract, clearSelected } from "../../../reducers/contract/dispatchers/contract.dispatcher";
+import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher";
 
 import { ownership_format, WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
 
@@ -224,10 +225,10 @@ const ContractCreate = (props) => {
 	)
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, items }) => ({
   user: user,
-  contractItems: contract.curConItems,
-  contractItemsChanged: contract.contractItemsChanged,
+  contractItems: items.items,
+  contractItemsChanged: items.itemsChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

@@ -10,8 +10,8 @@ import Login from '../login'
 import Register from '../register'
 import Profile from '../profile'
 
-import { clearSelected } from "../../reducers/contract.reducer";
-import { clearChat } from "../../reducers/chat.reducer"; 
+import { clearSelected } from "../../reducers/contract/dispatchers/contract.dispatcher";
+import { clearChat } from "../../reducers/chat/dispatchers/chat.dispatcher"; 
 import {history} from '../../reducers'
 
 import ContractsView from '../contracts_view';
@@ -29,11 +29,11 @@ import { useLocation } from 'react-router-dom'
 import { 
   pullUser,
   setRedirect
-} from "../../reducers/user.reducer";
+} from "../../reducers/user/user.reducer";
 
 import {
   setNavbar
-} from "../../reducers/site.reducer"
+} from "../../reducers/site/site.reducer"
 
 const ADMIN_ROLE = 7 // 111
 const STD_ROLE = 3 // 011

@@ -88,9 +88,9 @@ const ContractTextArea = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, items }) => ({
   cur_id: (user.user !== null) ? user.user.user_id : "",
-  contractItemsChanged: contract.contractItemsChanged,
+  contractItemsChanged: items.itemsChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

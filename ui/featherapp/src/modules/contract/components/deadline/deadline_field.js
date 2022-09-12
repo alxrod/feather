@@ -6,13 +6,17 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { exportDeadlines, exportDeadline, importDeadlines, genTestSet, genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+
 import {
-  suggestPayout, 
   addLocalDeadline, 
   addDeadline, 
   renameDeadlines, 
   deleteLocalDeadline
-} from "../../../../reducers/contract.reducer"
+} from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+
+import {
+  suggestPayout
+} from "../../../../reducers/deadlines/dispatchers/deadlines.payout.dispatcher"
 
 const DeadlineField = (props) => {
 
@@ -207,6 +211,7 @@ const DeadlineField = (props) => {
         saveDeadlines={saveDeadlines}
         createMode={props.createMode}
         confirmNewDeadline={confirmNewDeadline}
+        deadlinesChanged={props.deadlinesChanged}
 
         contractItemIds={props.contractItemIds}
         user={props.user}

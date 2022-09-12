@@ -3,7 +3,7 @@ import { push } from 'connected-react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { queryContractNubs } from "../../reducers/contract.reducer";
+import { queryContractNubs } from "../../reducers/contract/dispatchers/contract.dispatcher";
 
 import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'

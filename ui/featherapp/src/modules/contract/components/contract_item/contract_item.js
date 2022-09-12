@@ -3,13 +3,16 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
-import { editContractItem, suggestItem, addItem, deleteItem, deleteSuggestContractItem } from "../../../../reducers/contract.reducer"
+
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import { LockOpenIcon, TrashIcon} from "@heroicons/react/outline"
 import { LockClosedIcon, } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
 
-import { reactItem, reactAddItem, reactDeleteItem } from '../../../../reducers/contract.reducer'
+import { editContractItem, suggestItem, reactItem } from "../../../../reducers/items/dispatchers/items.body.dispatcher"
+import { addItem, reactAddItem } from "../../../../reducers/items/dispatchers/items.add.dispatcher"
+import { deleteItem, reactDeleteItem, deleteSuggestContractItem } from "../../../../reducers/items/dispatchers/items.delete.dispatcher"
+
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 
@@ -103,15 +106,14 @@ const ContractItem = (props) => {
     if (props.override) {
       return
     }
-    if (props.user !== null && props.selectedId !== "") {
-      let contract = props.cachedContracts[props.selectedId]
-      if (props.user.user_id === contract.worker.id) {
+    if (props.user !== null && props.curContract.id) {
+      if (props.user.user_id === props.curContract.worker.id) {
         setRole(WORKER_TYPE)
-      } else if (props.user.user_id === contract.buyer.id) {
+      } else if (props.user.user_id === props.curContract.buyer.id) {
         setRole(BUYER_TYPE)
       }
     }
-  }, [props.selectedId, props.cachedContracts, props.user])
+  }, [props.curContract, props.user])
   
   useEffect(() => {
     if (props.id && props.curItems && props.curItems.length > 0) {
@@ -157,7 +159,7 @@ const ContractItem = (props) => {
 
   const submitBodyEdit = () => {
     if (!props.override) {
-      props.suggestItem(props.selectedId, props.id, item_text)
+      props.suggestItem(props.curContract.id, props.id, item_text)
     }
     
   }
@@ -167,31 +169,31 @@ const ContractItem = (props) => {
   }
   
   const approveChange = () => {
-    props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
+    props.reactItem(props.curContract.id, itemMsgId, props.id, decisionTypes.YES)
   }
   const denyChange = () => {
-    props.reactItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
+    props.reactItem(props.curContract.id, itemMsgId, props.id, decisionTypes.NO)
   }
 
   const approveCreate = () => {
-    props.reactAddItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
+    props.reactAddItem(props.curContract.id, itemMsgId, props.id, decisionTypes.YES)
   }
   const denyCreate = () => {
-    props.reactAddItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
+    props.reactAddItem(props.curContract.id, itemMsgId, props.id, decisionTypes.NO)
   }
 
   const approveDelete = () => {
-    props.reactDeleteItem(props.selectedId, itemMsgId, props.id, decisionTypes.YES)
+    props.reactDeleteItem(props.curContract.id, itemMsgId, props.id, decisionTypes.YES)
   }
   const denyDelete = () => {
-    props.reactDeleteItem(props.selectedId, itemMsgId, props.id, decisionTypes.NO)
+    props.reactDeleteItem(props.curContract.id, itemMsgId, props.id, decisionTypes.NO)
   }
 
 
   const addItem = () => {
     if (props.suggestMode) {
       console.log("Adding item")
-      props.addItem(props.selectedId, contract_info.name, item_text).then( () => {
+      props.addItem(props.curContract.id, contract_info.name, item_text).then( () => {
         props.createCallback()
       })
     }
@@ -209,9 +211,8 @@ const ContractItem = (props) => {
       props.deleteSuggestContractItem(props.id)
       return
     }
-    console.log(props.selectedId)
     console.log(contract_info)
-    props.deleteItem(props.selectedId, contract_info.id, contract_info.name, contract_info.currentBody)
+    props.deleteItem(props.curContract.id, contract_info.id, contract_info.name, contract_info.currentBody)
   }
 
   if (props.embedded === true) {
@@ -290,12 +291,11 @@ const ContractItem = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract, chat }) => ({
-  curItems: contract.curConItems,
-  contractItemsChanged: contract.contractItemsChanged,
+const mapStateToProps = ({ user, contract, items, chat }) => ({
+  curItems: items.items,
+  contractItemsChanged: items.itemsChanged,
   user: user.user,
-  selectedId: contract.selectedId, 
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   messages: chat.messages,
 
 })

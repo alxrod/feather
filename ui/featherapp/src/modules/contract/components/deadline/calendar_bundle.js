@@ -7,7 +7,8 @@ import { genEmptyDeadline } from "./helpers"
 import Calendar from "./calendar"
 import CalendarTime from "./calendar_time"
 import DecideButton from '../decide_button'
-import { reactDate, suggestDate } from '../../../../reducers/contract.reducer'
+
+import { reactDate, suggestDate } from '../../../../reducers/deadlines/dispatchers/deadlines.date.dispatcher'
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 
@@ -54,6 +55,8 @@ const CalendarBundle = (props) => {
     // props.editDeadline(newDeadline)
     if (props.createMode || props.newDeadlineMode) {
       props.editDeadline(new_deadline)
+      console.log("Updated the date on new one")
+      console.log(new_deadline)
       if (timeoutId !== -1) {
         clearTimeout(timeoutId);
       }

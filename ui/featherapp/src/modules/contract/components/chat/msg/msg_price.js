@@ -5,8 +5,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactPrice, updateLocalPrice } from "../../../../../reducers/contract.reducer"
-import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { reactPrice, updateLocalPrice } from "../../../../../reducers/contract/dispatchers/contract.price.dispatcher"
+import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.dispatcher'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -41,16 +41,14 @@ const PriceMsg = (props) => {
   }, [props.reloaded])
 
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
-      if (contract.worker.username === props.user.username) {
-        setOtherUsername(contract.buyer.username)
+    if (props.curContract.id) {
+      if (props.curContract.worker.username === props.user.username) {
+        setOtherUsername(props.curContract.buyer.username)
       } else {
-        setOtherUsername(contract.worker.username)
+        setOtherUsername(props.curContract.worker.username)
       }
     }
-    
-  }, [props.selectedId])
+  }, [props.curContract])
 
   useEffect( () => {
     if (props.msg) {
@@ -58,23 +56,19 @@ const PriceMsg = (props) => {
       if (props.yourRole == WORKER_TYPE) {
         setStatus(props.msg.body.workerStatus)
         setOtherStatus(props.msg.body.buyerStatus)
-        // console.log("You: "+props.msg.body.workerStatus)
-        // console.log("Par: "+props.msg.body.buyerStatus)
       } else if (props.yourRole == BUYER_TYPE) {
         setStatus(props.msg.body.buyerStatus)
         setOtherStatus(props.msg.body.workerStatus)
-        // console.log("You: "+props.msg.body.buyerStatus)
-        // console.log("Par: "+props.msg.body.workerStatus)
       } 
     }
     
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactPrice(props.selectedId, props.msg.id, decisionTypes.YES)
+    props.reactPrice(props.curContract.id, props.msg.id, decisionTypes.YES)
   }
   const rejectChange = () => {
-    props.reactPrice(props.selectedId, props.msg.id, decisionTypes.NO)
+    props.reactPrice(props.curContract.id, props.msg.id, decisionTypes.NO)
   }
   
   
@@ -186,8 +180,7 @@ const PriceMsg = (props) => {
 }
 
 const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   user: user.user,
 })
   

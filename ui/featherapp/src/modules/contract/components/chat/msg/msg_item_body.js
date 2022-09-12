@@ -5,8 +5,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import { ArrowRightIcon } from '@heroicons/react/solid'
 import DecideButton from "../../decide_button";
 import { useEffect, useState } from "react";
-import { reactItem, updateLocalItemBody } from "../../../../../reducers/contract.reducer"
-import { finishedReload } from '../../../../../reducers/chat.reducer'
+import { reactItem, updateLocalItemBody } from "../../../../../reducers/items/dispatchers/items.body.dispatcher"
+import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.dispatcher'
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -41,16 +41,14 @@ const ItemBodyMsg = (props) => {
   }, [props.reloaded])
 
   useEffect( () => {
-    if (props.selectedId !== "") {
-      const contract = props.cachedContracts[props.selectedId]
-      if (contract.worker.username === props.user.username) {
-        setOtherUsername(contract.buyer.username)
+    if (props.curContract.id) {
+      if (props.curContract.worker.username === props.user.username) {
+        setOtherUsername(props.curContract.buyer.username)
       } else {
-        setOtherUsername(contract.worker.username)
+        setOtherUsername(props.curContract.worker.username)
       }
     }
-    
-  }, [props.selectedId])
+  }, [props.curContract])
 
   useEffect( () => {
     if (props.msg) {
@@ -66,11 +64,11 @@ const ItemBodyMsg = (props) => {
   }, [props.msg, props.yourRole, version])
 
   const acceptChange = () => {
-    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.YES)
+    props.reactItem(props.curContract.id, props.msg.id, props.msg.body.itemId, decisionTypes.YES)
     console.log("Accepting change")
   }
   const rejectChange = () => {
-    props.reactItem(props.selectedId, props.msg.id, props.msg.body.itemId, decisionTypes.NO)
+    props.reactItem(props.curContract.id, props.msg.id, props.msg.body.itemId, decisionTypes.NO)
     console.log("Rejecting change")
   }
   
@@ -150,8 +148,7 @@ const ItemBodyMsg = (props) => {
 }
 
 const mapStateToProps = ({ user, contract }) => ({
-  selectedId: contract.selectedId,
-  cachedContracts: contract.cachedContracts,
+  curContract: contract.curContract,
   user: user.user,
 })
   
