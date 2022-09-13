@@ -65,6 +65,14 @@ const PayoutMsg = (props) => {
     
   }, [props.msg, props.yourRole, version])
 
+  useEffect( () => {
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.deadlines[i].id === props.msg.body.deadlineId) {
+        setDeadlineName(props.deadlines[i].name)
+      }
+    }
+  }, [props.deadlines.length])
+
   const acceptChange = () => {
     props.reactPayout(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
     console.log("Accepting change")
@@ -183,9 +191,10 @@ const PayoutMsg = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, contract, deadlines }) => ({
   curContract: contract.curContract,
   user: user.user,
+  deadlines: deadlines.deadlines,
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({

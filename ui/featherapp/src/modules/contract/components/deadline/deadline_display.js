@@ -42,7 +42,7 @@ const DeadlineDisplay = (props) => {
       setFormatedDeadlines(sortedDeadlines)
       toggleUpdateFlag(!updateFlag)
     }
-  }, [props.deadlines, props.reloadFlag])
+  }, [props.deadlines, props.deadlinesChanged])
 
   const handleDeadlineClick = (idx) => {
     if (props.setSelected) {
@@ -53,6 +53,7 @@ const DeadlineDisplay = (props) => {
     <div className="flex flex-col">
       <div className="flex justify-between">
         <p className="text-xs text-gray-400">Start</p>
+        <div className="grow"></div>
         <p className="text-xs text-gray-400">End</p>
       </div>
       <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
@@ -139,20 +140,22 @@ const DeadlineDisplay = (props) => {
           ))}
         </ol>
       </nav>
+      {(props.showDates && (
+        <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
+          <ol role="list" className="flex grow w-full justify-between items-center">
+            {fDeadlines.map((deadline, idx) => (
+              <p key={deadline.id} className="text-xs text-gray-400">{(deadline.relDate || deadline.currentDate).toLocaleDateString('en-us', { day:"numeric", month:"numeric"})}</p>
 
-      <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
-        <ol role="list" className="flex grow w-full justify-between items-center">
-          {fDeadlines.map((deadline, idx) => (
-            <p key={deadline.id} className="text-xs text-gray-400">{(deadline.relDate || deadline.currentDate).toLocaleDateString('en-us', { day:"numeric", month:"numeric"})}</p>
-
-          ))}
-        </ol>
-      </nav>
+            ))}
+          </ol>
+        </nav>
+      ))}
     </div>
   )
 }
 
-const mapStateToProps = ({ }) => ({
+const mapStateToProps = ({ deadlines }) => ({
+  deadlinesChanged: deadlines.deadlinesChanged,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

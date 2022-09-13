@@ -83,7 +83,6 @@ const Calendar = (props) => {
 
   useEffect( () => {
     if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
-      console.log("Setting the partner as main date")
       setYourDate(partnerDate)
     } 
   }, [props.dateLock])

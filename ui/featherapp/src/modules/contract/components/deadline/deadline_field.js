@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
 import CalendarModal from "./calendar_modal";
 import DeadlineDisplay from "./deadline_display"
@@ -6,13 +6,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import useWindowDimensions from "../../../../custom_hooks/useWindowDimensions"
 import { loadLocalDeadlines } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
 
 import {
   addLocalDeadline, 
   addDeadline, 
   renameDeadlines, 
-  deleteLocalDeadline
 } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
 
 import {
@@ -26,7 +26,30 @@ const DeadlineField = (props) => {
   const [reloadFlag, toggleReloadFlag] = useState(false)
   const [localDeadlines, setLocalDeadlines] = useState([])
   const [nextDeadlineName, setNextDeadlineName] = useState("Deadline")
+  const [role, setRole] = useState(WORKER_TYPE)
+  const [openModal, setOpenModal] = useState(false)
 
+  const mainElem = useRef(null)
+  const [displayWidth, setDisplayWidth] = useState("0px") 
+  const {height, width} = useWindowDimensions()
+  const [showDates, toggleShowDates] = useState(true)
+
+
+
+
+  // Use effect to resort the deadlines every time that they are updated in the reducer state
+  useEffect( () => {
+    if (mainElem.current) {
+      const newWidth = mainElem.current?.offsetWidth - 70
+      setDisplayWidth(newWidth+"px")
+      if ((newWidth / props.deadlines.length) < 25) {
+        toggleShowDates(false)
+      } else {
+        toggleShowDates(true)
+      }
+    }
+  }, [height, width, props.localDeadlines])
+  
   useEffect( () => {
     if (props.deadlines.length > 0) {
       let max = 1
@@ -37,7 +60,6 @@ const DeadlineField = (props) => {
             max = num
           }
         }
-        
       }
       setNextDeadlineName("Deadline "+(max+1).toString())
     }
@@ -49,11 +71,19 @@ const DeadlineField = (props) => {
     }
   }, [props.deadlines, props.reloadDeadlines, props.deadlinesChanged])
 
+  // Set the user's role
+  useEffect(() => {
+    if (props.curContract.id) {
+      setRole(props.curContract.role)
+    }
+  }, [props.curContract])
+
+
+  // Deadline reducer operations 
+  // ----------------------------------------------------------------
   const saveDeadlines = () => {
     props.loadLocalDeadlines(localDeadlines)
   }
-
-  const [role, setRole] = useState(WORKER_TYPE)
   
   const editDeadline = (new_deadline) => {
     const newDeadlines = localDeadlines
@@ -63,7 +93,6 @@ const DeadlineField = (props) => {
       }
     }
     setLocalDeadlines(sortDeadlines(newDeadlines))
-    toggleReloadFlag(!reloadFlag)
   }
 
   const removeDeadline = (id) => {
@@ -74,7 +103,6 @@ const DeadlineField = (props) => {
       }
     }
     setLocalDeadlines(sortDeadlines(newDeadlines))
-    toggleReloadFlag(!reloadFlag)
   }
 
   const addDeadline = (curSelected) => {
@@ -111,17 +139,15 @@ const DeadlineField = (props) => {
     new_deadline.idx = localDeadlines.length
     new_deadline.temporary = true
 
-    console.log('adding deadline')
-    console.log(new_deadline)
     props.addLocalDeadline(new_deadline)
-
-    toggleReloadFlag(!reloadFlag)
   }
 
   const confirmNewDeadline = (deadline) => {
     props.addDeadline(props.curContract.id, deadline)
   }
 
+
+// Sortign helper function
   const sortDeadlines = (deadlines) => {
     if (role === WORKER_TYPE) {
       deadlines.sort((a, b) => (a.workerDate > b.workerDate) ? 1 : -1)
@@ -142,6 +168,7 @@ const DeadlineField = (props) => {
     }
 
     if (!props.createMode) {
+      // Call out to reducer to set up renaming, doesn't force udpate
       props.renameDeadlines(deadlines)
     }
 
@@ -152,14 +179,7 @@ const DeadlineField = (props) => {
     props.suggestPayout(props.curContract.id, deadline_id, new_payout)
   }
 
-  useEffect(() => {
-    if (props.curContract.id) {
-      setRole(props.curContract.role)
-    }
-  }, [props.curContract])
-
-  const [openModal, setOpenModal] = useState(false)
-
+  // Open Modal
   const handleOpenCalendar = (e) => {
     if (props.disabled !== true) {
       setOpenModal(true)
@@ -167,10 +187,12 @@ const DeadlineField = (props) => {
   }
   return (
     <>
-      <div className="flex">
-        <div className="flex grow items-center">
-          <div className="w-full" >
-            <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5}/>
+      <div className="flex overflow-y-visible" ref={mainElem}>
+        <div className="flex grow overflow-y-visible items-center">
+          <div className="grow overflow-y-visible h-full">
+            <div className="overflow-x-scroll overflow-y-visible h-full" style={{width: displayWidth}}>
+              <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5} showDates={showDates}/>
+            </div>
           </div>
           <button
             type="button"
@@ -182,24 +204,22 @@ const DeadlineField = (props) => {
         </div>
       </div>
       <CalendarModal 
+
         open={openModal} 
         setOpen={setOpenModal} 
         role={role} 
-        reloadFlag={reloadFlag}
         deadlines={localDeadlines}
+        createMode={props.createMode}
+        contractItemIds={props.contractItemIds}
+
+        // Deadline editing functions
         editDeadline={editDeadline}
         addDeadline={addDeadline}
         removeDeadline={removeDeadline}
-        deleteLocalDeadline={props.deleteLocalDeadline}
-        sortDeadlines={sortDeadlines}
-        saveDeadlines={saveDeadlines}
-        createMode={props.createMode}
         confirmNewDeadline={confirmNewDeadline}
-
-        contractItemIds={props.contractItemIds}
-        user={props.user}
-        
+        saveDeadlines={saveDeadlines}
         submitPayout={submitPayout}
+
       />
     </>
   )
@@ -218,7 +238,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   addLocalDeadline,
   renameDeadlines,
   addDeadline,
-  deleteLocalDeadline,
   loadLocalDeadlines,
 }, dispatch)
 

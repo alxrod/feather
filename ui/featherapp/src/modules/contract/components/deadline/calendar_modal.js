@@ -14,14 +14,17 @@ import DeadlineItems from "./deadline_items"
 import { PlusIcon } from '@heroicons/react/solid'
 import { XIcon } from '@heroicons/react/outline'
 
+import { reactAddDeadline, deleteLocalDeadline } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { decisionTypes, msgMethods} from "../../../../services/chat.service"
 
 const CalendarModal = (props) => {
 
+  // STATE
   const cancelButtonRef = useRef(null)
   const [errorMsg, setErrorMsg] = useState("")
   const [selected, setSelected] = useState(0)
-  const [newDeadlineIndex, setNewDeadlineIndex] = useState(-1)
 
+  const [newDeadlineIndex, setNewDeadlineIndex] = useState(-1)
   // Indicates if there is a new deadline in the array
   const [newDeadlineMode, toggleNewDeadlineMode] = useState(false)
   // Indicates whether there is a new local, non db uploaded deadline
@@ -30,57 +33,78 @@ const CalendarModal = (props) => {
   const [newDeadlineSelected, toggleNewDeadlineSelected] = useState(false)
   // If the new deadline is proposed by you,
   const [proposedByPartner, setProposedByPartner] = useState(false)
+  const [msgId, setMsgId] = useState("")
 
-  const handleAddDeadline = () => {
-    const newSelect = props.addDeadline(selected)
-    // setSelected(newSelect)
-    if (!props.createMode) {
-      toggleNewDeadlineMode(true)
-    }
-    
-  }
-
+  // Check to see if current deadline is the new deadline we've created
   useEffect( () => {
     if (props.deadlines.length > 0 && props.deadlines[selected].awaitingCreation) {
+      console.log("THIS HAS TO BE FLAGGED FOR THIS TO BE TRUE")
       toggleNewDeadlineSelected(true)
-      toggleNewDeadlineMode(true)
-      if (props.deadlines[selected].deadlineProposerId !== props.user.user_id) {
-        setProposedByPartner(true)
-      } else {
-        setProposedByPartner(false)
-      }
       return
     }
     toggleNewDeadlineSelected(false)
-  }, [selected])
+  }, [selected, props.deadlinesChanged])
 
+  // Use effect for determining whether deadline change is from partner and gettign the ID
+  useEffect(() => {
+    let final_item_id = ""
+    let foundPartner = false
+    for (let i = 0; i < props.messages.length; i++) {
+      if (props.messages[i].method === msgMethods.DEADLINE_CREATE) {
+        if (props.messages[i].body.deadline.id === props.deadlines[selected].id) {
+          final_item_id = props.messages[i].id
+        }
+      } else if (props.messages[i].method === msgMethods.DEADLINE_DELETE) {
+        if (props.messages[i].body.deadline.id === props.id) {
+          final_item_id = props.messages[i].id
+        }
+      } 
+    }
+    setMsgId(final_item_id)
+
+  }, [props.messages.length, selected])
+
+  // Use effect for detecting whether we are in new deadline mode
   useEffect( () => {
     if (props.deadlines.length > 0) {
+      console.log("DEALDINES UPDAED")
       let foundLocalAdd = false
       let foundNew = false
+      let propPartner = false
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadlines[i].id === "TEMPORARY") {
           foundLocalAdd = true
         }
         if (props.deadlines[i].awaitingCreation) {
+          setNewDeadlineIndex(i)
           foundNew = true
+          if (props.deadlines[i].deadlineProposerId === props.user.user_id || props.deadlines[i].id === "TEMPORARY") {
+            propPartner = false
+          } else {
+            propPartner = true
+          }
         }
+        
       }
       toggleNewDeadlineMode(foundNew)
       toggleNewDeadlineLocalMode(foundLocalAdd)
+      setProposedByPartner(propPartner)
     }
   }, [props.deadlines.length, props.deadlinesChanged])
 
-  const confirmNewDeadline = () => {
+  const handleAddDeadline = () => {
+    // add this because not necessarily going into the reducer yet
+    setProposedByPartner(false)
     setNewDeadlineIndex(-1)
-    toggleNewDeadlineLocalMode(false)
-    toggleNewDeadlineSelected(true)
-    for (let i = 0; i < props.deadlines.length; i++) {
-      if (props.deadlines[i].id === "TEMPORARY") {
-        props.confirmNewDeadline(props.deadlines[i])
-      }
-    }
-    
+    props.addDeadline(selected)
+  }
+
+  const confirmNewDeadline = () => {
+    if (props.deadlines[selected].awaitingCreation) {
+      setNewDeadlineIndex(-1)
+      toggleNewDeadlineMode(false)
+      props.confirmNewDeadline(props.deadlines[selected])
+    }    
   } 
 
   const cancelNewDeadline = () => {
@@ -90,9 +114,18 @@ const CalendarModal = (props) => {
       setSelected(props.deadlines.length - 2)
     }
     props.deleteLocalDeadline()
-    
   }
 
+  const addNewPartnerDeadline = () => {
+    props.reactAddDeadline(props.curContract.id, msgId, props.deadlines[selected].id, decisionTypes.YES)
+  }
+  
+  const rejectNewPartnerDeadline = () => {
+    props.reactAddDeadline(props.curContract.id, msgId, props.deadlines[selected].id, decisionTypes.NO)
+    if (selected === props.deadlines.length - 1) {
+      setSelected(props.deadlines.length - 2)
+    }
+  }
 
   return (
     <Transition.Root show={props.open} as={Fragment}>
@@ -136,12 +169,11 @@ const CalendarModal = (props) => {
                       <div className="w-full" >
                         <DeadlineDisplay 
                           role={props.role} 
-                          reloadFlag={props.reloadFlag} 
                           deadlines={props.deadlines} 
                           iconSize={8}
-                          sortDeadlines={props.sortDeadlines}
                           selected={selected}
                           setSelected={setSelected}
+                          showDates={true}
                         />
                       </div>
                       
@@ -178,12 +210,19 @@ const CalendarModal = (props) => {
                               </span>
                             </button>
                           )}
-                          {(newDeadlineMode && !newDeadlineSelected) && (
+                          {(newDeadlineMode && !newDeadlineSelected ) && (
                             <div className="w-full flex justify-end">
-                               <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before creating another deadline</h3>
+                              {( (proposedByPartner || newDeadlineLocalMode) ? 
+                                (
+                                  <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before creating another deadline</h3>
+                                ) : 
+                                (
+                                  <h3 className="text-sm text-gray-500">Awaiting partner to approve new deadline</h3>
+                                )
+                              )}
                             </div>
                           )}
-                          {(newDeadlineSelected && newDeadlineMode && (newDeadlineLocalMode || !proposedByPartner)) && (
+                          {(newDeadlineSelected && newDeadlineMode && newDeadlineLocalMode) && (
                             <div className="flex">
                               <button
                               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
@@ -199,6 +238,27 @@ const CalendarModal = (props) => {
                                 <span className="flex items-center font-light">
                                   <XIcon className="w-4 h-4"/>
                                   Cancel
+                                </span>
+                              </button>
+                            </div>
+                          )}
+
+                          {(newDeadlineSelected && newDeadlineMode && proposedByPartner) && (
+                            <div className="flex">
+                              <button
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              onClick={addNewPartnerDeadline}>
+                                <span className="flex items-center font-light">
+                                  <PlusIcon className="w-4 h-4"/>
+                                  Add
+                                </span>
+                              </button>
+                              <button
+                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              onClick={rejectNewPartnerDeadline}>
+                                <span className="flex items-center font-light">
+                                  <XIcon className="w-4 h-4"/>
+                                  Reject
                                 </span>
                               </button>
                             </div>
@@ -240,7 +300,6 @@ const CalendarModal = (props) => {
                               deadlines = {props.deadlines}
                               deadline={props.deadlines[selected]}
                               setErrorMsg={setErrorMsg}
-                              reloadFlag={props.reloadFlag}
                               createMode={props.createMode}
                               newDeadlineMode={newDeadlineSelected}
                               newDeadlineLocalMode={newDeadlineLocalMode}
@@ -268,11 +327,16 @@ const CalendarModal = (props) => {
   )
 }
 
-const mapStateToProps = ({ deadlines }) => ({
+const mapStateToProps = ({ deadlines, contract, chat, user }) => ({
   deadlinesChanged: deadlines.deadlinesChanged,
+  curContract: contract.curContract,
+  messages: chat.messages,
+  user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  reactAddDeadline,
+  deleteLocalDeadline,
 }, dispatch)
 
 export default connect(

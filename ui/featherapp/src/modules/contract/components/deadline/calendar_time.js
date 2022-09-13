@@ -51,7 +51,6 @@ const CalendarTime = (props) => {
 
   useEffect( () => {
     if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
-      console.log("Setting the partner as main date")
       let datetime = props.deadline.currentDate
       if (props.role === WORKER_TYPE) {
         datetime = props.deadline.buyerDate

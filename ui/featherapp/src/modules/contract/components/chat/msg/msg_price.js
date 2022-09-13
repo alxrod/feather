@@ -28,8 +28,9 @@ const PriceMsg = (props) => {
 
   const [otherUsername, setOtherUsername] = useState("")
   const [otherStatus, setOtherStatus] = useState(0)
-
   const [version, setVersion] = useState(1)
+  const [deadlineName, setDeadlineName] = useState("Deadline")
+
   useEffect( () => {
     if (props.reloaded === true) {
       if ((version+1) > 1) {
@@ -64,6 +65,14 @@ const PriceMsg = (props) => {
     
   }, [props.msg, props.yourRole, version])
 
+  useEffect( () => {
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.deadlines[i].id === props.msg.body.deadlineId) {
+        setDeadlineName(props.deadlines[i].name)
+      }
+    }
+  }, [props.deadlines.length])
+
   const acceptChange = () => {
     props.reactPrice(props.curContract.id, props.msg.id, decisionTypes.YES)
   }
@@ -94,7 +103,7 @@ const PriceMsg = (props) => {
             </a>
           </div>
           <div className="flex flex-wrap">
-            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={props.msg.label}/>
+            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={{name: deadlineName}}/>
           </div>
         </div>
         <div className="mt-2 text-sm text-gray-700">
@@ -179,9 +188,10 @@ const PriceMsg = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
+const mapStateToProps = ({ user, contract, deadlines }) => ({
   curContract: contract.curContract,
   user: user.user,
+  deadlines: deadlines.deadlines,
 })
   
 const mapDispatchToProps = (dispatch) => bindActionCreators({

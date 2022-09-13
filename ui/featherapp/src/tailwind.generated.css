@@ -1474,6 +1474,15 @@ input:checked + .toggle-bg {
 .w-2\/4 {
   width: 50%;
 }
+.w-\[100\%\] {
+  width: 100%;
+}
+.w-\[100px\] {
+  width: 100px;
+}
+.w-\[80\%\] {
+  width: 80%;
+}
 .min-w-full {
   min-width: 100%;
 }
@@ -1796,6 +1805,9 @@ input:checked + .toggle-bg {
 .overflow-hidden {
   overflow: hidden;
 }
+.overflow-visible {
+  overflow: visible;
+}
 .overflow-x-auto {
   overflow-x: auto;
 }
@@ -1807,6 +1819,9 @@ input:checked + .toggle-bg {
 }
 .overflow-y-hidden {
   overflow-y: hidden;
+}
+.overflow-y-visible {
+  overflow-y: visible;
 }
 .overflow-x-scroll {
   overflow-x: scroll;
