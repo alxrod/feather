@@ -18,9 +18,9 @@ import {
 
 import { 
     CONTRACT_UPDATE_PAYOUT,
-    CONTRACT_DEADLINE_RELOAD,
     CONTRACT_UPDATE_DATE,
     CONTRACT_ADD_DEADLINE_FROM_DB,
+    CONTRACT_DEADLINE_SUGGEST_DELETE,
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
@@ -312,10 +312,10 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             payload: msg.body.deadline,
         });
     } else if (msg.method === msgMethods.DEADLINE_DELETE) {
-        // dispatch({
-        //     type: CONTRACT_ITEM_SUGGEST_DELETE,
-        //     payload: msg.body.item.id,
-        // });
+        dispatch({
+            type: CONTRACT_DEADLINE_SUGGEST_DELETE,
+            payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
+        });
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CHAT_MESSAGE_UPDATE,

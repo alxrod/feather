@@ -551,7 +551,17 @@ func ContractRemoveDeadline(deadline *Deadline, contract *Contract, database *mo
 	}
 	contract.DeadlineIds = newIds
 	contract.Deadlines = newDeadlines
-	err := ContractSaveItems(contract, database)
+	err := ContractSaveDeadlines(contract, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractAddDeadline(deadline *Deadline, contract *Contract, database *mongo.Database) error {
+	contract.DeadlineIds = append(contract.DeadlineIds, deadline.Id)
+	contract.Deadlines = append(contract.Deadlines, deadline)
+	err := ContractSaveDeadlines(contract, database)
 	if err != nil {
 		return err
 	}

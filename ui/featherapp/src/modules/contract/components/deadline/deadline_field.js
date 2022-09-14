@@ -36,11 +36,10 @@ const DeadlineField = (props) => {
 
 
 
-
   // Use effect to resort the deadlines every time that they are updated in the reducer state
   useEffect( () => {
     if (mainElem.current) {
-      const newWidth = mainElem.current?.offsetWidth - 70
+      let newWidth = mainElem.current?.offsetWidth - 70
       setDisplayWidth(newWidth+"px")
       if ((newWidth / props.deadlines.length) < 25) {
         toggleShowDates(false)
@@ -48,7 +47,7 @@ const DeadlineField = (props) => {
         toggleShowDates(true)
       }
     }
-  }, [height, width, props.localDeadlines])
+  }, [height, width, props.deadlinesChanged])
   
   useEffect( () => {
     if (props.deadlines.length > 0) {
@@ -187,10 +186,10 @@ const DeadlineField = (props) => {
   }
   return (
     <>
-      <div className="flex overflow-y-visible" ref={mainElem}>
-        <div className="flex grow overflow-y-visible items-center">
-          <div className="grow overflow-y-visible h-full">
-            <div className="overflow-x-scroll overflow-y-visible h-full" style={{width: displayWidth}}>
+      <div className="flex grow" ref={mainElem}>
+        <div className="flex grow items-center">
+          <div className="grow h-full">
+            <div className="overflow-x-scroll overflow-y-hidden3 h-full" style={{width: displayWidth}}>
               <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5} showDates={showDates}/>
             </div>
           </div>

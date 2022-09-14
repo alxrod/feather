@@ -12,3 +12,5 @@ export const CONTRACT_DEADLINE_REPLACE = "contract/deadline/REPLACE"
 export const CONTRACT_DEADLINE_REMOVE = "contract/deadline/REMOVE"
 
 export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
+
+export const CONTRACT_DEADLINE_SUGGEST_DELETE = "contract/deadline/SUGGEST_DELETE"

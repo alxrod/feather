@@ -165,7 +165,7 @@ const DeadlineItems = (props) => {
             {deadlineItemNubs.map((item) => (
               <DeadlineItemBadge item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
             ))}
-            {(showAdd && !props.newDeadlineMode) && (
+            {(showAdd && !props.newDeadlineMode && !props.deleteDeadlineMode) && (
               <Listbox onChange={addItem}>
                 {({ open }) => (
                   <>
@@ -213,7 +213,7 @@ const DeadlineItems = (props) => {
                 )}
               </Listbox>
             )}
-            {!props.newDeadlineMode && (
+            {!props.newDeadlineMode && !props.deleteDeadlineMode && (
               <button
                 key="create"
                 className="relative inline-flex items-center rounded-full bg-indigo-400 hover:bg-indigo-500 px-2 py-0.5 mt-1 mx-1 text-sm"

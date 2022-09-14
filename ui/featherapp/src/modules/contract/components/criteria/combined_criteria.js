@@ -31,14 +31,14 @@ const CombinedCriteria = (props) => {
             </div>
           </li>
 
-          <li key="deadline">
+          <li key="deadline" className="grow">
             <div className="block">
               <div className="flex items-center px-4 py-4 sm:px-6">
                 <div className="min-w-0 flex-1 flex items-center">
                   <div className="flex-shrink-0">
                     <CalendarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true"/>
                   </div>
-                  <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1 md:gap-4">
+                  <div className="px-4 w-full">
                     <DeadlineField 
                       createMode={props.createMode ? true : false} 
                       deadlines={props.deadlines} 

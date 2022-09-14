@@ -30,10 +30,10 @@ const DeadlineSummary = (props) => {
     const [payoutMsgId, setPayoutMsgId] = useState("")
 
     useEffect(() => {
-      if (props.newDeadlineMode && !props.newDeadlineLocalMode) {
+      if ((props.newDeadlineMode && !props.newDeadlineLocalMode) || props.deleteDeadlineMode) {
         setPayoutLock(true)
       }
-    }, [props.newDeadlineMode])
+    }, [props.newDeadlineMode, props.deleteDeadlineMode])
 
     useEffect(() => {
       let final_date_id = ""
@@ -89,7 +89,7 @@ const DeadlineSummary = (props) => {
       newDeadline.workerDate = new Date(newDeadline.workerDate)
       newDeadline.buyerDate = new Date(newDeadline.buyerDate)
 
-      if (props.createMode === true || props.newDeadlineMode) {
+      if (props.createMode === true || props.newDeadlineMode || props.deleteDeadlineMode) {
         newDeadline.workerPayout = newVal
         newDeadline.currentPayout = newVal
         newDeadline.buyerPayout = newVal
@@ -100,7 +100,7 @@ const DeadlineSummary = (props) => {
       } else {
         newDeadline.currentPayout = newVal
       }
-      if ((props.createMode !== true || props.newDeadlineMode) && payoutEditInProgress === false) {
+      if ((props.createMode !== true || props.newDeadlineMode || props.deleteDeadlineMode) && payoutEditInProgress === false) {
         setOldPayout(payoutValue)
       }
       setPayout(newVal)
@@ -115,7 +115,7 @@ const DeadlineSummary = (props) => {
           setTimeoutId(-1)
         },1000)
         setTimeoutId(id)
-      } else if (props.newDeadlineMode) {
+      } else if (props.newDeadlineMode || props.deleteDeadlineMode) {
         props.editDeadline(newDeadline)
       } else {
         if (newVal === oldPayout) {
@@ -330,7 +330,7 @@ const DeadlineSummary = (props) => {
                         onChange={changePayout}
                         disabled={props.disabled || payoutLock}
                       />
-                    ) : (payoutLock == true && props.newDeadlineMode) ? (
+                    ) : (payoutLock == true && (props.newDeadlineMode || props.deleteDeadlineMode)) ? (
                       <>
                         <input
                           type="text"

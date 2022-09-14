@@ -346,7 +346,6 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 		}
 		items[idx] = item
 	}
-
 	req.Deadline.AwaitingCreation = true
 
 	deadline, err := db.DeadlineInsert(req.Deadline, user_id, contract_id, items, database)
@@ -429,7 +428,12 @@ func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractRe
 		msg.Body.ResolStatus = db.RESOL_REJECTED
 		deadline.AwaitingCreation = false
 
-		err := db.ContractRemoveDeadline(deadline, contract, database)
+		err := db.DeadlineReplace(deadline, database)
+		if err != nil {
+			return nil, err
+		}
+
+		err = db.ContractRemoveDeadline(deadline, contract, database)
 		if err != nil {
 			return nil, err
 		}
@@ -493,6 +497,7 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	}
 
 	deadline.AwaitingDeletion = true
+	deadline.DeadlineProposerId = user.Id
 	err = db.DeadlineReplace(deadline, database)
 	if err != nil {
 		return nil, err

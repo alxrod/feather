@@ -39,6 +39,16 @@ export const replaceDeadline = (deadlines, newDeadline) => {
     return deadlines
 }
 
+export const suggestDeleteDeadline = (deadlines, info) => {
+    for (let i = 0; i < deadlines.length; i++) {
+        if (deadlines[i].id === info.id) {
+            deadlines[i].awaitingDeletion = true
+            deadlines[i].deadlineProposerId = info.proposerId
+        }
+    }
+    return deadlines
+}
+
 export const removeDeadline = (deadlines, removal) => {
     const newDeadlines = []
     for (let i = 0; i < deadlines.length; i++) {
