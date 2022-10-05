@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { Fragment } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { MenuIcon, XIcon } from '@heroicons/react/outline'
 import { Link } from 'react-router-dom'
@@ -10,12 +10,34 @@ import feather_logo from "../../style/logo/feather_logo.svg";
 import { bindActionCreators } from 'redux'
 import { logout } from "../../reducers/user/user.reducer";
 import { connect } from "react-redux";
+import ContractTimeline from "../contract/components/contract_timeline"
+import { contractStages } from "../../services/contract.service"
+import { useLocation } from 'react-router-dom'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 const NavBar = (props) => {
+  const [inContractView, toggleInContractView] = useState(false)
+  const [contractStage, setContractStage] = useState(0)
+  const loc = useLocation()
+
+  useEffect(() => {
+    console.log("Contract is: ", props.curContract)
+    if (props.curContract.id) {
+      toggleInContractView(true)
+      setContractStage(props.curContract.stage)
+    } else {
+      toggleInContractView(false)
+      if (loc.pathname.split("/")[1] === "create") {
+        toggleInContractView(true)
+        setContractStage(contractStages.CREATE)
+      }
+    }
+
+  }, [props.curContract, loc])
+  
   if (props.showNavbar) {
     return (
       <Disclosure as="nav" className="bg-white shadow">
@@ -38,7 +60,7 @@ const NavBar = (props) => {
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                     {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
-                    <div className="flex px-1 pt-1 border-b-2 font-medium border-black-500">
+                    <div className="flex px-1 pt-1 font-medium ">
                       <Link
                           to="/contracts"
                           className=" text-gray-900 inline-flex items-center"
@@ -51,7 +73,7 @@ const NavBar = (props) => {
                       
                     </div>
                     
-                    <div className="flex hover:border-gray-300 border-b-2 ">
+                    <div className="flex hover:border-gray-300 ">
                       <Link
                           to="/messages"
                           className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 font-medium"
@@ -175,7 +197,7 @@ const NavBar = (props) => {
                 <Disclosure.Button
                   as="a"
                   href="#"
-                  className="bg-indigo-50 border-black-500 text-black-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                  className="bg-indigo-50 text-black-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
                 >
                   <Link
                     to="/contracts"
@@ -287,8 +309,13 @@ const NavBar = (props) => {
                 </div>
               </div>
             </Disclosure.Panel>
+            {inContractView && (
+              <ContractTimeline stage={contractStage}/>
+            )}
+            
           </>
         )}
+        
       </Disclosure>
     )
   } else {
@@ -296,10 +323,11 @@ const NavBar = (props) => {
   }
 }
 
-const mapStateToProps = ({ user, site }) => ({
+const mapStateToProps = ({ user, site, contract }) => ({
   isLoggedIn: user.isLoggedIn,
   user: user.user,
-  showNavbar: site.showNavbar
+  showNavbar: site.showNavbar,
+  curContract: contract.curContract,
 
 })
 

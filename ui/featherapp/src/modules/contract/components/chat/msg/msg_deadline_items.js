@@ -60,7 +60,6 @@ const DeadlineCreateMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
-		console.log(props.msg)
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadline.id) {
         setDeadlineName(props.deadlines[i].name)

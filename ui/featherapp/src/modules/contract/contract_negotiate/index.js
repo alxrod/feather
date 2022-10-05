@@ -14,7 +14,6 @@ import MainChat from "../components/chat/main_chat";
 import PartnerCard from "../components/summary/partner_profile_card";
 import SignContract from "../components/sign_contract"
 
-
 const ContractNegotiate = (props) => {
   let [reload, setReload] = useState(true)
 
@@ -65,39 +64,41 @@ const ContractNegotiate = (props) => {
   }
 
 	return (
-		<div className="p-4 sm:p-6 lg:p-8 m-auto">
-			<div className="flex flex-row justify-between">
-				<div className="flex flex-col min-w-[45vw] grow mr-10">
-					<div className="mb-5">
-						<PartnerCard title={contract.title} summary={contract.summary}/>
-					</div>
-					<div> 
-						<CriticalCriteria
-                contractItemIds={contractItemIds}
-                createMode={false}
-                active={true}
-            />
-					</div>
-				</div>
-				<div className="flex flex-row min-w-[45vw]">
-					<MainChat roomId={contract.roomId}/>
-				</div>
-			</div>
-			<div className="mt-5">
-				<SignContract/>
-			</div>
-			<div className="mt-5">
-        {contractItemIds.map((item_id) => (
-          <div className="min-h-[100px] w-full mb-5" key={item_id}>
-            <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+    <>
+      <div className="p-4 sm:p-6 lg:p-8 m-auto">
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col min-w-[45vw] grow mr-10">
+            <div className="mb-5">
+              <PartnerCard title={contract.title} summary={contract.summary}/>
+            </div>
+            <div> 
+              <CriticalCriteria
+                  contractItemIds={contractItemIds}
+                  createMode={false}
+                  active={true}
+              />
+            </div>
           </div>
-        ))}
-			</div>
-      {(!addItemMode) && (
-        <NewContractItem addContractItem={addContractItem}/>
-      )}
-			
-		</div>
+          <div className="flex flex-row min-w-[45vw]">
+            <MainChat roomId={contract.roomId}/>
+          </div>
+        </div>
+        <div className="mt-5">
+          <SignContract/>
+        </div>
+        <div className="mt-5">
+          {contractItemIds.map((item_id) => (
+            <div className="min-h-[100px] w-full mb-5" key={item_id}>
+              <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+            </div>
+          ))}
+        </div>
+        {(!addItemMode) && (
+          <NewContractItem addContractItem={addContractItem}/>
+        )}
+        
+      </div>
+    </>
 	)
 }
 

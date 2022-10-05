@@ -45,9 +45,9 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 
 export const contractClient = new ContractClient("https://localhost:8080");
 export const contractStages = {
-    INVITE: 0,
+    CREATE: 0,
+    INVITE: 1,
     NEGOTIATE: 10,
-    SIGNED: 20,
     ACTIVE: 30,
     SETTLING: 40,
     COMPLETE: 50,

@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	INVITE    = uint32(0)
+	CREATE    = uint32(0)
+	INVITE    = uint32(1)
 	NEGOTIATE = uint32(10)
 	SIGNED    = uint32(20)
 	ACTIVE    = uint32(30)
@@ -461,9 +462,9 @@ func ContractClaim(user *User, contract *Contract, database *mongo.Database) err
 	}
 
 	filter := bson.D{{"_id", contract.Id}}
-	update := bson.D{{"$set", bson.D{{"worker", contract.Worker}}}}
+	update := bson.D{{"$set", bson.D{{"worker", contract.Worker}}}, {"$set", bson.D{{"stage", NEGOTIATE}}}}
 	if nub.Type == BUYER {
-		update = bson.D{{"$set", bson.D{{"buyer", contract.Buyer}}}}
+		update = bson.D{{"$set", bson.D{{"buyer", contract.Buyer}}}, {"$set", bson.D{{"stage", NEGOTIATE}}}}
 	}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
