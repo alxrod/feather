@@ -134,9 +134,9 @@ const DeadlineDisplay = (props) => {
                   <div className="h-0.5 w-full border-b-2 border-indigo-600" />
                 </div>
               )}
-              {((idx !== props.deadlines.length - 1) ) && (
+              {((idx !== props.deadlines.length - 1) && deadline.status !== "past") && (
                 <div key={idx*3} className="grow" aria-hidden="true">
-                  <div className="h-0.5 border-b-2 border-grey-300" />
+                  <div className="h-0.5 w-full border-b-2 border-grey-300" />
                 </div>
               )}
             </Fragment>

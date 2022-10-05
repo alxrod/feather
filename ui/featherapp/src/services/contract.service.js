@@ -33,13 +33,15 @@ import {
     ContractSuggestDelDeadline,
     ContractReactDelDeadline,
 
+    ContractSuggestDeadlineItems,
+    ContractReactDeadlineItems,
+
     ClaimContractRequest,
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-
 
 export const contractClient = new ContractClient("https://localhost:8080");
 export const contractStages = {
@@ -535,7 +537,51 @@ class ContractService {
                 resolve(response)
             });
         });
+    }
+    
+    changeDeadlineItems(token, user_id, contract_id, deadline_id, item_ids) {
+        let changeRequest = new ContractSuggestDeadlineItems();
 
+        changeRequest.setDeadlineId(deadline_id)
+        changeRequest.setUserId(user_id)
+        changeRequest.setContractId(contract_id)
+
+        for (let i = 0; i < item_ids.length; i++) {
+            changeRequest.addItemIds(item_ids[i], i)
+        }
+        console.log(contract_id)
+        console.log(user_id)
+        console.log(deadline_id)
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.suggestDeadlineItems(changeRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+    reactDeadlineItems(token, user_id, contract_id, deadline_id, message_id, status) {
+        let reactRequest = new ContractReactDeadlineItems();
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setDeadlineId(deadline_id);
+        reactRequest.setStatus(status);
+        console.log("attempting to send")
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactDeadlineItems(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
+            });
+        });
     }
 
 

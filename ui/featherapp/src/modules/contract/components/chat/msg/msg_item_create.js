@@ -113,7 +113,7 @@ const ItemCreateMsg = (props) => {
             </div>
           </div>
 					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
-            <p>{props.msg.body.item.currentBody}</p>
+            <p className="text-green">{props.msg.body.item.currentBody}</p>
           </div>
           <div className="flex">
             {(yourStatus == decisionTypes.YES) && (

@@ -34,7 +34,7 @@ const DeadlineCreateMsg = (props) => {
 
   const [version, setVersion] = useState(1)
 
-  const [deadlineName, setDeadlineName] = useState("Deadline")
+  const [deadlineName, setDeadlineName] = useState("Deleted Deadline")
 
   useEffect( () => {
     if (props.reloaded === true) {
@@ -57,6 +57,8 @@ const DeadlineCreateMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
+    console.log("LOOKIGN FOR MATCHIGN ID OF " + props.msg.body.deadline.id)
+    console.log(props.deadlines)
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadline.id) {
         setDeadlineName(props.deadlines[i].name)
@@ -125,9 +127,9 @@ const DeadlineCreateMsg = (props) => {
           </div>
 					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
             <div className="flex">
-              <p className="text-gray-400 text-lg mr-2">{"Payout"}</p><p className="mr-1 text-lg">{props.msg.body.deadline.currentPayout}%</p>
+              <p className="text-red text-lg mr-2">{"Payout"}</p><p className="mr-1 text-lg text-red">{props.msg.body.deadline.currentPayout}%</p>
             </div>
-            <p>on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
+            <p className="text-red">on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
           </div>
           <div className="flex">
             {(yourStatus == decisionTypes.YES) && (

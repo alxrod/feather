@@ -17,44 +17,7 @@ const ContractTextArea = (props) => {
       }
     }
   }, [props.lock, props.contractItemsChanged])
-  // const set_to_total_offset = () => {
-  //   if (contentEditable.current.children.length < curOffset) {
-  //     return
-  //   } 
-  // }
-
-  // const mergeTextArea = (chars) => {
-  //   var contract_text = [];
-  //   var cur_chunk = {type: -1, text: "", author: ""};
-  //   for (var i = 0; i < chars.length; i++) {
-  //     if (cur_chunk.type === -1) {
-  //       cur_chunk.type = chars[i].type
-  //       cur_chunk.author = chars[i].author
-  //       cur_chunk.text += chars[i].text
-  //     } else if (chars[i].type === cur_chunk.type && chars[i].author === cur_chunk.author) {
-  //       cur_chunk.text += chars[i].text
-  //     } else {
-  //       contract_text.push(cur_chunk)
-  //       cur_chunk = {type: chars[i].type, text: chars[i].text, author: chars[i].author}
-  //     }
-  //   }
-  //   if (cur_chunk.type !== -1) {
-  //     contract_text.push(cur_chunk)
-  //   }
-  //   return contract_text
-  // }
-
   
-  
-  // useEffect(() => {
-  //   if (contentEditable) {
-  //     for (let i = 0; i < contentEditable.current.children.length; i++) {
-  //       contentEditable.current.children[i].onmouseover = textHoverHandler
-  //     }
-  //   }
-    
-  // }, [refreshFlag])
-  // Bulk of live editing logic
   const handleChange = (e) => {
     props.set_text(e.target.value)
   };  
@@ -79,6 +42,7 @@ const ContractTextArea = (props) => {
                   placeholder="Add the description for this contract item..."
                   value={props.text_body}
                   onChange={handleChange}
+                  disabled={props.disabled}
               />
             )}
           </div>

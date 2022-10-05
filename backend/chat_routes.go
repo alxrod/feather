@@ -468,6 +468,57 @@ func (s *BackServer) SendDeadlineDeleteMessage(
 	return nil
 }
 
+func (s *BackServer) SendDeadlineItemMessage(contract *db.Contract, user *db.User, deadline *db.Deadline, editType uint32) error {
+	new_item_ids := make([]primitive.ObjectID, len(deadline.Items))
+	for i, item := range deadline.Items {
+		new_item_ids[i] = item.Id
+	}
+	body := &db.MessageBody{
+		Type:          editType,
+		DeadlineId:    deadline.Id,
+		Deadline:      deadline,
+		NewItemStates: deadline.ItemStates,
+		NewItems:      deadline.Items,
+		NewItemIds:    new_item_ids,
+		Resolved:      false,
+		ResolStatus:   db.RESOL_UNDECIDED,
+		WorkerStatus:  db.DECISION_UNDECIDED,
+		BuyerStatus:   db.DECISION_UNDECIDED,
+	}
+	if contract.Worker.Id == user.Id {
+		log.Println("Sender is worker")
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer.Id == user.Id {
+		log.Println("Sender is buyer")
+		body.BuyerStatus = db.DECISION_YES
+	}
+	label_name := deadline.Name
+	if label_name == "" {
+		label_name = "Deadline"
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.DEADLINE_ITEMS,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_ITEM,
+			Name: label_name,
+		},
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)

@@ -25,6 +25,7 @@ const (
 	ITEM_DELETE     = 7
 	DEADLINE_CREATE = 8
 	DEADLINE_DELETE = 9
+	DEADLINE_ITEMS  = 10
 	PRICE           = 3
 	REVISION        = 4
 )
@@ -93,6 +94,10 @@ type MessageBody struct {
 	// Deadline messages
 	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
 	Deadline   *Deadline          `bson:"-"`
+
+	NewItemStates []uint32             `bson:"new_item_states"`
+	NewItemIds    []primitive.ObjectID `bson:"new_item_ids"`
+	NewItems      []*ContractItem      `bson:"-"`
 
 	PayoutNew float32   `bson:"payout_new,omitempty"`
 	PayoutOld float32   `bson:"payout_old,omitempty"`
@@ -226,6 +231,28 @@ func (b *MessageBody) DeadlineDeleteProto() *comms.ChatMessage_DeadlineDeleteBod
 	}
 }
 
+func (b *MessageBody) DeadlineItemsProto() *comms.ChatMessage_DeadlineItemBody {
+	new_items := make([]*comms.ItemNub, len(b.NewItems))
+
+	for idx, item := range b.NewItems {
+		new_items[idx] = item.NubProto()
+	}
+
+	return &comms.ChatMessage_DeadlineItemBody{
+		DeadlineItemBody: &comms.DeadlineItemMsgBody{
+			Resolved:      b.Resolved,
+			ResolStatus:   b.ResolStatus,
+			WorkerStatus:  b.WorkerStatus,
+			BuyerStatus:   b.BuyerStatus,
+			Type:          b.Type,
+			DeadlineId:    b.DeadlineId.Hex(),
+			Deadline:      b.Deadline.Proto(),
+			NewItemStates: b.NewItemStates,
+			NewItems:      new_items,
+		},
+	}
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -270,6 +297,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.DeadlineCreateProto()
 	} else if m.Method == DEADLINE_DELETE {
 		proto.Body = m.Body.DeadlineDeleteProto()
+	} else if m.Method == DEADLINE_ITEMS {
+		proto.Body = m.Body.DeadlineItemsProto()
 	}
 
 	return proto
@@ -381,13 +410,25 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		message.Body.Item = item
 	}
 
-	if (message.Method == DEADLINE_CREATE || message.Method == DEADLINE_DELETE) && !message.Body.DeadlineId.IsZero() {
+	if (message.Method == DEADLINE_CREATE || message.Method == DEADLINE_DELETE || message.Method == DEADLINE_ITEMS) && !message.Body.DeadlineId.IsZero() {
 		deadline, err := DeadlineById(message.Body.DeadlineId, database)
 		if err != nil {
 			return nil, err
 		}
 		message.Body.Deadline = deadline
 	}
+	if message.Method == DEADLINE_ITEMS {
+		new_items := make([]*ContractItem, len(message.Body.NewItemIds))
+		for idx, id := range message.Body.NewItemIds {
+			item, err := ContractItemById(id, database.Collection(ITEM_COL))
+			if err != nil {
+				return nil, err
+			}
+			new_items[idx] = item
+		}
+		message.Body.NewItems = new_items
+	}
+
 	return message, nil
 }
 

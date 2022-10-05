@@ -21,6 +21,7 @@ import {
     CONTRACT_UPDATE_DATE,
     CONTRACT_ADD_DEADLINE_FROM_DB,
     CONTRACT_DEADLINE_SUGGEST_DELETE,
+    CONTRACT_DEADLINE_REPLACE,
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
@@ -34,7 +35,6 @@ import {
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat/chat.actions"
-
 
 export const chatClient = new ChatClient("https://localhost:8080");
 
@@ -56,6 +56,13 @@ export const msgMethods = {
     ITEM_DELETE: 7,
     DEADLINE_CREATE: 8,
     DEADLINE_DELETE: 9,
+    DEADLINE_ITEMS: 10,
+}
+
+export const deadlineItemTypes = {
+	ITEM_ADDED: 1,
+	ITEM_RESOLVED: 2,
+	ITEM_REMOVED: 3,
 }
 
 export const editTypes = {
@@ -75,6 +82,8 @@ export const resolTypes = {
 	REJECTED: 2,
 	CANCELED: 3,
 }
+
+
 class ChatService {
 
     joinChat(token, user_id, room_id, dispatch, role) {
@@ -95,8 +104,7 @@ class ChatService {
                     type: CHAT_MESSAGE_RECEIVE,
                     payload: formatedMsg,
                 })
-            }
-            
+            } 
         })
         stream.on('status', function(status) {
             console.log(status.code);
@@ -316,6 +324,11 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_DEADLINE_SUGGEST_DELETE,
             payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
         });
+    } else if (msg.method === msgMethods.DEADLINE_ITEMS) {
+        dispatch({
+            type: CONTRACT_DEADLINE_REPLACE,
+            payload: msg.body.deadline,
+        })
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CHAT_MESSAGE_UPDATE,
@@ -351,6 +364,11 @@ const reformatBody = (msg) => {
         msg.deadlineDeleteBody.deadline.workerDate = new Date(1000 * msg.deadlineDeleteBody.deadline.workerDate.seconds)
         msg.deadlineDeleteBody.deadline.buyerDate = new Date(1000 * msg.deadlineDeleteBody.deadline.buyerDate.seconds)
         msg.body = msg.deadlineDeleteBody
+    } else if (msg.method === msgMethods.DEADLINE_ITEMS) {
+        msg.deadlineItemBody.deadline.currentDate = new Date(1000 * msg.deadlineItemBody.deadline.currentDate.seconds)
+        msg.deadlineItemBody.deadline.workerDate = new Date(1000 * msg.deadlineItemBody.deadline.workerDate.seconds)
+        msg.deadlineItemBody.deadline.buyerDate = new Date(1000 * msg.deadlineItemBody.deadline.buyerDate.seconds)
+        msg.body = msg.deadlineItemBody
     } else {
         msg.body = {}
     }

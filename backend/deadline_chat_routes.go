@@ -602,3 +602,148 @@ func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.Contrac
 	}
 	return &comms.ContractEditResponse{}, nil
 }
+
+func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.ContractSuggestDeadlineItems) (*comms.ContractEditResponse, error) {
+	log.Println(fmt.Sprintf("Suggesting a items for %s", req.DeadlineId))
+
+	// Collect Ids:
+	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	deadline_id, err := primitive.ObjectIDFromHex(req.DeadlineId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Query Objects
+	database := s.dbClient.Database(s.dbName)
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+	deadline, err := db.DeadlineById(deadline_id, database)
+	if err != nil {
+		return nil, err
+	}
+	newIds := make([]primitive.ObjectID, len(req.ItemIds))
+	for i, itemId := range req.ItemIds {
+		item_id, err := primitive.ObjectIDFromHex(itemId)
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Item Id %s is not a valid id", itemId))
+		}
+		newIds[i] = item_id
+	}
+	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
+		return nil, errors.New("You must provide both user and contract with 2 users to change deadline items with")
+	}
+	err = db.DeadlineSuggestItems(deadline, contract, user, newIds, database)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Deadline Items Updated in DB, attempting to send message")
+
+	err = s.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST)
+	log.Println("Finished attempting to send message")
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Date Message Broadcast")
+	return &comms.ContractEditResponse{}, nil
+}
+
+func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.ContractReactDeadlineItems) (*comms.ContractEditResponse, error) {
+	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	deadline_id, err := primitive.ObjectIDFromHex(req.DeadlineId)
+	if err != nil {
+		return nil, err
+	}
+	message_id, err := primitive.ObjectIDFromHex(req.MessageId)
+	if err != nil {
+		return nil, err
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+	deadline, err := db.DeadlineById(deadline_id, database)
+	if err != nil {
+		return nil, err
+	}
+	msg, err := db.MessageById(message_id, database)
+	if err != nil {
+		return nil, err
+	}
+
+	// var role uint32
+	if user.Id == contract.Worker.Id {
+		// role = db.WORKER
+		msg.Body.WorkerStatus = req.Status
+	} else if user.Id == contract.Buyer.Id {
+		// role = db.BUYER
+		msg.Body.BuyerStatus = req.Status
+	} else {
+		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
+	}
+
+	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+		msg.Body.Resolved = true
+		msg.Body.ResolStatus = db.RESOL_APPROVED
+		err := db.DeadlineReactItems(deadline, contract, user, db.DECISION_YES, database)
+		if err != nil {
+			return nil, err
+		}
+	} else if msg.Body.WorkerStatus == db.DECISION_NO || msg.Body.BuyerStatus == db.DECISION_NO {
+		msg.Body.Resolved = true
+		msg.Body.ResolStatus = db.RESOL_REJECTED
+		err := db.DeadlineReactItems(deadline, contract, user, db.DECISION_NO, database)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err = db.MessageReplace(msg, database); err != nil {
+		return nil, err
+	}
+	// Revision Sideeffect message sent
+	revMsgBody := &db.MessageBody{
+		MsgId:        msg.Id,
+		Resolved:     msg.Body.Resolved,
+		ResolStatus:  msg.Body.ResolStatus,
+		WorkerStatus: msg.Body.WorkerStatus,
+		BuyerStatus:  msg.Body.BuyerStatus,
+	}
+	revMsg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.REVISION,
+		Body:      revMsgBody,
+		Label:     &db.LabelNub{},
+	}
+	if err = s.SendRevMessage(revMsg); err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+}

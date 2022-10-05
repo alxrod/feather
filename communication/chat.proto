@@ -27,6 +27,7 @@ message ChatMessage {
         ItemDeleteMsgBody item_delete_body = 13;
         DeadlineCreateMsgBody deadline_create_body = 14;
         DeadlineDeleteMsgBody deadline_delete_body = 15;
+        DeadlineItemMsgBody deadline_item_body = 16;
 
     }   
 }
@@ -108,6 +109,18 @@ message PayoutMsgBody {
 message PriceMsgBody {
     float new_version = 1;
     float old_version = 2;
+    uint32 type = 3;
+    bool resolved = 4;
+    uint32 resol_status = 7;
+    uint32 worker_status = 5;
+    uint32 buyer_status = 6;
+}
+
+message DeadlineItemMsgBody {
+    DeadlineEntity deadline = 1;
+    string deadline_id = 10;
+    repeated uint32 new_item_states = 11;
+    repeated ItemNub new_items = 14;
     uint32 type = 3;
     bool resolved = 4;
     uint32 resol_status = 7;

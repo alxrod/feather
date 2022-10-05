@@ -15,6 +15,12 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+const (
+	ITEM_ADDED    = 1
+	ITEM_RESOLVED = 2
+	ITEM_REMOVED  = 3
+)
+
 type Deadline struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	ContractId primitive.ObjectID `bson:"contract_id"`
@@ -40,6 +46,8 @@ type Deadline struct {
 
 	Items                 []*ContractItem      `bson:"-"`
 	ItemIds               []primitive.ObjectID `bson:"item_ids"`
+	ItemsProposerId       primitive.ObjectID   `bson:"item_proposer_id"`
+	ItemStates            []uint32             `bson:"item_states"`
 	ItemsAwaitingApproval bool                 `bson:"items_awaiting_approval"`
 }
 
@@ -80,6 +88,8 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 		item_nubs[idx] = item.NubProto()
 	}
 	proto.Items = item_nubs
+	proto.ItemsProposerId = d.ItemsProposerId.Hex()
+	proto.ItemStates = d.ItemStates
 	proto.ItemsAwaitingApproval = d.ItemsAwaitingApproval
 
 	return proto
@@ -114,6 +124,8 @@ func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.
 
 	deadline.ItemIds = make([]primitive.ObjectID, len(proto.Items))
 	deadline.Items = make([]*ContractItem, len(proto.Items))
+	deadline.ItemsProposerId = user_id
+	deadline.ItemStates = make([]uint32, len(proto.Items))
 	for idx, nub := range proto.Items {
 		item_id, err := primitive.ObjectIDFromHex(nub.Id)
 		var item *ContractItem
@@ -142,6 +154,7 @@ func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.
 
 		deadline.Items[idx] = item
 		deadline.ItemIds[idx] = item.Id
+		deadline.ItemStates[idx] = ITEM_RESOLVED
 	}
 
 	res, err := database.Collection(DEADLINE_COL).InsertOne(context.TODO(), deadline)
@@ -221,6 +234,108 @@ func DeadlineSuggestDate(deadline *Deadline, user *User, userRole uint32, newDat
 		deadline.BuyerDate = newDate
 	}
 
+	err := DeadlineReplace(deadline, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeadlineSuggestItems(deadline *Deadline, contract *Contract, user *User, newIds []primitive.ObjectID, database *mongo.Database) error {
+	if deadline.ItemsAwaitingApproval {
+		return fmt.Errorf("the deadline %s is already awaiting approval of a different items change", deadline.Id.Hex())
+	}
+
+	newItems := make([]*ContractItem, 0)
+	newItemIds := make([]primitive.ObjectID, 0)
+	newItemStates := make([]uint32, 0)
+
+	for _, item := range deadline.Items {
+		existsInNew := false
+		for _, new_id := range newIds {
+			if item.Id == new_id {
+				newItems = append(newItems, item)
+				newItemIds = append(newItemIds, item.Id)
+				newItemStates = append(newItemStates, ITEM_RESOLVED)
+				existsInNew = true
+				break
+			}
+		}
+		if !existsInNew {
+			newItems = append(newItems, item)
+			newItemIds = append(newItemIds, item.Id)
+			newItemStates = append(newItemStates, ITEM_REMOVED)
+		}
+	}
+
+	for _, new_id := range newIds {
+		included := false
+		for _, new_item := range newItems {
+			if new_item.Id == new_id {
+				included = true
+			}
+		}
+		if !included {
+			var appendItem *ContractItem
+			found := false
+			for _, existingItem := range contract.Items {
+				if existingItem.Id == new_id {
+					found = true
+					appendItem = existingItem
+					break
+				}
+			}
+			if !found {
+				return fmt.Errorf("the contract item %s added is not in this contract", new_id)
+			}
+			newItems = append(newItems, appendItem)
+			newItemIds = append(newItemIds, appendItem.Id)
+			newItemStates = append(newItemStates, ITEM_ADDED)
+		}
+	}
+
+	deadline.Items = newItems
+	deadline.ItemIds = newItemIds
+	deadline.ItemStates = newItemStates
+	deadline.ItemsProposerId = user.Id
+	deadline.ItemsAwaitingApproval = true
+	err := DeadlineReplace(deadline, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeadlineReactItems(deadline *Deadline, contract *Contract, user *User, decision uint32, database *mongo.Database) error {
+	if !deadline.ItemsAwaitingApproval {
+		return fmt.Errorf("the deadline %s has no item changes to approve", deadline.Id.Hex())
+	}
+
+	newItems := make([]*ContractItem, 0)
+	newItemIds := make([]primitive.ObjectID, 0)
+	newItemStates := make([]uint32, 0)
+
+	for idx, item := range deadline.Items {
+		if deadline.ItemStates[idx] == ITEM_RESOLVED {
+			newItems = append(newItems, item)
+			newItemIds = append(newItemIds, item.Id)
+			newItemStates = append(newItemStates, ITEM_RESOLVED)
+		} else if deadline.ItemStates[idx] == ITEM_ADDED && decision == DECISION_YES {
+			newItems = append(newItems, item)
+			newItemIds = append(newItemIds, item.Id)
+			newItemStates = append(newItemStates, ITEM_RESOLVED)
+		} else if deadline.ItemStates[idx] == ITEM_REMOVED && decision == DECISION_NO {
+			newItems = append(newItems, item)
+			newItemIds = append(newItemIds, item.Id)
+			newItemStates = append(newItemStates, ITEM_RESOLVED)
+		}
+	}
+
+	deadline.Items = newItems
+	deadline.ItemIds = newItemIds
+	deadline.ItemStates = newItemStates
+	deadline.ItemsProposerId = user.Id
+	deadline.ItemsAwaitingApproval = false
 	err := DeadlineReplace(deadline, database)
 	if err != nil {
 		return err

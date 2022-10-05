@@ -35,6 +35,8 @@ message DeadlineEntity {
 
     bool draft_required = 19;
 
+    string items_proposer_id = 23;
+    repeated uint32 item_states = 24;
     repeated ItemNub items = 14;
     bool items_awaiting_approval = 15;
 
@@ -102,6 +104,7 @@ message ItemEntity {
 
 message ItemNub {
     string id = 1;
+    string proposer = 3;
     string name = 2;
 }
 
@@ -145,6 +148,19 @@ message ContractSuggestPayout {
     string contract_id = 2;
     string deadline_id = 4;
     float new_payout = 3;
+}
+message ContractSuggestDeadlineItems {
+    string user_id = 1;
+    string contract_id = 2;
+    string deadline_id = 4;
+    repeated string item_ids = 3;
+}
+message ContractReactDeadlineItems {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id = 4;
+    string deadline_id = 5;
+    uint32 status = 3;
 }
 message ContractReactDate {
     string user_id = 1;
@@ -280,4 +296,7 @@ service Contract {
 
     rpc SuggestDeleteDeadline(ContractSuggestDelDeadline) returns (ContractEditResponse) {};
     rpc ReactDeleteDeadline(ContractReactDelDeadline) returns (ContractEditResponse) {};
+
+    rpc SuggestDeadlineItems(ContractSuggestDeadlineItems) returns (ContractEditResponse) {};
+    rpc ReactDeadlineItems(ContractReactDeadlineItems) returns (ContractEditResponse) {};
 }
