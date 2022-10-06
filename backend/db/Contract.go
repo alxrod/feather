@@ -44,6 +44,9 @@ type Contract struct {
 
 	RoomId primitive.ObjectID `bson:"room_id"`
 	Stage  uint32             `bson:"stage"`
+
+	WorkerApproved bool `bson:"worker_approved"`
+	BuyerApproved  bool `bson:"buyer_approved"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -57,14 +60,16 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		items[idx] = item.Proto()
 	}
 	proto := &comms.ContractEntity{
-		Worker:   contract.Worker.Proto(),
-		Buyer:    contract.Buyer.Proto(),
-		Price:    contract.Price.Proto(),
-		Summary:  contract.Summary,
-		Title:    contract.Title,
-		Password: contract.Password,
-		Items:    items,
-		Stage:    contract.Stage,
+		Worker:         contract.Worker.Proto(),
+		Buyer:          contract.Buyer.Proto(),
+		Price:          contract.Price.Proto(),
+		Summary:        contract.Summary,
+		Title:          contract.Title,
+		Password:       contract.Password,
+		Items:          items,
+		Stage:          contract.Stage,
+		WorkerApproved: contract.WorkerApproved,
+		BuyerApproved:  contract.BuyerApproved,
 	}
 	if !contract.Id.IsZero() {
 		proto.Id = contract.Id.Hex()
@@ -237,12 +242,14 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	stage := INVITE
 
 	contract := &Contract{
-		Price:        price,
-		Title:        req.Title,
-		Summary:      req.Summary,
-		Password:     req.Password,
-		CreationTime: time.Now(),
-		Stage:        stage,
+		Price:          price,
+		Title:          req.Title,
+		Summary:        req.Summary,
+		Password:       req.Password,
+		CreationTime:   time.Now(),
+		Stage:          stage,
+		WorkerApproved: false,
+		BuyerApproved:  false,
 	}
 	if req.Role == WORKER {
 		contract.Worker = user.Nub(true)
@@ -470,6 +477,33 @@ func ContractClaim(user *User, contract *Contract, database *mongo.Database) err
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func ContractSign(user *User, contract *Contract, database *mongo.Database) error {
+	if contract.Worker.Id == user.Id {
+		contract.WorkerApproved = true
+	} else if contract.Buyer.Id == user.Id {
+		contract.BuyerApproved = true
+	} else {
+		return errors.New("User is trying to sign a contract they do not own")
+	}
+	if contract.WorkerApproved && contract.BuyerApproved && contract.Stage == NEGOTIATE {
+		contract.WorkerApproved = false
+		contract.BuyerApproved = false
+		contract.Stage = ACTIVE
+	}
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{
+		{"$set", bson.D{{"worker_approved", contract.WorkerApproved}}},
+		{"$set", bson.D{{"buyer_approved", contract.BuyerApproved}}},
+		{"$set", bson.D{{"stage", contract.Stage}}},
+	}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

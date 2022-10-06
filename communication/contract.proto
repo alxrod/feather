@@ -52,6 +52,8 @@ message ContractEntity {
     string title = 8;
     string summary = 6;
     uint32 stage = 9;
+    bool worker_approved = 12;
+    bool buyer_approved = 13;
     repeated ItemEntity items = 7;
     string room_id = 10;
 }
@@ -262,6 +264,10 @@ message ClaimContractRequest {
     string contract_id = 2;
     string password = 3;
 }
+message SignContractRequest {
+    string user_id = 1;
+    string contract_id = 2;
+}
 
 message ContractEditResponse {}
 
@@ -270,6 +276,7 @@ service Contract {
     rpc InviteQuery(InviteDataRequest) returns (InviteNub) {};
 
     rpc Claim(ClaimContractRequest) returns (ContractResponse) {};
+    rpc Sign(SignContractRequest) returns (ContractResponse) {};
 
     rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};

@@ -519,6 +519,36 @@ func (s *BackServer) SendDeadlineItemMessage(contract *db.Contract, user *db.Use
 	return nil
 }
 
+func (s *BackServer) SendContractSignMessage(
+	contract *db.Contract,
+	user *db.User) error {
+	body := &db.MessageBody{
+		ContractStage: contract.Stage,
+		ContractId:    contract.Id,
+		SignerId:      user.Id,
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.CONTRACT_SIGN,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Contract Signed",
+		},
+	}
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)

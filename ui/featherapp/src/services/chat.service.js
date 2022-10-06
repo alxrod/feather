@@ -13,7 +13,8 @@ import {
 } from "../proto/communication/chat_pb";
 
 import { 
-    CONTRACT_UPDATE_PRICE, 
+    CONTRACT_UPDATE_PRICE,
+    CONTRACT_SIGN, 
 } from "../reducers/contract/contract.actions"
 
 import { 
@@ -57,6 +58,7 @@ export const msgMethods = {
     DEADLINE_CREATE: 8,
     DEADLINE_DELETE: 9,
     DEADLINE_ITEMS: 10,
+    CONTRACT_SIGN: 11,
 }
 
 export const deadlineItemTypes = {
@@ -334,6 +336,31 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CHAT_MESSAGE_UPDATE,
             payload: msg.body,
         })
+    } else if (msg.method === msgMethods.CONTRACT_SIGN) {
+        let workerApproved = false;
+        let buyerApproved = false;
+        if (msg.body.signerId === this_user_id) {
+            if (role === WORKER_TYPE) {
+                workerApproved = true
+            } else if (role === BUYER_TYPE) {
+                buyerApproved = true
+            }
+        } else {
+            if (role === WORKER_TYPE) {
+                buyerApproved = true
+            } else if (role === BUYER_TYPE) {
+                workerApproved = true
+            }
+        }
+        dispatch({
+            type: CONTRACT_SIGN,
+            payload: {
+                stage: msg.body.contractStage,
+                workerApproved: workerApproved,
+                buyerApproved: buyerApproved,
+                id: msg.body.contractId,
+            }
+        })
     }
 }
 
@@ -369,6 +396,8 @@ const reformatBody = (msg) => {
         msg.deadlineItemBody.deadline.workerDate = new Date(1000 * msg.deadlineItemBody.deadline.workerDate.seconds)
         msg.deadlineItemBody.deadline.buyerDate = new Date(1000 * msg.deadlineItemBody.deadline.buyerDate.seconds)
         msg.body = msg.deadlineItemBody
+    } else if (msg.method === msgMethods.CONTRACT_SIGN) {
+        msg.body = msg.contractSignBody 
     } else {
         msg.body = {}
     }

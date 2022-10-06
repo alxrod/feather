@@ -114,3 +114,28 @@ export const claimContract = (contract_id, password) => {
         });
     }
 };
+
+export const signContract = (contract_id) => {
+    return dispatch => {
+        return helpers.authCheck(dispatch).then((creds) => {
+            return ContractService.signContract(creds.access_token, creds.user_id, contract_id).then(
+                (resp) => {
+                    dispatch({
+                        type: contractActions.CONTRACT_SIGN,
+                        payload: {
+                            role: resp.role,
+                            workerApproved: resp.contract.workerApproved,
+                            buyerApproved: resp.contract.buyerApproved,
+                            stage: resp.contract.stage,
+                            id: resp.contract.id,
+                        }
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    return helpers.parseError(error);
+                }
+            );
+        });
+    }
+};

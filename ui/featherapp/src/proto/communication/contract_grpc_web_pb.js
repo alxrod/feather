@@ -262,6 +262,67 @@ proto.main.ContractPromiseClient.prototype.claim =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.SignContractRequest,
+ *   !proto.main.ContractResponse>}
+ */
+const methodDescriptor_Contract_Sign = new grpc.web.MethodDescriptor(
+  '/main.Contract/Sign',
+  grpc.web.MethodType.UNARY,
+  proto.main.SignContractRequest,
+  proto.main.ContractResponse,
+  /**
+   * @param {!proto.main.SignContractRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.SignContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.sign =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/Sign',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Sign,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.SignContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.sign =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/Sign',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Sign);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.QueryByIdRequest,
  *   !proto.main.ContractResponse>}
  */

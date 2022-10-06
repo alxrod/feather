@@ -28,6 +28,7 @@ const (
 	DEADLINE_ITEMS  = 10
 	PRICE           = 3
 	REVISION        = 4
+	CONTRACT_SIGN   = 11
 )
 
 // Editing Typs
@@ -110,12 +111,27 @@ type MessageBody struct {
 
 	// Revision messages
 	MsgId primitive.ObjectID `bson:"msg_id,omitempty"`
+
+	// Sign Message
+	SignerId      primitive.ObjectID `bson:"signer_id,omitempty"`
+	ContractStage uint32             `bson:"contract_stage,omitempty"`
+	ContractId    primitive.ObjectID `bson:"contract_id,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
 	return &comms.ChatMessage_CommentBody{
 		CommentBody: &comms.CommentMsgBody{
 			Message: b.Message,
+		},
+	}
+}
+
+func (b *MessageBody) ContractSignProto() *comms.ChatMessage_ContractSignBody {
+	return &comms.ChatMessage_ContractSignBody{
+		ContractSignBody: &comms.ContractSignMsgBody{
+			SignerId:      b.SignerId.Hex(),
+			ContractStage: b.ContractStage,
+			ContractId:    b.ContractId.Hex(),
 		},
 	}
 }
@@ -299,6 +315,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.DeadlineDeleteProto()
 	} else if m.Method == DEADLINE_ITEMS {
 		proto.Body = m.Body.DeadlineItemsProto()
+	} else if m.Method == CONTRACT_SIGN {
+		proto.Body = m.Body.ContractSignProto()
 	}
 
 	return proto

@@ -37,6 +37,7 @@ import {
     ContractReactDeadlineItems,
 
     ClaimContractRequest,
+    SignContractRequest
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -600,7 +601,22 @@ class ContractService {
                 resolve(response.toObject())
             });
         });
+    }
 
+    signContract(token, user_id, contract_id) {
+        let signRequest = new SignContractRequest();
+        signRequest.setUserId(user_id);
+        signRequest.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.sign(signRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
     }
 
     queryInvite(contract_id) {

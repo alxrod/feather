@@ -41,7 +41,22 @@ export default (state = initialState, action) => {
                 ...state,
                 contractClaimed: true
             }
-
+        case actions.CONTRACT_SIGN:
+            return {
+                curContract: {
+                    ...state.curContract,
+                    workerApproved: state.curContract.workerApproved || action.payload.workerApproved,
+                    buyerApproved: state.curContract.buyerApproved || action.payload.buyerApproved,
+                    stage: action.payload.stage,
+                },
+                contractNubs: helpers.replaceContractNubStage(
+                    state.contractNubs, 
+                    action.payload.id,
+                    action.payload.stage,
+                ),
+                contractChanged: !state.contractChanged
+            }
+        
         case actions.CONTRACT_NUB_PULL_ALL:
             return {
                 ...state,
@@ -61,17 +76,14 @@ export default (state = initialState, action) => {
                 ...state,
                 loadingContract: false,
                 selectedId: action.payload.id,
-                contractNubs: {
-                    ...state.contractNubs,
-                    [action.payload.id]: {
-                        id: action.payload.id,
-                        title: action.payload.title,
-                        deadline: action.payload.deadlinesList[0],
-                        price: action.payload.price.current,
-                        stage: action.payload.stage,
-                        user_type: action.payload.user_type,
-                    }
-                },
+                contractNubs: helpers.replaceContractNub(state.contractNubs, {
+                    id: action.payload.id,
+                    title: action.payload.title,
+                    deadline: action.payload.deadlinesList[0],
+                    price: action.payload.price.current,
+                    stage: action.payload.stage,
+                    user_type: action.payload.user_type,
+                }),
                 curContract: action.payload
             }
 

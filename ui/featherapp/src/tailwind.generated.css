@@ -1474,6 +1474,9 @@ input:checked + .toggle-bg {
 .w-2\/4 {
   width: 50%;
 }
+.w-\[75\%\] {
+  width: 75%;
+}
 .min-w-full {
   min-width: 100%;
 }

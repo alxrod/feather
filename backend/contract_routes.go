@@ -120,6 +120,29 @@ func (s *BackServer) Claim(ctx context.Context, req *comms.ClaimContractRequest)
 	}, nil
 }
 
+func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (*comms.ContractResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.ContractSign(user, contract, database)
+	if err != nil {
+		return nil, err
+	}
+	role := db.BUYER
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
+		role = db.WORKER
+	}
+
+	err = s.SendContractSignMessage(contract, user)
+	return &comms.ContractResponse{
+		Contract: contract.Proto(),
+		Role:     role,
+	}, nil
+}
+
 func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequest) (*comms.ContractNubSet, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {

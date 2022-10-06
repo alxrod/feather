@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
 import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { genEmptyContract } from '../../../services/contract.service';
+import { contractStages } from '../../../services/contract.service';
 
 import ContractItem from "../components/contract_item/contract_item";
 import NewContractItem from "../components/contract_item/new_contract_item";
@@ -13,11 +14,13 @@ import CriticalCriteria from "../components/criteria/critical_criteria";
 import MainChat from "../components/chat/main_chat";
 import PartnerCard from "../components/summary/partner_profile_card";
 import SignContract from "../components/sign_contract"
+import { push } from 'connected-react-router'
 
 const ContractNegotiate = (props) => {
   let [reload, setReload] = useState(true)
 
   const [nextContractName, setNextContractName] = useState("")
+
   const contract = useMemo(() => {
     if (props.curContract.id) {
       return props.curContract
@@ -27,6 +30,13 @@ const ContractNegotiate = (props) => {
   }, [props.curContract])
 
   const { params: { contractId } } = props.match;
+  useEffect( () => {
+    if (props.curContract.id) {
+      if (props.curContract.stage > contractStages.NEGOTIATE) {
+        props.push("/contract/"+props.curContract.id)
+      }
+    }
+  }, [props.curContract])
 
   useEffect(() => {
     // console.log("Calling the reload effect")
@@ -112,6 +122,7 @@ const mapStateToProps = ({ user, contract, items}) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   queryContract,
   addContractItem,
+  push,
 }, dispatch)
 
 export default connect(
