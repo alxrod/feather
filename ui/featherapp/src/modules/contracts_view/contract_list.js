@@ -18,7 +18,12 @@ const ContractList = (props) => {
   }, [props.contracts])
 
   const formatDate = (date) => {
-    return date.toLocaleTimeString('en-US', {timeStyle: "short"}) + " " + date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
+    if (date) {
+      return date.toLocaleTimeString('en-US', {timeStyle: "short"}) + " " + date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
+    } else {
+      return ""
+    }
+    
   }
 
   return (

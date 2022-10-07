@@ -14,8 +14,8 @@ import DeadlineItems from "./deadline_items"
 import { PlusIcon, TrashIcon } from '@heroicons/react/solid'
 import { XIcon } from '@heroicons/react/outline'
 
-import { reactAddDeadline, deleteLocalDeadline } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
-import { deleteDeadline, reactDeleteDeadline } from "../../../../reducers/deadlines/dispatchers/deadlines.delete.dispatcher"
+import { reactAddDeadline } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { deleteDeadline, reactDeleteDeadline, deleteLocalDeadline } from "../../../../reducers/deadlines/dispatchers/deadlines.delete.dispatcher"
 import { decisionTypes, msgMethods} from "../../../../services/chat.service"
 import { genEmptyDeadline } from "./helpers"
 
@@ -130,8 +130,21 @@ const CalendarModal = (props) => {
   }
 
   const handleDeleteDeadline = () => {
-    setProposedByPartner(false)
-    props.deleteDeadline(props.curContract.id, props.deadlines[selected])
+    if (props.deadlines.length <= 2) {
+      return
+    }
+    if (props.createMode) {
+      if (selected === props.deadlines.length - 1) {
+        setSelected(props.deadlines.length - 2)
+      }
+      setNewDeadlineIndex(-1)
+      toggleNewDeadlineMode(false)
+      props.deleteLocalDeadline(props.deadlines[selected])
+    } else {
+      setProposedByPartner(false)
+      props.deleteDeadline(props.curContract.id, props.deadlines[selected])
+    }
+    
   }
 
   const confirmDeleteDeadline = () => {
@@ -158,7 +171,7 @@ const CalendarModal = (props) => {
     }
     setNewDeadlineIndex(-1)
     toggleNewDeadlineMode(false)
-    props.deleteLocalDeadline()
+    props.deleteLocalDeadline({id: "TEMPORARY"})
   }
 
   const addNewPartnerDeadline = () => {

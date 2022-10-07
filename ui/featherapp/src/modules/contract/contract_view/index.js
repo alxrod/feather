@@ -1,115 +1,117 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo, useEffect } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+
+import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
+import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { genEmptyContract } from '../../../services/contract.service';
+import { contractStages } from '../../../services/contract.service';
 
 import ContractItem from "../components/contract_item/contract_item";
-import CombinedCriteria from "../components/criteria/combined_criteria";
+import NewContractItem from "../components/contract_item/new_contract_item";
+import CriticalCriteria from "../components/criteria/critical_criteria";
 import MainChat from "../components/chat/main_chat";
-import PartnerCard from "../components/summary/partner_profile_card";
-import LinkProof from "../components/draft/link_proof";
-import DraftUpload from "../components/draft/draft_upload.js";
+import OverviewCard from "../components/summary/overview_card";
+import SignContract from "../components/sign_contract";
+import DeadlineField from "../components/deadline/deadline_field";
+import { push } from 'connected-react-router';
+import DraftUpload from "../components/draft/draft_upload";
 
-import { ITEM_AGREED, ITEM_DISAGREED, ITEM_NEG, ITEM_POS, ITEM_WAITING_OTHER, UNEDITED } from "../../../custom_encodings"
+const ContractDraft = (props) => {
+  let [reload, setReload] = useState(true)
 
-const profile_info = {
-	image:
-  	'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-	username: "NutraWorks",
-	email: "business.dev@nutraworks.com",
-	descript: "Nutraworks makes their very own vegan preworkout that only uses organic and healthy ingredients to help you have not just your best workout, but your best diet."
-}
-const contract_details = {
-	deadline_str: "10:00am June 10, 2022",
-	price_str: "250.00",
-	deadline_state: ITEM_AGREED,
-	deadline_assess: ITEM_NEG,
-	price_state: ITEM_WAITING_OTHER,
-	price_assess: ITEM_POS,
-}
+  const [nextItemName, setNextItemName] = useState("")
 
-const ContractView = (props) => {
-		const [contractItems, setContractItems] = useState({
-			1: {
-				id: "1",
-				text: [
-					{type: UNEDITED, text: "The video must contain the product for at least 15 seconds"}
-				],
-				recip_status: ITEM_DISAGREED,
-				sender_status: ITEM_AGREED,
-				chats: [
-					{"user_id": 1, msg: "@Item1 I think that the video should be a minute long, not just 30 seconds"},
-					{"user_id": 2, msg: "@Item2 Yeah but I make all of my videos 30 seconds so it would be unauthetic"},
-				],
-			},
-			2: {
-				id: "2",
-				text: [
-					{type: UNEDITED, text: "You cannot reference or use any other preworkouts in the video"}
-				],
-				recip_status: ITEM_DISAGREED,
-				sender_status: ITEM_AGREED,
-				chats: [
-					{"user_id": 1, msg: "@Item1 I think that the video should be a minute long, not just 30 seconds"},
-					{"user_id": 2, msg: "@Item2 Yeah but I make all of my videos 30 seconds so it would be unauthetic"},
-				],
-			},
-			
-		})
+  const { params: { contractId } } = props.match;
+  useEffect( () => {
+    if (props.curContract.id) {
+      if (props.curContract.stage > contractStages.ACTIVE) {
+        props.push("/contract/"+props.curContract.id)
+      }
+    }
+  }, [props.curContract])
 
-		const setContractInfo = (newInfo) => {
-			var new_contracts = {...contractItems}
-			new_contracts[newInfo.id] = newInfo
-			setContractItems(new_contracts)
-		}
+  useEffect(() => {
+    if (reload) {
+      props.queryContract(contractId)
+      setReload(false)
+    } 
+  }, [reload])
+  
+  const [contractItemIds, setContractItemIds] = useState([])
+  const [addItemMode, toggleAddItemMode] = useState(false)
 
-		return (
-				<div className="min-w-[50vw] p-4 sm:p-6 lg:p-8 m-auto">
-					<div className="flex flex-row justify-between">
-						<div className="flex flex-col grow min-w-[45vw] mr-10">
-                            <div className="mb-5"> 
-								<CombinedCriteria 
-									deadline_str={contract_details.deadline_str} 
-									price_str={contract_details.price_str}
-									deadline_assess={contract_details.deadline_assess}
-									price_assess={contract_details.price_assess}
-									deadline_state={contract_details.deadline_state}
-									price_state={contract_details.price_state} 
-								/>
-							</div>
-                            <div>
-                                <LinkProof/>
-                            </div>
-                            <div>
-                                <DraftUpload/>
-                            </div>
-						</div>
-						<div className="flex flex-col min-w-[45vw]">
-                            <div className="mb-5">
-								<PartnerCard excludePlatform={true}/>
-							</div>
-							
-							<MainChat/>
-						</div>
-					</div>
-					<div className="mt-5">
-						{Object.entries(contractItems).map((contract_and_key) => (
-							<div className="min-h-[100px]" key={contract_and_key[0]}>
-								<ContractItem contract_info={contract_and_key[1]} disabled={true} set_contract_info={setContractInfo}/>
-							</div>
-						))}
-					</div>
-				</div>
-		)
-		
+  useEffect(() => {
+    if (contractItemIds !== undefined) {
+      let ids = []
+      let max = 0
+      for (let i = 0; i < props.curConItems.length; i++) {
+        const num = parseInt(props.curConItems[i].name.split(" ")[1])
+        if (num > max) {
+          max = num
+        }
+        
+        ids.push(props.curConItems[i].id)
+      }
+      setNextItemName((max+1).toString())
+      setContractItemIds(ids)
+    }
+  }, [props.curContract, props.contractItemsChanged, props.curConItems.length])
+
+  const addContractItem = () => {
+    props.addContractItem(false, "new_negotiate", nextItemName)
+    toggleAddItemMode(true)
+  }
+
+	return (
+    <>
+      <div className="p-4 sm:p-6 lg:p-8 m-auto">
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col min-w-[45vw] grow mr-10">
+            <OverviewCard title={props.curContract.title} summary={props.curContract.summary}/>
+            <DeadlineField
+              createMode={false} 
+              disabled={false} 
+              contractItemIds={contractItemIds}
+            />
+          </div>
+          <div className="flex flex-row min-w-[45vw]">
+            <MainChat roomId={props.curContract.roomId}/>
+          </div>
+        </div>
+        <div className="mt-5">
+          <SignContract/>
+        </div>
+        <div className="mt-5">
+          {contractItemIds.map((item_id) => (
+            <div className="min-h-[100px] w-full mb-5" key={item_id}>
+              <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+            </div>
+          ))}
+        </div>
+        {(!addItemMode) && (
+          <NewContractItem addContractItem={addContractItem}/>
+        )}  
+      </div>
+    </>
+	)
 }
 
-const mapStateToProps = ({ }) => ({
+const mapStateToProps = ({ user, contract, items}) => ({
+  curContract: contract.curContract,
+  contractItemsChanged: items.items,
+  curConItems: items.items,
+  user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  queryContract,
+  addContractItem,
+  push,
 }, dispatch)
 
 export default connect(
 		mapStateToProps,
 		mapDispatchToProps
-)(ContractView)
+)(ContractDraft)

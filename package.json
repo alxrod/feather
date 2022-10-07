@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "autosize": "^5.0.1",
     "react-html-id": "^0.1.5"
   }
 }

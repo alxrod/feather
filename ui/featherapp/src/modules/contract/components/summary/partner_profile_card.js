@@ -14,4 +14,4 @@ const PartnerCard = props => (
 const mapStateToProps = ({ }) => ({
 })
 
-export default PartnerCard
+export default PartnerCard 

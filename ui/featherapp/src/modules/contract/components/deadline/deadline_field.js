@@ -2,12 +2,14 @@ import React, {useState, useEffect, useMemo, useRef} from "react";
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
 import CalendarModal from "./calendar_modal";
 import DeadlineDisplay from "./deadline_display"
+import DeadlineDraftView from "./deadline_draft_view"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import useWindowDimensions from "../../../../custom_hooks/useWindowDimensions"
 import { loadLocalDeadlines } from "../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { contractStages } from "../../../../services/contract.service";
 
 import {
   addLocalDeadline, 
@@ -34,6 +36,7 @@ const DeadlineField = (props) => {
   const {height, width} = useWindowDimensions()
   const [showDates, toggleShowDates] = useState(true)
 
+  const [inDraftMode, setInDraftMode] = useState(false)
 
 
   // Use effect to resort the deadlines every time that they are updated in the reducer state
@@ -74,6 +77,9 @@ const DeadlineField = (props) => {
   useEffect(() => {
     if (props.curContract.id) {
       setRole(props.curContract.role)
+    }
+    if (props.curContract.stage == contractStages.ACTIVE) {
+      setInDraftMode(true)
     }
   }, [props.curContract])
 
@@ -186,22 +192,26 @@ const DeadlineField = (props) => {
   }
   return (
     <>
-      <div className="flex grow" ref={mainElem}>
-        <div className="flex grow items-center">
-          <div className="grow h-full">
-            <div className="overflow-x-scroll overflow-y-hidden3 h-full" style={{width: displayWidth}}>
-              <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5} showDates={showDates}/>
+      {inDraftMode ? (
+        <DeadlineDraftView role={role} deadlines={localDeadlines} openModal={handleOpenCalendar}/>
+      ) : (
+        <div className=" flex grow" ref={mainElem}>
+          <div className="flex grow items-center">
+            <div className="grow h-full">
+              <div className="overflow-x-scroll overflow-y-hidden3 h-full" style={{width: displayWidth}}>
+                <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5} showDates={showDates}/>
+              </div>
             </div>
+            <button
+              type="button"
+              onClick={handleOpenCalendar}
+              className="ml-3 inline-flex items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-800 bg-indigo-100 hover:bg-indigo-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Edit
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenCalendar}
-            className="ml-3 inline-flex items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-800 bg-indigo-100 hover:bg-indigo-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Edit
-          </button>
         </div>
-      </div>
+      )}
       <CalendarModal 
 
         open={openModal} 

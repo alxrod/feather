@@ -24,15 +24,6 @@ export const addLocalDeadline = (new_deadline) => {
         })
         return Promise.resolve(new_deadline)
     }
-    
-}
-export const deleteLocalDeadline = () => {
-    return dispatch => {
-        dispatch({
-            type: deadlineActions.CONTRACT_DEADLINE_REMOVE,
-            payload: {id: "TEMPORARY"},
-        })
-    }
 }
 
 export const loadLocalDeadlines = (new_deadlines) => {

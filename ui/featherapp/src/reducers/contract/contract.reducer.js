@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
                     [action.payload.id]: {
                         id: action.payload.id,
                         title: action.payload.title,
-                        deadline: action.payload.deadlinesList[0],
+                        deadline: action.payload.deadlinesList[0].currentDate,
                         price: action.payload.price.current,
                         stage: action.payload.stage,
                         user_type: action.payload.user_type,
@@ -79,7 +79,7 @@ export default (state = initialState, action) => {
                 contractNubs: helpers.replaceContractNub(state.contractNubs, {
                     id: action.payload.id,
                     title: action.payload.title,
-                    deadline: action.payload.deadlinesList[0],
+                    deadline: action.payload.deadlinesList[0].currentDate,
                     price: action.payload.price.current,
                     stage: action.payload.stage,
                     user_type: action.payload.user_type,

@@ -6,7 +6,7 @@ const steps = [
   { name: '6/1/22', href: '#', status: 'upcoming' },
 ]
 
-export default function Example() {
+export default function DeadlineHistory() {
   return (
     <div className="px-2">
       <div>

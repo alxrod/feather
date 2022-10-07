@@ -20,6 +20,16 @@ export const deleteDeadline = (contract_id, deadline) => {
     }
 };
 
+export const deleteLocalDeadline = (del_deadline) => {
+    return dispatch => {
+        dispatch({
+            type: deadlineActions.CONTRACT_DEADLINE_REMOVE,
+            payload: del_deadline,
+        })
+        return Promise.resolve(del_deadline)
+    }
+}
+
 export const reactDeleteDeadline = (contract_id, message_id, deadline_id, status) => {
     return dispatch => {
         return helpers.authCheck(dispatch).then((creds) => {

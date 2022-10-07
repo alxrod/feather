@@ -1,12 +1,20 @@
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { useState, useEffect} from "react"
+import { useState, useEffect, useRef} from "react"
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import DeltaBody from "../delta/delta_textarea"
+import autosize from 'autosize';
 
 const ContractTextArea = (props) => {
   const [oldText, setOldText] = useState("")
   const [newText, setNewText] = useState("")
+  const textarea = useRef(null)
+
+  useEffect(() => {
+    autosize(textarea.current);
+    autosize.update(textarea.current);
+  }, [textarea.current])
+
   useEffect( () => {
     if (props.lock) {
       setOldText(props.contract_info.currentBody)
@@ -38,7 +46,8 @@ const ContractTextArea = (props) => {
               <textarea
                   name="intro_msg"
                   id="intro_msg"
-                  className="grow w-full text-gray-700 inline-block focus:border-0 focus:ring-0 focus:outline-none w-full border-0 border-b border-transparent p-0 pb-2 resize-none sm:text-sm"
+                  ref={textarea}
+                  className="grow w-full text-gray-700 inline-block focus:border-0 focus:ring-0 focus:outline-none border-0 border-b border-transparent p-0 pb-2 sm:text-sm"
                   placeholder="Add the description for this contract item..."
                   value={props.text_body}
                   onChange={handleChange}
