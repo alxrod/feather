@@ -406,6 +406,8 @@ const reformatBody = (msg) => {
         msg.body = msg.deadlineItemBody
     } else if (msg.method === msgMethods.CONTRACT_SIGN) {
         msg.body = msg.contractSignBody 
+    } else if (msg.method === msgMethods.CONTRACT_LOCK) {
+        msg.body = msg.contractLockBody
     } else {
         msg.body = {}
     }

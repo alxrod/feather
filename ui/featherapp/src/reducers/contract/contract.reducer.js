@@ -57,6 +57,14 @@ export default (state = initialState, action) => {
                 contractChanged: !state.contractChanged
             }
         
+        case actions.CONTRACT_TOGGLE_LOCK:
+            return {
+                curContract: {
+                    ...state.curContract,
+                    universalLock: action.payload.lockState,
+                },
+            }
+        
         case actions.CONTRACT_NUB_PULL_ALL:
             return {
                 ...state,

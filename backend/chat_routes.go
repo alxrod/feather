@@ -587,7 +587,7 @@ func (s *BackServer) SendToggleLockMessage(
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
-		Method:    db.DEADLINE_DELETE,
+		Method:    db.CONTRACT_LOCK,
 
 		Body: body,
 

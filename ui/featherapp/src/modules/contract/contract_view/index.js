@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
+import { toggleLock } from "../../../reducers/contract/dispatchers/contract.lock.dispatcher"
 import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { genEmptyContract } from '../../../services/contract.service';
 import { contractStages } from '../../../services/contract.service';
@@ -72,7 +73,7 @@ const ContractDraft = (props) => {
   }
 
   const requestLockChange = () => {
-
+    props.toggleLock(props.curContract.id, !universalLock)
   }
 
 	return (
@@ -126,6 +127,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   queryContract,
   addContractItem,
   push,
+  toggleLock,
 }, dispatch)
 
 export default connect(

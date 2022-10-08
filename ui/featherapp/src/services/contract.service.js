@@ -37,7 +37,11 @@ import {
     ContractReactDeadlineItems,
 
     ClaimContractRequest,
-    SignContractRequest
+    SignContractRequest,
+
+    ContractToggleLockRequest,
+    ContractReactLockRequest,
+    
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -615,6 +619,41 @@ class ContractService {
                     reject(error)
                 }
                 resolve(response.toObject())
+            });
+        });
+    }
+
+    toggleLock(token, user_id, contract_id, lockState) {
+        let lockRequest = new ContractToggleLockRequest();
+        lockRequest.setUserId(user_id);
+        lockRequest.setContractId(contract_id);
+        lockRequest.setContractLock(lockState);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.toggleLock(lockRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+    reactLock(token, user_id, contract_id, message_id, status) {
+        let reactRequest = new ContractReactLockRequest();
+
+        reactRequest.setUserId(user_id);
+        reactRequest.setContractId(contract_id);
+        reactRequest.setMessageId(message_id);
+        reactRequest.setStatus(status);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.reactLock(reactRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response)
             });
         });
     }

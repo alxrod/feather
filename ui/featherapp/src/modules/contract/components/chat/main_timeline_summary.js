@@ -18,6 +18,7 @@ import DeadlineCreateMsg from "./msg/msg_deadline_create"
 import DeadlineDeleteMsg from "./msg/msg_deadline_delete"
 import DeadlineItemsMsg from "./msg/msg_deadline_items"
 import ContractSignMsg from "./msg/msg_sign"
+import ContractLockMsg from "./msg/msg_lock"
 
 function useOnScreen(ref) {
 
@@ -79,6 +80,8 @@ const MainTimeline = (props) => {
                   <DeadlineItemsMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.CONTRACT_SIGN) ? (
                   <ContractSignMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.CONTRACT_LOCK) ? (
+                  <ContractLockMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

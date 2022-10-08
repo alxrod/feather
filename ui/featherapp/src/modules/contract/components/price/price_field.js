@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {LockOpenIcon, ExclamationCircleIcon} from "@heroicons/react/outline"
+import { LockClosedIcon } from '@heroicons/react/solid'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { suggestPrice, reactPrice } from '../../../../reducers/contract/dispatchers/contract.price.dispatcher'
@@ -8,7 +9,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 import EditLock from "../../../general_components/edit_lock"
-import { LockClosedIcon } from '@heroicons/react/solid'
+
 import { useLocation } from 'react-router-dom'
 import { ArrowRightIcon } from '@heroicons/react/solid'
 
@@ -46,7 +47,7 @@ const PriceField = (props) => {
 
   // Should probably be a useMemo
   useEffect( () => {
-    
+    console.log("RUNNING THE REASSESSMENT")
     if (props.createMode !== true && props.curContract.id && props.curContract.id != cur_contract.id) {   
       
       cur_contract = props.curContract
@@ -87,6 +88,7 @@ const PriceField = (props) => {
           }
         }
       } else if (props.universalLock) {
+        console.log("ENDIGN UP IN WORNG PLCE")
         newPrice = price.current
         setTextColor("text-gray-500")
         toggleLock(true)
@@ -98,7 +100,7 @@ const PriceField = (props) => {
       setOrigPrice(newPrice)
       setFieldValue(newPrice)
     }
-  }, [props.curContract, props.contractChanged])
+  }, [props.curContract, props.contractChanged, props.universalLock])
 
   useEffect( () => {
     if (props.curContract.id) {
@@ -217,7 +219,7 @@ const PriceField = (props) => {
           </div>
         )}
 
-        {(proposedByPartner && lock) && (
+        {(proposedByPartner && lock && !props.universalLock) && (
           <div className="ml-1 pt-1 my-auto">
             <DecideButton approve={approveChange} reject={denyChange}/>
           </div>
