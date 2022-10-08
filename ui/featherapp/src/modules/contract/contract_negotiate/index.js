@@ -36,7 +36,7 @@ const ContractNegotiate = (props) => {
         props.push("/contract/"+props.curContract.id)
       }
     }
-  }, [props.curContract])
+  }, [props.curContract, props.contractChanged])
 
   useEffect(() => {
     // console.log("Calling the reload effect")
@@ -114,6 +114,7 @@ const ContractNegotiate = (props) => {
 
 const mapStateToProps = ({ user, contract, items}) => ({
   curContract: contract.curContract,
+  contractChanged: contract.contractChanged,
   contractItemsChanged: items.items,
   curConItems: items.items,
   user: user.user,

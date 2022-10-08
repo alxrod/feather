@@ -59,6 +59,7 @@ export const msgMethods = {
     DEADLINE_DELETE: 9,
     DEADLINE_ITEMS: 10,
     CONTRACT_SIGN: 11,
+    CONTRACT_LOCK: 12,
 }
 
 export const deadlineItemTypes = {
@@ -352,6 +353,13 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 workerApproved = true
             }
         }
+        console.log("RECEIVED MESSAGE DISPATCHIGN APYLOAD:", {
+            stage: msg.body.contractStage,
+            workerApproved: workerApproved,
+            buyerApproved: buyerApproved,
+            id: msg.body.contractId,
+        })
+
         dispatch({
             type: CONTRACT_SIGN,
             payload: {

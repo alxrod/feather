@@ -558,6 +558,53 @@ func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	return nil
 }
 
+func (s *BackServer) SendToggleLockMessage(
+	contract *db.Contract,
+	user *db.User,
+	lockState bool,
+	editType uint32) error {
+
+	body := &db.MessageBody{
+		Type:         editType,
+		ContractLock: lockState,
+		ContractId:   contract.Id,
+		Resolved:     false,
+		ResolStatus:  db.RESOL_UNDECIDED,
+		WorkerStatus: db.DECISION_UNDECIDED,
+		BuyerStatus:  db.DECISION_UNDECIDED,
+	}
+	if contract.Worker.Id == user.Id {
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer.Id == user.Id {
+		body.BuyerStatus = db.DECISION_YES
+	}
+	label_name := "Contract Unlock"
+	if lockState {
+		label_name = "Contract Lock"
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.DEADLINE_DELETE,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: label_name,
+		},
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullRequest) (*comms.ChatMessageSet, error) {
 	if req.RoomId == "" {
 		return nil, errors.New("You must pass a room_id to get messages")

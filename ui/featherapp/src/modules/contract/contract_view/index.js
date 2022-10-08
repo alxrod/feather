@@ -17,15 +17,22 @@ import SignContract from "../components/sign_contract";
 import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
 import DraftUpload from "../components/draft/draft_upload";
+import UniversalLockCard from "../components/universal_lock/universal_lock_card";
 
 const ContractDraft = (props) => {
-  let [reload, setReload] = useState(true)
+  const [universalLock, setUniversalLock] = useState(true)
+  const [reload, setReload] = useState(true)
 
   const [nextItemName, setNextItemName] = useState("")
 
   const { params: { contractId } } = props.match;
   useEffect( () => {
     if (props.curContract.id) {
+      if (props.curContract.universalLock) {
+        setUniversalLock(true)
+      } else {
+        setUniversalLock(false)
+      }
       if (props.curContract.stage > contractStages.ACTIVE) {
         props.push("/contract/"+props.curContract.id)
       }
@@ -64,15 +71,25 @@ const ContractDraft = (props) => {
     toggleAddItemMode(true)
   }
 
+  const requestLockChange = () => {
+
+  }
+
 	return (
     <>
       <div className="p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">
-            <OverviewCard title={props.curContract.title} summary={props.curContract.summary}/>
+            <div className="mb-2">
+              <UniversalLockCard 
+                universalLock={universalLock}
+                requestLockChange={requestLockChange}
+              />
+            </div>
+            <OverviewCard title={props.curContract.title} summary={props.curContract.summary} universalLock={universalLock}/>
             <DeadlineField
               createMode={false} 
-              disabled={false} 
+              universalLock={universalLock}
               contractItemIds={contractItemIds}
             />
           </div>
@@ -86,7 +103,7 @@ const ContractDraft = (props) => {
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+              <ContractItem universalLock={universalLock} override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
             </div>
           ))}
         </div>

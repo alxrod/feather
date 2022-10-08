@@ -47,6 +47,8 @@ type Contract struct {
 
 	WorkerApproved bool `bson:"worker_approved"`
 	BuyerApproved  bool `bson:"buyer_approved"`
+
+	UniversalLock bool `bson:"universal_lock"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -63,6 +65,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		Worker:         contract.Worker.Proto(),
 		Buyer:          contract.Buyer.Proto(),
 		Price:          contract.Price.Proto(),
+		UniversalLock:  contract.UniversalLock,
 		Summary:        contract.Summary,
 		Title:          contract.Title,
 		Password:       contract.Password,
@@ -250,6 +253,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 		Stage:          stage,
 		WorkerApproved: false,
 		BuyerApproved:  false,
+		UniversalLock:  true,
 	}
 	if req.Role == WORKER {
 		contract.Worker = user.Nub(true)
@@ -510,6 +514,16 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 func ContractSavePrice(contract *Contract, database *mongo.Database) error {
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"price", contract.Price}}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func ContractToggleLock(contract *Contract, newState bool, database *mongo.Database) error {
+	contract.UniversalLock = newState
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{{"universal_lock", contract.UniversalLock}}}}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err

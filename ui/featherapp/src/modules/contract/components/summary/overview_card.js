@@ -64,7 +64,7 @@ const OverviewCard = (props) => {
             <div className="grid grid-cols-2 w-full">
               <div>
                 <h4 className="text-base font-bold">{props.title}</h4>
-                <PriceField/>        
+                <PriceField universalLock={props.universalLock}/>        
               </div>
               <div>
                 <p className="mt-1 text-sm">

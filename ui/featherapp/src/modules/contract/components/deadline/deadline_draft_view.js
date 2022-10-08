@@ -20,6 +20,7 @@ const DeadlineDraftView = (props) => {
     
   }
   useEffect( () => {
+    console.log("AN INITIAL CALL?")
     const newCurItems = []
     for (let i = 0; i < props.contractItems.length; i++) {
       for (let j = 0; j < props.deadlines[selectedIdx]?.itemsList.length; j++) {
@@ -29,7 +30,7 @@ const DeadlineDraftView = (props) => {
       }
     }
     setCurItems(newCurItems)
-  }, [selectedIdx, props.contractItems])
+  }, [selectedIdx, props.contractItems, props.deadlines[selectedIdx]])
 
 
   return (
@@ -51,7 +52,6 @@ const DeadlineDraftView = (props) => {
                   <b className="text-indigo-500">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 
                   {curItems.map((item, idx) => (
                     <Fragment key={idx}>
-                    
                       {(idx === (curItems.length-1)) ? (
                         <>{idx === 0 ? " if " : " and "}<b className="text-indigo-500">{item.name}</b>{(curItems.length === 1) ? " is complete " : " are completed"}</>
                       ) : (idx === 0) ? (
@@ -64,7 +64,7 @@ const DeadlineDraftView = (props) => {
                 </p>
               </div>
       
-              <div className="overflow-y-scroll min-h-[40vh]">   
+              <div className="overflow-y-scroll min-h-[40vh] max-h-[40vh]">   
                 {curItems.map((item, idx) => (
                   <Fragment key={idx}>
                     <div

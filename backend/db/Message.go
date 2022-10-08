@@ -29,6 +29,7 @@ const (
 	PRICE           = 3
 	REVISION        = 4
 	CONTRACT_SIGN   = 11
+	CONTRACT_LOCK   = 12
 )
 
 // Editing Typs
@@ -116,6 +117,9 @@ type MessageBody struct {
 	SignerId      primitive.ObjectID `bson:"signer_id,omitempty"`
 	ContractStage uint32             `bson:"contract_stage,omitempty"`
 	ContractId    primitive.ObjectID `bson:"contract_id,omitempty"`
+
+	// Lock Message
+	ContractLock bool `bson:"contract_lock,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -132,6 +136,20 @@ func (b *MessageBody) ContractSignProto() *comms.ChatMessage_ContractSignBody {
 			SignerId:      b.SignerId.Hex(),
 			ContractStage: b.ContractStage,
 			ContractId:    b.ContractId.Hex(),
+		},
+	}
+}
+
+func (b *MessageBody) ContractLockProto() *comms.ChatMessage_ContractLockBody {
+	return &comms.ChatMessage_ContractLockBody{
+		ContractLockBody: &comms.ContractLockMsgBody{
+			ContractId:   b.ContractId.Hex(),
+			ContractLock: b.ContractLock,
+			Resolved:     b.Resolved,
+			ResolStatus:  b.ResolStatus,
+			WorkerStatus: b.WorkerStatus,
+			BuyerStatus:  b.BuyerStatus,
+			Type:         b.Type,
 		},
 	}
 }
@@ -317,6 +335,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.DeadlineItemsProto()
 	} else if m.Method == CONTRACT_SIGN {
 		proto.Body = m.Body.ContractSignProto()
+	} else if m.Method == CONTRACT_LOCK {
+		proto.Body = m.Body.ContractLockProto()
 	}
 
 	return proto

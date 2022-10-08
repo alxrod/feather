@@ -14,7 +14,6 @@ import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 
 const DeadlineSummary = (props) => {
 
-
     const [timeoutId, setTimeoutId] = useState(-1)
     const [payoutValue, setPayout] = useState(0)
 
@@ -30,7 +29,7 @@ const DeadlineSummary = (props) => {
     const [payoutMsgId, setPayoutMsgId] = useState("")
 
     useEffect(() => {
-      if ((props.newDeadlineMode && !props.newDeadlineLocalMode) || props.deleteDeadlineMode) {
+      if ((props.newDeadlineMode && !props.newDeadlineLocalMode) || props.deleteDeadlineMode || props.universalLock) {
         setPayoutLock(true)
       }
     }, [props.newDeadlineMode, props.deleteDeadlineMode])
@@ -141,7 +140,7 @@ const DeadlineSummary = (props) => {
           payout_sum += payoutValue
         }
       }
-      if (payout_sum < 100) {
+      if (payout_sum < 100 && !props.universalLock) {
         setPayoutError("you still have " + (100 - payout_sum) + "% of contract to allocate")
       } else {
         setPayoutError("")
@@ -218,7 +217,7 @@ const DeadlineSummary = (props) => {
           }
         }
 
-        if (!props.newDeadlineLocalMode) {
+        if (!props.newDeadlineLocalMode && !props.universalLock) {
           setPayoutLock(payoutLockShould)
         }
         
@@ -330,7 +329,7 @@ const DeadlineSummary = (props) => {
                         onChange={changePayout}
                         disabled={props.disabled || payoutLock}
                       />
-                    ) : (payoutLock == true && (props.newDeadlineMode || props.deleteDeadlineMode)) ? (
+                    ) : (payoutLock == true && (props.newDeadlineMode || props.deleteDeadlineMode || props.universalLock)) ? (
                       <>
                         <input
                           type="text"
@@ -342,7 +341,7 @@ const DeadlineSummary = (props) => {
                         />
                         <div className="absolute inset-y-0 right-0 pr-12 flex items-center pointer-events-none">
                           <span className="text-gray-400 items-center text-sm flex" id="price-currency">
-                            <p className="text-green">{payoutValue}</p>
+                            <p className={props.universalLock ? "text-gray-600" : "text-green"}>{payoutValue}</p>
                           </span>
                         </div>
                       </>
@@ -392,7 +391,7 @@ const DeadlineSummary = (props) => {
                   
                 </div>
 
-                <DraftToggle required={props.deadline.draftRequired} changeRequired={changeDraftRequired}/>
+                {/* <DraftToggle required={props.deadline.draftRequired} changeRequired={changeDraftRequired}/> */}
               </div>
             </div>
   

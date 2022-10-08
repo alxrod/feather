@@ -257,7 +257,7 @@ const CalendarModal = (props) => {
                           </div>
                         </div>
                         <div className="sm:my-auto">
-                          {(!newDeadlineMode && !deleteDeadlineMode) && (
+                          {(!newDeadlineMode && !deleteDeadlineMode && !props.universalLock) && (
                             <>
                               <button
                               type="submit"
@@ -376,6 +376,7 @@ const CalendarModal = (props) => {
                           <div className="flex flex-col mr-1">
                             <DeadlineSummary 
                               role={props.role} 
+                              universalLock={props.universalLock}
                               deadline={props.deadlines[selected] ? props.deadlines[selected] : genEmptyDeadline(new Date())}
                               deadlines={props.deadlines} 
                               editDeadline={props.editDeadline}
@@ -390,6 +391,7 @@ const CalendarModal = (props) => {
                             />
                             <DeadlineItems
                               contractItemIds={props.contractItems}
+                              universalLock={props.universalLock}
                               createMode={props.createMode}
                               newDeadlineMode={newDeadlineSelected}
                               deleteDeadlineMode={deleteDeadlineSelected}
@@ -400,6 +402,7 @@ const CalendarModal = (props) => {
                           </div>
                           <div className="p-2 flex flex-col ml-1">
                             <CalendarBundle
+                              universalLock={props.universalLock}
                               role={props.role} 
                               editDeadline={props.editDeadline}
                               saveDeadlines={props.saveDeadlines}

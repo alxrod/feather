@@ -150,6 +150,8 @@ const DeadlineItems = (props) => {
         } else {
           setProposedByPartner(false)
         }
+      } else if (props.universalLock) {
+        setItemLock(true)
       } else {
         setItemLock(false)
       }
@@ -163,7 +165,7 @@ const DeadlineItems = (props) => {
         setSelectedId("")
       }
     }
-  }, [props.deadline, props.reloadDeadlines])
+  }, [props.deadline, props.reloadDeadlines, props.universalLock])
 
   useEffect( () => {
     if (deadlineItemSuggestedIds.length === 0 && deadlineItemDeletedIds.length === 0) {
@@ -354,18 +356,18 @@ const DeadlineItems = (props) => {
             </span>
           </h3>
 
-          {(suggestionMode && !itemLock) && (
+          {(suggestionMode && !itemLock && !props.universalLock) && (
             <div className="flex items-center">
               <p className="mr-1 text-sm text-gray-400">Commit your new items</p>
               <DecideButton approve={confirmItemChange} reject={revertItemChange}/>
             </div>
           )}
-          {(itemLock && !proposedByPartner) && (
+          {(itemLock && !proposedByPartner && !props.universalLock) && (
             <div className="flex items-center">
               <p className="mr-1 text-sm text-gray-400">Awaiting your partner's approval</p>
             </div>
           )}
-          {(itemLock && proposedByPartner) && (
+          {(itemLock && proposedByPartner && !props.universalLock) && (
             <div className="flex items-center">
               <p className="mr-1 text-sm text-gray-400">Approve your partner's change</p>
               <DecideButton approve={acceptNewItemsChange} reject={rejectNewItemsChange}/>

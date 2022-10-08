@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
@@ -137,10 +138,81 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 	}
 
 	err = s.SendContractSignMessage(contract, user)
+	if err != nil {
+		return nil, err
+	}
 	return &comms.ContractResponse{
 		Contract: contract.Proto(),
 		Role:     role,
 	}, nil
+}
+
+func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLockRequest) (*comms.ContractEditResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+	err = s.SendToggleLockMessage(contract, user, req.ContractLock, db.SUGGEST)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+}
+func (s *BackServer) ReactLock(ctx context.Context, req *comms.ContractReactLockRequest) (*comms.ContractEditResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+
+	user, contract, msg, err := pullUserContractMessage(req.UserId, req.ContractId, req.MessageId, database)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Id == contract.Worker.Id {
+		// role = db.WORKER
+		msg.Body.WorkerStatus = req.Status
+	} else if user.Id == contract.Buyer.Id {
+		// role = db.BUYER
+		msg.Body.BuyerStatus = req.Status
+	} else {
+		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
+	}
+
+	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+		msg.Body.Resolved = true
+		msg.Body.ResolStatus = db.RESOL_APPROVED
+		err := db.ContractToggleLock(contract, msg.Body.ContractLock, database)
+		if err != nil {
+			return nil, err
+		}
+	} else if msg.Body.WorkerStatus == db.DECISION_NO || msg.Body.BuyerStatus == db.DECISION_NO {
+		msg.Body.Resolved = true
+		msg.Body.ResolStatus = db.RESOL_REJECTED
+	}
+	if err = db.MessageReplace(msg, database); err != nil {
+		return nil, err
+	}
+	// Revision Sideeffect message sent
+	revMsgBody := &db.MessageBody{
+		MsgId:        msg.Id,
+		Resolved:     msg.Body.Resolved,
+		ResolStatus:  msg.Body.ResolStatus,
+		WorkerStatus: msg.Body.WorkerStatus,
+		BuyerStatus:  msg.Body.BuyerStatus,
+	}
+	revMsg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.REVISION,
+		Body:      revMsgBody,
+		Label:     &db.LabelNub{},
+	}
+	if err = s.SendRevMessage(revMsg); err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+
 }
 
 func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequest) (*comms.ContractNubSet, error) {
@@ -192,5 +264,37 @@ func pullUserContract(req_user_id, req_contract_id string, database *mongo.Datab
 		return nil, nil, err
 	}
 	return user, contract, nil
+}
+func pullUserContractMessage(
+	req_user_id,
+	req_contract_id,
+	req_msg_id string,
+	database *mongo.Database) (*db.User, *db.Contract, *db.Message, error) {
 
+	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(req_user_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	message_id, err := primitive.ObjectIDFromHex(req_msg_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	msg, err := db.MessageById(message_id, database)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return user, contract, msg, nil
 }

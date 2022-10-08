@@ -16,6 +16,7 @@ message DeadlineEntity {
     string id = 1;
     string contract_id = 2;
     string name = 18;
+    bool complete = 25;
     
     bool awaiting_creation = 20;
     bool awaiting_deletion = 21;
@@ -52,6 +53,8 @@ message ContractEntity {
     string title = 8;
     string summary = 6;
     uint32 stage = 9;
+
+    bool universal_lock = 14;
     bool worker_approved = 12;
     bool buyer_approved = 13;
     repeated ItemEntity items = 7;
@@ -269,6 +272,18 @@ message SignContractRequest {
     string contract_id = 2;
 }
 
+message ContractToggleLockRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    bool contract_lock = 3;
+}
+message ContractReactLockRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string message_id= 3;
+    uint32 status = 4;
+}
+
 message ContractEditResponse {}
 
 service Contract {
@@ -306,4 +321,7 @@ service Contract {
 
     rpc SuggestDeadlineItems(ContractSuggestDeadlineItems) returns (ContractEditResponse) {};
     rpc ReactDeadlineItems(ContractReactDeadlineItems) returns (ContractEditResponse) {};
+
+    rpc ToggleLock(ContractToggleLockRequest) returns (ContractEditResponse) {};
+    rpc ReactLock(ContractReactLockRequest) returns (ContractEditResponse) {};
 }

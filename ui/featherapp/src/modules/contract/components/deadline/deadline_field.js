@@ -220,6 +220,7 @@ const DeadlineField = (props) => {
         deadlines={localDeadlines}
         createMode={props.createMode}
         contractItemIds={props.contractItemIds}
+        universalLock={props.universalLock}
 
         // Deadline editing functions
         editDeadline={editDeadline}

@@ -60,7 +60,7 @@ export const queryContractNubs = () => {
                         type: contractActions.CONTRACT_NUB_PULL_ALL,
                         payload: data.contractNubsList,
                     });
-                    return Promise.resolve();
+                    return Promise.resolve(data.contractNubsList);
                 },
                 (error) => {
                     return helpers.parseError(error);

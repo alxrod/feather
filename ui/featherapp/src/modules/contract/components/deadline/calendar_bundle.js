@@ -124,6 +124,8 @@ const CalendarBundle = (props) => {
         console.log("SHOULD BE TRIGGERED")
         setDateLock(true)
         
+      } else if (props.universalLock) {
+        setDateLock(true)
       } else {
         setDateLock(false)
       }
@@ -133,7 +135,7 @@ const CalendarBundle = (props) => {
       }
       setDecisionMode(false)
     }
-  }, [props.deadline, props.deadlinesChanged])
+  }, [props.deadline, props.deadlinesChanged, props.universalLock])
 
   const approveChange = () => {
     props.reactDate(props.curContract.id, dateMsgId, props.deadline.id, decisionTypes.YES)
@@ -160,6 +162,7 @@ const CalendarBundle = (props) => {
       </div>
       
       <Calendar 
+        universalLock={props.universalLock}
         role={props.role} 
         changeDate={changeDate}
         deadlines = {props.deadlines}

@@ -2,7 +2,6 @@ syntax = "proto3";
 package main;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
-
 import "communication/contract.proto";
 
 message UserHandle {
@@ -29,7 +28,7 @@ message ChatMessage {
         DeadlineDeleteMsgBody deadline_delete_body = 15;
         DeadlineItemMsgBody deadline_item_body = 16;
         ContractSignMsgBody contract_sign_body = 17;
-
+        ContractLockMsgBody contract_lock_body = 18;
     }   
 }
 message ChatLabel {
@@ -133,6 +132,16 @@ message ContractSignMsgBody {
     uint32 contract_stage = 1;
     string signer_id = 2;
     string contract_id = 3;
+}
+
+message ContractLockMsgBody {
+    bool contract_lock = 1;
+    string contract_id = 3;
+    uint32 type = 4;
+    bool resolved = 5;
+    uint32 resol_status = 6;
+    uint32 worker_status = 7;
+    uint32 buyer_status = 8;
 }
 
 message RevMsgBody {

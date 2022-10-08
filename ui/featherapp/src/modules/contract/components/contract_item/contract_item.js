@@ -122,6 +122,8 @@ const ContractItem = (props) => {
           setContractInfo(props.curItems[i])
           if (props.curItems[i].awaitingApproval) {
             setLock(true)
+          } else if (props.universalLock) {
+            setLock(true)
           } else {
             setLock(false)
           }

@@ -86,6 +86,10 @@ const PriceField = (props) => {
             newPrice = price.worker
           }
         }
+      } else if (props.universalLock) {
+        newPrice = price.current
+        setTextColor("text-gray-500")
+        toggleLock(true)
       } else {
         newPrice = price.current
         setTextColor("text-gray-500")
@@ -179,9 +183,13 @@ const PriceField = (props) => {
                 />
                 <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                   <span className="text-gray-400 items-center text-sm flex" id="price-currency">
-                    <p>{oldPrice}</p>
-                    <ArrowRightIcon className="w-3 h-3"/>
-                    <p className="text-green">{fieldValue}</p>
+                    {!props.universalLock && (
+                      <>
+                        <p>{oldPrice}</p>
+                        <ArrowRightIcon className="w-3 h-3"/>
+                      </>
+                    )}
+                    <p className={props.universalLock ? "text-gray-600" : "text-green"}>{fieldValue}</p>
                   </span>
                 </div>
               </>

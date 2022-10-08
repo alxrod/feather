@@ -1540,5 +1540,127 @@ proto.main.ContractPromiseClient.prototype.reactDeadlineItems =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractToggleLockRequest,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_ToggleLock = new grpc.web.MethodDescriptor(
+  '/main.Contract/ToggleLock',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractToggleLockRequest,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractToggleLockRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractToggleLockRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.toggleLock =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ToggleLock',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ToggleLock,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractToggleLockRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.toggleLock =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ToggleLock',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ToggleLock);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractReactLockRequest,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_ReactLock = new grpc.web.MethodDescriptor(
+  '/main.Contract/ReactLock',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractReactLockRequest,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractReactLockRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractReactLockRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.reactLock =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/ReactLock',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactLock,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractReactLockRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.reactLock =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/ReactLock',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_ReactLock);
+};
+
+
 module.exports = proto.main;
 
