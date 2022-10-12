@@ -14,7 +14,7 @@ import {
 
 import { 
     CONTRACT_UPDATE_PRICE,
-    CONTRACT_SIGN, 
+    CONTRACT_STAGE_UPDATE, 
 } from "../reducers/contract/contract.actions"
 
 import { 
@@ -60,6 +60,7 @@ export const msgMethods = {
     DEADLINE_ITEMS: 10,
     CONTRACT_SIGN: 11,
     CONTRACT_LOCK: 12,
+    CONTRACT_SETTLE: 13,
 }
 
 export const deadlineItemTypes = {
@@ -337,7 +338,7 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CHAT_MESSAGE_UPDATE,
             payload: msg.body,
         })
-    } else if (msg.method === msgMethods.CONTRACT_SIGN) {
+    } else if (msg.method === msgMethods.CONTRACT_SIGN || msg.method === msgMethods.CONTRACT_SETTLE) {
         let workerApproved = false;
         let buyerApproved = false;
         if (msg.body.signerId === this_user_id) {
@@ -353,15 +354,8 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 workerApproved = true
             }
         }
-        console.log("RECEIVED MESSAGE DISPATCHIGN APYLOAD:", {
-            stage: msg.body.contractStage,
-            workerApproved: workerApproved,
-            buyerApproved: buyerApproved,
-            id: msg.body.contractId,
-        })
-
         dispatch({
-            type: CONTRACT_SIGN,
+            type: CONTRACT_STAGE_UPDATE,
             payload: {
                 stage: msg.body.contractStage,
                 workerApproved: workerApproved,
@@ -408,6 +402,8 @@ const reformatBody = (msg) => {
         msg.body = msg.contractSignBody 
     } else if (msg.method === msgMethods.CONTRACT_LOCK) {
         msg.body = msg.contractLockBody
+    } else if (msg.method === msgMethods.CONTRACT_SETTLE) {
+        msg.body = msg.contractSettleBody 
     } else {
         msg.body = {}
     }

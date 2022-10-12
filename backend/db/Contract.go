@@ -22,7 +22,7 @@ const (
 	NEGOTIATE = uint32(10)
 	SIGNED    = uint32(20)
 	ACTIVE    = uint32(30)
-	SETTLING  = uint32(40)
+	SETTLE    = uint32(40)
 	COMPLETE  = uint32(50)
 )
 
@@ -38,6 +38,9 @@ type Contract struct {
 
 	Deadlines   []*Deadline          `bson:"-"`
 	DeadlineIds []primitive.ObjectID `bson:"deadline_ids"`
+
+	CurrentDeadlineId primitive.ObjectID `bson:"current_deadline_id"`
+	CurrentDeadline   *Deadline          `bson:"-"`
 
 	Items   []*ContractItem      `bson:"-"`
 	ItemIds []primitive.ObjectID `bson:"item_ids"`
@@ -113,7 +116,7 @@ func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractN
 	if err != nil {
 		return nil, err
 	}
-	proto.Deadline = timestamppb.New(*nextDeadline)
+	proto.Deadline = timestamppb.New(nextDeadline.CurrentDate)
 
 	proto.Price = contract.Price.Current
 	proto.Stage = contract.Stage
@@ -144,10 +147,11 @@ func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
 	proto.Title = contract.Title
 	proto.Password = contract.Password
 	nextDeadline, err := contract.NextDeadline()
+	nextDate := nextDeadline.CurrentDate
 	if err != nil {
 		return nil, err
 	}
-	proto.Deadline = timestamppb.New(*nextDeadline)
+	proto.Deadline = timestamppb.New(nextDate)
 	proto.Price = contract.Price.Current
 	proto.Summary = contract.Summary
 	proto.Worker = contract.Worker.Proto()
@@ -157,16 +161,18 @@ func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
 
 }
 
-func (contract *Contract) NextDeadline() (*time.Time, error) {
+func (contract *Contract) NextDeadline() (*Deadline, error) {
 	if contract == nil {
 		return nil, errors.New("This contract is nil")
 	}
 	now := time.Now()
 	var earliest *time.Time
+	var earliestDeadline *Deadline
 	for _, deadline := range contract.Deadlines {
 		if deadline.CurrentDate.After(now) {
-			if earliest == nil || deadline.CurrentDate.Before(*earliest) {
+			if (earliest == nil || deadline.CurrentDate.Before(*earliest)) && !deadline.Complete {
 				earliest = &deadline.CurrentDate
+				earliestDeadline = deadline
 			}
 		}
 	}
@@ -174,7 +180,7 @@ func (contract *Contract) NextDeadline() (*time.Time, error) {
 	if earliest == nil {
 		return nil, errors.New("This contract is missing deadlines")
 	}
-	return earliest, nil
+	return earliestDeadline, nil
 }
 
 type UserNub struct {
@@ -421,11 +427,15 @@ func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Co
 	deadlines := make([]*Deadline, len(contract.DeadlineIds))
 	for idx, id := range contract.DeadlineIds {
 		deadline, err := DeadlineById(id, database)
+		if id == contract.CurrentDeadlineId {
+			contract.CurrentDeadline = deadline
+		}
 		if err != nil {
 			return nil, err
 		}
 		deadlines[idx] = deadline
 	}
+
 	contract.Deadlines = deadlines
 
 	return contract, nil
@@ -497,6 +507,39 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 		contract.BuyerApproved = false
 		contract.Stage = ACTIVE
 	}
+	nextDeadline, err := contract.NextDeadline()
+	if err != nil {
+		return err
+	}
+	contract.CurrentDeadline = nextDeadline
+	contract.CurrentDeadlineId = nextDeadline.Id
+
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{
+		{"$set", bson.D{{"worker_approved", contract.WorkerApproved}}},
+		{"$set", bson.D{{"buyer_approved", contract.BuyerApproved}}},
+		{"$set", bson.D{{"stage", contract.Stage}}},
+		{"$set", bson.D{{"current_deadline_id", contract.CurrentDeadlineId}}},
+	}
+	_, err = database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func ContractSettle(user *User, contract *Contract, database *mongo.Database) error {
+	if contract.Worker.Id == user.Id {
+		contract.WorkerApproved = true
+	} else if contract.Buyer.Id == user.Id {
+		contract.BuyerApproved = true
+	} else {
+		return errors.New("User is trying to sign a contract they do not own")
+	}
+	if contract.WorkerApproved && contract.BuyerApproved && contract.Stage == ACTIVE {
+		contract.WorkerApproved = false
+		contract.BuyerApproved = false
+		contract.Stage = SETTLE
+	}
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{
 		{"$set", bson.D{{"worker_approved", contract.WorkerApproved}}},
@@ -510,7 +553,6 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 
 	return nil
 }
-
 func ContractSavePrice(contract *Contract, database *mongo.Database) error {
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"price", contract.Price}}}}
@@ -540,6 +582,7 @@ func ContractSaveItems(contract *Contract, database *mongo.Database) error {
 	}
 	return nil
 }
+
 func ContractSaveDeadlines(contract *Contract, database *mongo.Database) error {
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"deadline_ids", contract.DeadlineIds}}}}

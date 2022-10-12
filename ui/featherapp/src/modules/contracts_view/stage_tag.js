@@ -25,9 +25,9 @@ export default (props) => {
         } 
         else if (props.stage === contractStages.ACTIVE) {
             setBgColor("bg-green")
-            setStageText("Active")
+            setStageText("Drafting")
         } 
-        else if (props.stage === contractStages.SETTLING) {
+        else if (props.stage === contractStages.SETTLE) {
             setBgColor("bg-yellow")
             setStageText("Settling")
         } 

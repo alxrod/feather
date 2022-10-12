@@ -13,7 +13,7 @@ import NewContractItem from "../components/contract_item/new_contract_item";
 import CriticalCriteria from "../components/criteria/critical_criteria";
 import MainChat from "../components/chat/main_chat";
 import PartnerCard from "../components/summary/partner_profile_card";
-import SignContract from "../components/sign_contract"
+import SignContract from "../components/advance_cards/sign_contract"
 import { push } from 'connected-react-router'
 
 const ContractNegotiate = (props) => {

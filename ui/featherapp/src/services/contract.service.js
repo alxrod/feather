@@ -38,6 +38,7 @@ import {
 
     ClaimContractRequest,
     SignContractRequest,
+    SettleContractRequest,
 
     ContractToggleLockRequest,
     ContractReactLockRequest,
@@ -54,7 +55,7 @@ export const contractStages = {
     INVITE: 1,
     NEGOTIATE: 10,
     ACTIVE: 30,
-    SETTLING: 40,
+    SETTLE: 40,
     COMPLETE: 50,
 }
 
@@ -623,6 +624,22 @@ class ContractService {
         });
     }
 
+    settleContract(token, user_id, contract_id) {
+        let settleRequest = new SettleContractRequest();
+        settleRequest.setUserId(user_id);
+        settleRequest.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.settle(settleRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+    
     toggleLock(token, user_id, contract_id, lockState) {
         let lockRequest = new ContractToggleLockRequest();
         lockRequest.setUserId(user_id);

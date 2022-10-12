@@ -14,7 +14,7 @@ import NewContractItem from "../components/contract_item/new_contract_item";
 import CriticalCriteria from "../components/criteria/critical_criteria";
 import MainChat from "../components/chat/main_chat";
 import OverviewCard from "../components/summary/overview_card";
-import SignContract from "../components/sign_contract";
+import SettleContract from "../components/advance_cards/settle_contract";
 import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
 import DraftUpload from "../components/draft/draft_upload";
@@ -99,7 +99,7 @@ const ContractDraft = (props) => {
           </div>
         </div>
         <div className="mt-5">
-          <SignContract/>
+          <SettleContract/>
         </div>
         <div className="mt-5">
           {contractItemIds.map((item_id) => (

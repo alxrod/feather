@@ -22,8 +22,8 @@ const ContractRedirect = (props) => {
                 path="/view/"+contractId
               } else if (newContracts[i].stage == contractStages.ACTIVE) {
                 path="/view/"+contractId
-              } else if (newContracts[i].stage == contractStages.SETTLING) {
-                path="/settling/"+contractId
+              } else if (newContracts[i].stage == contractStages.SETTLE) {
+                path="/settle/"+contractId
               } else if (newContracts[i].stage == contractStages.COMPLETE) {
                 path="/view/"+contractId
               }

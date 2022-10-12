@@ -29,6 +29,7 @@ message ChatMessage {
         DeadlineItemMsgBody deadline_item_body = 16;
         ContractSignMsgBody contract_sign_body = 17;
         ContractLockMsgBody contract_lock_body = 18;
+        ContractSettleMsgBody contract_settle_body = 19;
     }   
 }
 message ChatLabel {
@@ -132,6 +133,12 @@ message ContractSignMsgBody {
     uint32 contract_stage = 1;
     string signer_id = 2;
     string contract_id = 3;
+}
+message ContractSettleMsgBody {
+    uint32 contract_stage = 1;
+    string signer_id = 2;
+    string contract_id = 3;
+    string deadline_id = 4;
 }
 
 message ContractLockMsgBody {

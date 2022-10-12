@@ -5,62 +5,61 @@ import { contractStages } from "../../../../services/contract.service"
 
 
 export default function ContractTimeline(props) {
-	const initialVal = {}
-	initialVal[contractStages.CREATE] = {name: 'Creation', status: 'future' }
-	initialVal[contractStages.INVITE] = {name: 'Invited', status: 'future' }
-	initialVal[contractStages.NEGOTIATE] = {name: 'Negotiation', status: 'future' }
-	initialVal[contractStages.ACTIVE] = {name: 'Drafting', status: 'future' }
-	initialVal[contractStages.SETTLING] = {name: 'Settling', status: 'future' }
-	initialVal[contractStages.COMPLETE] = {name: 'Complete', status: 'future' }
+	const initialVal = [ 
+    {name: 'Creation', status: 'future', stage: contractStages.CREATE},
+    {name: 'Invited', status: 'future', stage: contractStages.INVITE},
+    {name: 'Negotiation', status: 'future', stage: contractStages.NEGOTIATE},
+    {name: 'Drafting', status: 'future', stage: contractStages.ACTIVE},
+    {name: 'Settling', status: 'future', stage: contractStages.SETTLE},
+    {name: 'Complete', status: 'future', stage: contractStages.COMPLETE},
+  ]
 
 	const [steps, setSteps] = useState(initialVal)
 
 	useEffect( () => {
-		const newSteps = {}
-		for (const [stage, detail] of Object.entries(steps)) {
-			if (stage < props.stage) {
-				newSteps[stage] = {name: detail["name"], status: "complete"}
-			} else if (stage == props.stage) {
-				newSteps[stage] = {name: detail["name"], status: "current"}
+		const newSteps = []
+		initialVal.forEach((step, idx) => {
+			if (step.stage < props.stage) {
+				newSteps.push({name: step["name"], status: "complete"})
+			} else if (step.stage == props.stage) {
+				newSteps.push({name: step["name"], status: "current"})
 			} else {
-				newSteps[stage] = {name: detail["name"], status: "future"}
+				newSteps.push({name: step["name"], status: "future"})
 			}
-		}
-		console.log("STAGES IS")
-		console.log(newSteps)
+    })
 		setSteps(newSteps)
 	}, [])
   return (
     <nav aria-label="Progress" className="bg-white">
       <ol role="list" className="grid grid-cols-6">
-        {Object.entries(steps).map((step) => (
-          <li key={step[1].name} className="relative flex w-full">
-            {step[1].status === 'complete' ? (
+        {steps.map((step,idx) => (
+          <li key={step.name} className="relative flex w-full">
+            {step.status === 'complete' ? (
               <div className="group flex w-full items-center bg-indigo-600 py-0 h-1 sm:py-4">
                 <span className="flex justify-center items-center w-full text-sm font-medium">
                   <span className="flex flex-shrink-0 items-center justify-center hidden md:flex">
                     <CheckIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </span>
-                  <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step[1].name}</span>
+                  <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step.name}</span>
                 </span>
               </div>
-            ) : step[1].status === 'current' ? (
+            ) : step.status === 'current' ? (
               <div className="group flex w-full items-center bg-indigo-600 py-0 h-1 sm:py-4">
                 <span className="flex items-center justify-center w-full text-sm font-medium" >
-                  <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step[1].name}</span>
+                  <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step.name}</span>
                 </span>
               </div>
             ) : (
               <div className="group flex w-full justify-center items-center py-0 h-1 sm:py-4">
                 <span className="items-center flex justify-center w-full text-sm font-medium">
-                  <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900 hidden sm:flex">{step[1].name}</span>
+                  <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900 hidden sm:flex">{step.name}</span>
                 </span>
               </div>
             )}
 
-            {step[0] != contractStages.COMPLETE ? (
+            {step.stage != contractStages.COMPLETE ? (
               <>
-                {step[1].status === 'complete' ? (
+                {step.status === 'complete' ? (
                 <div className="absolute top-0 right-0 h-full w-5 block bg-indigo-600" aria-hidden="true">
                   <svg
                     className="h-full w-full text-[#5850ec]"
@@ -77,7 +76,7 @@ export default function ContractTimeline(props) {
                     />
                   </svg>
                 </div>
-								) : step[1].status === 'current' ? (
+								) : step.status === 'current' ? (
 									<div className="absolute top-0 right-0 h-full w-5 block bg-white" aria-hidden="true">
 										<svg
 											className="h-full w-full text-[#5850ec]"

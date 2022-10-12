@@ -323,6 +323,67 @@ proto.main.ContractPromiseClient.prototype.sign =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.SettleContractRequest,
+ *   !proto.main.ContractResponse>}
+ */
+const methodDescriptor_Contract_Settle = new grpc.web.MethodDescriptor(
+  '/main.Contract/Settle',
+  grpc.web.MethodType.UNARY,
+  proto.main.SettleContractRequest,
+  proto.main.ContractResponse,
+  /**
+   * @param {!proto.main.SettleContractRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.SettleContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.settle =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/Settle',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Settle,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.SettleContractRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.settle =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/Settle',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_Settle);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.QueryByIdRequest,
  *   !proto.main.ContractResponse>}
  */

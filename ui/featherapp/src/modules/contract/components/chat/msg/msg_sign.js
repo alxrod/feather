@@ -10,7 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-const ContractSignItem = (props) => {
+const ContractSignMsg = (props) => {
   const genTimeString = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
@@ -84,4 +84,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ContractSignItem)
+)(ContractSignMsg)

@@ -121,7 +121,32 @@ export const signContract = (contract_id) => {
             return ContractService.signContract(creds.access_token, creds.user_id, contract_id).then(
                 (resp) => {
                     dispatch({
-                        type: contractActions.CONTRACT_SIGN,
+                        type: contractActions.CONTRACT_STAGE_UPDATE,
+                        payload: {
+                            role: resp.role,
+                            workerApproved: resp.contract.workerApproved,
+                            buyerApproved: resp.contract.buyerApproved,
+                            stage: resp.contract.stage,
+                            id: resp.contract.id,
+                        }
+                    });
+                    return Promise.resolve();
+                },
+                (error) => {
+                    return helpers.parseError(error);
+                }
+            );
+        });
+    }
+};
+
+export const settleContract = (contract_id) => {
+    return dispatch => {
+        return helpers.authCheck(dispatch).then((creds) => {
+            return ContractService.settleContract(creds.access_token, creds.user_id, contract_id).then(
+                (resp) => {
+                    dispatch({
+                        type: contractActions.CONTRACT_STAGE_UPDATE,
                         payload: {
                             role: resp.role,
                             workerApproved: resp.contract.workerApproved,

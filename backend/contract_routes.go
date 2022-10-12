@@ -147,6 +147,31 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 	}, nil
 }
 
+func (s *BackServer) Settle(ctx context.Context, req *comms.SettleContractRequest) (*comms.ContractResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.ContractSettle(user, contract, database)
+	if err != nil {
+		return nil, err
+	}
+	role := db.BUYER
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
+		role = db.WORKER
+	}
+	err = s.SendContractSettleMessage(contract, contract.CurrentDeadline, user)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractResponse{
+		Contract: contract.Proto(),
+		Role:     role,
+	}, nil
+}
+
 func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLockRequest) (*comms.ContractEditResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
@@ -297,4 +322,37 @@ func pullUserContractMessage(
 		return nil, nil, nil, err
 	}
 	return user, contract, msg, nil
+}
+func pullUserContractDeadline(
+	req_user_id,
+	req_contract_id,
+	req_deadline_id string,
+	database *mongo.Database) (*db.User, *db.Contract, *db.Deadline, error) {
+
+	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(req_user_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	deadline_id, err := primitive.ObjectIDFromHex(req_deadline_id)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	deadline, err := db.DeadlineById(deadline_id, database)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	return user, contract, deadline, nil
 }

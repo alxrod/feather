@@ -30,6 +30,7 @@ const (
 	REVISION        = 4
 	CONTRACT_SIGN   = 11
 	CONTRACT_LOCK   = 12
+	CONTRACT_SETTLE = 13
 )
 
 // Editing Typs
@@ -136,6 +137,16 @@ func (b *MessageBody) ContractSignProto() *comms.ChatMessage_ContractSignBody {
 			SignerId:      b.SignerId.Hex(),
 			ContractStage: b.ContractStage,
 			ContractId:    b.ContractId.Hex(),
+		},
+	}
+}
+func (b *MessageBody) ContractSettleProto() *comms.ChatMessage_ContractSettleBody {
+	return &comms.ChatMessage_ContractSettleBody{
+		ContractSettleBody: &comms.ContractSettleMsgBody{
+			SignerId:      b.SignerId.Hex(),
+			ContractStage: b.ContractStage,
+			ContractId:    b.ContractId.Hex(),
+			DeadlineId:    b.DeadlineId.Hex(),
 		},
 	}
 }
@@ -337,6 +348,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ContractSignProto()
 	} else if m.Method == CONTRACT_LOCK {
 		proto.Body = m.Body.ContractLockProto()
+	} else if m.Method == CONTRACT_SETTLE {
+		proto.Body = m.Body.ContractSettleProto()
 	}
 
 	return proto

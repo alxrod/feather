@@ -41,7 +41,7 @@ export default (state = initialState, action) => {
                 ...state,
                 contractClaimed: true
             }
-        case actions.CONTRACT_SIGN:
+        case actions.CONTRACT_STAGE_UPDATE:
             return {
                 curContract: {
                     ...state.curContract,
