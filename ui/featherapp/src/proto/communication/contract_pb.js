@@ -1174,6 +1174,8 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     name: jspb.Message.getFieldWithDefault(msg, 18, ""),
     complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+    workerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
+    buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     deadlineProposerId: jspb.Message.getFieldWithDefault(msg, 22, ""),
@@ -1244,6 +1246,14 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setComplete(value);
+      break;
+    case 26:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setWorkerSettled(value);
+      break;
+    case 27:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBuyerSettled(value);
       break;
     case 20:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -1377,6 +1387,20 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       25,
+      f
+    );
+  }
+  f = message.getWorkerSettled();
+  if (f) {
+    writer.writeBool(
+      26,
+      f
+    );
+  }
+  f = message.getBuyerSettled();
+  if (f) {
+    writer.writeBool(
+      27,
       f
     );
   }
@@ -1582,6 +1606,42 @@ proto.main.DeadlineEntity.prototype.getComplete = function() {
  */
 proto.main.DeadlineEntity.prototype.setComplete = function(value) {
   return jspb.Message.setProto3BooleanField(this, 25, value);
+};
+
+
+/**
+ * optional bool worker_settled = 26;
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.getWorkerSettled = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setWorkerSettled = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 26, value);
+};
+
+
+/**
+ * optional bool buyer_settled = 27;
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.getBuyerSettled = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setBuyerSettled = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 27, value);
 };
 
 
@@ -2051,6 +2111,7 @@ proto.main.ContractEntity.toObject = function(includeInstance, msg) {
     price: (f = msg.getPrice()) && proto.main.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
     proto.main.DeadlineEntity.toObject, includeInstance),
+    currentDeadlineId: jspb.Message.getFieldWithDefault(msg, 15, ""),
     title: jspb.Message.getFieldWithDefault(msg, 8, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 6, ""),
     stage: jspb.Message.getFieldWithDefault(msg, 9, 0),
@@ -2123,6 +2184,10 @@ proto.main.ContractEntity.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.main.DeadlineEntity;
       reader.readMessage(value,proto.main.DeadlineEntity.deserializeBinaryFromReader);
       msg.addDeadlines(value);
+      break;
+    case 15:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCurrentDeadlineId(value);
       break;
     case 8:
       var value = /** @type {string} */ (reader.readString());
@@ -2230,6 +2295,13 @@ proto.main.ContractEntity.serializeBinaryToWriter = function(message, writer) {
       5,
       f,
       proto.main.DeadlineEntity.serializeBinaryToWriter
+    );
+  }
+  f = message.getCurrentDeadlineId();
+  if (f.length > 0) {
+    writer.writeString(
+      15,
+      f
     );
   }
   f = message.getTitle();
@@ -2474,6 +2546,24 @@ proto.main.ContractEntity.prototype.addDeadlines = function(opt_value, opt_index
  */
 proto.main.ContractEntity.prototype.clearDeadlinesList = function() {
   return this.setDeadlinesList([]);
+};
+
+
+/**
+ * optional string current_deadline_id = 15;
+ * @return {string}
+ */
+proto.main.ContractEntity.prototype.getCurrentDeadlineId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 15, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ContractEntity} returns this
+ */
+proto.main.ContractEntity.prototype.setCurrentDeadlineId = function(value) {
+  return jspb.Message.setProto3StringField(this, 15, value);
 };
 
 
@@ -3895,7 +3985,9 @@ proto.main.ItemEntity.toObject = function(includeInstance, msg) {
     buyerBody: jspb.Message.getFieldWithDefault(msg, 7, ""),
     awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
-    awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
+    awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+    workerSettled: jspb.Message.getFieldWithDefault(msg, 26, 0),
+    buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0)
   };
 
   if (includeInstance) {
@@ -3967,6 +4059,14 @@ proto.main.ItemEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 10:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAwaitingDeletion(value);
+      break;
+    case 26:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setWorkerSettled(value);
+      break;
+    case 27:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setBuyerSettled(value);
       break;
     default:
       reader.skipField();
@@ -4057,6 +4157,20 @@ proto.main.ItemEntity.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       10,
+      f
+    );
+  }
+  f = message.getWorkerSettled();
+  if (f !== 0) {
+    writer.writeUint32(
+      26,
+      f
+    );
+  }
+  f = message.getBuyerSettled();
+  if (f !== 0) {
+    writer.writeUint32(
+      27,
       f
     );
   }
@@ -4222,6 +4336,42 @@ proto.main.ItemEntity.prototype.getAwaitingDeletion = function() {
  */
 proto.main.ItemEntity.prototype.setAwaitingDeletion = function(value) {
   return jspb.Message.setProto3BooleanField(this, 10, value);
+};
+
+
+/**
+ * optional uint32 worker_settled = 26;
+ * @return {number}
+ */
+proto.main.ItemEntity.prototype.getWorkerSettled = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 26, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.ItemEntity} returns this
+ */
+proto.main.ItemEntity.prototype.setWorkerSettled = function(value) {
+  return jspb.Message.setProto3IntField(this, 26, value);
+};
+
+
+/**
+ * optional uint32 buyer_settled = 27;
+ * @return {number}
+ */
+proto.main.ItemEntity.prototype.getBuyerSettled = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.ItemEntity} returns this
+ */
+proto.main.ItemEntity.prototype.setBuyerSettled = function(value) {
+  return jspb.Message.setProto3IntField(this, 27, value);
 };
 
 

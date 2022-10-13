@@ -48,6 +48,6 @@ export const UNEDITED = 0
 export const ADDED = 1
 export const REMOVED = 2
 
-export const ITEM_APPROVED = 0
+export const ITEM_APPROVED = 2
 export const ITEM_REJECTED = 1
-export const ITEM_PENDING = 2
+export const ITEM_PENDING = 0

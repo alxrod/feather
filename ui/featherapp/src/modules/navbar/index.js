@@ -28,7 +28,6 @@ const NavBar = (props) => {
       toggleInContractView(true)
       setContractStage(props.curContract.stage)
     } else {
-      console.log("Contract is: ", props.curContract)
       toggleInContractView(false)
       if (loc.pathname.split("/")[1] === "create") {
         toggleInContractView(true)

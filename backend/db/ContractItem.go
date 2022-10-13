@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	ITEM_REJECT  = 0
+	ITEM_REJECT  = 2
 	ITEM_APPROVE = 1
-	ITEM_PENDING = 2
+	ITEM_PENDING = 0
 )
 
 type ContractItem struct {
@@ -30,6 +30,9 @@ type ContractItem struct {
 	Proposer         primitive.ObjectID `bson:"proposer_id"`
 	AwaitingCreation bool               `bson:"awaiting_creation"`
 	AwaitingDeletion bool               `bson:"awaiting_deletion"`
+
+	WorkerSettled uint32 `bson:"worker_settled"`
+	BuyerSettled  uint32 `bson:"buyer_settled"`
 }
 
 func (ci *ContractItem) Proto() *comms.ItemEntity {
@@ -42,6 +45,8 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		AwaitingApproval: ci.AwaitingApproval,
 		AwaitingCreation: ci.AwaitingCreation,
 		AwaitingDeletion: ci.AwaitingDeletion,
+		WorkerSettled:    ci.WorkerSettled,
+		BuyerSettled:     ci.BuyerSettled,
 
 		CurrentBody: ci.CurrentBody,
 		WorkerBody:  ci.WorkerBody,

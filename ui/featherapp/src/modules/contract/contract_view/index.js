@@ -108,7 +108,7 @@ const ContractDraft = (props) => {
             </div>
           ))}
         </div>
-        {(!addItemMode) && (
+        {(!addItemMode && !universalLock) && (
           <NewContractItem addContractItem={addContractItem}/>
         )}  
       </div>
@@ -118,7 +118,7 @@ const ContractDraft = (props) => {
 
 const mapStateToProps = ({ user, contract, items}) => ({
   curContract: contract.curContract,
-  contractItemsChanged: items.items,
+  contractItemsChanged: items.itemsChanged,
   curConItems: items.items,
   user: user.user,
 })

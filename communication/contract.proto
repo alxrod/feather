@@ -16,7 +16,10 @@ message DeadlineEntity {
     string id = 1;
     string contract_id = 2;
     string name = 18;
+
     bool complete = 25;
+    bool worker_settled = 26;
+    bool buyer_settled = 27;
     
     bool awaiting_creation = 20;
     bool awaiting_deletion = 21;
@@ -50,6 +53,7 @@ message ContractEntity {
     UserNubEntity buyer = 3;
     PriceEntity price = 4;
     repeated DeadlineEntity deadlines = 5;
+    string current_deadline_id = 15;
     string title = 8;
     string summary = 6;
     uint32 stage = 9;
@@ -105,6 +109,9 @@ message ItemEntity {
     bool awaiting_approval = 8;
     bool awaiting_creation = 9;
     bool awaiting_deletion = 10;
+
+    uint32 worker_settled = 26;
+    uint32 buyer_settled = 27;
 }
 
 message ItemNub {

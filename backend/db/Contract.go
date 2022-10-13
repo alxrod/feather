@@ -83,6 +83,9 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 	if !contract.RoomId.IsZero() {
 		proto.RoomId = contract.RoomId.Hex()
 	}
+	if !contract.CurrentDeadlineId.IsZero() {
+		proto.CurrentDeadlineId = contract.CurrentDeadlineId.Hex()
+	}
 
 	itemProtos := make([]*comms.ItemEntity, len(contract.Items))
 	for i, item := range contract.Items {
@@ -544,6 +547,7 @@ func ContractSettle(user *User, contract *Contract, database *mongo.Database) er
 	update := bson.D{
 		{"$set", bson.D{{"worker_approved", contract.WorkerApproved}}},
 		{"$set", bson.D{{"buyer_approved", contract.BuyerApproved}}},
+		{"$set", bson.D{{"universal_lock", true}}},
 		{"$set", bson.D{{"stage", contract.Stage}}},
 	}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)

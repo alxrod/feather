@@ -25,7 +25,11 @@ type Deadline struct {
 	Id         primitive.ObjectID `bson:"_id,omitempty"`
 	ContractId primitive.ObjectID `bson:"contract_id"`
 	Name       string             `bson:"name"`
-	Complete   bool               `bson:"complete"`
+
+	Complete bool `bson:"complete"`
+
+	WorkerSettled bool `bson:"worker_settled"`
+	BuyerSettled  bool `bson:"buyer_settled"`
 
 	DeadlineProposerId primitive.ObjectID `bson:"deadline_proposer_id`
 	AwaitingCreation   bool               `bson:"awaiting_creation"`
@@ -70,7 +74,11 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	if !d.DeadlineProposerId.IsZero() {
 		proto.DeadlineProposerId = d.DeadlineProposerId.Hex()
 	}
+
 	proto.Complete = d.Complete
+	proto.WorkerSettled = d.WorkerSettled
+	proto.BuyerSettled = d.BuyerSettled
+
 	proto.AwaitingCreation = d.AwaitingCreation
 	proto.AwaitingDeletion = d.AwaitingDeletion
 

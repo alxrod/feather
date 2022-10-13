@@ -3,11 +3,11 @@ import { CheckCircleIcon } from '@heroicons/react/solid'
 const DeadlineHistory = (props) => {
 
   const genDateString = (date) => {
-    return date.toLocaleDateString() 
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' }) 
   }
 
   return (
-    <div className="px-2 grow">
+    <div className="md:px-1 lg: px-2 grow">
       <div className="flex flex-col h-full items-center justify-between">
         <nav className="flex justify-center" aria-label="Progress">
           <ol role="list" className="space-y-6">
@@ -27,7 +27,7 @@ const DeadlineHistory = (props) => {
                           />
                         </span>
                       </span>
-                      <span className="ml-3 text-sm font-medium text-gray-500 group-hover:text-gray-900">
+                      <span className="hidden md:flex ml-3 text-sm font-medium text-gray-500 group-hover:text-gray-900">
                         {genDateString(deadline.currentDate)}
                       </span>
                     </span>
@@ -45,7 +45,9 @@ const DeadlineHistory = (props) => {
                           <span className="relative block w-2 h-2 bg-gray-300 rounded-full" />
                         </span>
                       )}
-                      <p className="ml-3 text-sm font-medium text-gray-500 group-hover:text-gray-900">{genDateString(deadline.currentDate)}</p>
+                      <span className="hidden md:flex">
+                        <p className="ml-3 text-sm font-medium text-gray-500 group-hover:text-gray-900">{genDateString(deadline.currentDate)}</p>
+                      </span>
                     </div>
                   </div>
                 )}
@@ -56,7 +58,7 @@ const DeadlineHistory = (props) => {
         <button
               type="button"
               onClick={props.openModal}
-              className="ml-3 inline-flex items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-800 bg-indigo-100 hover:bg-indigo-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="hidden md:inline-flex mt-2 ml-3 items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-800 bg-indigo-100 hover:bg-indigo-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           Edit
         </button>

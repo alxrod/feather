@@ -37,7 +37,8 @@ const DeadlineField = (props) => {
   const [showDates, toggleShowDates] = useState(true)
 
   const [inDraftMode, setInDraftMode] = useState(false)
-
+  // In vh terms
+  const [itemsHeight, setItemsHeight] = useState(200)
 
   // Use effect to resort the deadlines every time that they are updated in the reducer state
   useEffect( () => {
@@ -78,8 +79,13 @@ const DeadlineField = (props) => {
     if (props.curContract.id) {
       setRole(props.curContract.role)
     }
-    if (props.curContract.stage == contractStages.ACTIVE) {
+    if (props.curContract.stage === contractStages.ACTIVE) {
       setInDraftMode(true)
+      setItemsHeight(200)
+    }
+    if (props.curContract.stage === contractStages.SETTLE) {
+      setInDraftMode(true)
+      setItemsHeight(150)
     }
   }, [props.curContract])
 
@@ -193,7 +199,9 @@ const DeadlineField = (props) => {
   return (
     <>
       {inDraftMode ? (
-        <DeadlineDraftView role={role} deadlines={localDeadlines} openModal={handleOpenCalendar}/>
+        <div className={"mt-5 "}>
+          <DeadlineDraftView role={role} deadlines={localDeadlines} openModal={handleOpenCalendar} height={itemsHeight}/>
+        </div>
       ) : (
         <div className=" flex grow" ref={mainElem}>
           <div className="flex grow items-center">

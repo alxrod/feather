@@ -25,7 +25,6 @@ const ContractSettleMsg = (props) => {
 
   useEffect( () => {
     if (props.curContract.id) {
-      console.log("SIGN MSG: ", props.msg.body)
       if (props.msg.body.signerId === props.curContract.buyer.id) {
         setSignerUsername(props.curContract.buyer.username)
       } else if (props.msg.body.signerId === props.curContract.worker.id) {

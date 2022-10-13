@@ -1069,6 +1069,9 @@ input:checked + .toggle-bg {
 .col-span-2 {
   grid-column: span 2 / span 2;
 }
+.col-span-3 {
+  grid-column: span 3 / span 3;
+}
 .m-auto {
   margin: auto;
 }
@@ -1362,6 +1365,9 @@ input:checked + .toggle-bg {
 .h-auto {
   height: auto;
 }
+.h-\[\"\+props\.maxHeight\+\"px\] {
+  height: "+props.maxHeight+"px;
+}
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1370,6 +1376,31 @@ input:checked + .toggle-bg {
 }
 .max-h-\[40vh\] {
   max-height: 40vh;
+}
+.max-h-\[\"\+props\.maxHeight\+\"vh\] {
+  max-height: "+props.maxHeight+"vh;
+}
+.max-h-fit {
+  max-height: -moz-fit-content;
+  max-height: fit-content;
+}
+.max-h-max {
+  max-height: max-content;
+}
+.max-h-\[200px\] {
+  max-height: 200px;
+}
+.max-h-\[\"\+props\.minHeight\+\"px\] {
+  max-height: "+props.minHeight+"px;
+}
+.max-h-\[\"\+props\.maxHeight\+\"px\] {
+  max-height: "+props.maxHeight+"px;
+}
+.max-h-\[100px\] {
+  max-height: 100px;
+}
+.max-h-\[150px\] {
+  max-height: 150px;
 }
 .min-h-\[50vh\] {
   min-height: 50vh;
@@ -1388,6 +1419,18 @@ input:checked + .toggle-bg {
 }
 .min-h-\[250px\] {
   min-height: 250px;
+}
+.min-h-\[\"\+props\.minHeight\+\"vh\] {
+  min-height: "+props.minHeight+"vh;
+}
+.min-h-\[\"\+minHeight\+\"\] {
+  min-height: "+minHeight+";
+}
+.min-h-\[\"\+minHeight\+\"vh\] {
+  min-height: "+minHeight+"vh;
+}
+.min-h-\[\"\+props\.minHeight\+\"px\] {
+  min-height: "+props.minHeight+"px;
 }
 .w-64 {
   width: 16rem;
@@ -1479,6 +1522,12 @@ input:checked + .toggle-bg {
 }
 .w-2\/4 {
   width: 50%;
+}
+.w-\[20px\] {
+  width: 20px;
+}
+.w-\[50px\] {
+  width: 50px;
 }
 .min-w-full {
   min-width: 100%;
@@ -1674,6 +1723,9 @@ input:checked + .toggle-bg {
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .flex-row {
   flex-direction: row;
 }
@@ -1807,6 +1859,9 @@ input:checked + .toggle-bg {
 }
 .overflow-hidden {
   overflow: hidden;
+}
+.overflow-clip {
+  overflow: clip;
 }
 .overflow-x-auto {
   overflow-x: auto;
@@ -2037,6 +2092,10 @@ input:checked + .toggle-bg {
 .border-blue-600 {
   --tw-border-opacity: 1;
   border-color: rgb(28 100 242 / var(--tw-border-opacity));
+}
+.border-gray-600 {
+  --tw-border-opacity: 1;
+  border-color: rgb(75 85 99 / var(--tw-border-opacity));
 }
 .bg-gray-200 {
   --tw-bg-opacity: 1;
@@ -3775,8 +3834,16 @@ input:checked + .toggle-bg {
     display: block;
   }
 
+  .sm\:inline {
+    display: inline;
+  }
+
   .sm\:flex {
     display: flex;
+  }
+
+  .sm\:inline-flex {
+    display: inline-flex;
   }
 
   .sm\:grid {
@@ -3813,6 +3880,42 @@ input:checked + .toggle-bg {
 
   .sm\:w-6 {
     width: 1.5rem;
+  }
+
+  .sm\:w-4 {
+    width: 1rem;
+  }
+
+  .sm\:w-20 {
+    width: 5rem;
+  }
+
+  .sm\:w-\[20px\] {
+    width: 20px;
+  }
+
+  .sm\:w-\[40px\] {
+    width: 40px;
+  }
+
+  .sm\:w-\[50px\] {
+    width: 50px;
+  }
+
+  .sm\:w-\[60px\] {
+    width: 60px;
+  }
+
+  .sm\:w-\[100px\] {
+    width: 100px;
+  }
+
+  .sm\:w-\[150px\] {
+    width: 150px;
+  }
+
+  .sm\:w-\[125px\] {
+    width: 125px;
   }
 
   .sm\:max-w-md {
@@ -3954,6 +4057,11 @@ input:checked + .toggle-bg {
     padding-right: 1rem;
   }
 
+  .sm\:px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
   .sm\:pl-6 {
     padding-left: 1.5rem;
   }
@@ -4046,8 +4154,16 @@ input:checked + .toggle-bg {
     display: block;
   }
 
+  .md\:inline {
+    display: inline;
+  }
+
   .md\:flex {
     display: flex;
+  }
+
+  .md\:inline-flex {
+    display: inline-flex;
   }
 
   .md\:grid {
@@ -4072,6 +4188,14 @@ input:checked + .toggle-bg {
 
   .md\:w-auto {
     width: auto;
+  }
+
+  .md\:w-\[125px\] {
+    width: 125px;
+  }
+
+  .md\:w-\[150px\] {
+    width: 150px;
   }
 
   .md\:max-w-xl {
@@ -4138,6 +4262,16 @@ input:checked + .toggle-bg {
     padding-right: 1.5rem;
   }
 
+  .md\:px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .md\:px-1 {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
   .md\:text-center {
     text-align: center;
   }
@@ -4190,8 +4324,20 @@ input:checked + .toggle-bg {
     display: block;
   }
 
+  .lg\:flex {
+    display: flex;
+  }
+
   .lg\:hidden {
     display: none;
+  }
+
+  .lg\:w-\[125px\] {
+    width: 125px;
+  }
+
+  .lg\:w-\[150px\] {
+    width: 150px;
   }
 
   .lg\:justify-center {
@@ -4209,6 +4355,12 @@ input:checked + .toggle-bg {
 
   .lg\:text-center {
     text-align: center;
+  }
+}
+@media (min-width: 1280px) {
+
+  .xl\:block {
+    display: block;
   }
 }
 
