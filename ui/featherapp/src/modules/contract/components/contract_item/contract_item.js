@@ -14,6 +14,7 @@ import { addItem, reactAddItem } from "../../../../reducers/items/dispatchers/it
 import { deleteItem, reactDeleteItem, deleteSuggestContractItem } from "../../../../reducers/items/dispatchers/items.delete.dispatcher"
 
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
+import { contractStages } from "../../../../services/contract.service"
 
 
 const SAVE_TIME = 350
@@ -38,6 +39,10 @@ const ContractItem = (props) => {
   const [lock, setLock] = useState(false)
   const [decideMode, toggleDecideMode] = useState(false)
 
+  const contractStage = useMemo(() => {
+    return props.curContract?.stage
+  })
+
   const item_text = useMemo(() => {
     let i = 0
     if (props.contractItemsChanged) {
@@ -53,6 +58,7 @@ const ContractItem = (props) => {
       return contract_info.currentBody
     }
   })
+
 
   useEffect( () => {
     if (item_text !== contract_info.currentBody && !lock) {
@@ -259,19 +265,19 @@ const ContractItem = (props) => {
                       <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
                     </div>
                   )}
-                  {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation) && (
+                  {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation && !(contractStage === contractStages.SETTLE)) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
                       <DecideButton approve={approveChange} reject={denyChange}/>
                     </div>
                   )}
-                  {(lock && contract_info.awaitingCreation && proposedByPartner) && (
+                  {(lock && contract_info.awaitingCreation && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
                       <DecideButton approve={approveCreate} reject={denyCreate}/>
                     </div>
                   )}
-                  {(lock && contract_info.awaitingDeletion && proposedByPartner) && (
+                  {(lock && contract_info.awaitingDeletion && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
                     <div className="flex items-center">
                       <h3 className="text-gray-400 mr-2 text-md">Approve your partner's deleting this item</h3>
                       <DecideButton approve={approveDelete} reject={denyDelete}/>

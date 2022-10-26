@@ -149,3 +149,34 @@ func ContractItemSuggestBody(item *ContractItem, contract *Contract, user *User,
 	}
 	return nil
 }
+
+func ContractItemChangeSettle(
+	item *ContractItem,
+	deadline *Deadline,
+	user *User,
+	contract *Contract,
+	newState uint32,
+	database *mongo.Database,
+) error {
+	itemInDeadline := false
+	for _, id := range deadline.ItemIds {
+		if id == item.Id {
+			itemInDeadline = true
+		}
+	}
+	if !itemInDeadline {
+		return errors.New("contract item not required for current deadline")
+	}
+
+	if user.Id == contract.Worker.Id {
+		item.WorkerSettled = newState
+	} else if user.Id == contract.Buyer.Id {
+		item.BuyerSettled = newState
+	} else {
+		return errors.New("current user is not connected to the current contract")
+	}
+
+	err := ContractItemReplace(item, database)
+
+	return err
+}

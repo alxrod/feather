@@ -581,6 +581,45 @@ func (s *BackServer) SendContractSettleMessage(
 	return nil
 }
 
+func (s *BackServer) SendItemSettleMessage(contract *db.Contract,
+	deadline *db.Deadline,
+	user *db.User,
+	item *db.ContractItem) error {
+
+	label_name := item.Name
+	if label_name == "" {
+		label_name = "Item"
+	}
+	body := &db.MessageBody{
+		ContractId:       contract.Id,
+		DeadlineId:       deadline.Id,
+		ItemId:           item.Id,
+		ItemWorkerSettle: item.WorkerSettled,
+		ItemBuyerSettle:  item.BuyerSettled,
+	}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.CONTRACT_ITEM_SETTLE,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_ITEM,
+			Name: label_name,
+		},
+	}
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *BackServer) SendRevMessage(msg *db.Message) error {
 	database := s.dbClient.Database(s.dbName)
 	err := s.ChatAgent.SendMessageInternal(msg, database)

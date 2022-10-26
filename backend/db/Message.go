@@ -17,20 +17,21 @@ import (
 
 // Methods
 const (
-	COMMENT         = 0
-	ITEM            = 1
-	DATE            = 2
-	PAYOUT          = 5
-	ITEM_CREATE     = 6
-	ITEM_DELETE     = 7
-	DEADLINE_CREATE = 8
-	DEADLINE_DELETE = 9
-	DEADLINE_ITEMS  = 10
-	PRICE           = 3
-	REVISION        = 4
-	CONTRACT_SIGN   = 11
-	CONTRACT_LOCK   = 12
-	CONTRACT_SETTLE = 13
+	COMMENT              = 0
+	ITEM                 = 1
+	DATE                 = 2
+	PAYOUT               = 5
+	ITEM_CREATE          = 6
+	ITEM_DELETE          = 7
+	DEADLINE_CREATE      = 8
+	DEADLINE_DELETE      = 9
+	DEADLINE_ITEMS       = 10
+	PRICE                = 3
+	REVISION             = 4
+	CONTRACT_SIGN        = 11
+	CONTRACT_LOCK        = 12
+	CONTRACT_SETTLE      = 13
+	CONTRACT_ITEM_SETTLE = 14
 )
 
 // Editing Typs
@@ -121,6 +122,10 @@ type MessageBody struct {
 
 	// Lock Message
 	ContractLock bool `bson:"contract_lock,omitempty"`
+
+	// For settlign items
+	ItemWorkerSettle uint32 `bson:"item_worker_settle,omitempty"`
+	ItemBuyerSettle  uint32 `bson:"item_buyer_settle,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -298,6 +303,18 @@ func (b *MessageBody) DeadlineItemsProto() *comms.ChatMessage_DeadlineItemBody {
 	}
 }
 
+func (b *MessageBody) SettleItemProto() *comms.ChatMessage_SettleItemBody {
+	return &comms.ChatMessage_SettleItemBody{
+		SettleItemBody: &comms.ContractSettleItemMsgBody{
+			ContractId:       b.ContractId.Hex(),
+			DeadlineId:       b.DeadlineId.Hex(),
+			ItemId:           b.ItemId.Hex(),
+			ItemWorkerSettle: b.ItemWorkerSettle,
+			ItemBuyerSettle:  b.ItemBuyerSettle,
+		},
+	}
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -350,6 +367,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ContractLockProto()
 	} else if m.Method == CONTRACT_SETTLE {
 		proto.Body = m.Body.ContractSettleProto()
+	} else if m.Method == CONTRACT_ITEM_SETTLE {
+		proto.Body = m.Body.SettleItemProto()
 	}
 
 	return proto

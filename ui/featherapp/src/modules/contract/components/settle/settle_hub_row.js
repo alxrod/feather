@@ -10,11 +10,12 @@ import {ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING} from "../../../../custom_enc
 import SettleOption from "./settle_option_selection"
 import { bindActionCreators } from 'redux'
 import { useEffect, useState } from "react"
+import { settleItem } from "../../../../reducers/items/dispatchers/items.settle.dispatcher"
 
 const SettleHubOption = (props) => {
   const [role, setRole] = useState(false)
-  const [partnerStatus, setPartnerStatus] = useState(false)
-  const [yourStatus, setYourStatus] = useState(false)
+  const [partnerStatus, setPartnerStatus] = useState(ITEM_PENDING)
+  const [yourStatus, setYourStatus] = useState(ITEM_PENDING)
 
   useEffect(() => {
     if (props.curContract?.worker.id === props.user.user_id) {
@@ -30,11 +31,14 @@ const SettleHubOption = (props) => {
 
 
   const switchStatus = (new_status) => {
-    
+    if (new_status !== yourStatus) {
+      props.settleItem(props.curContract.id, props.deadline.id, props.item.id, new_status) //contract_id, deadline_id, item_id, new_state
+    }
+    setYourStatus(new_status)
   }
 
   return (
-    <li key={props.item.id}>
+    <li>
       <div className="block hover:bg-gray-50">
         <div className="flex items-center px-2 py-4">
           <div className="min-w-0 flex-1 flex items-center">
@@ -67,7 +71,13 @@ const SettleHubOption = (props) => {
                 </p>
               </div>
               <div>
-                <SettleOption status={yourStatus} switchStatus={switchStatus}/>
+                <SettleOption 
+                  workerSettled={props.item.workerSettled} 
+                  buyerSettled={props.item.buyerSettled}
+                  role={role}
+                  status={yourStatus} 
+                  switchStatus={switchStatus}
+                />
               </div>
             </div>
           </div>
@@ -85,6 +95,7 @@ const mapStateToProps = ({ user, contract, items, deadlines}) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  settleItem,
 }, dispatch)
 
 export default connect(

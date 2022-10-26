@@ -39,6 +39,7 @@ import {
     ClaimContractRequest,
     SignContractRequest,
     SettleContractRequest,
+    ContractSettleItemRequest,
 
     ContractToggleLockRequest,
     ContractReactLockRequest,
@@ -632,6 +633,24 @@ class ContractService {
         return new Promise( (resolve, reject) => {
             var metadata = {"authorization": token}
             contractClient.settle(settleRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+
+    settleItem(token, user_id, contract_id, deadline_id, item_id, new_state) {
+        let settleRequest = new ContractSettleItemRequest()
+        settleRequest.setUserId(user_id)
+        settleRequest.setContractId(contract_id)
+        settleRequest.setDeadlineId(deadline_id)
+        settleRequest.setItemId(item_id)
+        settleRequest.setNewState(new_state)
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.settleItem(settleRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }

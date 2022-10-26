@@ -60,6 +60,12 @@ export const contractItemUpdateBody = (item, newBody) => {
     return item
 }
 
+export const updateSettledStates = (item, workerSettled, buyerSettled) => {
+    item.workerSettled = workerSettled
+    item.buyerSettled = buyerSettled
+    return item
+}
+
 export const updateContractItems = (contract, newItemsList) => {
     contract.itemsList = newItemsList
     return contract

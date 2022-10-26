@@ -7,12 +7,15 @@ import SettleOption from "./settle_option_selection"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SettleHubRow from "./settle_hub_row"
+import { Fragment } from 'react'
 
 const SettleHubOption = (props) => {
   return (
     <ul role="list" className="divide-y divide-gray-200">
       {props.items.map((item) => (
-        <SettleHubRow item={item}/>
+        <Fragment key={item.id}>
+          <SettleHubRow item={item} deadline={props.deadline}/>
+        </Fragment>
       ))}
     </ul>
   )

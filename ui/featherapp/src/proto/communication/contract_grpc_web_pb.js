@@ -1723,5 +1723,66 @@ proto.main.ContractPromiseClient.prototype.reactLock =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractSettleItemRequest,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_SettleItem = new grpc.web.MethodDescriptor(
+  '/main.Contract/SettleItem',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractSettleItemRequest,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractSettleItemRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractSettleItemRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.settleItem =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/SettleItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SettleItem,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractSettleItemRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.settleItem =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/SettleItem',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SettleItem);
+};
+
+
 module.exports = proto.main;
 

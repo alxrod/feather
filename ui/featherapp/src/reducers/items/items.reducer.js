@@ -82,6 +82,19 @@ export default (state = initialState, action) => {
                 items: deletedItemInList,
             }
 
+        case actions.CONTRACT_ITEM_SETTLE_UPDATE:
+            return {
+                ...state,
+                itemsChanged: !state.itemsChanged,
+                items: helpers.replaceContractItem(
+                    state.items,
+                    helpers.updateSettledStates(
+                        helpers.getContractItem(state.items, action.payload.itemId),
+                        action.payload.workerSettled,
+                        action.payload.buyerSettled
+                    )
+                )
+            }
         default:
             return state
     }

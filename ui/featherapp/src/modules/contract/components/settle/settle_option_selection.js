@@ -1,7 +1,8 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { XIcon, ClockIcon } from '@heroicons/react/outline'
+import {WORKER_TYPE, BUYER_TYPE } from "../../../../services/user.service"
 
 import { ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING } from '../../../../custom_encodings'
 const people = [
@@ -14,11 +15,35 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Example() {
-  const [selected, setSelected] = useState(people[1])
+const SettleOption = (props) => {
+  const [selected, setSelected] = useState({id: 2, name: 'Pending', action: ITEM_PENDING})
+  useEffect( () => {
+    if (props.role === WORKER_TYPE) {
+      if (props.workerSettled === ITEM_APPROVED) {
+        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
+      } else if (props.workerSettled === ITEM_REJECTED) {
+        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
+      } else {
+        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
+      }
+    } else if (props.role === BUYER_TYPE) {
+      if (props.buyerSettled === ITEM_APPROVED) {
+        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
+      } else if (props.buyerSettled === ITEM_REJECTED) {
+        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
+      } else {
+        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
+      }
+    }
+  }, [props.workerSettled, props.buyerSettled, props.role])
 
+
+  const switchStatus = (new_status) => {
+    setSelected(new_status)
+    props.switchStatus(new_status.action)
+  }
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={selected} onChange={switchStatus}>
       {({ open }) => (
         <>
           <div className="w-[50px] lg:w-[125px]">
@@ -93,3 +118,5 @@ export default function Example() {
     </Listbox>
   )
 }
+
+export default SettleOption

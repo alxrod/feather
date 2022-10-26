@@ -240,6 +240,24 @@ func (s *BackServer) ReactLock(ctx context.Context, req *comms.ContractReactLock
 
 }
 
+func (s *BackServer) SettleItem(ctx context.Context, req *comms.ContractSettleItemRequest) (*comms.ContractEditResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, deadline, item, err := pullUserContractDeadlineItem(req.UserId, req.ContractId, req.DeadlineId, req.ItemId, database)
+	if err != nil {
+		return nil, err
+	}
+	err = db.ContractItemChangeSettle(item, deadline, user, contract, req.NewState, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.SendItemSettleMessage(contract, deadline, user, item)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+}
+
 func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequest) (*comms.ContractNubSet, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
@@ -355,4 +373,47 @@ func pullUserContractDeadline(
 		return nil, nil, nil, err
 	}
 	return user, contract, deadline, nil
+}
+
+func pullUserContractDeadlineItem(
+	req_user_id,
+	req_contract_id,
+	req_deadline_id,
+	req_item_id string,
+	database *mongo.Database) (*db.User, *db.Contract, *db.Deadline, *db.ContractItem, error) {
+
+	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	user_id, err := primitive.ObjectIDFromHex(req_user_id)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	deadline_id, err := primitive.ObjectIDFromHex(req_deadline_id)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	item_id, err := primitive.ObjectIDFromHex(req_item_id)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+
+	contract, err := db.ContractById(contract_id, database)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	deadline, err := db.DeadlineById(deadline_id, database)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	item, err := db.ContractItemById(item_id, database.Collection(db.ITEM_COL))
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	return user, contract, deadline, item, nil
 }

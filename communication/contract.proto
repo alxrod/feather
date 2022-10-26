@@ -295,6 +295,14 @@ message ContractReactLockRequest {
     uint32 status = 4;
 }
 
+message ContractSettleItemRequest {
+    string user_id = 1;
+    string deadline_id = 2;
+    string contract_id = 3;
+    string item_id = 4;
+    uint32 new_state = 5;
+}
+
 message ContractEditResponse {}
 
 service Contract {
@@ -336,4 +344,6 @@ service Contract {
 
     rpc ToggleLock(ContractToggleLockRequest) returns (ContractEditResponse) {};
     rpc ReactLock(ContractReactLockRequest) returns (ContractEditResponse) {};
+
+    rpc SettleItem(ContractSettleItemRequest) returns (ContractEditResponse) {};
 }

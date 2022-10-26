@@ -30,6 +30,7 @@ import {
     CONTRACT_ITEM_RELOAD,
     CONTRACT_ITEM_REPLACE_SUGGEST,
     CONTRACT_ITEM_SUGGEST_DELETE,
+    CONTRACT_ITEM_SETTLE_UPDATE,
 } from "../reducers/items/items.actions"
 
 
@@ -61,6 +62,7 @@ export const msgMethods = {
     CONTRACT_SIGN: 11,
     CONTRACT_LOCK: 12,
     CONTRACT_SETTLE: 13,
+    CONTRACT_ITEM_SETTLE: 14,
 }
 
 export const deadlineItemTypes = {
@@ -363,6 +365,15 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 id: msg.body.contractId,
             }
         })
+    } else if (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) {
+        dispatch({
+            type: CONTRACT_ITEM_SETTLE_UPDATE,
+            payload: {
+                workerSettled: msg.body.itemWorkerSettle,
+                buyerSettled: msg.body.itemBuyerSettle,
+                itemId: msg.body.itemId,
+            }
+        })
     }
 }
 
@@ -404,6 +415,8 @@ const reformatBody = (msg) => {
         msg.body = msg.contractLockBody
     } else if (msg.method === msgMethods.CONTRACT_SETTLE) {
         msg.body = msg.contractSettleBody 
+    } else if (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) {
+        msg.body = msg.settleItemBody
     } else {
         msg.body = {}
     }
