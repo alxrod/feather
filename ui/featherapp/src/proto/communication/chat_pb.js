@@ -813,6 +813,7 @@ proto.main.ChatMessage.toObject = function(includeInstance, msg) {
     timestamp: (f = msg.getTimestamp()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     label: (f = msg.getLabel()) && proto.main.ChatLabel.toObject(includeInstance, f),
     method: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    isAdmin: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     commentBody: (f = msg.getCommentBody()) && proto.main.CommentMsgBody.toObject(includeInstance, f),
     payoutBody: (f = msg.getPayoutBody()) && proto.main.PayoutMsgBody.toObject(includeInstance, f),
     dateBody: (f = msg.getDateBody()) && proto.main.DateMsgBody.toObject(includeInstance, f),
@@ -886,6 +887,10 @@ proto.main.ChatMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setMethod(value);
+      break;
+    case 21:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsAdmin(value);
       break;
     case 6:
       var value = new proto.main.CommentMsgBody;
@@ -1026,6 +1031,13 @@ proto.main.ChatMessage.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint32(
       4,
+      f
+    );
+  }
+  f = message.getIsAdmin();
+  if (f) {
+    writer.writeBool(
+      21,
       f
     );
   }
@@ -1296,6 +1308,24 @@ proto.main.ChatMessage.prototype.getMethod = function() {
  */
 proto.main.ChatMessage.prototype.setMethod = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional bool is_admin = 21;
+ * @return {boolean}
+ */
+proto.main.ChatMessage.prototype.getIsAdmin = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.ChatMessage} returns this
+ */
+proto.main.ChatMessage.prototype.setIsAdmin = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 21, value);
 };
 
 
@@ -5414,7 +5444,6 @@ proto.main.ContractSettleItemMsgBody.prototype.toObject = function(opt_includeIn
  */
 proto.main.ContractSettleItemMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     deadlineId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     itemId: jspb.Message.getFieldWithDefault(msg, 4, ""),
@@ -5456,10 +5485,6 @@ proto.main.ContractSettleItemMsgBody.deserializeBinaryFromReader = function(msg,
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setContractId(value);
@@ -5509,13 +5534,6 @@ proto.main.ContractSettleItemMsgBody.prototype.serializeBinary = function() {
  */
 proto.main.ContractSettleItemMsgBody.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getContractId();
   if (f.length > 0) {
     writer.writeString(
@@ -5551,24 +5569,6 @@ proto.main.ContractSettleItemMsgBody.serializeBinaryToWriter = function(message,
       f
     );
   }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.main.ContractSettleItemMsgBody.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.main.ContractSettleItemMsgBody} returns this
- */
-proto.main.ContractSettleItemMsgBody.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

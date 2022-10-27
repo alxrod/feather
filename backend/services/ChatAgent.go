@@ -144,6 +144,9 @@ func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Dat
 		log.Println(color.Ize(color.Red, fmt.Sprintf("The room %s is not active", room_id.Hex())))
 		return errors.New("You must join the room before sending messages, this room is not active")
 	}
+	if msg.User.AdminStatus {
+		msg.IsAdmin = true
+	}
 	entry.mu.Lock()
 	msg, err := entry.room.AddMessageInternal(msg, database)
 	if err != nil {

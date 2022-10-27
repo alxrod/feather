@@ -506,6 +506,67 @@ proto.main.ContractPromiseClient.prototype.queryByUser =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.QueryByUserRequest,
+ *   !proto.main.ContractNubSet>}
+ */
+const methodDescriptor_Contract_QueryByAdmin = new grpc.web.MethodDescriptor(
+  '/main.Contract/QueryByAdmin',
+  grpc.web.MethodType.UNARY,
+  proto.main.QueryByUserRequest,
+  proto.main.ContractNubSet,
+  /**
+   * @param {!proto.main.QueryByUserRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractNubSet.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.QueryByUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractNubSet)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractNubSet>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.queryByAdmin =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/QueryByAdmin',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_QueryByAdmin,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.QueryByUserRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractNubSet>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.queryByAdmin =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/QueryByAdmin',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_QueryByAdmin);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractSuggestPrice,
  *   !proto.main.ContractEditResponse>}
  */

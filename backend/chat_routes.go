@@ -70,9 +70,6 @@ func (s *BackServer) SendPriceMessage(
 	oldPrice float32,
 	editType uint32) error {
 
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return errors.New("You must provide both user and contract with 2 users to change price with")
-	}
 	body := &db.MessageBody{
 		Type:         editType,
 		PriceNew:     newPrice,
@@ -82,13 +79,29 @@ func (s *BackServer) SendPriceMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
+	if contract.Worker == nil {
 		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
+	}
+	if contract.Buyer == nil {
 		body.BuyerStatus = db.DECISION_YES
 	}
+
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
+		log.Println("Sender is worker")
+		body.WorkerStatus = db.DECISION_YES
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
+		log.Println("Sender is buyer")
+		body.BuyerStatus = db.DECISION_YES
+	} else if user.AdminStatus {
+		body.BuyerStatus = db.DECISION_YES
+		body.WorkerStatus = db.DECISION_YES
+	}
+
+	if body.BuyerStatus == db.DECISION_YES && body.WorkerStatus == db.DECISION_YES {
+		body.ResolStatus = db.RESOL_APPROVED
+		body.Resolved = true
+	}
+
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
 		User:      user,

@@ -10,6 +10,8 @@ import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.di
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import MsgWrapper from "./components/msg_wrapper"
+import MsgDecisionFooter from "./components/msg_decision_footer"
 
 const ItemDeleteMsg = (props) => {
 
@@ -74,74 +76,29 @@ const ItemDeleteMsg = (props) => {
   }
 
   return (
-    <>
-      <div className="relative">
-        <img
-          className="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
-          src={"https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"}
-          alt=""
-        />
-
-        <span className="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-          <DocumentIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-        </span>
-      </div>
-      <div className="min-w-0 flex-1">
-        <div>
-          <div className="text-sm">
-            <a href={"#"} className="font-medium text-gray-900">
-              {props.msg.user.username}
-            </a>
-          </div>
-          <div className="flex flex-wrap">
-            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={props.msg.label}/>
+    <MsgWrapper msg={props.msg} editString={editString}>
+      <div className="mt-2 text-sm text-gray-700">
+        <div className="flex items-center">
+          <p className="text-gray-400 text-lg mr-2">{"Deleted " + props.msg.body.item.name}</p>
+          <div className="w-2"></div>
+          <div className="w-16">
+            {(yourStatus == decisionTypes.UNDECIDED) && (
+              <DecideButton 
+                approve={acceptChange}
+                reject={rejectChange}
+              />
+            )} 
           </div>
         </div>
-        <div className="mt-2 text-sm text-gray-700">
-          <div className="flex items-center">
-						<p className="text-gray-400 text-lg mr-2">{"Deleted " + props.msg.body.item.name}</p>
-            <div className="w-2"></div>
-            <div className="w-16">
-              {(yourStatus == decisionTypes.UNDECIDED) && (
-                <DecideButton 
-                  approve={acceptChange}
-                  reject={rejectChange}
-                />
-              )} 
-            </div>
-          </div>
-					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
-            <p className="text-red">{props.msg.body.item.currentBody}</p>
-          </div>
-          <div className="flex">
-            {(yourStatus == decisionTypes.YES) && (
-              <div className="flex items-center justify-between">
-                <p className="text-grey-400 mr-1">You <b className="text-green">approved</b></p>
-              </div>
-            )}
-            {(yourStatus == decisionTypes.NO) && (
-              <div>
-                <p className="text-grey-400 mr-1">You <b className="text-red">rejected</b></p>
-              </div>
-            )}
-            {" "}
-            {(otherStatus == decisionTypes.YES) && (
-              <div className="flex items-center justify-between">
-                <p className="text-grey-400">{otherUsername} <b className="text-green">approved</b>{" "}</p>
-              </div>
-            )}
-            {(otherStatus == decisionTypes.NO) && (
-              <div>
-                <p className="text-grey-400">{otherUsername} <b className="text-red">rejected</b></p>
-              </div>
-            )}
-          </div>
-          
-
-          
+        <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
+          <p className="text-red">{props.msg.body.item.currentBody}</p>
         </div>
+        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
+        
+
+        
       </div>
-    </>
+    </MsgWrapper>
 
   )
 }

@@ -271,12 +271,48 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
 		return nil, err
 	}
-
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
 	log.Println("Contracts queried successfully")
 
 	contractNubs := make([]*comms.ContractNub, len(contracts))
 	for idx, contract := range contracts {
-		conNub, err := contract.NubProto(user_id)
+		conNub, err := contract.NubProto(user)
+		if err != nil {
+			return nil, err
+		}
+		contractNubs[idx] = conNub
+	}
+	log.Println("Contracts nubbed successfully")
+	return &comms.ContractNubSet{
+		UserId:       user_id.Hex(),
+		ContractNubs: contractNubs,
+	}, nil
+}
+
+func (s *BackServer) QueryByAdmin(ctx context.Context, req *comms.QueryByUserRequest) (*comms.ContractNubSet, error) {
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Invalid user id for contract query")))
+		return nil, err
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	contracts, err := db.ContractsByAdmin(user_id, database)
+	if err != nil {
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
+		return nil, err
+	}
+	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+
+	contractNubs := make([]*comms.ContractNub, len(contracts))
+	for idx, contract := range contracts {
+		conNub, err := contract.NubProto(user)
 		if err != nil {
 			return nil, err
 		}

@@ -32,8 +32,19 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	oldPrice := contract.Price.Current
 	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
 
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return nil, errors.New("You must provide both user and contract with 2 users to change price with")
+	if user == nil || contract == nil {
+		return nil, errors.New("either the user or contract is invalid")
+	} else if !user.AdminStatus {
+		con_member := false
+		if contract.Worker != nil && contract.Worker.Id == user.Id {
+			con_member = true
+		}
+		if contract.Buyer != nil && contract.Buyer.Id == user.Id {
+			con_member = true
+		}
+		if !con_member {
+			return nil, errors.New("you must be a worker or a buyer of the contract to change")
+		}
 	}
 	err = db.ContractSuggestPrice(contract, user, req.NewPrice, database)
 	if err != nil {

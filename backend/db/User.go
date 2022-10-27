@@ -16,6 +16,7 @@ import (
 const (
 	WORKER = uint32(0)
 	BUYER  = uint32(1)
+	ADMIN  = uint32(2)
 )
 
 const (
@@ -37,6 +38,8 @@ type User struct {
 	Payment   PaymentNub         `bson:"payment"`
 
 	Active_token string `bson:"-"`
+
+	AdminStatus bool `bson:"admin_status"`
 }
 
 func (user *User) Handle() *UserHandle {

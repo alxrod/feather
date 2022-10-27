@@ -641,7 +641,8 @@ proto.main.UserRegisterResponse.toObject = function(includeInstance, msg) {
     tokenTimeout: (f = msg.getTokenTimeout()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     username: jspb.Message.getFieldWithDefault(msg, 4, ""),
     id: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    role: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    role: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    adminStatus: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
   };
 
   if (includeInstance) {
@@ -706,6 +707,10 @@ proto.main.UserRegisterResponse.deserializeBinaryFromReader = function(msg, read
     case 6:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setRole(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAdminStatus(value);
       break;
     default:
       reader.skipField();
@@ -783,6 +788,13 @@ proto.main.UserRegisterResponse.serializeBinaryToWriter = function(message, writ
   if (f !== 0) {
     writer.writeUint32(
       6,
+      f
+    );
+  }
+  f = message.getAdminStatus();
+  if (f) {
+    writer.writeBool(
+      8,
       f
     );
   }
@@ -931,6 +943,24 @@ proto.main.UserRegisterResponse.prototype.getRole = function() {
  */
 proto.main.UserRegisterResponse.prototype.setRole = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional bool admin_status = 8;
+ * @return {boolean}
+ */
+proto.main.UserRegisterResponse.prototype.getAdminStatus = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.UserRegisterResponse} returns this
+ */
+proto.main.UserRegisterResponse.prototype.setAdminStatus = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 
@@ -1131,7 +1161,8 @@ proto.main.UserLoginResponse.toObject = function(includeInstance, msg) {
     tokenTimeout: (f = msg.getTokenTimeout()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     username: jspb.Message.getFieldWithDefault(msg, 4, ""),
     id: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    role: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    role: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    adminStatus: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
   };
 
   if (includeInstance) {
@@ -1192,6 +1223,10 @@ proto.main.UserLoginResponse.deserializeBinaryFromReader = function(msg, reader)
     case 6:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setRole(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAdminStatus(value);
       break;
     default:
       reader.skipField();
@@ -1262,6 +1297,13 @@ proto.main.UserLoginResponse.serializeBinaryToWriter = function(message, writer)
   if (f !== 0) {
     writer.writeUint32(
       6,
+      f
+    );
+  }
+  f = message.getAdminStatus();
+  if (f) {
+    writer.writeBool(
+      8,
       f
     );
   }
@@ -1392,6 +1434,24 @@ proto.main.UserLoginResponse.prototype.getRole = function() {
  */
 proto.main.UserLoginResponse.prototype.setRole = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional bool admin_status = 8;
+ * @return {boolean}
+ */
+proto.main.UserLoginResponse.prototype.getAdminStatus = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.UserLoginResponse} returns this
+ */
+proto.main.UserLoginResponse.prototype.setAdminStatus = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 
@@ -1867,7 +1927,8 @@ proto.main.UserPullResponse.toObject = function(includeInstance, msg) {
     tiktokAccount: jspb.Message.getFieldWithDefault(msg, 10, ""),
     tiktokFollowers: jspb.Message.getFieldWithDefault(msg, 11, 0),
     tiktokVerified: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    paymentSetup: jspb.Message.getBooleanFieldWithDefault(msg, 13, false)
+    paymentSetup: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
+    adminStatus: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
   };
 
   if (includeInstance) {
@@ -1961,6 +2022,10 @@ proto.main.UserPullResponse.deserializeBinaryFromReader = function(msg, reader) 
     case 13:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setPaymentSetup(value);
+      break;
+    case 15:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAdminStatus(value);
       break;
     default:
       reader.skipField();
@@ -2086,6 +2151,13 @@ proto.main.UserPullResponse.serializeBinaryToWriter = function(message, writer) 
   if (f) {
     writer.writeBool(
       13,
+      f
+    );
+  }
+  f = message.getAdminStatus();
+  if (f) {
+    writer.writeBool(
+      15,
       f
     );
   }
@@ -2360,6 +2432,24 @@ proto.main.UserPullResponse.prototype.getPaymentSetup = function() {
  */
 proto.main.UserPullResponse.prototype.setPaymentSetup = function(value) {
   return jspb.Message.setProto3BooleanField(this, 13, value);
+};
+
+
+/**
+ * optional bool admin_status = 15;
+ * @return {boolean}
+ */
+proto.main.UserPullResponse.prototype.getAdminStatus = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.UserPullResponse} returns this
+ */
+proto.main.UserPullResponse.prototype.setAdminStatus = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 15, value);
 };
 
 

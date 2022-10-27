@@ -102,7 +102,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 	return proto
 }
 
-func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractNub, error) {
+func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	proto := &comms.ContractNub{}
 	if contract == nil {
 		return proto, nil
@@ -124,14 +124,15 @@ func (contract *Contract) NubProto(user_id primitive.ObjectID) (*comms.ContractN
 	proto.Price = contract.Price.Current
 	proto.Stage = contract.Stage
 
-	if contract.Worker != nil && contract.Worker.Id == user_id {
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		proto.UserType = WORKER
-	} else if contract.Buyer != nil && contract.Buyer.Id == user_id {
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
 		proto.UserType = BUYER
+	} else if user.AdminStatus {
+		proto.UserType = ADMIN
 	} else {
 		return nil, errors.New("This user_id is not on this contract")
 	}
-
 	return proto, nil
 }
 
@@ -412,6 +413,60 @@ func ContractsByUser(user_id primitive.ObjectID, database *mongo.Database) ([]*C
 	return contracts, nil
 }
 
+func ContractsByAdmin(user_id primitive.ObjectID, database *mongo.Database) ([]*Contract, error) {
+	contracts := make([]*Contract, 0)
+
+	user, err := UserQueryId(user_id, database.Collection(USERS_COL))
+	if err != nil {
+		return nil, err
+	}
+	if !user.AdminStatus {
+		return nil, errors.New(fmt.Sprintf("%s is not an admin, cannot query contracts", user.Username))
+	}
+
+	all_filter := bson.D{{}}
+	cur, err := database.Collection(CON_COL).Find(context.TODO(), all_filter)
+	if err != nil {
+		return nil, err
+	}
+	for cur.Next(context.TODO()) {
+		var con *Contract
+		err := cur.Decode(&con)
+		if err != nil {
+			return nil, err
+		}
+		contracts = append(contracts, con)
+	}
+	cur.Close(context.TODO())
+
+	for _, con := range contracts {
+		items := make([]*ContractItem, len(con.ItemIds))
+		for idx, id := range con.ItemIds {
+			item, err := ContractItemById(id, database.Collection(ITEM_COL))
+			if err != nil {
+				return nil, err
+			}
+			items[idx] = item
+		}
+		con.Items = items
+
+		deadlines := make([]*Deadline, len(con.DeadlineIds))
+		for idx, id := range con.DeadlineIds {
+			deadline, err := DeadlineById(id, database)
+			if err != nil {
+				return nil, err
+			}
+			deadlines[idx] = deadline
+		}
+		con.Deadlines = deadlines
+	}
+
+	sort.Slice(contracts, func(i, j int) bool {
+		return contracts[i].CreationTime.Before(contracts[j].CreationTime)
+	})
+	return contracts, nil
+}
+
 func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Contract, error) {
 	filter := bson.D{{"_id", contract_id}}
 	var contract *Contract
@@ -448,21 +503,38 @@ func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Co
 }
 
 func ContractSuggestPrice(contract *Contract, user *User, newPrice float32, database *mongo.Database) error {
-	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
-		return errors.New(fmt.Sprintf("The user w/ id %s is not a member of the contract w/ id %s", user.Id.Hex(), contract.Id.Hex()))
-	}
 	if contract.Price.AwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The contract %s is already awaiting approval of a different price change", contract.Id.Hex()))
 	}
 
 	priceNub := contract.Price
-	if user.Id == contract.Worker.Id {
-		priceNub.Worker = newPrice
-	} else {
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer == nil {
+			priceNub.Buyer = newPrice
+			priceNub.Worker = newPrice
+			priceNub.Current = newPrice
+		} else {
+			priceNub.Worker = newPrice
+			priceNub.AwaitingApproval = true
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker == nil {
+			priceNub.Buyer = newPrice
+			priceNub.Worker = newPrice
+			priceNub.Current = newPrice
+		} else {
+			priceNub.Buyer = newPrice
+			priceNub.AwaitingApproval = true
+		}
+	} else if user.AdminStatus {
 		priceNub.Buyer = newPrice
+		priceNub.Worker = newPrice
+		priceNub.Current = newPrice
+	} else {
+		return errors.New("Invalid proposing user")
 	}
 	priceNub.Proposer = user.Id
-	priceNub.AwaitingApproval = true
+
 	contract.Price = priceNub
 
 	err := ContractSavePrice(contract, database)

@@ -20,6 +20,7 @@ export const paymentClient = new PaymentClient("https://localhost:8080");
 
 export const WORKER_TYPE = 0
 export const BUYER_TYPE = 1
+export const ADMIN_TYPE = 2
 
 class UserService {
 
@@ -46,6 +47,7 @@ class UserService {
                         access_token: resp.token,
                         user_id: resp.id,
                         role: resp.role,
+                        admin_status: resp.adminStatus,
                     }
                     var creds = {
                         username: resp.username,
@@ -53,6 +55,7 @@ class UserService {
                         user_id: resp.id,
                         access_token: resp.token,
                         token_timeout: response.getTokenTimeout().toDate(),
+                        admin_status: resp.adminStatus,
                     }
                     localStorage.setItem("creds", JSON.stringify(creds));
 
@@ -90,12 +93,14 @@ class UserService {
                         access_token: resp.token,
                         user_id: resp.id,
                         role: resp.role,
+                        admin_status: resp.adminStatus,
                     }
                     var creds = {
                         username: resp.username,
                         password: password,
                         user_id: resp.id,
                         access_token: resp.token,
+                        admin_status: resp.adminStatus,
                         token_timeout: response.getTokenTimeout().toDate(),
                     }
                     localStorage.setItem("creds", JSON.stringify(creds));
@@ -327,6 +332,7 @@ export const authChecker = (needAuth) => {
                         var new_creds = {
                             username: resp.username,
                             password: creds.password,
+                            admin_status: creds.admin_status,
                             user_id: resp.id,
                             access_token: resp.token,
                             token_timeout: response.getTokenTimeout().toDate(),

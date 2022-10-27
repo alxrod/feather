@@ -54,7 +54,7 @@ export const queryContract = (contract_id) => {
 export const queryContractNubs = () => {
     return dispatch => {
         return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.query_contract_nubs(creds.access_token, creds.user_id).then(
+            return ContractService.query_contract_nubs(creds.access_token, creds.user_id, creds.admin_status).then(
                 (data) => {
                     dispatch({
                         type: contractActions.CONTRACT_NUB_PULL_ALL,

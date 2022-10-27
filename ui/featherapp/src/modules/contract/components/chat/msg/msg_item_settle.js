@@ -10,6 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING } from "../../../../../custom_encodings"
+import MsgWrapper from "./components/msg_wrapper"
 
 const ItemSettleMsg = (props) => {
 
@@ -67,68 +68,45 @@ const ItemSettleMsg = (props) => {
   
 
   return (
-    <>
-      <div className="relative">
-        <img
-          className="h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white"
-          src={"https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"}
-          alt=""
-        />
-
-        <span className="absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px">
-          <DocumentIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-        </span>
-      </div>
-      <div className="min-w-0 flex-1">
-        <div>
-          <div className="text-sm">
-            <a href={"#"} className="font-medium text-gray-900">
-              {props.msg.user.username}
-            </a>
-          </div>
-          <div className="flex flex-wrap">
-            <p className="mt-0.5 text-sm text-gray-500 mr-1">{editString + ' '} at {genTimeString(props.msg.timestamp)}</p><ChatLabel label={props.msg.label}/>
-          </div>
+    <MsgWrapper msg={props.msg} editString={editString}>
+      <div className="mt-2 text-sm text-gray-700">
+        <div className="flex">
+            <div className="flex items-center justify-between">
+              <p className="text-grey-400 mr-1">You{" "}
+              {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
+                <b className="text-green">approved</b>
+              ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                <b className="text-red">rejected</b>
+              ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
+                <b className="text-green">approved</b>
+              ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
+                <b className="text-red">rejected</b>
+              ) : (
+                <b className="text-gray-400 font-normal">are still deciding</b>
+              )}
+              </p>
+            </div>
+            <div>
+              <p className="text-grey-400">{otherUsername}{" "}
+              {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
+                <b className="text-green">approved</b>
+              ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
+                <b className="text-red">rejected</b>
+              ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
+                <b className="text-green">approved</b>
+              ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                <b className="text-red">rejected</b>
+              ) : (
+                <b className="text-gray-400 font-normal">are still deciding</b>
+              )}
+              </p>
+            </div>
         </div>
-        <div className="mt-2 text-sm text-gray-700">
-          <div className="flex">
-              <div className="flex items-center justify-between">
-                <p className="text-grey-400 mr-1">You{" "}
-                {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
-                  <b className="text-green">approved</b>
-                ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
-                  <b className="text-red">rejected</b>
-                ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
-                  <b className="text-green">approved</b>
-                ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
-                  <b className="text-red">rejected</b>
-                ) : (
-                  <b className="text-gray-400 font-normal">are still deciding</b>
-                )}
-                </p>
-              </div>
-              <div>
-                <p className="text-grey-400">{otherUsername}{" "}
-                {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
-                  <b className="text-green">approved</b>
-                ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
-                  <b className="text-red">rejected</b>
-                ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
-                  <b className="text-green">approved</b>
-                ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
-                  <b className="text-red">rejected</b>
-                ) : (
-                  <b className="text-gray-400 font-normal">are still deciding</b>
-                )}
-                </p>
-              </div>
-          </div>
-          
+        
 
-          
-        </div>
+        
       </div>
-    </>
+    </MsgWrapper>
 
   )
 }

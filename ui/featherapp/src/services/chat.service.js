@@ -186,6 +186,7 @@ class ChatService {
 
 const parseMessage = (msg, role, this_user_id, dispatch) => {
     if (msg.method === msgMethods.PRICE) {
+        console.log("Looking at a message in this state: ", msg)
         const newPrice = {
             proposerId: msg.user.id,
             current: msg.body.oldVersion,
@@ -193,7 +194,12 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             buyer: msg.body.oldVersion,
             worker: msg.body.oldVersion,
         }
-        if (this_user_id === msg.user.id) {
+        
+        if (msg.body.resolStatus === resolTypes.APPROVED) {
+            newPrice.current = msg.body.newVersion
+            newPrice.buyer = msg.body.newVersion
+            newPrice.worker = msg.body.newVersion
+        } else if (this_user_id === msg.user.id) {
             if (role === WORKER_TYPE) {
                 newPrice.worker = msg.body.newVersion
             } else {

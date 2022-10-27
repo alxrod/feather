@@ -123,28 +123,48 @@ class ContractService {
         });
     }
 
-    query_contract_nubs(token, user_id) {
+    query_contract_nubs(token, user_id, admin_status) {
         let queryRequest = new QueryByUserRequest();
         queryRequest.setUserId(user_id);
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
-            contractClient.queryByUser(queryRequest, metadata, function(error, response) {
-                if (error) {
-                    console.log("Error:")
-                    console.log(error)
-                    reject(error)
-                }
-                console.log("RESPONSE")
-                console.log(response)
-                var resp = response.toObject();
-                // Convert proto times to js times
-                const protoNubs = response.getContractNubsList()
-                for (let i = 0; i < protoNubs.length; i++) {
-                    resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
-                }
-                localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
-                resolve(resp)
-            });
+            if (admin_status) {
+                contractClient.queryByAdmin(queryRequest, metadata, function(error, response) {
+                    if (error) {
+                        console.log("Error:")
+                        console.log(error)
+                        reject(error)
+                    }
+                    console.log("RESPONSE")
+                    console.log(response)
+                    var resp = response.toObject();
+                    // Convert proto times to js times
+                    const protoNubs = response.getContractNubsList()
+                    for (let i = 0; i < protoNubs.length; i++) {
+                        resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
+                    }
+                    localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
+                    resolve(resp)
+                });
+            } else {
+                contractClient.queryByUser(queryRequest, metadata, function(error, response) {
+                    if (error) {
+                        console.log("Error:")
+                        console.log(error)
+                        reject(error)
+                    }
+                    console.log("RESPONSE")
+                    console.log(response)
+                    var resp = response.toObject();
+                    // Convert proto times to js times
+                    const protoNubs = response.getContractNubsList()
+                    for (let i = 0; i < protoNubs.length; i++) {
+                        resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
+                    }
+                    localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
+                    resolve(resp)
+                });
+            }
         });
     }
     

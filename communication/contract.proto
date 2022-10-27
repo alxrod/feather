@@ -315,6 +315,7 @@ service Contract {
 
     rpc QueryById(QueryByIdRequest) returns (ContractResponse) {};
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
+    rpc QueryByAdmin(QueryByUserRequest) returns (ContractNubSet) {};
 
     rpc SuggestPrice(ContractSuggestPrice) returns (ContractEditResponse) {};
     rpc ReactPrice(ContractReactPrice) returns (ContractEditResponse) {};

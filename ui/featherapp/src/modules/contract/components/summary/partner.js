@@ -9,11 +9,22 @@ const CriticalCriteria = (props) => {
   const [havePartner, setHavePartner] = useState(false)
   const [partnerRole, setPartnerRole] = useState(BUYER_TYPE)
   const [roleString, setRoleString] = useState("")
+  
+  const [workerName, setWorkerName] = useState("undecided")
+  const [buyerName, setBuyerName] = useState("undecided")
 
   const [partnerMsg, setPartnerMsg] = useState("")
   useEffect( () => {
     if (props.curContract.id) {
       const contract = props.curContract
+      if (contract.worker.username) {
+        setWorkerName(contract.worker.username)
+      }
+      if (contract.buyer.username) {
+        setBuyerName(contract.buyer.username)
+      }
+      
+      
       if (contract.role === WORKER_TYPE) {
         setPartnerRole(BUYER_TYPE)
         if (contract.buyer.id === "") {
@@ -38,6 +49,10 @@ const CriticalCriteria = (props) => {
     }
   }, [props.curContract])
 
+  useEffect(() => {
+    console.log("New user is: ", props.user)
+  }, [props.user])
+
   useEffect( () => {
     if (partnerRole === WORKER_TYPE) {
       setRoleString("Worker")
@@ -57,18 +72,25 @@ const CriticalCriteria = (props) => {
                   <div className="flex-shrink-0">
                     <UserIcon className="mr-1.5 h-9 w-9 flex-shrink-0 text-gray-400"/>
                   </div>
-                  <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1">
-            
-                      <p className="text-base font-medium text-gray-700 truncate">{roleString+": "+partnerName}</p>
-                      <p className="text-base font-medium text-gray-500">
-                        {partnerMsg}
-                        { !havePartner && (
-                          <>
-                            {" "}<Link className="text-indigo-500" to={"/invite/"+props.curContract.id}>click to view invite</Link>{" "}
-                          </>
-                        ) }
-                      </p>
-                  </div>
+                  {props.user.admin_status ? (
+                    <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2">
+                        <p className="text-base font-medium text-gray-700 truncate mr-2">{"Worker: "+workerName}</p>
+                        <p className="text-base font-medium text-gray-700 truncate">{"Buyer: "+buyerName}</p>
+                    </div>
+                  ) : (
+                    <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-1">
+              
+                        <p className="text-base font-medium text-gray-700 truncate">{roleString+": "+partnerName}</p>
+                        <p className="text-base font-medium text-gray-500">
+                          {partnerMsg}
+                          { !havePartner && (
+                            <>
+                              {" "}<Link className="text-indigo-500" to={"/invite/"+props.curContract.id}>click to view invite</Link>{" "}
+                            </>
+                          ) }
+                        </p>
+                    </div>
+                  )}
                 </div>
                 
                 <div>
@@ -83,8 +105,9 @@ const CriticalCriteria = (props) => {
   )
 }
 
-const mapStateToProps = ({ contract }) => ({
+const mapStateToProps = ({ contract, user }) => ({
   curContract: contract.curContract,
+  user: user.user
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

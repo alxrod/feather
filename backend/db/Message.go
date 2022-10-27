@@ -73,8 +73,9 @@ type Message struct {
 
 	Label *LabelNub `bson:"label"`
 
-	UserId primitive.ObjectID `bson:"user_id"`
-	User   *User              `bson:"-"`
+	UserId  primitive.ObjectID `bson:"user_id"`
+	IsAdmin bool               `bson:"is_admin"`
+	User    *User              `bson:"-"`
 
 	Timestamp time.Time `bson:"timestamp"`
 }
@@ -338,6 +339,7 @@ func (m *Message) Proto() *comms.ChatMessage {
 	proto.Timestamp = timestamppb.New(m.Timestamp)
 	proto.Method = m.Method
 	proto.Label = m.Label.Proto()
+	proto.IsAdmin = m.IsAdmin
 
 	if m.Method == COMMENT {
 		proto.Body = m.Body.CommentProto()
@@ -436,6 +438,7 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 		Method:    req.Method,
 		Body:      ParseBody(req),
 		Label:     label,
+		IsAdmin:   user.AdminStatus,
 	}
 
 	messageCollection := database.Collection(MSG_COL)
@@ -504,6 +507,9 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 
 func MessageInsertInternal(msg *Message, room_id primitive.ObjectID, database *mongo.Database) (primitive.ObjectID, error) {
 	messageCollection := database.Collection(MSG_COL)
+	if msg.User.AdminStatus {
+		msg.IsAdmin = true
+	}
 	res, err := messageCollection.InsertOne(context.TODO(), msg)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Internally Insert Message for room %s", room_id.Hex())))

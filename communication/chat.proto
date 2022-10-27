@@ -15,6 +15,7 @@ message ChatMessage {
     google.protobuf.Timestamp timestamp = 3;
     ChatLabel label =  5;
     uint32 method = 4;
+    bool is_admin = 21;
     oneof body {
         CommentMsgBody comment_body = 6;
         PayoutMsgBody payout_body = 7;

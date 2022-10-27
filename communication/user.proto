@@ -4,6 +4,7 @@ option go_package=".;communication";
 
 import "google/protobuf/timestamp.proto";
 
+
 message UserRegisterRequest {
     string username = 1;
     string email = 2;
@@ -21,6 +22,7 @@ message UserRegisterResponse {
     string username = 4;
     string id = 5;
     uint32 role = 6;
+    bool admin_status = 8;
 }
 
 message UserLoginRequest {
@@ -35,6 +37,7 @@ message UserLoginResponse {
     string username = 4;
     string id = 5;
     uint32 role = 6;
+    bool admin_status = 8;
 }
 
 message UserLogoutRequest {
@@ -68,6 +71,8 @@ message UserPullResponse {
     bool tiktok_verified = 12;
 
     bool payment_setup = 13;
+
+    bool admin_status = 15;
 
 
 }

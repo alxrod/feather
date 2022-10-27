@@ -50,6 +50,7 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 			Username:     user.Username,
 			Id:           user.Id.Hex(),
 			Role:         user.Role,
+			AdminStatus:  user.AdminStatus,
 		}, nil
 
 	// Handles nil case, meaning user query was successful, user already exists
@@ -75,12 +76,14 @@ func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*c
 	if err != nil {
 		return &comms.UserLoginResponse{Error: err.Error()}, nil
 	}
+	log.Println(color.Ize(color.Yellow, fmt.Sprintf("Username %s is status %b", user.Username, user.AdminStatus)))
 	return &comms.UserLoginResponse{
 		Token:        tkn,
 		TokenTimeout: timestamppb.New(tkn_timeout),
 		Username:     user.Username,
 		Id:           user.Id.Hex(),
 		Role:         user.Role,
+		AdminStatus:  user.AdminStatus,
 	}, nil
 
 }
@@ -114,6 +117,8 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 		TiktokAccount:   user.Tiktok.Account,
 		TiktokFollowers: user.Tiktok.Followers,
 		TiktokVerified:  user.Tiktok.Verified,
+
+		AdminStatus: user.AdminStatus,
 	}
 	if user.Payment.CardHolder != "" {
 		resp.PaymentSetup = true
