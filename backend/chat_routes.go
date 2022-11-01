@@ -3,7 +3,6 @@ package backend
 import (
 	"context"
 	"errors"
-	"log"
 	"time"
 
 	db "github.com/alxrod/feather/backend/db"
@@ -79,27 +78,9 @@ func (s *BackServer) SendPriceMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker == nil {
-		body.WorkerStatus = db.DECISION_YES
-	}
-	if contract.Buyer == nil {
-		body.BuyerStatus = db.DECISION_YES
-	}
-
-	if contract.Worker != nil && contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
-	} else if user.AdminStatus {
-		body.BuyerStatus = db.DECISION_YES
-		body.WorkerStatus = db.DECISION_YES
-	}
-
-	if body.BuyerStatus == db.DECISION_YES && body.WorkerStatus == db.DECISION_YES {
-		body.ResolStatus = db.RESOL_APPROVED
-		body.Resolved = true
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 
 	msg := &db.Message{
@@ -117,7 +98,7 @@ func (s *BackServer) SendPriceMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -132,9 +113,6 @@ func (s *BackServer) SendPayoutMessage(
 	oldPayout float32,
 	editType uint32) error {
 
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return errors.New("You must provide both user and contract with 2 users to change price with")
-	}
 	body := &db.MessageBody{
 		Type:         editType,
 		PayoutNew:    newPayout,
@@ -145,12 +123,9 @@ func (s *BackServer) SendPayoutMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := deadline.Name
 	if label_name == "" {
@@ -172,7 +147,7 @@ func (s *BackServer) SendPayoutMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -187,9 +162,6 @@ func (s *BackServer) SendDateMessage(
 	oldDate time.Time,
 	editType uint32) error {
 
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return errors.New("You must provide both user and contract with 2 users to change price with")
-	}
 	body := &db.MessageBody{
 		Type:         editType,
 		DateNew:      newDate,
@@ -200,12 +172,9 @@ func (s *BackServer) SendDateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := deadline.Name
 	if label_name == "" {
@@ -227,7 +196,7 @@ func (s *BackServer) SendDateMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -252,12 +221,9 @@ func (s *BackServer) SendItemMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := item.Name
 	if label_name == "" {
@@ -279,7 +245,7 @@ func (s *BackServer) SendItemMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -300,12 +266,9 @@ func (s *BackServer) SendItemCreateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := item.Name
 	if label_name == "" {
@@ -327,7 +290,7 @@ func (s *BackServer) SendItemCreateMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -349,13 +312,11 @@ func (s *BackServer) SendItemDeleteMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
+
 	label_name := item.Name
 	if label_name == "" {
 		label_name = "Item"
@@ -376,7 +337,7 @@ func (s *BackServer) SendItemDeleteMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -398,12 +359,9 @@ func (s *BackServer) SendDeadlineCreateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := deadline.Name
 	if label_name == "" {
@@ -425,7 +383,7 @@ func (s *BackServer) SendDeadlineCreateMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -447,12 +405,9 @@ func (s *BackServer) SendDeadlineDeleteMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := deadline.Name
 	if label_name == "" {
@@ -474,7 +429,7 @@ func (s *BackServer) SendDeadlineDeleteMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -498,12 +453,9 @@ func (s *BackServer) SendDeadlineItemMessage(contract *db.Contract, user *db.Use
 		WorkerStatus:  db.DECISION_UNDECIDED,
 		BuyerStatus:   db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := deadline.Name
 	if label_name == "" {
@@ -525,7 +477,7 @@ func (s *BackServer) SendDeadlineItemMessage(contract *db.Contract, user *db.Use
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}
@@ -657,10 +609,9 @@ func (s *BackServer) SendToggleLockMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	if contract.Worker.Id == user.Id {
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer.Id == user.Id {
-		body.BuyerStatus = db.DECISION_YES
+	err := s.AdjustMsgBody(user, contract, body)
+	if err != nil {
+		return err
 	}
 	label_name := "Contract Unlock"
 	if lockState {
@@ -682,7 +633,7 @@ func (s *BackServer) SendToggleLockMessage(
 	}
 
 	database := s.dbClient.Database(s.dbName)
-	err := s.ChatAgent.SendMessageInternal(msg, database)
+	err = s.ChatAgent.SendMessageInternal(msg, database)
 	if err != nil {
 		return err
 	}

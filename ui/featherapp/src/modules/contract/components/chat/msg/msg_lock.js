@@ -41,7 +41,7 @@ const ContractLockMsg = (props) => {
       }
       setVersion(version+1)
       props.finishedReload()
-    }
+    } 
   }, [props.reloaded])
 
   useEffect( () => {
@@ -63,7 +63,7 @@ const ContractLockMsg = (props) => {
       } else if (props.yourRole == BUYER_TYPE) {
         setStatus(props.msg.body.buyerStatus)
         setOtherStatus(props.msg.body.workerStatus)
-      } 
+      }
     }
     
   }, [props.msg, props.yourRole, version])
@@ -76,14 +76,29 @@ const ContractLockMsg = (props) => {
   }
   
   
-
+  const Icon = () => {
+    if (props.msg.body.contractLock) {
+      return (
+        <LockOpenIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+      )
+    } else {
+      return (
+        <LockClosedIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+      )
+    }
+    
+  }
   return (
-    <MsgWrapper msg={props.msg} editString={editString}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
-            <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" requested to "}<b className="text-indigo-500">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
-          </div>
+            {props.msg.isAdmin ? (
+              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" "}<b className="text-indigo-500">{props.msg.body.contractLock ? "closed" : "opened"}</b>{" the edit lock"}</h3>              
+            ) : (
+              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" requested to "}<b className="text-indigo-500">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
+            )}
+            </div>
           <div className="w-6"></div>
           <div className="w-16">
             {(yourStatus == decisionTypes.UNDECIDED) && (

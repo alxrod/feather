@@ -48,9 +48,6 @@ func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggest
 	}
 
 	oldBody := item.CurrentBody
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return nil, errors.New("You must provide both user and contract with 2 users to change price with")
-	}
 	err = db.ContractItemSuggestBody(item, contract, user, req.NewBody, database)
 	if err != nil {
 		return nil, err
@@ -180,8 +177,29 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 		return nil, err
 	}
 
-	req.Item.AwaitingApproval = true
-	req.Item.AwaitingCreation = true
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer != nil {
+			req.Item.AwaitingApproval = true
+			req.Item.AwaitingCreation = true
+		} else {
+			req.Item.AwaitingApproval = false
+			req.Item.AwaitingCreation = false
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker != nil {
+			req.Item.AwaitingApproval = true
+			req.Item.AwaitingCreation = true
+		} else {
+			req.Item.AwaitingApproval = false
+			req.Item.AwaitingCreation = false
+		}
+	} else if user.AdminStatus {
+		req.Item.AwaitingApproval = false
+		req.Item.AwaitingCreation = false
+	} else {
+		return nil, errors.New("Invalid proposing user")
+	}
+
 	item, err := db.ItemInsert(req.Item, contract_id, database.Collection(db.ITEM_COL))
 	if err != nil {
 		return nil, err
@@ -330,8 +348,30 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	if err != nil {
 		return nil, err
 	}
-	item.AwaitingApproval = true
-	item.AwaitingDeletion = true
+
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer != nil {
+			req.Item.AwaitingApproval = true
+			req.Item.AwaitingDeletion = true
+		} else {
+			req.Item.AwaitingApproval = false
+			req.Item.AwaitingDeletion = false
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker != nil {
+			req.Item.AwaitingApproval = true
+			req.Item.AwaitingDeletion = true
+		} else {
+			req.Item.AwaitingApproval = false
+			req.Item.AwaitingDeletion = false
+		}
+	} else if user.AdminStatus {
+		req.Item.AwaitingApproval = false
+		req.Item.AwaitingDeletion = false
+	} else {
+		return nil, errors.New("Invalid proposing user")
+	}
+
 	err = db.ContractItemReplace(item, database)
 	if err != nil {
 		return nil, err
@@ -342,6 +382,13 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
+	}
+
+	if req.Item.AwaitingDeletion == false {
+		err := db.ContractRemoveItem(item, contract, database)
+		if err != nil {
+			return nil, err
+		}
 	}
 	// log.Println("Price Message Broadcast")
 	return &comms.ContractEditResponse{}, nil

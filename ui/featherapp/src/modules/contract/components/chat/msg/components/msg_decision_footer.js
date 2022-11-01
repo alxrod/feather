@@ -17,7 +17,6 @@ const MsgDecisionFooter = (props) => {
     }
   }, [props.curContract])
   if (props.msg.isAdmin) {
-    console.log("Foudn it")
     return (<></>)
   }
   return (

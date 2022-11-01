@@ -134,14 +134,33 @@ func ContractItemSuggestBody(item *ContractItem, contract *Contract, user *User,
 		return errors.New(fmt.Sprintf("The contract item %s is already awaiting approval of a different body change", item.Id.Hex()))
 	}
 
-	if user.Id == contract.Worker.Id {
-		item.WorkerBody = newBody
-	} else if user.Id == contract.Buyer.Id {
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer == nil {
+			item.BuyerBody = newBody
+			item.WorkerBody = newBody
+			item.CurrentBody = newBody
+		} else {
+			item.WorkerBody = newBody
+			item.AwaitingApproval = true
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker == nil {
+			item.BuyerBody = newBody
+			item.WorkerBody = newBody
+			item.CurrentBody = newBody
+		} else {
+			item.BuyerBody = newBody
+			item.AwaitingApproval = true
+		}
+	} else if user.AdminStatus {
 		item.BuyerBody = newBody
+		item.WorkerBody = newBody
+		item.CurrentBody = newBody
+	} else {
+		return errors.New("Invalid proposing user")
 	}
 
 	item.Proposer = user.Id
-	item.AwaitingApproval = true
 
 	err := ContractItemReplace(item, database)
 	if err != nil {

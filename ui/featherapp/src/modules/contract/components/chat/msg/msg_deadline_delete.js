@@ -59,8 +59,6 @@ const DeadlineCreateMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
-    console.log("LOOKIGN FOR MATCHIGN ID OF " + props.msg.body.deadline.id)
-    console.log(props.deadlines)
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadline.id) {
         setDeadlineName(props.deadlines[i].name)
@@ -90,8 +88,13 @@ const DeadlineCreateMsg = (props) => {
     console.log("Rejecting change")
   }
 
+  const Icon = () => {
+    return (
+      <CalendarIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+    )
+  }
   return (
-    <MsgWrapper msg={props.msg} editString={editString}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <p className="text-gray-400 text-lg mr-2">{"Deleted " + deadlineName}</p>

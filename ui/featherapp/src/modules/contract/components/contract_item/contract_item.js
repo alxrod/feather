@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import ItemTextArea from "./contract_item_textarea"
 
-import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE} from "../../../../services/user.service"
 import { LockOpenIcon, TrashIcon} from "@heroicons/react/outline"
 import { LockClosedIcon, } from '@heroicons/react/solid'
 import DecideButton from "../decide_button";
@@ -27,6 +27,7 @@ const ContractItem = (props) => {
     currentBody: "",
     workerBody: "",
     buyerBody: "",
+    oldBody: "",
     awaitingApproval: false,
     awaitingCreation: false,
     default: true,
@@ -54,19 +55,21 @@ const ContractItem = (props) => {
       return contract_info.workerBody
     } else if (role === BUYER_TYPE) {
       return contract_info.buyerBody
+    } else if (role === ADMIN_TYPE) {
+      return contract_info.currentBody
     } else {
       return contract_info.currentBody
     }
   })
 
-
   useEffect( () => {
-    if (item_text !== contract_info.currentBody && !lock) {
+    if (item_text !== contract_info.oldBody && !lock) {
+
       toggleDecideMode(true)
     } else {
       toggleDecideMode(false)
     }
-  }, [item_text, props.contractItemsChanged])
+  }, [item_text, contract_info.currentBody, contract_info.workerBody, contract_info.buyerBody])
 
   const [proposedByPartner, setProposedByPartner] = useState(false)
   const [itemMsgId, setItemMsgId] = useState("")
@@ -117,6 +120,8 @@ const ContractItem = (props) => {
         setRole(WORKER_TYPE)
       } else if (props.user.user_id === props.curContract.buyer.id) {
         setRole(BUYER_TYPE)
+      } else if (props.user.admin_status) {
+        setRole(ADMIN_TYPE)
       }
     }
   }, [props.curContract, props.user])
@@ -125,7 +130,9 @@ const ContractItem = (props) => {
     if (props.id && props.curItems && props.curItems.length > 0) {
       for (let i = 0; i < props.curItems.length; i++) {
         if (props.curItems[i].id === props.id) {
-          setContractInfo(props.curItems[i])
+          const new_info = JSON.parse(JSON.stringify(props.curItems[i]));
+          new_info.oldBody = new_info.currentBody
+          setContractInfo(new_info)
           if (props.curItems[i].awaitingApproval) {
             setLock(true)
           } else if (props.universalLock) {
@@ -149,6 +156,10 @@ const ContractItem = (props) => {
       new_contract_info.workerBody = new_text;
     } else if (role === BUYER_TYPE) {
       new_contract_info.buyerBody = new_text;
+    } else if (role === ADMIN_TYPE) {
+      new_contract_info.currentBody = new_text;
+      new_contract_info.workerBody = new_text;
+      new_contract_info.buyerBody = new_text;
     }
     setContractInfo(new_contract_info);
 
@@ -168,8 +179,8 @@ const ContractItem = (props) => {
   const submitBodyEdit = () => {
     if (!props.override) {
       props.suggestItem(props.curContract.id, props.id, item_text)
+      toggleDecideMode(false)
     }
-    
   }
 
   const rejectBodyEdit = () => {
@@ -200,7 +211,6 @@ const ContractItem = (props) => {
 
   const addItem = () => {
     if (props.suggestMode) {
-      console.log("Adding item")
       props.addItem(props.curContract.id, contract_info.name, item_text).then( () => {
         props.createCallback()
       })
@@ -215,11 +225,11 @@ const ContractItem = (props) => {
 
   const suggestDeleteItem = () => {
     if (props.override) {
-      console.log("DELETING IN CREATE MODE")
+      // console.log("DELETING IN CREATE MODE")
       props.deleteSuggestContractItem(props.id)
       return
     }
-    console.log(contract_info)
+    // console.log(contract_info)
     props.deleteItem(props.curContract.id, contract_info.id, contract_info.name, contract_info.currentBody)
   }
 

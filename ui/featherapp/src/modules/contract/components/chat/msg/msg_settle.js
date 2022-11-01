@@ -42,8 +42,13 @@ const ContractSettleMsg = (props) => {
     }
   }, [props.deadlines.length])
 
+  const Icon = () => {
+    return (
+      <DocumentIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+    )
+  }
   return (
-    <MsgWrapper msg={props.msg} editString={editString}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="flex items-center">

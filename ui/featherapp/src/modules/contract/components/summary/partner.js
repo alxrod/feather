@@ -72,7 +72,7 @@ const CriticalCriteria = (props) => {
                   <div className="flex-shrink-0">
                     <UserIcon className="mr-1.5 h-9 w-9 flex-shrink-0 text-gray-400"/>
                   </div>
-                  {props.user.admin_status ? (
+                  {props.user?.admin_status ? (
                     <div className="min-w-0 flex-1 px-4 md:grid md:grid-cols-2">
                         <p className="text-base font-medium text-gray-700 truncate mr-2">{"Worker: "+workerName}</p>
                         <p className="text-base font-medium text-gray-700 truncate">{"Buyer: "+buyerName}</p>

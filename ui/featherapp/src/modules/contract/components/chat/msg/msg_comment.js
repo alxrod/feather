@@ -8,9 +8,13 @@ export default (props) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
-
+  const Icon = () => {
+    return (
+      <ChatAltIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+    )
+  }
   return (
-    <MsgWrapper msg={props.msg} editString={"Commented"}>
+    <MsgWrapper msg={props.msg} editString={"Commented"} icon={Icon}>
         <div className="mt-2 text-sm text-gray-700">
           <p>{props.msg.body.message}</p>
         </div>

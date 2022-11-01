@@ -66,7 +66,14 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 		return nil, err
 	}
 	if (contract.Worker != nil && contract.Worker.Id != user_id) && (contract.Buyer != nil && contract.Buyer.Id != user_id) {
-		return nil, errors.New("The queried contract does not belong to this user")
+		user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+		if err != nil {
+			return nil, err
+		}
+		if !user.AdminStatus {
+			return nil, errors.New("The queried contract does not belong to this user")
+		}
+
 	}
 
 	role := db.BUYER
@@ -178,12 +185,20 @@ func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLo
 	if err != nil {
 		return nil, err
 	}
+
+	if user.AdminStatus {
+		err := db.ContractToggleLock(contract, req.ContractLock, database)
+		if err != nil {
+			return nil, err
+		}
+	}
 	err = s.SendToggleLockMessage(contract, user, req.ContractLock, db.SUGGEST)
 	if err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
 }
+
 func (s *BackServer) ReactLock(ctx context.Context, req *comms.ContractReactLockRequest) (*comms.ContractEditResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 

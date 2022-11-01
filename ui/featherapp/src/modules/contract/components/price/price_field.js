@@ -47,7 +47,6 @@ const PriceField = (props) => {
 
   // Should probably be a useMemo
   useEffect( () => {
-    console.log("RUNNING THE REASSESSMENT")
     if (props.createMode !== true && props.curContract.id && props.curContract.id != cur_contract.id) {   
       
       cur_contract = props.curContract
@@ -64,10 +63,7 @@ const PriceField = (props) => {
         toggleLock(true)
         setClasses("hidden")
         setTextColor("text-green")
-        console.log("Receiving")
-        console.log(price)
         setOldPrice(price.current)
-        console.log("Loading the price info for awaiting")
         if (price.proposerId === props.user.user_id) {
           setProposedByPartner(false)
 

@@ -42,20 +42,20 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 	deadline, err := db.DeadlineById(deadline_id, database)
 
 	var userRole uint32
-	if contract.Worker.Id == user.Id {
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		userRole = db.WORKER
-	} else if contract.Buyer.Id == user.Id {
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
 		userRole = db.BUYER
+	} else if user.AdminStatus {
+		userRole = db.ADMIN
 	} else {
 		return nil, errors.New("User is not a member of the contract for which they are suggesting new payout.")
 	}
 
 	oldPayout := deadline.CurrentPayout
 	newPayout := req.NewPayout
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return nil, errors.New("You must provide both user and contract with 2 users to change price with")
-	}
-	err = db.DeadlineSuggestPayout(deadline, user, userRole, newPayout, database)
+
+	err = db.DeadlineSuggestPayout(contract, deadline, user, userRole, newPayout, database)
 	if err != nil {
 		return nil, err
 	}
@@ -192,20 +192,20 @@ func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggest
 	deadline, err := db.DeadlineById(deadline_id, database)
 
 	var userRole uint32
-	if contract.Worker.Id == user.Id {
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		userRole = db.WORKER
-	} else if contract.Buyer.Id == user.Id {
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
 		userRole = db.BUYER
+	} else if contract.Worker != nil && user.AdminStatus {
+		userRole = db.ADMIN
 	} else {
 		return nil, errors.New("User is not a member of the contract for which they are suggesting new payout.")
 	}
 
 	oldDate := deadline.CurrentDate
 	newDate := req.NewDate.AsTime()
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return nil, errors.New("You must provide both user and contract with 2 users to change price with")
-	}
-	err = db.DeadlineSuggestDate(deadline, user, userRole, newDate, database)
+
+	err = db.DeadlineSuggestDate(contract, deadline, user, userRole, newDate, database)
 	if err != nil {
 		return nil, err
 	}
@@ -346,7 +346,24 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 		}
 		items[idx] = item
 	}
-	req.Deadline.AwaitingCreation = true
+
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer != nil {
+			req.Deadline.AwaitingCreation = true
+		} else {
+			req.Deadline.AwaitingCreation = false
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker != nil {
+			req.Deadline.AwaitingCreation = true
+		} else {
+			req.Deadline.AwaitingCreation = false
+		}
+	} else if user.AdminStatus {
+		req.Deadline.AwaitingCreation = false
+	} else {
+		return nil, errors.New("Invalid proposing user")
+	}
 
 	deadline, err := db.DeadlineInsert(req.Deadline, user_id, contract_id, items, database)
 	if err != nil {
@@ -496,7 +513,24 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 		return nil, err
 	}
 
-	deadline.AwaitingDeletion = true
+	if contract.Worker != nil && user.Id == contract.Worker.Id {
+		if contract.Buyer != nil {
+			deadline.AwaitingDeletion = true
+		} else {
+			deadline.AwaitingDeletion = false
+		}
+	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
+		if contract.Worker != nil {
+			deadline.AwaitingDeletion = true
+		} else {
+			deadline.AwaitingDeletion = false
+		}
+	} else if user.AdminStatus {
+		deadline.AwaitingDeletion = false
+	} else {
+		return nil, errors.New("Invalid proposing user")
+	}
+
 	deadline.DeadlineProposerId = user.Id
 	err = db.DeadlineReplace(deadline, database)
 	if err != nil {
@@ -509,6 +543,14 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	if err != nil {
 		return nil, err
 	}
+
+	if deadline.AwaitingDeletion == false {
+		err = db.ContractRemoveDeadline(deadline, contract, database)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// log.Println("Price Message Broadcast")
 	return &comms.ContractEditResponse{}, nil
 }
@@ -642,8 +684,19 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 		}
 		newIds[i] = item_id
 	}
-	if user == nil || contract == nil || contract.Worker == nil || contract.Buyer == nil {
-		return nil, errors.New("You must provide both user and contract with 2 users to change deadline items with")
+
+	incorrect_user := true
+	if user.AdminStatus {
+		incorrect_user = false
+	}
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
+		incorrect_user = false
+	}
+	if contract.Buyer != nil && contract.Buyer.Id == user.Id {
+		incorrect_user = false
+	}
+	if incorrect_user {
+		return nil, errors.New("this user is not correct for the contract")
 	}
 	err = db.DeadlineSuggestItems(deadline, contract, user, newIds, database)
 	if err != nil {

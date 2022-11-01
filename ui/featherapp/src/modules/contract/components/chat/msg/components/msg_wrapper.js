@@ -4,6 +4,21 @@ import { useState, useEffect } from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 export default (props) => {
+
+  function Wrapper({icon: Icon}) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Icon />
+      </div>
+    );
+  }
+  
   const genTimeString = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
@@ -19,7 +34,7 @@ export default (props) => {
         />
 
         <span className={"absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px " + (props.msg.isAdmin ? "border-2 border-indigo-500" : "")}>
-          <ChatAltIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
+          <Wrapper icon={props.icon}/>
         </span>
       </div>
       <div className="min-w-0 flex-1">

@@ -15,6 +15,7 @@ import {
 import { 
     CONTRACT_UPDATE_PRICE,
     CONTRACT_STAGE_UPDATE, 
+    CONTRACT_TOGGLE_LOCK,
 } from "../reducers/contract/contract.actions"
 
 import { 
@@ -23,11 +24,13 @@ import {
     CONTRACT_ADD_DEADLINE_FROM_DB,
     CONTRACT_DEADLINE_SUGGEST_DELETE,
     CONTRACT_DEADLINE_REPLACE,
+    CONTRACT_DEADLINE_REMOVE,
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
     CONTRACT_ITEM_UPDATE_BODY,
     CONTRACT_ITEM_RELOAD,
+    CONTRACT_ITEM_REMOVE,
     CONTRACT_ITEM_REPLACE_SUGGEST,
     CONTRACT_ITEM_SUGGEST_DELETE,
     CONTRACT_ITEM_SETTLE_UPDATE,
@@ -184,45 +187,43 @@ class ChatService {
     }
 }
 
+const adjustNewVersion = (newVersion, msg, this_user_id, role) => {
+    if (msg.body.resolStatus === resolTypes.APPROVED) {
+        newVersion.current = msg.body.newVersion
+        newVersion.buyer = msg.body.newVersion
+        newVersion.worker = msg.body.newVersion
+    } else if (this_user_id === msg.user.id) {
+        if (role === WORKER_TYPE) {
+            newVersion.worker = msg.body.newVersion
+        } else {
+            newVersion.buyer = msg.body.newVersion
+        }   
+    } else if (this_user_id !== msg.user.id) {
+        if (role === WORKER_TYPE) {
+            newVersion.buyer = msg.body.newVersion
+        } else {
+            newVersion.worker = msg.body.newVersion
+        }   
+    }
+    return newVersion
+}
 const parseMessage = (msg, role, this_user_id, dispatch) => {
     if (msg.method === msgMethods.PRICE) {
-        console.log("Looking at a message in this state: ", msg)
-        const newPrice = {
+        let newPrice = {
             proposerId: msg.user.id,
             current: msg.body.oldVersion,
             awaitingApproval: !msg.body.resolved,
             buyer: msg.body.oldVersion,
             worker: msg.body.oldVersion,
         }
+        newPrice = adjustNewVersion(newPrice, msg, this_user_id, role)
         
-        if (msg.body.resolStatus === resolTypes.APPROVED) {
-            newPrice.current = msg.body.newVersion
-            newPrice.buyer = msg.body.newVersion
-            newPrice.worker = msg.body.newVersion
-        } else if (this_user_id === msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newPrice.worker = msg.body.newVersion
-            } else {
-                newPrice.buyer = msg.body.newVersion
-            }   
-        } else if (this_user_id !== msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newPrice.buyer = msg.body.newVersion
-            } else {
-                newPrice.worker = msg.body.newVersion
-            }   
-        }
-        console.log("Suggestion new price:")
-        console.log(newPrice)
         dispatch({
             type: CONTRACT_UPDATE_PRICE,
             payload: newPrice,
         })
     } else if (msg.method === msgMethods.PAYOUT) {
-        console.log("Received payout message")
-        console.log(msg)
-
-        const newPayout = {
+        let newPayout = {
             proposerId: msg.user.id,
             deadlineId: msg.body.deadlineId,
             current: msg.body.oldVersion,
@@ -230,62 +231,34 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             buyer: msg.body.oldVersion,
             worker: msg.body.oldVersion,
         }
-        if (this_user_id === msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newPayout.worker = msg.body.newVersion
-            } else {
-                newPayout.buyer = msg.body.newVersion
-            }   
-        } else if (this_user_id !== msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newPayout.buyer = msg.body.newVersion
-            } else {
-                newPayout.worker = msg.body.newVersion
-            }   
-        }
-        console.log("Suggestion new payout:")
-        console.log(newPayout)
+        newPayout = adjustNewVersion(newPayout, msg, this_user_id, role)
+
         dispatch({
             type: CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
         })
 
     } else if (msg.method === msgMethods.DATE) {
-        console.log("Received date message")
-        console.log(msg)
-
-        const newDate = {
+        console.log("RECEIVED DATE MSG W INFO: ", msg)
+        let newDate = {
             proposerId: msg.user.id,
             deadlineId: msg.body.deadlineId,
-            current: new Date(msg.body.oldVersion.seconds*1000),
+            current: msg.body.oldVersion,
             awaitingApproval: !msg.body.resolved,
-            buyer: new Date(msg.body.oldVersion.seconds*1000),
-            worker: new Date(msg.body.oldVersion.seconds*1000),
+            buyer: msg.body.oldVersion,
+            worker: msg.body.oldVersion,
         }
-        if (this_user_id === msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newDate.worker = new Date(msg.body.newVersion.seconds*1000)
-            } else {
-                newDate.buyer = new Date(msg.body.newVersion.seconds*1000)
-            }   
-        } else if (this_user_id !== msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newDate.buyer = new Date(msg.body.newVersion.seconds*1000)
-            } else {
-                newDate.worker = new Date(msg.body.newVersion.seconds*1000)
-            }   
-        }
-        console.log("Suggestion new date:")
-        console.log(newDate)
+        newDate = adjustNewVersion(newDate, msg, this_user_id, role)
+        newDate.current = new Date(newDate.current.seconds*1000)
+        newDate.worker = new Date(newDate.worker.seconds*1000)
+        newDate.buyer = new Date(newDate.buyer.seconds*1000)
+
         dispatch({
             type: CONTRACT_UPDATE_DATE,
             payload: newDate,
         })
     } else if (msg.method === msgMethods.ITEM) {
-        console.log("Received item body message")
-        console.log(msg)
-
-        const newBody = {
+        let newBody = {
             proposerId: msg.user.id,
             itemId: msg.body.itemId,
             current: msg.body.oldVersion,
@@ -293,49 +266,46 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             buyer: msg.body.oldVersion,
             worker: msg.body.oldVersion,
         }
-        if (this_user_id === msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newBody.worker = msg.body.newVersion
-            } else {
-                newBody.buyer = msg.body.newVersion
-            }   
-        } else if (this_user_id !== msg.user.id) {
-            if (role === WORKER_TYPE) {
-                newBody.buyer = msg.body.newVersion
-            } else {
-                newBody.worker = msg.body.newVersion
-            }   
-        }
-        console.log("Suggestion new item body:")
-        console.log(newBody)
+        newBody = adjustNewVersion(newBody, msg, this_user_id, role)
         dispatch({
             type: CONTRACT_ITEM_UPDATE_BODY,
             payload: newBody,
         })
-        dispatch({
-            type: CONTRACT_ITEM_RELOAD,
-        })
-
     } else if (msg.method === msgMethods.ITEM_CREATE) {
         dispatch({
             type: CONTRACT_ITEM_REPLACE_SUGGEST,
             payload: msg.body.item,
         });
     } else if (msg.method === msgMethods.ITEM_DELETE) {
-        dispatch({
-            type: CONTRACT_ITEM_SUGGEST_DELETE,
-            payload: msg.body.item.id,
-        });
+        if (msg.body.resolved) {
+            dispatch({
+                type: CONTRACT_ITEM_REMOVE,
+                payload: msg.body.item,
+            });
+        } else {
+            dispatch({
+                type: CONTRACT_ITEM_SUGGEST_DELETE,
+                payload: msg.body.item.id,
+            });
+        }
+        
     } else if (msg.method === msgMethods.DEADLINE_CREATE) {
         dispatch({
             type: CONTRACT_ADD_DEADLINE_FROM_DB,
             payload: msg.body.deadline,
         });
     } else if (msg.method === msgMethods.DEADLINE_DELETE) {
-        dispatch({
-            type: CONTRACT_DEADLINE_SUGGEST_DELETE,
-            payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
-        });
+        if (msg.body.resolved) {
+            dispatch({
+                type: CONTRACT_DEADLINE_REMOVE,
+                payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
+            });
+        } else {
+            dispatch({
+                type: CONTRACT_DEADLINE_SUGGEST_DELETE,
+                payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
+            });
+        }
     } else if (msg.method === msgMethods.DEADLINE_ITEMS) {
         dispatch({
             type: CONTRACT_DEADLINE_REPLACE,
@@ -380,6 +350,15 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 itemId: msg.body.itemId,
             }
         })
+    } else if (msg.method === msgMethods.CONTRACT_LOCK) {
+        if (msg.isAdmin) {
+            dispatch({
+                type: CONTRACT_TOGGLE_LOCK,
+                payload: {
+                    lockState: msg.body.contractLock
+                }
+            });
+        }
     }
 }
 
