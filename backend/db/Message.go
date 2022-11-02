@@ -73,9 +73,14 @@ type Message struct {
 
 	Label *LabelNub `bson:"label"`
 
-	UserId  primitive.ObjectID `bson:"user_id"`
-	IsAdmin bool               `bson:"is_admin"`
-	User    *User              `bson:"-"`
+	UserId primitive.ObjectID `bson:"user_id"`
+
+	IsAdmin bool `bson:"is_admin"`
+
+	AdminOverride bool   `bson:"admin_override"`
+	AdminStatus   uint32 `bson:"admin_status"`
+
+	User *User `bson:"-"`
 
 	Timestamp time.Time `bson:"timestamp"`
 }
@@ -89,6 +94,7 @@ type MessageBody struct {
 	ResolStatus  uint32 `bson:"resol_status,omitempty"`
 	WorkerStatus uint32 `bson:"worker_status,omitempty"`
 	BuyerStatus  uint32 `bson:"buyer_status,omitempty"`
+	AdminStatus  uint32 `bson:"admin_status,omitempty"`
 
 	// Item messages
 	ItemId      primitive.ObjectID `bson:"item_id,omitempty"`
@@ -324,6 +330,7 @@ func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 			ResolStatus:  b.ResolStatus,
 			WorkerStatus: b.WorkerStatus,
 			BuyerStatus:  b.BuyerStatus,
+			AdminStatus:  b.AdminStatus,
 		},
 	}
 }
@@ -340,6 +347,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 	proto.Method = m.Method
 	proto.Label = m.Label.Proto()
 	proto.IsAdmin = m.IsAdmin
+	proto.AdminOverride = m.AdminOverride
+	proto.AdminStatus = m.AdminStatus
 
 	if m.Method == COMMENT {
 		proto.Body = m.Body.CommentProto()

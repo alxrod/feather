@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
+import { displayDecide } from "./components/msg_helpers"
 
 const ItemDeleteMsg = (props) => {
 
@@ -87,7 +88,7 @@ const ItemDeleteMsg = (props) => {
           <p className="text-gray-400 text-lg mr-2">{"Deleted " + props.msg.body.item.name}</p>
           <div className="w-2"></div>
           <div className="w-16">
-            {(yourStatus == decisionTypes.UNDECIDED) && (
+            {(displayDecide(props.msg, yourStatus, props.user)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -98,8 +99,13 @@ const ItemDeleteMsg = (props) => {
         <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
           <p className="text-red">{props.msg.body.item.currentBody}</p>
         </div>
-        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
-        
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername}
+        />
 
         
       </div>

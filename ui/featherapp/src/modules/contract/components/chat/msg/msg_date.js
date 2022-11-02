@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
+import { displayDecide } from "./components/msg_helpers"
 
 const DateMsg = (props) => {
 
@@ -132,7 +133,7 @@ const DateMsg = (props) => {
           </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(yourStatus == decisionTypes.UNDECIDED) && (
+            {(displayDecide(props.msg, yourStatus, props.user)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -140,7 +141,13 @@ const DateMsg = (props) => {
             )} 
           </div>
         </div>
-        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername}
+        />
       </div>
     </MsgWrapper>
 

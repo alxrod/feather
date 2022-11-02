@@ -95,21 +95,32 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	// What needs to be implemented:
-	// 1) If the user reacts with accept
-	// If the other user is accepted, mark the change as resolved and then update the price.
-	// 2) If the user reacts with reject
-	// Resolve the contract, make it cancelled no matter the other users reaction
-
-	// Implementation:
-
 	saveContract := false
 	// 1)
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			contract.Price.Current = msg.Body.PriceNew
+			contract.Price.Worker = msg.Body.PriceNew
+			contract.Price.Buyer = msg.Body.PriceNew
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			contract.Price.Current = msg.Body.PriceOld
+			contract.Price.Worker = msg.Body.PriceOld
+			contract.Price.Buyer = msg.Body.PriceOld
+		}
+		contract.Price.AwaitingApproval = false
+		saveContract = true
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		contract.Price.Current = msg.Body.PriceNew
@@ -140,6 +151,7 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 		ResolStatus:  msg.Body.ResolStatus,
 		WorkerStatus: msg.Body.WorkerStatus,
 		BuyerStatus:  msg.Body.BuyerStatus,
+		AdminStatus:  msg.AdminStatus,
 	}
 	revMsg := &db.Message{
 		RoomId:    contract.RoomId,

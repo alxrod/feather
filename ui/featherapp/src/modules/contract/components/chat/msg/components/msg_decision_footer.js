@@ -16,28 +16,43 @@ const MsgDecisionFooter = (props) => {
       setShowPartner(false)
     }
   }, [props.curContract])
+
+  useEffect( () => {
+    console.log(props.msg)
+    console.log("overide: ", props.msg.adminOverride, " stat: ", props.adminStatus)
+  }, [props.adminStatus])
   if (props.msg.isAdmin) {
     return (<></>)
   }
   return (
     <div className="flex">
-      {(props.yourStatus == decisionTypes.YES) && (
+      {(props.msg.adminOverride && props.adminStatus === decisionTypes.YES) && (
+        <div className="flex items-center justify-between">
+          <p className="text-grey-400 mr-1">Admin <b className="text-green">approved</b></p>
+        </div>
+      )}
+      {(props.msg.adminOverride && props.adminStatus === decisionTypes.NO) && (
+        <div className="flex items-center justify-between">
+          <p className="text-grey-400 mr-1">Admin <b className="text-red">rejected</b></p>
+        </div>
+      )}
+      {(!props.msg.adminOverride && props.yourStatus == decisionTypes.YES ) && (
         <div className="flex items-center justify-between">
           <p className="text-grey-400 mr-1">You <b className="text-green">approved</b></p>
         </div>
       )}
-      {(props.yourStatus == decisionTypes.NO) && (
+      {(!props.msg.adminOverride && props.yourStatus == decisionTypes.NO) && (
         <div>
           <p className="text-grey-400 mr-1">You <b className="text-red">rejected</b></p>
         </div>
       )}
       {" "}
-      {(showPartner && props.otherStatus == decisionTypes.YES) && (
+      {(!props.msg.adminOverride && showPartner && props.otherStatus == decisionTypes.YES) && (
         <div className="flex items-center justify-between">
           <p className="text-grey-400">{props.otherUsername} <b className="text-green">approved</b>{" "}</p>
         </div>
       )}
-      {(showPartner && props.otherStatus == decisionTypes.NO) && (
+      {(!props.msg.adminOverride && showPartner && props.otherStatus == decisionTypes.NO) && (
         <div>
           <p className="text-grey-400">{props.otherUsername} <b className="text-red">rejected</b></p>
         </div>

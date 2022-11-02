@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
+import { displayDecide } from "./components/msg_helpers"
 
 const DeadlineCreateMsg = (props) => {
 
@@ -100,7 +101,7 @@ const DeadlineCreateMsg = (props) => {
           <p className="text-gray-400 text-lg mr-2">{"Deleted " + deadlineName}</p>
           <div className="w-2"></div>
           <div className="w-16">
-            {(yourStatus == decisionTypes.UNDECIDED) && (
+            {(displayDecide(props.msg, yourStatus, props.user)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -114,7 +115,13 @@ const DeadlineCreateMsg = (props) => {
           </div>
           <p className="text-red">on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
         </div>
-        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername}
+        />
         
       </div>
     </MsgWrapper>

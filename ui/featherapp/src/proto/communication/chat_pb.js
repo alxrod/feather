@@ -814,6 +814,8 @@ proto.main.ChatMessage.toObject = function(includeInstance, msg) {
     label: (f = msg.getLabel()) && proto.main.ChatLabel.toObject(includeInstance, f),
     method: jspb.Message.getFieldWithDefault(msg, 4, 0),
     isAdmin: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
+    adminOverride: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
+    adminStatus: jspb.Message.getFieldWithDefault(msg, 23, 0),
     commentBody: (f = msg.getCommentBody()) && proto.main.CommentMsgBody.toObject(includeInstance, f),
     payoutBody: (f = msg.getPayoutBody()) && proto.main.PayoutMsgBody.toObject(includeInstance, f),
     dateBody: (f = msg.getDateBody()) && proto.main.DateMsgBody.toObject(includeInstance, f),
@@ -891,6 +893,14 @@ proto.main.ChatMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 21:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsAdmin(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setAdminOverride(value);
+      break;
+    case 23:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setAdminStatus(value);
       break;
     case 6:
       var value = new proto.main.CommentMsgBody;
@@ -1038,6 +1048,20 @@ proto.main.ChatMessage.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       21,
+      f
+    );
+  }
+  f = message.getAdminOverride();
+  if (f) {
+    writer.writeBool(
+      22,
+      f
+    );
+  }
+  f = message.getAdminStatus();
+  if (f !== 0) {
+    writer.writeUint32(
+      23,
       f
     );
   }
@@ -1326,6 +1350,42 @@ proto.main.ChatMessage.prototype.getIsAdmin = function() {
  */
 proto.main.ChatMessage.prototype.setIsAdmin = function(value) {
   return jspb.Message.setProto3BooleanField(this, 21, value);
+};
+
+
+/**
+ * optional bool admin_override = 22;
+ * @return {boolean}
+ */
+proto.main.ChatMessage.prototype.getAdminOverride = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.ChatMessage} returns this
+ */
+proto.main.ChatMessage.prototype.setAdminOverride = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 22, value);
+};
+
+
+/**
+ * optional uint32 admin_status = 23;
+ * @return {number}
+ */
+proto.main.ChatMessage.prototype.getAdminStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 23, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.ChatMessage} returns this
+ */
+proto.main.ChatMessage.prototype.setAdminStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 23, value);
 };
 
 
@@ -6228,7 +6288,8 @@ proto.main.RevMsgBody.toObject = function(includeInstance, msg) {
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
     workerStatus: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    buyerStatus: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    buyerStatus: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    adminStatus: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -6284,6 +6345,10 @@ proto.main.RevMsgBody.deserializeBinaryFromReader = function(msg, reader) {
     case 6:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setBuyerStatus(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setAdminStatus(value);
       break;
     default:
       reader.skipField();
@@ -6346,6 +6411,13 @@ proto.main.RevMsgBody.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint32(
       6,
+      f
+    );
+  }
+  f = message.getAdminStatus();
+  if (f !== 0) {
+    writer.writeUint32(
+      8,
       f
     );
   }
@@ -6439,6 +6511,24 @@ proto.main.RevMsgBody.prototype.getBuyerStatus = function() {
  */
 proto.main.RevMsgBody.prototype.setBuyerStatus = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional uint32 admin_status = 8;
+ * @return {number}
+ */
+proto.main.RevMsgBody.prototype.getAdminStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.RevMsgBody} returns this
+ */
+proto.main.RevMsgBody.prototype.setAdminStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 

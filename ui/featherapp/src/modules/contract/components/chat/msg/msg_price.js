@@ -12,6 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
+import { displayDecide, assignStatus } from "./components/msg_helpers"
 
 const PriceMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -54,18 +55,10 @@ const PriceMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
-    if (props.msg) {
-      // console.log("New Status for " + props.msg.id)
-      if (props.yourRole == WORKER_TYPE) {
-        setStatus(props.msg.body.workerStatus)
-        setOtherStatus(props.msg.body.buyerStatus)
-      } else if (props.yourRole == BUYER_TYPE) {
-        setStatus(props.msg.body.buyerStatus)
-        setOtherStatus(props.msg.body.workerStatus)
-      } 
-    }
+    // console.log("WTFFF")
+    assignStatus(props.msg, props.user, props.yourRole, setStatus, setOtherStatus)
     
-  }, [props.msg, props.yourRole, version])
+  }, [props.msg, props.yourRole, props.user, version])
 
   const acceptChange = () => {
     props.reactPrice(props.curContract.id, props.msg.id, decisionTypes.YES)
@@ -123,7 +116,7 @@ const PriceMsg = (props) => {
           </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(yourStatus == decisionTypes.UNDECIDED) && (
+            {(displayDecide(props.msg, yourStatus, props.user)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -131,7 +124,12 @@ const PriceMsg = (props) => {
             )} 
           </div>
         </div>
-        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername} />
       </div>
     </MsgWrapper>
 

@@ -76,9 +76,11 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 
 	}
 
-	role := db.BUYER
+	role := db.ADMIN
 	if contract.Worker != nil && contract.Worker.Id == user_id {
 		role = db.WORKER
+	} else if contract.Buyer != nil && contract.Buyer.Id == user_id {
+		role = db.BUYER
 	}
 
 	proto := contract.Proto()
@@ -213,11 +215,26 @@ func (s *BackServer) ReactLock(ctx context.Context, req *comms.ContractReactLock
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			err := db.ContractToggleLock(contract, msg.Body.ContractLock, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.Resolved = true
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+		}
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		err := db.ContractToggleLock(contract, msg.Body.ContractLock, database)

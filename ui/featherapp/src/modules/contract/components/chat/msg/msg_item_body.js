@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import DeltaBody from "../../delta/delta_textarea"
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
+import { displayDecide } from "./components/msg_helpers"
 
 const ItemBodyMsg = (props) => {
   let editString = "Suggested"
@@ -87,7 +88,7 @@ const ItemBodyMsg = (props) => {
           <p className="text-gray-400 text-lg mr-2">{"Text Change"}</p>
           <div className="w-2"></div>
           <div className="w-16">
-            {(yourStatus == decisionTypes.UNDECIDED) && (
+            {(displayDecide(props.msg, yourStatus, props.user)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -98,7 +99,13 @@ const ItemBodyMsg = (props) => {
         <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
           <DeltaBody old_text={props.msg.body.oldVersion} new_text={props.msg.body.newVersion}/>
         </div>
-        <MsgDecisionFooter msg={props.msg} yourStatus={yourStatus} otherStatus={otherStatus} otherUsername={otherUsername} />
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername}
+        />
 
       </div>
     </MsgWrapper>

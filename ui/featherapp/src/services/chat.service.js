@@ -314,7 +314,7 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({
             type: CHAT_MESSAGE_UPDATE,
-            payload: msg.body,
+            payload: msg,
         })
     } else if (msg.method === msgMethods.CONTRACT_SIGN || msg.method === msgMethods.CONTRACT_SETTLE) {
         let workerApproved = false;

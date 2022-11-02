@@ -11,6 +11,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING } from "../../../../../custom_encodings"
 import MsgWrapper from "./components/msg_wrapper"
+import { displayDecide } from "./components/msg_helpers"
 
 const ItemSettleMsg = (props) => {
 

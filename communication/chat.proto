@@ -16,6 +16,10 @@ message ChatMessage {
     ChatLabel label =  5;
     uint32 method = 4;
     bool is_admin = 21;
+
+    bool admin_override = 22;
+    uint32 admin_status = 23;
+
     oneof body {
         CommentMsgBody comment_body = 6;
         PayoutMsgBody payout_body = 7;
@@ -167,6 +171,7 @@ message RevMsgBody {
     uint32 resol_status = 7;
     uint32 worker_status = 5;
     uint32 buyer_status = 6;
+    uint32 admin_status = 8;
 }
 
 message UserJoin {

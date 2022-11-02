@@ -113,11 +113,29 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
+	// 1)
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			deadline.CurrentPayout = msg.Body.PayoutNew
+			deadline.WorkerPayout = msg.Body.PayoutNew
+			deadline.BuyerPayout = msg.Body.PayoutNew
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			deadline.CurrentPayout = msg.Body.PayoutOld
+			deadline.WorkerPayout = msg.Body.PayoutOld
+			deadline.BuyerPayout = msg.Body.PayoutOld
+		}
+		deadline.PayoutAwaitingApproval = false
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		deadline.CurrentPayout = msg.Body.PayoutNew
@@ -146,6 +164,7 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 		ResolStatus:  msg.Body.ResolStatus,
 		WorkerStatus: msg.Body.WorkerStatus,
 		BuyerStatus:  msg.Body.BuyerStatus,
+		AdminStatus:  msg.Body.AdminStatus,
 	}
 	revMsg := &db.Message{
 		RoomId:    contract.RoomId,
@@ -263,11 +282,29 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			deadline.CurrentDate = msg.Body.DateNew
+			deadline.WorkerDate = msg.Body.DateNew
+			deadline.BuyerDate = msg.Body.DateNew
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			deadline.CurrentDate = msg.Body.DateOld
+			deadline.WorkerDate = msg.Body.DateOld
+			deadline.BuyerDate = msg.Body.DateOld
+		}
+		deadline.DateAwaitingApproval = false
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		deadline.CurrentDate = msg.Body.DateNew
@@ -428,11 +465,39 @@ func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractRe
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		deadline.AwaitingCreation = false
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+			msg.Body.Resolved = true
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			err := db.DeadlineReplace(deadline, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.Resolved = true
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+
+			err := db.DeadlineReplace(deadline, database)
+			if err != nil {
+				return nil, err
+			}
+
+			err = db.ContractRemoveDeadline(deadline, contract, database)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		deadline.AwaitingCreation = false
@@ -598,11 +663,32 @@ func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.Contrac
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		deadline.AwaitingDeletion = false
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+
+			err := db.ContractRemoveDeadline(deadline, contract, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			err := db.DeadlineReplace(deadline, database)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		deadline.AwaitingDeletion = false
@@ -756,11 +842,31 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		if req.Status == db.DECISION_YES {
+
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			err := db.DeadlineReactItems(deadline, contract, user, db.DECISION_YES, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			err := db.DeadlineReactItems(deadline, contract, user, db.DECISION_NO, database)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		err := db.DeadlineReactItems(deadline, contract, user, db.DECISION_YES, database)

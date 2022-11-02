@@ -106,11 +106,30 @@ func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		item.AwaitingApproval = false
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			item.CurrentBody = msg.Body.ItemBodyNew
+			item.WorkerBody = msg.Body.ItemBodyNew
+			item.BuyerBody = msg.Body.ItemBodyNew
+
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			item.CurrentBody = msg.Body.ItemBodyOld
+			item.WorkerBody = msg.Body.ItemBodyOld
+			item.BuyerBody = msg.Body.ItemBodyOld
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		item.CurrentBody = msg.Body.ItemBodyNew
@@ -263,11 +282,32 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		item.AwaitingApproval = false
+		item.AwaitingCreation = false
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			err := db.ContractItemReplace(item, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			err := db.ContractRemoveItem(item, contract, database)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		item.AwaitingApproval = false
@@ -437,11 +477,32 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 	} else if user.Id == contract.Buyer.Id {
 		// role = db.BUYER
 		msg.Body.BuyerStatus = req.Status
+	} else if user.AdminStatus {
+		msg.AdminOverride = true
+		msg.AdminStatus = req.Status
 	} else {
 		return nil, errors.New(fmt.Sprintf("The user %s that sent the change is not a member of this contract", user.Id))
 	}
 
-	if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
+	if user.AdminStatus {
+		msg.Body.Resolved = true
+		item.AwaitingApproval = false
+		item.AwaitingDeletion = false
+		if req.Status == db.DECISION_YES {
+			msg.Body.ResolStatus = db.RESOL_APPROVED
+			err := db.ContractRemoveItem(item, contract, database)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			msg.Body.ResolStatus = db.RESOL_REJECTED
+			err := db.ContractItemReplace(item, database)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	} else if msg.Body.WorkerStatus == db.DECISION_YES && msg.Body.BuyerStatus == db.DECISION_YES {
 		msg.Body.Resolved = true
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		item.AwaitingApproval = false
