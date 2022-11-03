@@ -3,7 +3,7 @@ import { CheckCircleIcon } from '@heroicons/react/solid'
 const DeadlineHistory = (props) => {
 
   const genDateString = (date) => {
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'numeric' }) 
+    return date.toLocaleDateString('en-US', { day: 'numeric', month: 'numeric' }) 
   }
 
   return (

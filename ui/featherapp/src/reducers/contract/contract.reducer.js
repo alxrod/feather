@@ -104,7 +104,16 @@ export default (state = initialState, action) => {
                                 action.payload
                             )
             }
-
+        
+        case actions.CONTRACT_ADMIN_REQUEST_CHANGED:
+            return {
+                ...state,
+                contractChanged: !state.contractChanged,
+                curContract: helpers.editAdminRequested(
+                                state.curContract, 
+                                action.payload
+                            )
+            }
         default:
             return state
     }

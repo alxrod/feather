@@ -63,6 +63,9 @@ message ContractEntity {
     bool buyer_approved = 13;
     repeated ItemEntity items = 7;
     string room_id = 10;
+
+    bool disputed = 16;
+    bool admin_requested = 17;
 }
 
 message ContractNub {
@@ -72,6 +75,9 @@ message ContractNub {
     float price = 4;
     uint32 stage = 5;
     uint32 user_type = 6;
+
+    bool disputed = 7;
+    bool admin_requested = 8;
 }
 
 message InviteDataRequest {
@@ -283,6 +289,11 @@ message SettleContractRequest {
     string contract_id = 2;
 }
 
+message ContractRequestAdmin {
+    string contract_id = 1;
+    string user_id = 2;
+}
+
 message ContractToggleLockRequest {
     string user_id = 1;
     string contract_id = 2;
@@ -302,6 +313,8 @@ message ContractSettleItemRequest {
     string item_id = 4;
     uint32 new_state = 5;
 }
+
+message NullResponse {}
 
 message ContractEditResponse {}
 
@@ -347,4 +360,6 @@ service Contract {
     rpc ReactLock(ContractReactLockRequest) returns (ContractEditResponse) {};
 
     rpc SettleItem(ContractSettleItemRequest) returns (ContractEditResponse) {};
+    rpc RequestAdmin(ContractRequestAdmin) returns (NullResponse) {};
+
 }

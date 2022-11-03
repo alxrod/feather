@@ -32,6 +32,7 @@ const (
 	CONTRACT_LOCK        = 12
 	CONTRACT_SETTLE      = 13
 	CONTRACT_ITEM_SETTLE = 14
+	REQUEST_ADMIN        = 15
 )
 
 // Editing Typs
@@ -322,6 +323,12 @@ func (b *MessageBody) SettleItemProto() *comms.ChatMessage_SettleItemBody {
 	}
 }
 
+func (b *MessageBody) RequestAdminProto() *comms.ChatMessage_RequestAdminBody {
+	return &comms.ChatMessage_RequestAdminBody{
+		RequestAdminBody: &comms.RequestAdminMsgBody{},
+	}
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -380,6 +387,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ContractSettleProto()
 	} else if m.Method == CONTRACT_ITEM_SETTLE {
 		proto.Body = m.Body.SettleItemProto()
+	} else if m.Method == REQUEST_ADMIN {
+		proto.Body = m.Body.RequestAdminProto()
 	}
 
 	return proto

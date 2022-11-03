@@ -5,6 +5,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { TagIcon } from '@heroicons/react/solid'
 
 import { sendMessage } from '../../../../reducers/chat/dispatchers/chat.dispatcher';
+import { requestAdmin } from '../../../../reducers/contract/dispatchers/contract.admin.dispatcher';
 import { labelTypes } from '../../../../services/chat.service';
 
 function classNames(...classes) {
@@ -19,7 +20,13 @@ const ChatBox = (props) => {
     { name: 'Price', id:"", type: labelTypes.PRICE },
   ])
   const [labelled, setLabelled] = useState(labels[0])
+  
+  const [showAdminButton, toggleAdminButton] = useState(true)
   const [message, setMessage] = useState("")
+
+  useEffect( () => {
+    toggleAdminButton(!props.curContract.adminRequested)
+  }, [props.curContract, props.contractChanged])
   useEffect( () => {
     if (props.curContract.id) {
       let items = [...labels]
@@ -47,12 +54,13 @@ const ChatBox = (props) => {
       handleSend(e)
     }
   }
+
+  const handleRequestAdmin = () => {
+    props.requestAdmin(props.curContract.id)
+  }
   return (
-    <form action="#" className="relative">
+    <div className="relative">
       <div className="border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
-        <label htmlFor="description" className="sr-only">
-          Description
-        </label>
         <textarea
           rows={2}
           name="description"
@@ -78,60 +86,70 @@ const ChatBox = (props) => {
       <div className="absolute bottom-0 inset-x-px">
         {/* Actions: These are just examples to demonstrate the concept, replace/wire these up however makes sense for your project. */}
         <div className="border-t border-gray-200 px-2 py-2 flex justify-between items-center space-x-3 sm:px-3">
-          <div className="flex">
-          <Listbox as="div" value={labelled} onChange={setLabelled} className="flex-shrink-0">
-            {({ open }) => (
-              <>
-                <Listbox.Label className="sr-only">Add a label</Listbox.Label>
-                <div className="relative">
-                  <Listbox.Button className="relative inline-flex items-center rounded-full py-2 px-2 bg-gray-50 text-sm font-medium text-gray-500 whitespace-nowrap hover:bg-gray-100 sm:px-3">
-                    <TagIcon
-                      className={classNames(
-                        labelled.value === null ? 'text-gray-300' : 'text-gray-500',
-                        'flex-shrink-0 h-5 w-5 sm:-ml-1'
-                      )}
-                      aria-hidden="true"
-                    />
-                    <span
-                      className={classNames(
-                        labelled.value === null ? '' : 'text-gray-900',
-                        'hidden truncate sm:ml-2 sm:block'
-                      )}
-                    >
-                      {labelled.value === null ? 'Label' : labelled.name}
-                    </span>
-                  </Listbox.Button>
-
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute right-0 z-10 mt-1 w-52 bg-white shadow max-h-56 rounded-lg py-3 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                      {labels.map((label, idx) => (
-                        <Listbox.Option
-                          key={idx}
-                          className={({ active }) =>
-                            classNames(
-                              active ? 'bg-gray-100' : 'bg-white',
-                              'cursor-default select-none relative py-2 px-3'
-                            )
-                          }
-                          value={label}
-                        >
-                          <div className="flex items-center">
-                            <span className="block font-medium truncate">{label.name}</span>
-                          </div>
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </>
+          <div className="flex space-x-1">
+            {showAdminButton && (
+              <button
+                onClick={handleRequestAdmin}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-indigo-900 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300"
+              >
+                Get Admin
+              </button>
             )}
-          </Listbox>
+            <div className="flex">
+              <Listbox as="div" value={labelled} onChange={setLabelled} className="flex-shrink-0">
+                {({ open }) => (
+                  <>
+                    <Listbox.Label className="sr-only">Add a label</Listbox.Label>
+                    <div className="relative">
+                      <Listbox.Button className="relative inline-flex items-center rounded-full py-2 px-2 bg-gray-50 text-sm font-medium text-gray-500 whitespace-nowrap hover:bg-gray-100 sm:px-3">
+                        <TagIcon
+                          className={classNames(
+                            labelled.value === null ? 'text-gray-300' : 'text-gray-500',
+                            'flex-shrink-0 h-5 w-5 sm:-ml-1'
+                          )}
+                          aria-hidden="true"
+                        />
+                        <span
+                          className={classNames(
+                            labelled.value === null ? '' : 'text-gray-900',
+                            'hidden truncate sm:ml-2 sm:block'
+                          )}
+                        >
+                          {labelled.value === null ? 'Label' : labelled.name}
+                        </span>
+                      </Listbox.Button>
+
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute right-0 z-10 mt-1 w-52 bg-white shadow max-h-56 rounded-lg py-3 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                          {labels.map((label, idx) => (
+                            <Listbox.Option
+                              key={idx}
+                              className={({ active }) =>
+                                classNames(
+                                  active ? 'bg-gray-100' : 'bg-white',
+                                  'cursor-default select-none relative py-2 px-3'
+                                )
+                              }
+                              value={label}
+                            >
+                              <div className="flex items-center">
+                                <span className="block font-medium truncate">{label.name}</span>
+                              </div>
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </>
+                )}
+              </Listbox>
+            </div>
           </div>
           <div className="flex-shrink-0">
             <button
@@ -143,16 +161,18 @@ const ChatBox = (props) => {
           </div>
         </div>
       </div>
-    </form>
+    </div>
   )
 }
 const mapStateToProps = ({ user, contract }) => ({
   curContract: contract.curContract,
+  contractChanged: contract.contractChanged,
   user: user.user,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  sendMessage
+  sendMessage,
+  requestAdmin,
 }, dispatch)
 
 export default connect(

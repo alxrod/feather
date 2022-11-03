@@ -7,6 +7,11 @@ export const editPrice = (contract, price) =>{
     contract.price = price
     return contract
 }
+
+export const editAdminRequested = (contract, admin_requested) => {
+    contract.adminRequested = admin_requested
+    return contract
+}
 export const replaceContractNub = (nubs, new_nub) => {
     for (let i = 0; i < nubs.length; i++) {
         if (nubs[i].id === new_nub.id) {

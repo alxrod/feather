@@ -194,8 +194,21 @@ func ContractItemChangeSettle(
 	} else {
 		return errors.New("current user is not connected to the current contract")
 	}
-
+	if item.WorkerSettled == ITEM_APPROVE && item.BuyerSettled == ITEM_REJECT {
+		contract.Disputed = true
+	} else if item.BuyerSettled == ITEM_APPROVE && item.WorkerSettled == ITEM_REJECT {
+		contract.Disputed = true
+	} else {
+		contract.Disputed = false
+	}
 	err := ContractItemReplace(item, database)
+	if err != nil {
+		return err
+	}
 
+	err = ContractSaveDisputed(contract, database)
+	if err != nil {
+		return err
+	}
 	return err
 }

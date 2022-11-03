@@ -1845,5 +1845,66 @@ proto.main.ContractPromiseClient.prototype.settleItem =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractRequestAdmin,
+ *   !proto.main.NullResponse>}
+ */
+const methodDescriptor_Contract_RequestAdmin = new grpc.web.MethodDescriptor(
+  '/main.Contract/RequestAdmin',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractRequestAdmin,
+  proto.main.NullResponse,
+  /**
+   * @param {!proto.main.ContractRequestAdmin} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.NullResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractRequestAdmin} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.NullResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.NullResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.requestAdmin =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/RequestAdmin',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_RequestAdmin,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractRequestAdmin} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.NullResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.requestAdmin =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/RequestAdmin',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_RequestAdmin);
+};
+
+
 module.exports = proto.main;
 

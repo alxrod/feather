@@ -43,6 +43,7 @@ import {
 
     ContractToggleLockRequest,
     ContractReactLockRequest,
+    ContractRequestAdmin
     
 
 } from "../proto/communication/contract_pb";
@@ -653,6 +654,22 @@ class ContractService {
         return new Promise( (resolve, reject) => {
             var metadata = {"authorization": token}
             contractClient.settle(settleRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+
+    requestAdmin(token, user_id, contract_id) {
+        let request = new ContractRequestAdmin();
+        request.setUserId(user_id);
+        request.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.requestAdmin(request, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }

@@ -7,3 +7,4 @@ export const CONTRACT_TOGGLE_LOCK = "contract/contract/TOGGLE_LOCK"
 export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 
 export const CONTRACT_UPDATE_PRICE = "contract/price/UPDATE_PRICE"
+export const CONTRACT_ADMIN_REQUEST_CHANGED = "contract/admin/REQUEST_CHANGED"

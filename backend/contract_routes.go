@@ -181,6 +181,25 @@ func (s *BackServer) Settle(ctx context.Context, req *comms.SettleContractReques
 	}, nil
 }
 
+func (s *BackServer) RequestAdmin(ctx context.Context, req *comms.ContractRequestAdmin) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract.AdminRequested = true
+	err = db.ContractSaveAdminRequested(contract, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.SendRequestAdminMessage(contract, user)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.NullResponse{}, nil
+}
+
 func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLockRequest) (*comms.ContractEditResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)

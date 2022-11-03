@@ -16,6 +16,7 @@ import {
     CONTRACT_UPDATE_PRICE,
     CONTRACT_STAGE_UPDATE, 
     CONTRACT_TOGGLE_LOCK,
+    CONTRACT_ADMIN_REQUEST_CHANGED
 } from "../reducers/contract/contract.actions"
 
 import { 
@@ -66,6 +67,7 @@ export const msgMethods = {
     CONTRACT_LOCK: 12,
     CONTRACT_SETTLE: 13,
     CONTRACT_ITEM_SETTLE: 14,
+    REQUEST_ADMIN: 15,
 }
 
 export const deadlineItemTypes = {
@@ -359,6 +361,11 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 }
             });
         }
+    } else if (msg.method === msgMethods.REQUEST_ADMIN) {
+        dispatch({
+            type: CONTRACT_ADMIN_REQUEST_CHANGED,
+            payload: true,
+        })
     }
 }
 

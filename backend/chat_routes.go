@@ -546,6 +546,32 @@ func (s *BackServer) SendContractSettleMessage(
 	return nil
 }
 
+func (s *BackServer) SendRequestAdminMessage(
+	contract *db.Contract,
+	user *db.User) error {
+	body := &db.MessageBody{}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.REQUEST_ADMIN,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Admin Request",
+		},
+	}
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) SendItemSettleMessage(contract *db.Contract,
 	deadline *db.Deadline,
 	user *db.User,

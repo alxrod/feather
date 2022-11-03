@@ -36,6 +36,7 @@ message ChatMessage {
         ContractLockMsgBody contract_lock_body = 18;
         ContractSettleMsgBody contract_settle_body = 19;
         ContractSettleItemMsgBody settle_item_body = 20;
+        RequestAdminMsgBody request_admin_body = 24;
     }   
 }
 message ChatLabel {
@@ -163,6 +164,9 @@ message ContractLockMsgBody {
     uint32 resol_status = 6;
     uint32 worker_status = 7;
     uint32 buyer_status = 8;
+}
+
+message RequestAdminMsgBody {
 }
 
 message RevMsgBody {
