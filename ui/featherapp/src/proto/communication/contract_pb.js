@@ -4173,7 +4173,8 @@ proto.main.ItemEntity.toObject = function(includeInstance, msg) {
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
     workerSettled: jspb.Message.getFieldWithDefault(msg, 26, 0),
-    buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0)
+    buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0),
+    adminSettled: jspb.Message.getFieldWithDefault(msg, 28, 0)
   };
 
   if (includeInstance) {
@@ -4253,6 +4254,10 @@ proto.main.ItemEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 27:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setBuyerSettled(value);
+      break;
+    case 28:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setAdminSettled(value);
       break;
     default:
       reader.skipField();
@@ -4357,6 +4362,13 @@ proto.main.ItemEntity.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint32(
       27,
+      f
+    );
+  }
+  f = message.getAdminSettled();
+  if (f !== 0) {
+    writer.writeUint32(
+      28,
       f
     );
   }
@@ -4558,6 +4570,24 @@ proto.main.ItemEntity.prototype.getBuyerSettled = function() {
  */
 proto.main.ItemEntity.prototype.setBuyerSettled = function(value) {
   return jspb.Message.setProto3IntField(this, 27, value);
+};
+
+
+/**
+ * optional uint32 admin_settled = 28;
+ * @return {number}
+ */
+proto.main.ItemEntity.prototype.getAdminSettled = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 28, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.ItemEntity} returns this
+ */
+proto.main.ItemEntity.prototype.setAdminSettled = function(value) {
+  return jspb.Message.setProto3IntField(this, 28, value);
 };
 
 

@@ -118,6 +118,7 @@ message ItemEntity {
 
     uint32 worker_settled = 26;
     uint32 buyer_settled = 27;
+    uint32 admin_settled = 28;
 }
 
 message ItemNub {

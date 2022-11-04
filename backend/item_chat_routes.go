@@ -546,3 +546,21 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 	}
 	return &comms.ContractEditResponse{}, nil
 }
+
+func (s *BackServer) SettleItem(ctx context.Context, req *comms.ContractSettleItemRequest) (*comms.ContractEditResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, deadline, item, err := pullUserContractDeadlineItem(req.UserId, req.ContractId, req.DeadlineId, req.ItemId, database)
+	if err != nil {
+		return nil, err
+	}
+	err = db.ContractItemChangeSettle(item, deadline, user, contract, req.NewState, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.SendItemSettleMessage(contract, deadline, user, item)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+}

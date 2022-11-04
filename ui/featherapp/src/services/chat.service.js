@@ -349,6 +349,7 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             payload: {
                 workerSettled: msg.body.itemWorkerSettle,
                 buyerSettled: msg.body.itemBuyerSettle,
+                adminSettled: msg.body.itemAdminSettle,
                 itemId: msg.body.itemId,
             }
         })

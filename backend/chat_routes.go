@@ -587,6 +587,7 @@ func (s *BackServer) SendItemSettleMessage(contract *db.Contract,
 		ItemId:           item.Id,
 		ItemWorkerSettle: item.WorkerSettled,
 		ItemBuyerSettle:  item.BuyerSettled,
+		ItemAdminSettle:  item.AdminSettled,
 	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,

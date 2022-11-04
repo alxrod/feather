@@ -4,12 +4,16 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { useState, useEffect } from "react"
 import { ITEM_APPROVED } from "../../../../custom_encodings"
+import { WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE } from "../../../../services/user.service"
+
 const SettleHub = (props) => {
   const [curDeadline, setCurDeadline] = useState({})
   const [curItems, setCurItems] = useState([])
   const [totalItemLength, setTotalItemLength] = useState(0)
-  const [yourApprovedCount, setYourApprovedCount] = useState(0)
-  const [partnerApprovedCount, setPartnerApprovedCount] = useState(0)
+
+  const [yourRole, setYourRole] = useState(WORKER_TYPE)
+  const [workerApprovedCount, setWorkerApprovedCount] = useState(0)
+  const [buyerApprovedCount, setBuyerApprovedCount] = useState(0)
 
   const percentComplete = (count) => {
     return Math.round((count/totalItemLength)*100)+"%"
@@ -41,14 +45,14 @@ const SettleHub = (props) => {
           setCurItems(new_items)
           setTotalItemLength(new_items.length)
           
+          setWorkerApprovedCount(worker_approved)
+          setBuyerApprovedCount(buyer_approved)
           if (props.user.user_id === props.curContract.worker.id) {
-            console.log("YOu: ", worker_approved, " Part: ", buyer_approved)
-            setYourApprovedCount(worker_approved)
-            setPartnerApprovedCount(buyer_approved)
+            setYourRole(WORKER_TYPE)
           } else if (props.user.user_id === props.curContract.buyer.id) {
-            console.log("YOu: ", buyer_approved, " Part: ", worker_approved)
-            setYourApprovedCount(buyer_approved)
-            setPartnerApprovedCount(worker_approved)
+            setYourRole(BUYER_TYPE)
+          } else if (props.user.admin_status) {
+            setYourRole(ADMIN_TYPE)
           }
         }
       }
@@ -60,8 +64,20 @@ const SettleHub = (props) => {
       <div className="px-4 pt-5 pb-2 sm:px-6">
           <h3 className="text-lg leading-6 font-medium text-gray-900">Settlement Status</h3>
           <div className="mt-1">
-            <SettleProgress key="you" user_str="Your" progress={percentComplete(yourApprovedCount) }tasks_complete={yourApprovedCount} tasks_total={totalItemLength}/>
-            <SettleProgress key="partner" user_str="Partner's" progress={percentComplete(partnerApprovedCount)} tasks_complete={partnerApprovedCount} tasks_total={totalItemLength}/>
+            <SettleProgress 
+              key={yourRole === ADMIN_TYPE ? "worker" : "you"} 
+              user_str={yourRole === ADMIN_TYPE ? "Worker's": "Your"} 
+              progress={yourRole === BUYER_TYPE ? percentComplete(buyerApprovedCount) : percentComplete(workerApprovedCount)}
+              tasks_complete={yourRole === BUYER_TYPE ? buyerApprovedCount : workerApprovedCount}
+              tasks_total={totalItemLength}
+            />
+            <SettleProgress 
+              key={yourRole === ADMIN_TYPE ? "buyer" : "partner"} 
+              user_str={yourRole === ADMIN_TYPE ? "Buyers's": "Partner's"} 
+              progress={yourRole === BUYER_TYPE ? percentComplete(workerApprovedCount) : percentComplete(buyerApprovedCount)}
+              tasks_complete={yourRole === BUYER_TYPE ? workerApprovedCount : buyerApprovedCount}
+              tasks_total={totalItemLength}
+            />
           </div>
       </div>
       <div className="px-0 py-0 overflow-y-scroll overflow-x-hidden max-h-[150px]">{

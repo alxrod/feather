@@ -33,6 +33,7 @@ type ContractItem struct {
 
 	WorkerSettled uint32 `bson:"worker_settled"`
 	BuyerSettled  uint32 `bson:"buyer_settled"`
+	AdminSettled  uint32 `bson:"admin_settled"`
 }
 
 func (ci *ContractItem) Proto() *comms.ItemEntity {
@@ -47,6 +48,7 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		AwaitingDeletion: ci.AwaitingDeletion,
 		WorkerSettled:    ci.WorkerSettled,
 		BuyerSettled:     ci.BuyerSettled,
+		AdminSettled:     ci.AdminSettled,
 
 		CurrentBody: ci.CurrentBody,
 		WorkerBody:  ci.WorkerBody,
@@ -191,6 +193,9 @@ func ContractItemChangeSettle(
 		item.WorkerSettled = newState
 	} else if user.Id == contract.Buyer.Id {
 		item.BuyerSettled = newState
+	} else if user.AdminStatus {
+		log.Println("admin overrode item settlement property")
+		item.AdminSettled = newState
 	} else {
 		return errors.New("current user is not connected to the current contract")
 	}

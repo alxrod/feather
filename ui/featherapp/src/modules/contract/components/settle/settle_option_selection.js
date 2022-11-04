@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { XIcon, ClockIcon } from '@heroicons/react/outline'
-import {WORKER_TYPE, BUYER_TYPE } from "../../../../services/user.service"
+import {WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE } from "../../../../services/user.service"
 
 import { ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING } from '../../../../custom_encodings'
 const people = [
@@ -34,6 +34,14 @@ const SettleOption = (props) => {
       } else {
         setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
       }
+    } else if (props.role === ADMIN_TYPE) {
+      if (props.adminSettled === ITEM_APPROVED) {
+        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
+      } else if (props.adminSettled === ITEM_REJECTED) {
+        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
+      } else {
+        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
+      }
     }
   }, [props.workerSettled, props.buyerSettled, props.role])
 
@@ -43,11 +51,15 @@ const SettleOption = (props) => {
     props.switchStatus(new_status.action)
   }
   return (
-    <Listbox value={selected} onChange={switchStatus}>
+    <Listbox value={selected} onChange={switchStatus} disabled={props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING}>
       {({ open }) => (
         <>
           <div className="w-[50px] lg:w-[125px]">
-            <Listbox.Button className={classNames("relative rounded-md shadow-sm pl-2 w-full pr-2 py-1.5 text-left cursor-default focus:outline-none focus:ring-0 sm:text-sm text-gray-900 border border-gray-400",)}>
+            <Listbox.Button className={
+                                classNames(
+                                  "relative rounded-md shadow-sm pl-2 w-full pr-2 py-1.5 text-left focus:outline-none focus:ring-0 sm:text-sm text-gray-900 border border-gray-400", 
+                                  (props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING) ? "bg-gray-100" : "cursor-pointer"
+                                )}>
               <span className="flex items-center">
               {(selected.action == ITEM_APPROVED) && (
                 <CheckIcon className="flex-shrink-0 inline-block h-4 w-4 text-green"/>

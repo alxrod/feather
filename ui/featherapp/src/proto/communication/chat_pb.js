@@ -5582,7 +5582,8 @@ proto.main.ContractSettleItemMsgBody.toObject = function(includeInstance, msg) {
     deadlineId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     itemId: jspb.Message.getFieldWithDefault(msg, 4, ""),
     itemWorkerSettle: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    itemBuyerSettle: jspb.Message.getFieldWithDefault(msg, 6, 0)
+    itemBuyerSettle: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    itemAdminSettle: jspb.Message.getFieldWithDefault(msg, 7, 0)
   };
 
   if (includeInstance) {
@@ -5638,6 +5639,10 @@ proto.main.ContractSettleItemMsgBody.deserializeBinaryFromReader = function(msg,
     case 6:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setItemBuyerSettle(value);
+      break;
+    case 7:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setItemAdminSettle(value);
       break;
     default:
       reader.skipField();
@@ -5700,6 +5705,13 @@ proto.main.ContractSettleItemMsgBody.serializeBinaryToWriter = function(message,
   if (f !== 0) {
     writer.writeUint32(
       6,
+      f
+    );
+  }
+  f = message.getItemAdminSettle();
+  if (f !== 0) {
+    writer.writeUint32(
+      7,
       f
     );
   }
@@ -5793,6 +5805,24 @@ proto.main.ContractSettleItemMsgBody.prototype.getItemBuyerSettle = function() {
  */
 proto.main.ContractSettleItemMsgBody.prototype.setItemBuyerSettle = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional uint32 item_admin_settle = 7;
+ * @return {number}
+ */
+proto.main.ContractSettleItemMsgBody.prototype.getItemAdminSettle = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.main.ContractSettleItemMsgBody} returns this
+ */
+proto.main.ContractSettleItemMsgBody.prototype.setItemAdminSettle = function(value) {
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 

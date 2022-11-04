@@ -134,6 +134,7 @@ type MessageBody struct {
 	// For settlign items
 	ItemWorkerSettle uint32 `bson:"item_worker_settle,omitempty"`
 	ItemBuyerSettle  uint32 `bson:"item_buyer_settle,omitempty"`
+	ItemAdminSettle  uint32 `bson:"item_admin_settle,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -319,6 +320,7 @@ func (b *MessageBody) SettleItemProto() *comms.ChatMessage_SettleItemBody {
 			ItemId:           b.ItemId.Hex(),
 			ItemWorkerSettle: b.ItemWorkerSettle,
 			ItemBuyerSettle:  b.ItemBuyerSettle,
+			ItemAdminSettle:  b.ItemAdminSettle,
 		},
 	}
 }

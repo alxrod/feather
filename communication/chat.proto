@@ -148,6 +148,7 @@ message ContractSettleItemMsgBody {
     string item_id = 4;
     uint32 item_worker_settle = 5;
     uint32 item_buyer_settle = 6;
+    uint32 item_admin_settle = 7;
 }
 message ContractSettleMsgBody {
     uint32 contract_stage = 1;

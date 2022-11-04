@@ -91,7 +91,8 @@ export default (state = initialState, action) => {
                     helpers.updateSettledStates(
                         helpers.getContractItem(state.items, action.payload.itemId),
                         action.payload.workerSettled,
-                        action.payload.buyerSettled
+                        action.payload.buyerSettled,
+                        action.payload.adminSettled,
                     )
                 )
             }

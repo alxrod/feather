@@ -75,37 +75,80 @@ const ItemSettleMsg = (props) => {
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon}> 
       <div className="mt-2 text-sm text-gray-700">
-        <div className="flex">
-            <div className="flex items-center justify-between">
-              <p className="text-grey-400 mr-1">You{" "}
-              {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
-                <b className="text-green">approved</b>
-              ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
-                <b className="text-red">rejected</b>
-              ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
-                <b className="text-green">approved</b>
-              ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
-                <b className="text-red">rejected</b>
-              ) : (
-                <b className="text-gray-400 font-normal">are still deciding</b>
-              )}
-              </p>
+        <div>
+            {props.msg.isAdmin ? (
+              <div className="flex items-center justify-between">
+                {props.msg.body.itemAdminSettle === ITEM_APPROVED ? (
+                  <p className="text-grey-400 mr-1">Admin overrode the settlment to be {" "}
+                    <b className="text-green">approved</b>
+                  </p>
+                ) : props.msg.body.itemAdminSettle === ITEM_REJECTED ? (
+                  <p className="text-grey-400 mr-1">Admin overrode the settlment to be {" "}
+                    <b className="text-red">rejected</b>
+                  </p>
+                ) : (
+                  <p className="text-grey-400 mr-1">Admin undid override</p>
+                )}
+              </div>
+            ) : !props.user.admin_status ? (
+            <div className="flex">
+              <div className="flex items-center justify-between">
+                <p className="text-grey-400 mr-1">You{" "}
+                {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
+                  <b className="text-green">approved</b>
+                ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                  <b className="text-red">rejected</b>
+                ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
+                  <b className="text-green">approved</b>
+                ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
+                  <b className="text-red">rejected</b>
+                ) : (
+                  <b className="text-gray-400 font-normal">are still deciding</b>
+                )}
+                </p>
+              </div>
+              <div>
+                <p className="text-grey-400">{otherUsername}{" "}
+                {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
+                  <b className="text-green">approved</b>
+                ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
+                  <b className="text-red">rejected</b>
+                ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
+                  <b className="text-green">approved</b>
+                ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                  <b className="text-red">rejected</b>
+                ) : (
+                  <b className="text-gray-400 font-normal">is still deciding</b>
+                )}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-grey-400">{otherUsername}{" "}
-              {props.msg.body.itemWorkerSettle === ITEM_APPROVED && props.yourRole === BUYER_TYPE ? (
-                <b className="text-green">approved</b>
-              ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === BUYER_TYPE ? (
-                <b className="text-red">rejected</b>
-              ) : props.msg.body.itemBuyerSettle === ITEM_APPROVED && props.yourRole === WORKER_TYPE ? (
-                <b className="text-green">approved</b>
-              ) : props.msg.body.itemBuyerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
-                <b className="text-red">rejected</b>
-              ) : (
-                <b className="text-gray-400 font-normal">are still deciding</b>
-              )}
-              </p>
-            </div>
+            ) : (
+            <div className="flex">
+              <div className="flex items-center justify-between">
+                <p className="text-grey-400 mr-1">Worker{" "}
+                  {props.msg.body.itemWorkerSettle === ITEM_APPROVED ? (
+                    <b className="text-green">approved</b>
+                  ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                    <b className="text-red">rejected</b>
+                  ) : (
+                    <b className="text-gray-400 font-normal">is still deciding</b>
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="text-grey-400 mr-1">Buyer{" "}
+                  {props.msg.body.itemWorkerSettle === ITEM_APPROVED ? (
+                    <b className="text-green">approved</b>
+                  ) : props.msg.body.itemWorkerSettle === ITEM_REJECTED && props.yourRole === WORKER_TYPE ? (
+                    <b className="text-red">rejected</b>
+                  ) : (
+                    <b className="text-gray-400 font-normal">is still deciding</b>
+                  )}
+                </p>
+              </div>
+            </div>  
+            )}
         </div>
         
 
