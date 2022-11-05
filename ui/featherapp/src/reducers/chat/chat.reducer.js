@@ -7,6 +7,7 @@ const initialState = {
     roomId: "",
     isActive: false,
     messages: [],
+    messagesChanged: false,
     sending: sendStates.INACTIVE,
     
     reloadMsg: false,
@@ -19,6 +20,7 @@ export default (state = initialState, action) => {
         case actions.CHAT_MESSAGE_HISTORY_PULLED:
             return {
                 ...state,
+                messagesChanged: !state.messagesChanged,
                 messages: action.payload
             }
         case actions.CHAT_CLEAR_ROOM:
@@ -27,6 +29,7 @@ export default (state = initialState, action) => {
                 roomId: "",
                 isActive: false,
                 messages: [],
+                messagesChanged: !state.messagesChanged,
                 sending: sendStates.INACTIVE 
             }
         case actions.CHAT_JOIN:
@@ -34,14 +37,16 @@ export default (state = initialState, action) => {
                 ...state,
                 roomId: action.payload.roomId,
                 isActive: true,
-                messages: []
+                messages: [],
+                messagesChanged: !state.messagesChanged,
             }
         case actions.CHAT_LEAVE:
             return {
                 ...state,
                 roomId: "",
                 isActive: false,
-                messages: []
+                messages: [],
+                messagesChanged: !state.messagesChanged,
             }
 
         case actions.CHAT_MESSAGE_ATTEMPT_SEND:
@@ -63,7 +68,8 @@ export default (state = initialState, action) => {
         case actions.CHAT_MESSAGE_RECEIVE:
             return {
                 ...state,
-                messages: [...state.messages, action.payload]
+                messages: [...state.messages, action.payload],
+                messagesChanged: !state.messagesChanged,
             }
 
         case actions.CHAT_MESSAGE_UPDATE:
@@ -76,6 +82,7 @@ export default (state = initialState, action) => {
                 messages: state.messages.map(
                     (msg, i) => i === idx ? newMessage : msg
                 ),
+                messagesChanged: !state.messagesChanged,
                 reloadMsg: true,
                 reloadIdx: idx,
             }

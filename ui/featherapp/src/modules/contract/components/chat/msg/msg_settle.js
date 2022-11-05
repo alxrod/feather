@@ -20,20 +20,6 @@ const ContractSettleMsg = (props) => {
 
   let editString = "Settled"
 
-
-  const [signerUsername, setSignerUsername] = useState("Unknown")
-
-
-  useEffect( () => {
-    if (props.curContract.id) {
-      if (props.msg.body.signerId === props.curContract.buyer.id) {
-        setSignerUsername(props.curContract.buyer.username)
-      } else if (props.msg.body.signerId === props.curContract.worker.id) {
-        setSignerUsername(props.curContract.worker.username)
-      }
-    }
-  }, [props.curContract])
-
   useEffect( () => {
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadlineId) {
@@ -52,7 +38,7 @@ const ContractSettleMsg = (props) => {
         <div className="mt-2 text-sm text-gray-700">
           <div className="flex items-center">
             <div className="flex items-center">
-              <h3 className="text-xl text-green font-medium">{signerUsername} advanced to settling on {deadlineName}</h3>
+              <h3 className="text-xl text-green font-medium">{props.msg.user.username} advanced to settling on {deadlineName}</h3>
             </div>
             <div className="w-6"></div>
           </div>

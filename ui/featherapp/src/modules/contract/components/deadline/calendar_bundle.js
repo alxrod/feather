@@ -60,11 +60,11 @@ const CalendarBundle = (props) => {
         clearTimeout(timeoutId);
       }
       if (props.createMode) {
-        const id = setTimeout(function(){
-          props.saveDeadlines()
-          setTimeoutId(-1)
-        },1000)
-        setTimeoutId(id)
+        // const id = setTimeout(function(){
+        props.saveDeadlines()
+          // setTimeoutId(-1)
+        // },1000)
+        // setTimeoutId(id)
       }
       
     } else {

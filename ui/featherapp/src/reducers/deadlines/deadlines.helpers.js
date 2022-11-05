@@ -29,7 +29,6 @@ export const replaceDeadline = (deadlines, newDeadline) => {
     let found = false
     for (let i = 0; i < deadlines.length; i++) {
         if (deadlines[i].id === newDeadline.id) {
-            console.log("FOUND ", newDeadline)
             deadlines[i] = newDeadline
             found = true
         }

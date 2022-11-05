@@ -143,6 +143,8 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 	role := db.BUYER
 	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		role = db.WORKER
+	} else if user.AdminStatus {
+		role = db.ADMIN
 	}
 
 	err = s.SendContractSignMessage(contract, user)

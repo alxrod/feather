@@ -98,11 +98,9 @@ const ContractDraft = (props) => {
             <MainChat roomId={props.curContract.roomId}/>
           </div>
         </div>
-        {!props.user?.admin_status && (
-          <div className="mt-5">
-            <SettleContract/>
-          </div>
-        )}
+        <div className="mt-5">
+          <SettleContract/>
+        </div>
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>

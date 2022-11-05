@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { useMemo } from "react"
 import { WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE } from "../../../../services/user.service"
 
 /* This example requires Tailwind CSS v2.0+ */
@@ -9,7 +8,7 @@ import TextTag from "../tag_in_text"
 import {ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING} from "../../../../custom_encodings"
 import SettleOption from "./settle_option_selection"
 import { bindActionCreators } from 'redux'
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { settleItem } from "../../../../reducers/items/dispatchers/items.settle.dispatcher"
 
 const SettleHubOption = (props) => {
@@ -129,6 +128,8 @@ const SettleHubOption = (props) => {
                   workerSettled={props.item.workerSettled} 
                   buyerSettled={props.item.buyerSettled}
                   adminSettled={props.item.adminSettled}
+                  deadlineWorkerSettled={props.deadline.workerSettled}
+                  deadlineBuyerSettled={props.deadline.buyerSettled}
                   role={yourRole}
                   status={yourStatus} 
                   switchStatus={switchStatus}
@@ -145,6 +146,7 @@ const mapStateToProps = ({ user, contract, items, deadlines}) => ({
   curContract: contract.curContract,
   itemsChanged: items.itemsChanged,
   contractChanged: contract.contractChanged,
+  deadlines: deadlines.deadlines,
   deadlinesChanged: deadlines.deadlinesChanged,
   user: user.user,
 })

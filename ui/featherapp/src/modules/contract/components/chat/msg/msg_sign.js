@@ -19,17 +19,6 @@ const ContractSignMsg = (props) => {
 
   let editString = "Signed"
 
-  const [signerUsername, setSignerUsername] = useState("Unknown")
-
-  useEffect( () => {
-    if (props.curContract.id) {
-      if (props.msg.body.signerId === props.curContract.buyer.id) {
-        setSignerUsername(props.curContract.buyer.username)
-      } else if (props.msg.body.signerId === props.curContract.worker.id) {
-        setSignerUsername(props.curContract.worker.username)
-      }
-    }
-  }, [props.curContract])
 
   const Icon = () => {
     return (
@@ -41,7 +30,7 @@ const ContractSignMsg = (props) => {
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
-            <h3 className="text-xl text-green font-medium">{signerUsername} signed the contract</h3>
+            <h3 className="text-xl text-green font-medium">{props.msg.user.username} signed the contract</h3>
           </div>
           <div className="w-6"></div>
         </div>

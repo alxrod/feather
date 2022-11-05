@@ -335,8 +335,21 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	contract.Deadlines = contractDeadlines
 	contract.DeadlineIds = deadline_ids
 
+	nextDeadline, err := contract.NextDeadline()
+	if err != nil {
+		return nil, err
+	}
+	contract.CurrentDeadline = nextDeadline
+	contract.CurrentDeadlineId = nextDeadline.Id
+
 	filter := bson.D{{"_id", contract.Id}}
-	update := bson.D{{"$set", bson.D{{"deadline_ids", deadline_ids}}}}
+	update := bson.D{{
+		"$set",
+		bson.D{
+			{"deadline_ids", deadline_ids},
+			{"current_deadline_id", contract.CurrentDeadlineId},
+		},
+	}}
 	_, err = contractCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with deadline ids")))
@@ -585,6 +598,9 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 		contract.WorkerApproved = true
 	} else if contract.Buyer.Id == user.Id {
 		contract.BuyerApproved = true
+	} else if user.AdminStatus {
+		contract.WorkerApproved = true
+		contract.BuyerApproved = true
 	} else {
 		return errors.New("User is trying to sign a contract they do not own")
 	}
@@ -617,6 +633,9 @@ func ContractSettle(user *User, contract *Contract, database *mongo.Database) er
 	if contract.Worker.Id == user.Id {
 		contract.WorkerApproved = true
 	} else if contract.Buyer.Id == user.Id {
+		contract.BuyerApproved = true
+	} else if user.AdminStatus {
+		contract.WorkerApproved = true
 		contract.BuyerApproved = true
 	} else {
 		return errors.New("User is trying to sign a contract they do not own")

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid'
 import { XIcon, ClockIcon } from '@heroicons/react/outline'
@@ -15,8 +15,23 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
+
 const SettleOption = (props) => {
   const [selected, setSelected] = useState({id: 2, name: 'Pending', action: ITEM_PENDING})
+
+  const optionDisabled = useMemo(() => {
+    if (props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING) {
+      return true
+    }
+    if (props.role === WORKER_TYPE && props.deadlineWorkerSettled) {
+      return true
+    }
+    if (props.role === BUYER_TYPE && props.deadlineBuyerSettled) {
+      return true
+    }
+    return false
+            
+  })
   useEffect( () => {
     if (props.role === WORKER_TYPE) {
       if (props.workerSettled === ITEM_APPROVED) {
@@ -51,14 +66,14 @@ const SettleOption = (props) => {
     props.switchStatus(new_status.action)
   }
   return (
-    <Listbox value={selected} onChange={switchStatus} disabled={props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING}>
+    <Listbox value={selected} onChange={switchStatus} disabled={optionDisabled}>
       {({ open }) => (
         <>
           <div className="w-[50px] lg:w-[125px]">
             <Listbox.Button className={
                                 classNames(
                                   "relative rounded-md shadow-sm pl-2 w-full pr-2 py-1.5 text-left focus:outline-none focus:ring-0 sm:text-sm text-gray-900 border border-gray-400", 
-                                  (props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING) ? "bg-gray-100" : "cursor-pointer"
+                                  (optionDisabled) ? "bg-gray-100" : "cursor-pointer"
                                 )}>
               <span className="flex items-center">
               {(selected.action == ITEM_APPROVED) && (

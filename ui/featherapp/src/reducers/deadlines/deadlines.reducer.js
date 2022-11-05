@@ -45,8 +45,6 @@ export default (state = initialState, action) => {
         
         case actions.CONTRACT_ADD_DEADLINE_FROM_DB:
             const newDeadlinesWDB = helpers.addOrReplaceDeadline(state.deadlines, action.payload)
-            console.log(action.payload)
-            console.log(newDeadlinesWDB)
             return {
                 ...state,
                 deadlinesChanged: !state.deadlinesChanged,
@@ -86,7 +84,6 @@ export default (state = initialState, action) => {
             }
         
         case actions.CONTRACT_DEADLINE_FINALIZE_SETTLE:
-            console.log("FINALIZE: ", action.payload)
             return {
                 ...state,
                 deadlinesChanged: !state.deadlinesChanged,

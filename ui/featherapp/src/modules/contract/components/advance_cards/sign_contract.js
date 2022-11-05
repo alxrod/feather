@@ -1,36 +1,68 @@
 import { Link } from 'react-router-dom'
 import { CheckIcon } from '@heroicons/react/solid'
 import { ClockIcon } from '@heroicons/react/outline'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { signContract } from "../../../../reducers/contract/dispatchers/contract.dispatcher"
-import { WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import { WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE} from "../../../../services/user.service"
 
 
 const SignButton = (props) => {
   const [role, setRole] = useState(WORKER_TYPE)
-  const [youSigned, setYouSigned] = useState(false)
+
+  const [workerSigned, setWorkerSigned] = useState(false)
+  const [buyerSigned, setBuyerSigned] = useState(false)
+
+  const youSigned = useMemo(() => {
+    if (role === WORKER_TYPE) {
+      return workerSigned
+    } else if (role === BUYER_TYPE) {
+      return buyerSigned
+    } else {
+      return false
+    }
+  })
+
+  const [unresolved, setUnresolved] = useState(false)
+  const [invalidDeadline, setInvalidDeadline] = useState(false)
+
   useEffect( () => {
     if (props.curContract.id && props.user) {
-      console.log("CONTRACT: ", props.curContract)
       if (props.curContract.worker.id === props.user.user_id) {
         setRole(WORKER_TYPE)
-        if (props.curContract.workerApproved) {
-          setYouSigned(true)
-        } else {
-          setYouSigned(false)
-        }
       } else if (props.curContract.buyer.id === props.user.user_id) {
         setRole(BUYER_TYPE)
-        if (props.curContract.buyerApproved) {
-          setYouSigned(true)
-        } else {
-          setYouSigned(false)
+      } else if (props.user.admin_status) {
+        setRole(ADMIN_TYPE)
+      }
+      setWorkerSigned(props.curContract.workerApproved)
+      setBuyerSigned(props.curContract.buyerApproved)
+    }
+  }, [props.curContract, props.user, props.contractChanged])
+
+  useEffect( () => {
+    let invalid_deadline = false
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.curContract.currentDeadlineId === props.deadlines[i].id) {
+        let now = new Date();
+        if (now > props.deadlines[i].currentDate) {
+          invalid_deadline = true
         }
       }
     }
-  }, [props.curContract, props.user, props.contractChanged])
+    setInvalidDeadline(invalid_deadline)
+  }, [props.deadlines, props.deadlinesChanged])
+
+  useEffect( () => {
+    for (let i = 0; i < props.messages.length; i++) {
+      if (props.messages[i].body.resolved === false) {
+        setUnresolved(true)
+        return
+      }
+    }
+    setUnresolved(false)
+  }, [props.messages.length, props.messagesChanged])
 
   const signContract = () => {
     props.signContract(props.curContract.id)
@@ -41,7 +73,23 @@ const SignButton = (props) => {
       <div className="px-4 py-5 sm:p-6">
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">Sign the Contract</h3>
-          {((role === WORKER_TYPE && props.curContract.buyerApproved) || (role === BUYER_TYPE && props.curContract.workerApproved)) ? (
+          {role === ADMIN_TYPE ? (
+            <div className="flex items-center">
+              <p className="text-gray-400">Worker</p>
+              {workerSigned ? (
+                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+              ) : (
+                <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
+              )}
+              <div className="w-4"></div>
+              <p className="text-gray-400">Buyer</p>
+              {buyerSigned ? (
+                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+              ) : (
+                <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
+              )}
+            </div>
+          ) : ((role === WORKER_TYPE && props.curContract.buyerApproved) || (role === BUYER_TYPE && props.curContract.workerApproved)) ? (
             <div className="flex items-center">
               <p className="text-gray-400">Your partner has signed the contract</p>
               <CheckIcon className="w-4 h-4 text-green ml-1"/>
@@ -57,6 +105,22 @@ const SignButton = (props) => {
         {youSigned ? (
           <div className="w-full flex justify-center items-center mt-2">
             <h3 className="text-indigo-500 font-medium text-xl">You have already signed the contract</h3>
+          </div>
+        ) : invalidDeadline ? (
+          <div className="mt-2 sm:flex sm:items-start sm:justify-between">
+            <div className="max-w-4xl text-sm text-gray-500">
+              <p>
+                Your starting deadline is due before the current time. <b>Make the first deadline in the future to sign the contract</b>
+              </p>
+            </div>
+          </div>
+        ) : unresolved ? (
+          <div className="mt-2 sm:flex sm:items-start sm:justify-between">
+            <div className="max-w-4xl text-sm text-gray-500">
+              <p>
+                This contract still has unresolved suggestions. <b>Approve or reject all changes before signing the contract</b>
+              </p>
+            </div>
           </div>
         ) : (
           <div className="mt-2 sm:flex sm:items-start sm:justify-between">
@@ -81,9 +145,16 @@ const SignButton = (props) => {
   )
 }
 
-const mapStateToProps = ({ user, contract}) => ({
+const mapStateToProps = ({ user, contract, deadlines, chat }) => ({
   curContract: contract.curContract,
   contractChanged: contract.contractChanged,
+
+  deadlines: deadlines.deadlines,
+  deadlinesChanged: deadlines.deadlinesChanged,
+
+  messages: chat.messages,
+  messagesChanged: chat.messagesChanged,
+
   user: user.user,
 })
 

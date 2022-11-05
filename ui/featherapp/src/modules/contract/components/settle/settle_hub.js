@@ -41,7 +41,6 @@ const SettleHub = (props) => {
               }
             }
           }
-          console.log("FOUND ALL ITEMS AS: ", new_items)
           setCurItems(new_items)
           setTotalItemLength(new_items.length)
           
