@@ -33,6 +33,8 @@ const (
 	CONTRACT_SETTLE      = 13
 	CONTRACT_ITEM_SETTLE = 14
 	REQUEST_ADMIN        = 15
+	RESOLVE_ADMIN        = 16
+	FINALIZE_SETTLE      = 17
 )
 
 // Editing Typs
@@ -135,6 +137,14 @@ type MessageBody struct {
 	ItemWorkerSettle uint32 `bson:"item_worker_settle,omitempty"`
 	ItemBuyerSettle  uint32 `bson:"item_buyer_settle,omitempty"`
 	ItemAdminSettle  uint32 `bson:"item_admin_settle,omitempty"`
+
+	// For finalize message
+	Confirmed       bool `bson:"confirmed"`
+	Undo            bool `bson:"undo"`
+	WorkerSettled   bool `bson:"worker_settled,omitempty"`
+	BuyerSettled    bool `bson:"buyer_settled,omitempty"`
+	WorkerConfirmed bool `bson:"worker_confirmed,omitempty"`
+	BuyerConfirmed  bool `bson:"buyer_confirmed,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -327,7 +337,28 @@ func (b *MessageBody) SettleItemProto() *comms.ChatMessage_SettleItemBody {
 
 func (b *MessageBody) RequestAdminProto() *comms.ChatMessage_RequestAdminBody {
 	return &comms.ChatMessage_RequestAdminBody{
-		RequestAdminBody: &comms.RequestAdminMsgBody{},
+		RequestAdminBody: &comms.AdminMsgBody{},
+	}
+}
+
+func (b *MessageBody) ResolveAdminProto() *comms.ChatMessage_ResolveAdminBody {
+	return &comms.ChatMessage_ResolveAdminBody{
+		ResolveAdminBody: &comms.AdminMsgBody{},
+	}
+}
+func (b *MessageBody) FinalizeProto() *comms.ChatMessage_FinalizeBody {
+	return &comms.ChatMessage_FinalizeBody{
+		FinalizeBody: &comms.FinalizeMsgBody{
+			ContractId:      b.ContractId.Hex(),
+			DeadlineId:      b.DeadlineId.Hex(),
+			Confirmed:       b.Confirmed,
+			Undo:            b.Undo,
+			ContractStage:   b.ContractStage,
+			WorkerSettled:   b.WorkerSettled,
+			BuyerSettled:    b.BuyerSettled,
+			WorkerConfirmed: b.WorkerConfirmed,
+			BuyerConfirmed:  b.BuyerConfirmed,
+		},
 	}
 }
 
@@ -391,6 +422,10 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.SettleItemProto()
 	} else if m.Method == REQUEST_ADMIN {
 		proto.Body = m.Body.RequestAdminProto()
+	} else if m.Method == RESOLVE_ADMIN {
+		proto.Body = m.Body.ResolveAdminProto()
+	} else if m.Method == FINALIZE_SETTLE {
+		proto.Body = m.Body.FinalizeProto()
 	}
 
 	return proto

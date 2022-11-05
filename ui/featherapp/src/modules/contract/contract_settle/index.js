@@ -15,6 +15,7 @@ import { push } from 'connected-react-router';
 import UniversalLockCard from "../components/universal_lock/universal_lock_card";
 import CompactSummary from "../components/criteria/compact_summary"
 import SettleHub from "../components/settle/settle_hub"
+import CompleteDeadlineButton from "../components/advance_cards/complete_deadline"
 
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
@@ -77,6 +78,9 @@ const ContractDraft = (props) => {
           <div className="flex flex-row min-w-[45vw]">
             <MainChat roomId={props.curContract.roomId}/>
           </div>
+        </div>
+        <div className="mt-4">
+          <CompleteDeadlineButton/>
         </div>
         <div className="mt-5">
           {contractItemIds.map((item_id) => (

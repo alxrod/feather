@@ -26,6 +26,8 @@ import {
     CONTRACT_DEADLINE_SUGGEST_DELETE,
     CONTRACT_DEADLINE_REPLACE,
     CONTRACT_DEADLINE_REMOVE,
+    CONTRACT_DEADLINE_FINALIZE_SETTLE,
+    
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
@@ -68,6 +70,8 @@ export const msgMethods = {
     CONTRACT_SETTLE: 13,
     CONTRACT_ITEM_SETTLE: 14,
     REQUEST_ADMIN: 15,
+    RESOLVE_ADMIN: 16,
+    FINALIZE_SETTLE: 17,
 }
 
 export const deadlineItemTypes = {
@@ -367,6 +371,16 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_ADMIN_REQUEST_CHANGED,
             payload: true,
         })
+    } else if (msg.method === msgMethods.RESOLVE_ADMIN) {
+        dispatch({
+            type: CONTRACT_ADMIN_REQUEST_CHANGED,
+            payload: false,
+        })
+    } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
+        dispatch({
+            type: CONTRACT_DEADLINE_FINALIZE_SETTLE,
+            payload: msg.body
+        })
     }
 }
 
@@ -410,6 +424,8 @@ const reformatBody = (msg) => {
         msg.body = msg.contractSettleBody 
     } else if (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) {
         msg.body = msg.settleItemBody
+    } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
+        msg.body = msg.finalizeBody
     } else {
         msg.body = {}
     }

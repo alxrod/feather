@@ -43,8 +43,10 @@ import {
 
     ContractToggleLockRequest,
     ContractReactLockRequest,
-    ContractRequestAdmin
-    
+    ContractAdminSupport,
+    FinishDeadlineRequest,
+    ConfirmDeadlineRequest,
+    UndoDeadlineRequest,
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -663,7 +665,7 @@ class ContractService {
     }
 
     requestAdmin(token, user_id, contract_id) {
-        let request = new ContractRequestAdmin();
+        let request = new ContractAdminSupport();
         request.setUserId(user_id);
         request.setContractId(contract_id);
 
@@ -678,6 +680,73 @@ class ContractService {
         });
     }
 
+    resolveAdmin(token, user_id, contract_id) {
+        let request = new ContractAdminSupport();
+        request.setUserId(user_id);
+        request.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.resolveAdmin(request, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+
+    finishDeadline(token, user_id, contract_id, deadline_id) {
+        let request = new FinishDeadlineRequest();
+        request.setUserId(user_id);
+        request.setContractId(contract_id);
+        request.setDeadlineId(deadline_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.finishDeadline(request, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+
+    confirmDeadline(token, user_id, contract_id, deadline_id) {
+        let request = new ConfirmDeadlineRequest();
+        request.setUserId(user_id);
+        request.setContractId(contract_id);
+        request.setDeadlineId(deadline_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.confirmDeadline(request, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+
+    undoDeadline(token, user_id, contract_id, deadline_id) {
+        let request = new UndoDeadlineRequest();
+        request.setUserId(user_id);
+        request.setContractId(contract_id);
+        request.setDeadlineId(deadline_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            contractClient.undoDeadline(request, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve(response.toObject())
+            });
+        });
+    }
+    
     settleItem(token, user_id, contract_id, deadline_id, item_id, new_state) {
         let settleRequest = new ContractSettleItemRequest()
         settleRequest.setUserId(user_id)

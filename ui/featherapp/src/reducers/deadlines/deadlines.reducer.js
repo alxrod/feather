@@ -84,6 +84,20 @@ export default (state = initialState, action) => {
                 deadlinesChanged: !state.deadlinesChanged,
                 deadlines: deletedOneDeadline
             }
+        
+        case actions.CONTRACT_DEADLINE_FINALIZE_SETTLE:
+            console.log("FINALIZE: ", action.payload)
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                deadlines: helpers.replaceDeadline(
+                    state.deadlines,
+                    helpers.updateSettleInfo(
+                        helpers.getDeadline(state.deadlines, action.payload.deadlineId), 
+                        action.payload,
+                    )
+                )
+            }
 
         default:
             return state

@@ -1,11 +1,11 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo} from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { Listbox, Transition } from '@headlessui/react'
 import { TagIcon } from '@heroicons/react/solid'
 
 import { sendMessage } from '../../../../reducers/chat/dispatchers/chat.dispatcher';
-import { requestAdmin } from '../../../../reducers/contract/dispatchers/contract.admin.dispatcher';
+import { requestAdmin, resolveAdmin } from '../../../../reducers/contract/dispatchers/contract.admin.dispatcher';
 import { labelTypes } from '../../../../services/chat.service';
 
 function classNames(...classes) {
@@ -22,11 +22,14 @@ const ChatBox = (props) => {
   const [labelled, setLabelled] = useState(labels[0])
   
   const [showAdminButton, toggleAdminButton] = useState(true)
+  const [showResolveButton, toggleResolveButton] = useState(false)
   const [message, setMessage] = useState("")
 
   useEffect( () => {
-    toggleAdminButton(!props.curContract.adminRequested)
+    toggleAdminButton(!props.curContract.adminRequested && !props.user.admin_status)
+    toggleResolveButton(props.curContract.adminRequested && props.user.admin_status)
   }, [props.curContract, props.contractChanged])
+
   useEffect( () => {
     if (props.curContract.id) {
       let items = [...labels]
@@ -57,6 +60,9 @@ const ChatBox = (props) => {
 
   const handleRequestAdmin = () => {
     props.requestAdmin(props.curContract.id)
+  }
+  const handleResolveAdmin = () => {
+    props.resolveAdmin(props.curContract.id)
   }
   return (
     <div className="relative">
@@ -92,7 +98,15 @@ const ChatBox = (props) => {
                 onClick={handleRequestAdmin}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-indigo-900 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300"
               >
-                Get Admin
+                <p className="m-0 p-0 flex"><b className="font-medium hidden md:flex mr-1">Get</b> Admin</p>
+              </button>
+            )}
+            {showResolveButton && (
+              <button
+                onClick={handleResolveAdmin}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-indigo-900 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-300"
+              >
+                Resolve Dispute
               </button>
             )}
             <div className="flex">
@@ -173,6 +187,7 @@ const mapStateToProps = ({ user, contract }) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   sendMessage,
   requestAdmin,
+  resolveAdmin,
 }, dispatch)
 
 export default connect(

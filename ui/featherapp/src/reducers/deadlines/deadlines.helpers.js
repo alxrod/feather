@@ -29,6 +29,7 @@ export const replaceDeadline = (deadlines, newDeadline) => {
     let found = false
     for (let i = 0; i < deadlines.length; i++) {
         if (deadlines[i].id === newDeadline.id) {
+            console.log("FOUND ", newDeadline)
             deadlines[i] = newDeadline
             found = true
         }
@@ -100,4 +101,20 @@ export const editDeadlineDate = (deadlines, date_info) => {
     deadlines[i] = deadline
     return deadlines
     
+}
+
+export const getDeadline = (deadlines, id) => {
+    for (let i = 0; i < deadlines.length; i++) {
+        if (deadlines[i].id === id) {
+            return deadlines[i]
+        }
+    }
+} 
+
+export const updateSettleInfo = (deadline, info) => {
+    deadline.workerSettled = info.workerSettled
+    deadline.buyerSettled = info.buyerSettled
+    deadline.workerConfirmed = info.workerConfirmed
+    deadline.buyerConfirmed = info.buyerConfirmed
+    return deadline
 }

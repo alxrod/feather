@@ -22,6 +22,8 @@ import ContractLockMsg from "./msg/msg_lock"
 import ContractSettleMsg from "./msg/msg_settle"
 import ItemSettleMsg from "./msg/msg_item_settle"
 import RequestAdminMsg from "./msg/msg_request_admin"
+import ResolveAdminMsg from "./msg/msg_resolve_admin"
+import ContractFinalizeMsg from "./msg/msg_finalize"
 
 function useOnScreen(ref) {
 
@@ -91,6 +93,10 @@ const MainTimeline = (props) => {
                   <ItemSettleMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.REQUEST_ADMIN) ? (
                   <RequestAdminMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.RESOLVE_ADMIN) ? (
+                  <ResolveAdminMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.FINALIZE_SETTLE) ? (
+                  <ContractFinalizeMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

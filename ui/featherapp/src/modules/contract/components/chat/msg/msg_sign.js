@@ -19,9 +19,7 @@ const ContractSignMsg = (props) => {
 
   let editString = "Signed"
 
-
   const [signerUsername, setSignerUsername] = useState("Unknown")
-
 
   useEffect( () => {
     if (props.curContract.id) {

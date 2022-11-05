@@ -10,6 +10,7 @@ import (
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSuggestPayout) (*comms.ContractEditResponse, error) {
@@ -905,4 +906,99 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
+}
+
+func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contract, deadline *db.Deadline, database *mongo.Database) error {
+	if err := db.DeadlineReplace(deadline, database); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *BackServer) FinishDeadline(ctx context.Context, req *comms.FinishDeadlineRequest) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, deadline, err := pullUserContractDeadline(req.UserId, req.ContractId, req.DeadlineId, database)
+	if err != nil {
+		return nil, err
+	}
+	if deadline.Id != contract.CurrentDeadlineId {
+		return nil, errors.New("The requested deadline is not the current deadline for the contract")
+	}
+
+	if user.Id == contract.Worker.Id {
+		deadline.WorkerSettled = true
+	} else if user.Id == contract.Buyer.Id {
+		deadline.BuyerSettled = true
+	} else if user.AdminStatus {
+		deadline.AdminSettled = true
+	}
+
+	if err = s.DeadlineTransitionLogic(user, contract, deadline, database); err != nil {
+		return nil, err
+	}
+
+	if err = s.SendItemFinalizeMessage(contract, deadline, user, false, false); err != nil {
+		return nil, err
+	}
+
+	return &comms.NullResponse{}, nil
+
+}
+
+func (s *BackServer) ConfirmDeadline(ctx context.Context, req *comms.ConfirmDeadlineRequest) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, deadline, err := pullUserContractDeadline(req.UserId, req.ContractId, req.DeadlineId, database)
+	if err != nil {
+		return nil, err
+	}
+	if deadline.Id != contract.CurrentDeadlineId {
+		return nil, errors.New("The requested deadline is not the current deadline for the contract")
+	}
+
+	if user.Id == contract.Worker.Id {
+		deadline.WorkerConfirmed = true
+	} else if user.Id == contract.Buyer.Id {
+		deadline.BuyerConfirmed = true
+	} else if user.AdminStatus {
+		return nil, errors.New("Admin should not need to confirm")
+	}
+
+	if err = s.DeadlineTransitionLogic(user, contract, deadline, database); err != nil {
+		return nil, err
+	}
+
+	if err = s.SendItemFinalizeMessage(contract, deadline, user, true, false); err != nil {
+		return nil, err
+	}
+
+	return &comms.NullResponse{}, nil
+}
+
+func (s *BackServer) UndoDeadline(ctx context.Context, req *comms.UndoDeadlineRequest) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, deadline, err := pullUserContractDeadline(req.UserId, req.ContractId, req.DeadlineId, database)
+	if err != nil {
+		return nil, err
+	}
+	if deadline.Id != contract.CurrentDeadlineId {
+		return nil, errors.New("The requested deadline is not the current deadline for the contract")
+	}
+
+	if user.Id == contract.Worker.Id {
+		deadline.WorkerSettled = false
+	} else if user.Id == contract.Buyer.Id {
+		deadline.BuyerSettled = false
+	} else if user.AdminStatus {
+		deadline.AdminSettled = false
+	}
+
+	if err = s.DeadlineTransitionLogic(user, contract, deadline, database); err != nil {
+		return nil, err
+	}
+
+	if err = s.SendItemFinalizeMessage(contract, deadline, user, false, true); err != nil {
+		return nil, err
+	}
+
+	return &comms.NullResponse{}, nil
 }

@@ -11,7 +11,6 @@ import (
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateRequest) (*comms.ContractResponse, error) {
@@ -181,7 +180,7 @@ func (s *BackServer) Settle(ctx context.Context, req *comms.SettleContractReques
 	}, nil
 }
 
-func (s *BackServer) RequestAdmin(ctx context.Context, req *comms.ContractRequestAdmin) (*comms.NullResponse, error) {
+func (s *BackServer) RequestAdmin(ctx context.Context, req *comms.ContractAdminSupport) (*comms.NullResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
 	if err != nil {
@@ -194,6 +193,28 @@ func (s *BackServer) RequestAdmin(ctx context.Context, req *comms.ContractReques
 	}
 
 	err = s.SendRequestAdminMessage(contract, user)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.NullResponse{}, nil
+}
+
+func (s *BackServer) ResolveAdmin(ctx context.Context, req *comms.ContractAdminSupport) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+	if !user.AdminStatus {
+		return nil, errors.New("A non-admin cannot resolve an admin request")
+	}
+	contract.AdminRequested = false
+	err = db.ContractSaveAdminRequested(contract, database)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.SendResolveAdminMessage(contract, user)
 	if err != nil {
 		return nil, err
 	}
@@ -356,133 +377,4 @@ func (s *BackServer) QueryByAdmin(ctx context.Context, req *comms.QueryByUserReq
 		UserId:       user_id.Hex(),
 		ContractNubs: contractNubs,
 	}, nil
-}
-
-func pullUserContract(req_user_id, req_contract_id string, database *mongo.Database) (*db.User, *db.Contract, error) {
-	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
-	if err != nil {
-		return nil, nil, errors.New("Invalid contract id")
-	}
-	user_id, err := primitive.ObjectIDFromHex(req_user_id)
-	if err != nil {
-		return nil, nil, errors.New("Invalid user id")
-	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
-	if err != nil {
-		return nil, nil, err
-	}
-	contract, err := db.ContractById(contract_id, database)
-	if err != nil {
-		return nil, nil, err
-	}
-	return user, contract, nil
-}
-func pullUserContractMessage(
-	req_user_id,
-	req_contract_id,
-	req_msg_id string,
-	database *mongo.Database) (*db.User, *db.Contract, *db.Message, error) {
-
-	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	user_id, err := primitive.ObjectIDFromHex(req_user_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	message_id, err := primitive.ObjectIDFromHex(req_msg_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	contract, err := db.ContractById(contract_id, database)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	msg, err := db.MessageById(message_id, database)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	return user, contract, msg, nil
-}
-func pullUserContractDeadline(
-	req_user_id,
-	req_contract_id,
-	req_deadline_id string,
-	database *mongo.Database) (*db.User, *db.Contract, *db.Deadline, error) {
-
-	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	user_id, err := primitive.ObjectIDFromHex(req_user_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	deadline_id, err := primitive.ObjectIDFromHex(req_deadline_id)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	contract, err := db.ContractById(contract_id, database)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	deadline, err := db.DeadlineById(deadline_id, database)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	return user, contract, deadline, nil
-}
-
-func pullUserContractDeadlineItem(
-	req_user_id,
-	req_contract_id,
-	req_deadline_id,
-	req_item_id string,
-	database *mongo.Database) (*db.User, *db.Contract, *db.Deadline, *db.ContractItem, error) {
-
-	contract_id, err := primitive.ObjectIDFromHex(req_contract_id)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	user_id, err := primitive.ObjectIDFromHex(req_user_id)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	deadline_id, err := primitive.ObjectIDFromHex(req_deadline_id)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	item_id, err := primitive.ObjectIDFromHex(req_item_id)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-
-	contract, err := db.ContractById(contract_id, database)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	deadline, err := db.DeadlineById(deadline_id, database)
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	item, err := db.ContractItemById(item_id, database.Collection(db.ITEM_COL))
-	if err != nil {
-		return nil, nil, nil, nil, err
-	}
-	return user, contract, deadline, item, nil
 }

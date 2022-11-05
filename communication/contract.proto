@@ -20,6 +20,9 @@ message DeadlineEntity {
     bool complete = 25;
     bool worker_settled = 26;
     bool buyer_settled = 27;
+    bool worker_confirmed = 29;
+    bool buyer_confirmed = 30;
+    bool admin_settled = 28;
     
     bool awaiting_creation = 20;
     bool awaiting_deletion = 21;
@@ -281,6 +284,7 @@ message ClaimContractRequest {
     string contract_id = 2;
     string password = 3;
 }
+
 message SignContractRequest {
     string user_id = 1;
     string contract_id = 2;
@@ -290,7 +294,25 @@ message SettleContractRequest {
     string contract_id = 2;
 }
 
-message ContractRequestAdmin {
+message FinishDeadlineRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string deadline_id = 3;
+}
+
+message ConfirmDeadlineRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string deadline_id = 3;
+}
+
+message UndoDeadlineRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string deadline_id = 3;
+}
+
+message ContractAdminSupport {
     string contract_id = 1;
     string user_id = 2;
 }
@@ -361,6 +383,11 @@ service Contract {
     rpc ReactLock(ContractReactLockRequest) returns (ContractEditResponse) {};
 
     rpc SettleItem(ContractSettleItemRequest) returns (ContractEditResponse) {};
-    rpc RequestAdmin(ContractRequestAdmin) returns (NullResponse) {};
+    rpc RequestAdmin(ContractAdminSupport) returns (NullResponse) {};
+    rpc ResolveAdmin(ContractAdminSupport) returns (NullResponse) {};
 
+    rpc FinishDeadline(FinishDeadlineRequest) returns (NullResponse) {};
+    rpc ConfirmDeadline(ConfirmDeadlineRequest) returns (NullResponse) {};
+    rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
+    
 }

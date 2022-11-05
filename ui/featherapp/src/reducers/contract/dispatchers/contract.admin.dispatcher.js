@@ -22,6 +22,22 @@ export const requestAdmin = (contract_id) => {
     }
 };
 
+export const resolveAdmin = (contract_id) => {
+    return dispatch => {
+        return helpers.authCheck(dispatch).then((creds) => {
+            return ContractService.resolveAdmin(creds.access_token, creds.user_id, contract_id).then(
+                (resp) => {
+                    return Promise.resolve();
+                },
+                (error) => {
+                    return helpers.parseError(error);
+                }
+            );
+        });
+    }
+};
+
+
 export const updateAdminRequested= (newRequestState) => {
     return dispatch => {
         dispatch({

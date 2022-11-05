@@ -17,10 +17,6 @@ const MsgDecisionFooter = (props) => {
     }
   }, [props.curContract])
 
-  useEffect( () => {
-    console.log(props.msg)
-    console.log("overide: ", props.msg.adminOverride, " stat: ", props.adminStatus)
-  }, [props.adminStatus])
   if (props.msg.isAdmin) {
     return (<></>)
   }

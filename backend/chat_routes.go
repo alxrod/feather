@@ -572,6 +572,32 @@ func (s *BackServer) SendRequestAdminMessage(
 	return nil
 }
 
+func (s *BackServer) SendResolveAdminMessage(
+	contract *db.Contract,
+	user *db.User) error {
+	body := &db.MessageBody{}
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.RESOLVE_ADMIN,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Admin Resolved",
+		},
+	}
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *BackServer) SendItemSettleMessage(contract *db.Contract,
 	deadline *db.Deadline,
 	user *db.User,
@@ -601,6 +627,48 @@ func (s *BackServer) SendItemSettleMessage(contract *db.Contract,
 		Label: &db.LabelNub{
 			Type: db.LABEL_ITEM,
 			Name: label_name,
+		},
+	}
+	database := s.dbClient.Database(s.dbName)
+	err := s.ChatAgent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BackServer) SendItemFinalizeMessage(
+	contract *db.Contract,
+	deadline *db.Deadline,
+	user *db.User,
+	confirmed bool,
+	undo bool) error {
+
+	body := &db.MessageBody{
+		ContractId:      contract.Id,
+		ContractStage:   contract.Stage,
+		Confirmed:       confirmed,
+		Undo:            undo,
+		DeadlineId:      deadline.Id,
+		WorkerSettled:   deadline.WorkerSettled,
+		BuyerSettled:    deadline.BuyerSettled,
+		WorkerConfirmed: deadline.WorkerConfirmed,
+		BuyerConfirmed:  deadline.BuyerConfirmed,
+	}
+
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.FINALIZE_SETTLE,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Finalize",
 		},
 	}
 	database := s.dbClient.Database(s.dbName)
