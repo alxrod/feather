@@ -233,5 +233,5 @@ service Chat {
     rpc JoinChat(UserJoin) returns (stream ChatMessage);
     rpc LeaveChat(UserLeave) returns (UserClose);
     
-    rpc SendMessage(SendRequest) returns (SendResponse);
+    rpc SendCommentMessage(SendRequest) returns (SendResponse);
 }

@@ -147,7 +147,7 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 		role = db.ADMIN
 	}
 
-	err = s.SendContractSignMessage(contract, user)
+	err = s.ChatAgent.SendContractSignMessage(contract, user, database)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +172,7 @@ func (s *BackServer) Settle(ctx context.Context, req *comms.SettleContractReques
 	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		role = db.WORKER
 	}
-	err = s.SendContractSettleMessage(contract, contract.CurrentDeadline, user)
+	err = s.ChatAgent.SendContractSettleMessage(contract, contract.CurrentDeadline, user, database)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +194,7 @@ func (s *BackServer) RequestAdmin(ctx context.Context, req *comms.ContractAdminS
 		return nil, err
 	}
 
-	err = s.SendRequestAdminMessage(contract, user)
+	err = s.ChatAgent.SendRequestAdminMessage(contract, user, database)
 	if err != nil {
 		return nil, err
 	}
@@ -216,7 +216,7 @@ func (s *BackServer) ResolveAdmin(ctx context.Context, req *comms.ContractAdminS
 		return nil, err
 	}
 
-	err = s.SendResolveAdminMessage(contract, user)
+	err = s.ChatAgent.SendResolveAdminMessage(contract, user, database)
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLo
 			return nil, err
 		}
 	}
-	err = s.SendToggleLockMessage(contract, user, req.ContractLock, db.SUGGEST)
+	err = s.ChatAgent.SendToggleLockMessage(contract, user, req.ContractLock, db.SUGGEST, database)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ func (s *BackServer) ReactLock(ctx context.Context, req *comms.ContractReactLock
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil

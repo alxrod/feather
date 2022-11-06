@@ -27,7 +27,7 @@ import {
     CONTRACT_DEADLINE_REPLACE,
     CONTRACT_DEADLINE_REMOVE,
     CONTRACT_DEADLINE_FINALIZE_SETTLE,
-    
+
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
@@ -179,7 +179,7 @@ class ChatService {
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             
-            chatClient.sendMessage(sendRequest, metadata, function(error, response) {
+            chatClient.sendCommentMessage(sendRequest, metadata, function(error, response) {
                 if (error) {
                     console.log("Error")
                     console.log(error)

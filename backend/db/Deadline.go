@@ -34,6 +34,7 @@ type Deadline struct {
 	AdminSettled bool `bson:"admin_settled"`
 
 	Complete bool `bson:"complete"`
+	Expired  bool `bson:"expired"`
 
 	DeadlineProposerId primitive.ObjectID `bson:"deadline_proposer_id`
 	AwaitingCreation   bool               `bson:"awaiting_creation"`
@@ -80,6 +81,8 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	}
 
 	proto.Complete = d.Complete
+	proto.Expired = d.Expired
+
 	proto.WorkerSettled = d.WorkerSettled
 	proto.BuyerSettled = d.BuyerSettled
 	proto.WorkerConfirmed = d.WorkerConfirmed

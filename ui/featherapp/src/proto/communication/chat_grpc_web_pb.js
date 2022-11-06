@@ -262,8 +262,8 @@ proto.main.ChatPromiseClient.prototype.leaveChat =
  *   !proto.main.SendRequest,
  *   !proto.main.SendResponse>}
  */
-const methodDescriptor_Chat_SendMessage = new grpc.web.MethodDescriptor(
-  '/main.Chat/SendMessage',
+const methodDescriptor_Chat_SendCommentMessage = new grpc.web.MethodDescriptor(
+  '/main.Chat/SendCommentMessage',
   grpc.web.MethodType.UNARY,
   proto.main.SendRequest,
   proto.main.SendResponse,
@@ -288,13 +288,13 @@ const methodDescriptor_Chat_SendMessage = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.main.SendResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.ChatClient.prototype.sendMessage =
+proto.main.ChatClient.prototype.sendCommentMessage =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.Chat/SendMessage',
+      '/main.Chat/SendCommentMessage',
       request,
       metadata || {},
-      methodDescriptor_Chat_SendMessage,
+      methodDescriptor_Chat_SendCommentMessage,
       callback);
 };
 
@@ -307,13 +307,13 @@ proto.main.ChatClient.prototype.sendMessage =
  * @return {!Promise<!proto.main.SendResponse>}
  *     Promise that resolves to the response
  */
-proto.main.ChatPromiseClient.prototype.sendMessage =
+proto.main.ChatPromiseClient.prototype.sendCommentMessage =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.Chat/SendMessage',
+      '/main.Chat/SendCommentMessage',
       request,
       metadata || {},
-      methodDescriptor_Chat_SendMessage);
+      methodDescriptor_Chat_SendCommentMessage);
 };
 
 

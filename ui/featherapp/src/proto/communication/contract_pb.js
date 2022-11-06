@@ -1306,6 +1306,7 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     name: jspb.Message.getFieldWithDefault(msg, 18, ""),
     complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+    expired: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
     workerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
     buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
     workerConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
@@ -1381,6 +1382,10 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setComplete(value);
+      break;
+    case 31:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setExpired(value);
       break;
     case 26:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -1534,6 +1539,13 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       25,
+      f
+    );
+  }
+  f = message.getExpired();
+  if (f) {
+    writer.writeBool(
+      31,
       f
     );
   }
@@ -1774,6 +1786,24 @@ proto.main.DeadlineEntity.prototype.getComplete = function() {
  */
 proto.main.DeadlineEntity.prototype.setComplete = function(value) {
   return jspb.Message.setProto3BooleanField(this, 25, value);
+};
+
+
+/**
+ * optional bool expired = 31;
+ * @return {boolean}
+ */
+proto.main.DeadlineEntity.prototype.getExpired = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.DeadlineEntity} returns this
+ */
+proto.main.DeadlineEntity.prototype.setExpired = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 31, value);
 };
 
 

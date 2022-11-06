@@ -18,6 +18,8 @@ message DeadlineEntity {
     string name = 18;
 
     bool complete = 25;
+    bool expired = 31;
+
     bool worker_settled = 26;
     bool buyer_settled = 27;
     bool worker_confirmed = 29;
@@ -389,5 +391,5 @@ service Contract {
     rpc FinishDeadline(FinishDeadlineRequest) returns (NullResponse) {};
     rpc ConfirmDeadline(ConfirmDeadlineRequest) returns (NullResponse) {};
     rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
-    
+
 }

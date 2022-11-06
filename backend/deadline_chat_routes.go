@@ -62,7 +62,7 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 	}
 	log.Println("Payout Updated in DB, attempting to send message")
 
-	err = s.SendPayoutMessage(contract, user, deadline, newPayout, oldPayout, db.SUGGEST)
+	err = s.ChatAgent.SendPayoutMessage(contract, user, deadline, newPayout, oldPayout, db.SUGGEST, database)
 	log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -176,7 +176,7 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -231,7 +231,7 @@ func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggest
 	}
 	log.Println("Payout Updated in DB, attempting to send message")
 
-	err = s.SendDateMessage(contract, user, deadline, newDate, oldDate, db.SUGGEST)
+	err = s.ChatAgent.SendDateMessage(contract, user, deadline, newDate, oldDate, db.SUGGEST, database)
 	log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -344,7 +344,7 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -413,7 +413,7 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 		return nil, err
 	}
 
-	err = s.SendDeadlineCreateMessage(deadline, contract, user, db.SUGGEST)
+	err = s.ChatAgent.SendDeadlineCreateMessage(deadline, contract, user, db.SUGGEST, database)
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -541,7 +541,7 @@ func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractRe
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -604,7 +604,7 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	}
 	log.Println("Deadline suggested to delete, attempting to send message")
 
-	err = s.SendDeadlineDeleteMessage(deadline, contract, user, db.SUGGEST)
+	err = s.ChatAgent.SendDeadlineDeleteMessage(deadline, contract, user, db.SUGGEST, database)
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -726,7 +726,7 @@ func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.Contrac
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -791,7 +791,7 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 	}
 	log.Println("Deadline Items Updated in DB, attempting to send message")
 
-	err = s.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST)
+	err = s.ChatAgent.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST, database)
 	log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -902,7 +902,7 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -937,7 +937,7 @@ func (s *BackServer) FinishDeadline(ctx context.Context, req *comms.FinishDeadli
 		return nil, err
 	}
 
-	if err = s.SendItemFinalizeMessage(contract, deadline, user, false, false); err != nil {
+	if err = s.ChatAgent.SendItemFinalizeMessage(contract, deadline, user, false, false, database); err != nil {
 		return nil, err
 	}
 
@@ -967,7 +967,7 @@ func (s *BackServer) ConfirmDeadline(ctx context.Context, req *comms.ConfirmDead
 		return nil, err
 	}
 
-	if err = s.SendItemFinalizeMessage(contract, deadline, user, true, false); err != nil {
+	if err = s.ChatAgent.SendItemFinalizeMessage(contract, deadline, user, true, false, database); err != nil {
 		return nil, err
 	}
 
@@ -984,6 +984,8 @@ func (s *BackServer) UndoDeadline(ctx context.Context, req *comms.UndoDeadlineRe
 		return nil, errors.New("The requested deadline is not the current deadline for the contract")
 	}
 
+	deadline.WorkerConfirmed = false
+	deadline.BuyerConfirmed = false
 	if user.Id == contract.Worker.Id {
 		deadline.WorkerSettled = false
 	} else if user.Id == contract.Buyer.Id {
@@ -996,7 +998,7 @@ func (s *BackServer) UndoDeadline(ctx context.Context, req *comms.UndoDeadlineRe
 		return nil, err
 	}
 
-	if err = s.SendItemFinalizeMessage(contract, deadline, user, false, true); err != nil {
+	if err = s.ChatAgent.SendItemFinalizeMessage(contract, deadline, user, false, true, database); err != nil {
 		return nil, err
 	}
 

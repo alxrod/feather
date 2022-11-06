@@ -69,23 +69,29 @@ const CompleteDeadlineButton = (props) => {
           setAdminSettled(props.deadlines[i].adminSettled)
           setRole(role)
 
-          if (role === WORKER_TYPE && props.deadlines[i].workerSettled) {
+          if (role === WORKER_TYPE && props.deadlines[i].workerSettled && !props.deadlines[i].workerConfirmed) {
             setUndoMode(true)
-          } else if (role === BUYER_TYPE && props.deadlines[i].buyerSettled) {
+            if (props.deadlines[i].buyerSettled) {
+              setConfirmMode(true)
+            } else {
+              setConfirmMode(false)
+            }
+          } else if (role === BUYER_TYPE && props.deadlines[i].buyerSettled && !props.deadlines[i].buyerConfirmed) {
             setUndoMode(true)
+            if (props.deadlines[i].workerSettled) {
+              setConfirmMode(true)
+            } else {
+              setConfirmMode(false)
+            }
           } else {
             setUndoMode(false)
+            setConfirmMode(false)
           }
-          setConfirmMode(props.deadlines[i].workerSettled && props.deadlines[i].buyerSettled)
-          
         }
       }
     }
   }, [props.curContract, props.user, props.contractChanged, props.deadlinesChanged, props.itemsChanged])
 
-  const advanceContract = () => {
-    // props.settleContract(props.curContract.id)
-  }
 
   const SettleStatus = ({settled: settled, string: string}) => {
     return (

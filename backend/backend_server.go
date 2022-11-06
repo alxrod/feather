@@ -54,8 +54,9 @@ type BackServer struct {
 	comms.UnimplementedContractServer
 	comms.UnimplementedChatServer
 
-	JwtManager *services.JWTManager
-	ChatAgent  *services.ChatAgent
+	JwtManager    *services.JWTManager
+	ChatAgent     *services.ChatAgent
+	DeadlineAgent *services.DeadlineAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -88,6 +89,12 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		return nil, err
 	}
 
+	s_dbName := ""
+	if len(dbName) == 1 {
+		s_dbName = dbName[0]
+	} else {
+		s_dbName = "testing"
+	}
 	s := &BackServer{
 		lis:        lis,
 		GrpcSrv:    grpcServer,
@@ -95,14 +102,14 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		ChatAgent: &services.ChatAgent{
 			ActiveRooms: map[primitive.ObjectID]*services.CacheEntry{},
 		},
+		DeadlineAgent: &services.DeadlineAgent{
+			Database: client.Database(s_dbName),
+		},
+		dbName:   s_dbName,
 		dbClient: client,
 		dbCtx:    ctx,
 	}
-	if len(dbName) == 1 {
-		s.dbName = dbName[0]
-	} else {
-		s.dbName = "testing"
-	}
+
 	// Have to add this for every service
 	comms.RegisterSocialServer(grpcServer, s)
 	comms.RegisterAuthServer(grpcServer, s)

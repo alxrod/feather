@@ -52,7 +52,7 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	}
 	log.Println("Price Updated, attempting to send message")
 
-	err = s.SendPriceMessage(contract, user, req.NewPrice, oldPrice, db.SUGGEST)
+	err = s.ChatAgent.SendPriceMessage(contract, user, req.NewPrice, oldPrice, db.SUGGEST, database)
 	log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -162,7 +162,7 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil

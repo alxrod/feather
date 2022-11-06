@@ -54,7 +54,7 @@ func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggest
 	}
 	log.Println("Item Updated, attempting to send message")
 
-	err = s.SendItemMessage(item, contract, user, req.NewBody, oldBody, db.SUGGEST)
+	err = s.ChatAgent.SendItemMessage(item, contract, user, req.NewBody, oldBody, db.SUGGEST, database)
 	// log.Println("Finished attempting to send message")
 	// if err != nil {
 	// 	return nil, err
@@ -168,7 +168,7 @@ func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -230,7 +230,7 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 	}
 	log.Println("Item Updated, attempting to send message")
 
-	err = s.SendItemCreateMessage(item, contract, user, db.SUGGEST)
+	err = s.ChatAgent.SendItemCreateMessage(item, contract, user, db.SUGGEST, database)
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -351,7 +351,7 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -418,7 +418,7 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	}
 	log.Println("Item Updated, attempting to send message")
 
-	err = s.SendItemDeleteMessage(item, contract, user, db.SUGGEST)
+	err = s.ChatAgent.SendItemDeleteMessage(item, contract, user, db.SUGGEST, database)
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -541,7 +541,7 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 		Body:      revMsgBody,
 		Label:     &db.LabelNub{},
 	}
-	if err = s.SendRevMessage(revMsg); err != nil {
+	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
@@ -558,7 +558,7 @@ func (s *BackServer) SettleItem(ctx context.Context, req *comms.ContractSettleIt
 		return nil, err
 	}
 
-	err = s.SendItemSettleMessage(contract, deadline, user, item)
+	err = s.ChatAgent.SendItemSettleMessage(contract, deadline, user, item, database)
 	if err != nil {
 		return nil, err
 	}
