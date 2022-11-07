@@ -11,6 +11,7 @@ message UserHandle {
 
 message ChatMessage {
     string id = 1;
+    bool system_message = 28;
     UserHandle user = 2;
     google.protobuf.Timestamp timestamp = 3;
     ChatLabel label =  5;
@@ -19,6 +20,7 @@ message ChatMessage {
 
     bool admin_override = 22;
     uint32 admin_status = 23;
+    bool expired = 29;
 
     oneof body {
         CommentMsgBody comment_body = 6;
@@ -39,6 +41,7 @@ message ChatMessage {
         AdminMsgBody request_admin_body = 24;
         AdminMsgBody resolve_admin_body = 25;
         FinalizeMsgBody finalize_body = 26;
+        DeadlineExpireMsgBody deadline_expire_body = 27;
     }   
 }
 message ChatLabel {
@@ -183,6 +186,11 @@ message FinalizeMsgBody {
     bool worker_confirmed = 6;
     bool buyer_settled = 7;
     bool buyer_confirmed = 8;
+}
+
+message DeadlineExpireMsgBody {
+    string contract_id = 1;
+    string deadline_id = 2;
 }
 
 message RevMsgBody {

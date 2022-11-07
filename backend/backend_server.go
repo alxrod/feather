@@ -103,7 +103,8 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 			ActiveRooms: map[primitive.ObjectID]*services.CacheEntry{},
 		},
 		DeadlineAgent: &services.DeadlineAgent{
-			Database: client.Database(s_dbName),
+			Database:      client.Database(s_dbName),
+			INTERVAL_TIME: 5,
 		},
 		dbName:   s_dbName,
 		dbClient: client,
@@ -147,6 +148,8 @@ func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*g
 }
 
 func (s *BackServer) Serve() {
+	s.DeadlineAgent.StartDeadlineLoop(s.ChatAgent.SendDeadlineExpireMessage)
+
 	log.Println(color.Ize(color.Green, "Serving Backend on 127.0.0.1:9990"))
 	log.Fatal(s.GrpcSrv.Serve(s.lis))
 }

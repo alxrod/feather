@@ -39,8 +39,10 @@ import {
     CONTRACT_ITEM_SETTLE_UPDATE,
 } from "../reducers/items/items.actions"
 
+import {queryContract } from "../reducers/contract/dispatchers/contract.dispatcher"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
+import {contractStages } from "./contract.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat/chat.actions"
 
@@ -72,6 +74,7 @@ export const msgMethods = {
     REQUEST_ADMIN: 15,
     RESOLVE_ADMIN: 16,
     FINALIZE_SETTLE: 17,
+    DEADLINE_EXPIRED: 18,
 }
 
 export const deadlineItemTypes = {
@@ -381,6 +384,17 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_DEADLINE_FINALIZE_SETTLE,
             payload: msg.body
         })
+    } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
+        console.log("SHOULD BE ADDRESSING SOLUTON")
+        dispatch({
+            type: CONTRACT_STAGE_UPDATE,
+            payload: {
+                stage: contractStages.SETTLE,
+                workerApproved: true,
+                buyerApproved: true,
+                id: msg.body.contractId,
+            }
+        })
     }
 }
 
@@ -426,6 +440,8 @@ const reformatBody = (msg) => {
         msg.body = msg.settleItemBody
     } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
         msg.body = msg.finalizeBody
+    } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
+        msg.body = msg.deadlineExpireBody
     } else {
         msg.body = {}
     }

@@ -23,10 +23,12 @@ type ContractItem struct {
 	Id               primitive.ObjectID `bson:"_id,omitempty"`
 	ContractId       primitive.ObjectID `bson:"contract_id"`
 	Name             string             `bson:"name"`
+	
 	CurrentBody      string             `bson:"current_body"`
 	WorkerBody       string             `bson:"worker_body"`
 	BuyerBody        string             `bson:"buyer_body"`
 	AwaitingApproval bool               `bson:"awaiting_approval"`
+	
 	Proposer         primitive.ObjectID `bson:"proposer_id"`
 	AwaitingCreation bool               `bson:"awaiting_creation"`
 	AwaitingDeletion bool               `bson:"awaiting_deletion"`

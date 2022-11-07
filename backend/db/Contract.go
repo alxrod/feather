@@ -659,6 +659,16 @@ func ContractSettle(user *User, contract *Contract, database *mongo.Database) er
 
 	return nil
 }
+
+func ContractReplace(contract *Contract, database *mongo.Database) error {
+	filter := bson.D{{"_id", contract.Id}}
+	_, err := database.Collection(CON_COL).ReplaceOne(context.TODO(), filter, contract)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func ContractSavePrice(contract *Contract, database *mongo.Database) error {
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"price", contract.Price}}}}

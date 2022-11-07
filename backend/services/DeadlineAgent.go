@@ -15,8 +15,11 @@ import (
 )
 
 type DeadlineAgent struct {
-	Database *mongo.Database
+	Database      *mongo.Database
+	INTERVAL_TIME uint32
 }
+
+type SendExpireMsg func(contract *db.Contract, deadline *db.Deadline, database *mongo.Database) error
 
 func (agent *DeadlineAgent) QueryContracts() ([]*db.Contract, error) {
 	contracts := make([]*db.Contract, 0)
@@ -35,26 +38,30 @@ func (agent *DeadlineAgent) QueryContracts() ([]*db.Contract, error) {
 	}
 	cur.Close(context.TODO())
 
-	for _, con := range contracts {
-		items := make([]*db.ContractItem, len(con.ItemIds))
-		for idx, id := range con.ItemIds {
+	for _, contract := range contracts {
+		items := make([]*db.ContractItem, len(contract.ItemIds))
+		for idx, id := range contract.ItemIds {
 			item, err := db.ContractItemById(id, agent.Database.Collection(db.ITEM_COL))
 			if err != nil {
 				return nil, err
 			}
 			items[idx] = item
 		}
-		con.Items = items
+		contract.Items = items
 
-		deadlines := make([]*db.Deadline, len(con.DeadlineIds))
-		for idx, id := range con.DeadlineIds {
+		deadlines := make([]*db.Deadline, len(contract.DeadlineIds))
+		for idx, id := range contract.DeadlineIds {
 			deadline, err := db.DeadlineById(id, agent.Database)
+			if id == contract.CurrentDeadlineId {
+				contract.CurrentDeadline = deadline
+			}
 			if err != nil {
 				return nil, err
 			}
 			deadlines[idx] = deadline
 		}
-		con.Deadlines = deadlines
+
+		contract.Deadlines = deadlines
 	}
 
 	sort.Slice(contracts, func(i, j int) bool {
@@ -118,6 +125,7 @@ func (agent *DeadlineAgent) RevertContractSuggestions(contract *db.Contract) err
 		if err := db.DeadlineReplace(deadline, agent.Database); err != nil {
 			return err
 		}
+
 	}
 
 	contract.Deadlines = final_deadlines
@@ -146,6 +154,19 @@ func (agent *DeadlineAgent) RevertContractSuggestions(contract *db.Contract) err
 	contract.ItemIds = finalItemIds
 
 	contract.UniversalLock = true
+
+	chatRoom, err := db.ChatRoomQueryId(contract.RoomId, agent.Database)
+	if err != nil {
+		return err
+	}
+	for _, msg := range chatRoom.Messages {
+		if msg.RequiresResol() && !msg.Body.Resolved {
+			msg.Expired = true
+			if err := db.MessageReplace(msg, agent.Database); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 
@@ -154,7 +175,7 @@ func (agent *DeadlineAgent) DeadlinePassed(deadline *db.Deadline) bool {
 	return deadline.CurrentDate.Before(now)
 }
 
-func (agent *DeadlineAgent) DeadlineLoop() {
+func (agent *DeadlineAgent) DeadlineLoop(sendMsg SendExpireMsg) {
 	for {
 		contracts, err := agent.QueryContracts()
 		if err != nil {
@@ -162,14 +183,31 @@ func (agent *DeadlineAgent) DeadlineLoop() {
 		}
 		for _, contract := range contracts {
 			curDeadline := contract.CurrentDeadline
+			if curDeadline == nil {
+				continue
+			}
+
 			if agent.DeadlinePassed(curDeadline) && contract.Stage == db.ACTIVE {
+				log.Println(color.Colorize(color.Green, fmt.Sprintf("DEADLINE AGENT: contract %s deadline expired", contract.Id.Hex())))
 				contract.Stage = db.SETTLE
 				curDeadline.Expired = true
 				err := agent.RevertContractSuggestions(contract)
 				if err != nil {
-					log.Println(color.Colorize("red", fmt.Sprintf("DEADLINE AGENT ERROR: ", err.Error())))
+					log.Println(color.Colorize(color.Red, fmt.Sprintf("DEADLINE AGENT ERROR: ", err.Error())))
+					continue
 				}
+				if err := db.ContractReplace(contract, agent.Database); err != nil {
+					log.Println(color.Colorize("red", fmt.Sprintf("DEADLINE AGENT ERROR: ", err.Error())))
+					continue
+				}
+				sendMsg(contract, curDeadline, agent.Database)
+
 			}
 		}
+		time.Sleep(time.Second * time.Duration(agent.INTERVAL_TIME))
 	}
+}
+
+func (agent *DeadlineAgent) StartDeadlineLoop(sendMsg SendExpireMsg) {
+	go agent.DeadlineLoop(sendMsg)
 }

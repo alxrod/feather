@@ -130,9 +130,8 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 	}
 	entry.mu.Unlock()
 
-	user_id := msg.UserId
 	proto := msg.Proto()
-	err = agent.BroadcastMessage(room_id, user_id, proto)
+	err = agent.BroadcastMessage(room_id, proto)
 
 	return err
 }
@@ -140,11 +139,19 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Database) error {
 	room_id := msg.RoomId
 	entry, ok := agent.ActiveRooms[room_id]
-	if !ok {
+	if !ok && !msg.SystemMessage {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("The room %s is not active", room_id.Hex())))
 		return errors.New("You must join the room before sending messages, this room is not active")
+	} else if !ok {
+		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Sending message to room %s in background", room_id.Hex())))
+		room, err := db.ChatRoomQueryId(room_id, database)
+		if err != nil {
+			return nil
+		}
+		msg, err = room.AddMessageInternal(msg, database)
+		return err
 	}
-	if msg.User.AdminStatus {
+	if !msg.SystemMessage && msg.User.AdminStatus {
 		msg.IsAdmin = true
 	}
 	entry.mu.Lock()
@@ -159,12 +166,11 @@ func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Dat
 	go func(
 		agent *ChatAgent,
 		room_id primitive.ObjectID,
-		user_id primitive.ObjectID,
 		proto *comms.ChatMessage) {
 
-		agent.BroadcastMessage(room_id, user_id, proto)
+		agent.BroadcastMessage(room_id, proto)
 
-	}(agent, room_id, msg.UserId, proto)
+	}(agent, room_id, proto)
 
 	return nil
 }
@@ -174,7 +180,7 @@ type ConnLog struct {
 	index int
 }
 
-func (agent *ChatAgent) BroadcastMessage(room_id, user_id primitive.ObjectID, msg *comms.ChatMessage) error {
+func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *comms.ChatMessage) error {
 	log.Println("Broadcasting")
 	entry, ok := agent.ActiveRooms[room_id]
 	if !ok {

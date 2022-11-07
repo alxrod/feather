@@ -35,6 +35,7 @@ const (
 	REQUEST_ADMIN        = 15
 	RESOLVE_ADMIN        = 16
 	FINALIZE_SETTLE      = 17
+	DEADLINE_EXPIRED     = 18
 )
 
 // Editing Typs
@@ -76,7 +77,9 @@ type Message struct {
 
 	Label *LabelNub `bson:"label"`
 
-	UserId primitive.ObjectID `bson:"user_id"`
+	UserId        primitive.ObjectID `bson:"user_id,omitempty"`
+	SystemMessage bool               `bson:"system_message"`
+	Expired       bool               `bson:"expired"`
 
 	IsAdmin bool `bson:"is_admin"`
 
@@ -128,7 +131,8 @@ type MessageBody struct {
 	// Sign Message
 	SignerId      primitive.ObjectID `bson:"signer_id,omitempty"`
 	ContractStage uint32             `bson:"contract_stage,omitempty"`
-	ContractId    primitive.ObjectID `bson:"contract_id,omitempty"`
+
+	ContractId primitive.ObjectID `bson:"contract_id,omitempty"`
 
 	// Lock Message
 	ContractLock bool `bson:"contract_lock,omitempty"`
@@ -362,6 +366,46 @@ func (b *MessageBody) FinalizeProto() *comms.ChatMessage_FinalizeBody {
 	}
 }
 
+func (b *MessageBody) ExpireProto() *comms.ChatMessage_DeadlineExpireBody {
+	return &comms.ChatMessage_DeadlineExpireBody{
+		DeadlineExpireBody: &comms.DeadlineExpireMsgBody{
+			ContractId: b.ContractId.Hex(),
+			DeadlineId: b.DeadlineId.Hex(),
+		},
+	}
+}
+
+func (msg *Message) RequiresResol() bool {
+	if msg.Method == DATE {
+		return true
+	}
+	if msg.Method == PAYOUT {
+		return true
+	}
+	if msg.Method == ITEM_CREATE {
+		return true
+	}
+	if msg.Method == ITEM_DELETE {
+		return true
+	}
+	if msg.Method == DEADLINE_CREATE {
+		return true
+	}
+	if msg.Method == DEADLINE_DELETE {
+		return true
+	}
+	if msg.Method == DEADLINE_ITEMS {
+		return true
+	}
+	if msg.Method == PRICE {
+		return true
+	}
+	if msg.Method == CONTRACT_LOCK {
+		return true
+	}
+	return false
+}
+
 func (b *MessageBody) RevProto() *comms.ChatMessage_RevBody {
 	return &comms.ChatMessage_RevBody{
 		RevBody: &comms.RevMsgBody{
@@ -382,7 +426,12 @@ func (m *Message) Proto() *comms.ChatMessage {
 	}
 
 	proto.Id = m.Id.Hex()
-	proto.User = m.User.Handle().Proto()
+	proto.SystemMessage = m.SystemMessage
+	proto.Expired = m.Expired
+	if !m.SystemMessage {
+		proto.User = m.User.Handle().Proto()
+	}
+
 	proto.Timestamp = timestamppb.New(m.Timestamp)
 	proto.Method = m.Method
 	proto.Label = m.Label.Proto()
@@ -426,6 +475,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ResolveAdminProto()
 	} else if m.Method == FINALIZE_SETTLE {
 		proto.Body = m.Body.FinalizeProto()
+	} else if m.Method == DEADLINE_EXPIRED {
+		proto.Body = m.Body.ExpireProto()
 	}
 
 	return proto
@@ -486,14 +537,15 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 	}
 
 	message := &Message{
-		RoomId:    room_id,
-		User:      user,
-		UserId:    user.Id,
-		Timestamp: time.Now().Local(),
-		Method:    req.Method,
-		Body:      ParseBody(req),
-		Label:     label,
-		IsAdmin:   user.AdminStatus,
+		RoomId:        room_id,
+		User:          user,
+		UserId:        user.Id,
+		SystemMessage: false,
+		Timestamp:     time.Now().Local(),
+		Method:        req.Method,
+		Body:          ParseBody(req),
+		Label:         label,
+		IsAdmin:       user.AdminStatus,
 	}
 
 	messageCollection := database.Collection(MSG_COL)
@@ -525,11 +577,15 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("Contract Not Found")
 	}
-	user, err := UserQueryId(message.UserId, database.Collection(USERS_COL))
-	if err != nil {
-		return nil, err
+	if !message.SystemMessage {
+		user, err := UserQueryId(message.UserId, database.Collection(USERS_COL))
+		if err != nil {
+			return nil, err
+		}
+
+		message.User = user
 	}
-	message.User = user
+
 	if (message.Method == ITEM_CREATE || message.Method == ITEM_DELETE) && !message.Body.ItemId.IsZero() {
 		item, err := ContractItemById(message.Body.ItemId, database.Collection(ITEM_COL))
 		if err != nil {
@@ -562,7 +618,7 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 
 func MessageInsertInternal(msg *Message, room_id primitive.ObjectID, database *mongo.Database) (primitive.ObjectID, error) {
 	messageCollection := database.Collection(MSG_COL)
-	if msg.User.AdminStatus {
+	if msg.User != nil && msg.User.AdminStatus {
 		msg.IsAdmin = true
 	}
 	res, err := messageCollection.InsertOne(context.TODO(), msg)

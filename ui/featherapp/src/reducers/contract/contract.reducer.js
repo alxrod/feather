@@ -16,6 +16,7 @@ const initialState = {
     curContract: {id: null},
     contractChanged: false,
     contractClaimed: false,   
+    contractForceReload: false,
 }
 
 export default (state = initialState, action) => {
@@ -114,6 +115,7 @@ export default (state = initialState, action) => {
                                 action.payload
                             )
             }
+
         default:
             return state
     }

@@ -24,7 +24,7 @@ import ItemSettleMsg from "./msg/msg_item_settle"
 import RequestAdminMsg from "./msg/msg_request_admin"
 import ResolveAdminMsg from "./msg/msg_resolve_admin"
 import ContractFinalizeMsg from "./msg/msg_finalize"
-
+import DeadlineExpiredMsg from "./msg/msg_deadline_expired"
 function useOnScreen(ref) {
 
   const [isIntersecting, setIntersecting] = useState(false)
@@ -97,6 +97,8 @@ const MainTimeline = (props) => {
                   <ResolveAdminMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.FINALIZE_SETTLE) ? (
                   <ContractFinalizeMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.DEADLINE_EXPIRED) ? (
+                  <DeadlineExpiredMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

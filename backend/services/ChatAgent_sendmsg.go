@@ -498,6 +498,35 @@ func (agent *ChatAgent) SendContractSettleMessage(
 	return nil
 }
 
+func (agent *ChatAgent) SendDeadlineExpireMessage(
+	contract *db.Contract,
+	deadline *db.Deadline,
+	database *mongo.Database,
+) error {
+	body := &db.MessageBody{
+		ContractId: contract.Id,
+		DeadlineId: deadline.Id,
+	}
+	msg := &db.Message{
+		RoomId:        contract.RoomId,
+		Timestamp:     time.Now().Local(),
+		Method:        db.DEADLINE_EXPIRED,
+		SystemMessage: true,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Deadline Expired",
+		},
+	}
+	err := agent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (agent *ChatAgent) SendRequestAdminMessage(
 	contract *db.Contract,
 	user *db.User,

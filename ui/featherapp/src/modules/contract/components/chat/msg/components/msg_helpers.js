@@ -2,7 +2,7 @@ import {resolTypes, decisionTypes} from "../../../../../../services/chat.service
 import { WORKER_TYPE, BUYER_TYPE } from "../../../../../../services/user.service"
 
 export const displayDecide = (msg, status, user) => {
-    return  (msg.body.resolStatus === resolTypes.UNDECIDED) &&
+    return  (msg.body.resolStatus === resolTypes.UNDECIDED && !msg.expired) &&
     ((status === decisionTypes.UNDECIDED) ||
     (user.admin_status && msg.adminStatus === decisionTypes.UNDECIDED))
 }
