@@ -29,7 +29,7 @@ const ContractDraft = (props) => {
       } else {
         setUniversalLock(false)
       }
-      if (props.curContract.stage > contractStages.SETTLE) {
+      if (props.curContract.stage !== contractStages.SETTLE) {
         props.push("/contract/"+props.curContract.id)
       }
     }

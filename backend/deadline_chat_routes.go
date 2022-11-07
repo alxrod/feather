@@ -10,7 +10,6 @@ import (
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSuggestPayout) (*comms.ContractEditResponse, error) {
@@ -906,13 +905,6 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 		return nil, err
 	}
 	return &comms.ContractEditResponse{}, nil
-}
-
-func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contract, deadline *db.Deadline, database *mongo.Database) error {
-	if err := db.DeadlineReplace(deadline, database); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (s *BackServer) FinishDeadline(ctx context.Context, req *comms.FinishDeadlineRequest) (*comms.NullResponse, error) {

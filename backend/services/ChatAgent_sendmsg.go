@@ -527,6 +527,37 @@ func (agent *ChatAgent) SendDeadlineExpireMessage(
 	return nil
 }
 
+func (agent *ChatAgent) SendDeadlineSettledMessage(
+	contract *db.Contract,
+	deadline *db.Deadline,
+	database *mongo.Database,
+	stage uint32,
+) error {
+	body := &db.MessageBody{
+		ContractId:    contract.Id,
+		ContractStage: stage,
+		DeadlineId:    deadline.Id,
+	}
+	msg := &db.Message{
+		RoomId:        contract.RoomId,
+		Timestamp:     time.Now().Local(),
+		Method:        db.DEADLINE_SETTLED,
+		SystemMessage: true,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Deadline Settled",
+		},
+	}
+	err := agent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (agent *ChatAgent) SendRequestAdminMessage(
 	contract *db.Contract,
 	user *db.User,

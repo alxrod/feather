@@ -75,6 +75,7 @@ export const msgMethods = {
     RESOLVE_ADMIN: 16,
     FINALIZE_SETTLE: 17,
     DEADLINE_EXPIRED: 18,
+    DEADLINE_SETTLED: 19,
 }
 
 export const deadlineItemTypes = {
@@ -385,13 +386,22 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             payload: msg.body
         })
     } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
-        console.log("SHOULD BE ADDRESSING SOLUTON")
         dispatch({
             type: CONTRACT_STAGE_UPDATE,
             payload: {
                 stage: contractStages.SETTLE,
                 workerApproved: true,
                 buyerApproved: true,
+                id: msg.body.contractId,
+            }
+        })
+    } else if (msg.method === msgMethods.DEADLINE_SETTLED) {
+        dispatch({
+            type: CONTRACT_STAGE_UPDATE,
+            payload: {
+                stage: msg.body.contractStage,
+                workerApproved: false,
+                buyerApproved: false,
                 id: msg.body.contractId,
             }
         })
@@ -442,6 +452,8 @@ const reformatBody = (msg) => {
         msg.body = msg.finalizeBody
     } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
         msg.body = msg.deadlineExpireBody
+    } else if (msg.method === msgMethods.DEADLINE_SETTLED) {
+        msg.body = msg.deadlineSettledBody
     } else {
         msg.body = {}
     }

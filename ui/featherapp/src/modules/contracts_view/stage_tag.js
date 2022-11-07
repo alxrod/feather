@@ -31,11 +31,10 @@ export default (props) => {
             setBgColor("bg-yellow")
             setStageText("Settling")
         } 
-        else if (props.stage === contractStages.COMPILED) {
+        else if (props.stage === contractStages.COMPLETE) {
             setBgColor("bg-green")
             setStageText("Complete")
-        } 
-        else {
+        } else {
             setBgColor("bg-red")
             setStageText("Invalid")
         }

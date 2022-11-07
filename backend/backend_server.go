@@ -57,6 +57,7 @@ type BackServer struct {
 	JwtManager    *services.JWTManager
 	ChatAgent     *services.ChatAgent
 	DeadlineAgent *services.DeadlineAgent
+	PaymentAgent  *services.PaymentAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -105,6 +106,9 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		DeadlineAgent: &services.DeadlineAgent{
 			Database:      client.Database(s_dbName),
 			INTERVAL_TIME: 5,
+		},
+		PaymentAgent: &services.PaymentAgent{
+			Database: client.Database(s_dbName),
 		},
 		dbName:   s_dbName,
 		dbClient: client,

@@ -42,6 +42,7 @@ message ChatMessage {
         AdminMsgBody resolve_admin_body = 25;
         FinalizeMsgBody finalize_body = 26;
         DeadlineExpireMsgBody deadline_expire_body = 27;
+        DeadlineSettledMsgBody deadline_settled_body = 39;
     }   
 }
 message ChatLabel {
@@ -190,6 +191,11 @@ message FinalizeMsgBody {
 
 message DeadlineExpireMsgBody {
     string contract_id = 1;
+    string deadline_id = 2;
+}
+message DeadlineSettledMsgBody {
+    string contract_id = 1;
+    uint32 contract_stage = 3;
     string deadline_id = 2;
 }
 

@@ -125,6 +125,9 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	if err != nil {
 		return nil, err
 	}
+	if nextDeadline == nil {
+		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
+	}
 	proto.Deadline = timestamppb.New(nextDeadline.CurrentDate)
 
 	proto.Price = contract.Price.Current
@@ -159,10 +162,14 @@ func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
 	proto.Title = contract.Title
 	proto.Password = contract.Password
 	nextDeadline, err := contract.NextDeadline()
-	nextDate := nextDeadline.CurrentDate
 	if err != nil {
 		return nil, err
 	}
+	if nextDeadline == nil {
+		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
+	}
+	nextDate := nextDeadline.CurrentDate
+
 	proto.Deadline = timestamppb.New(nextDate)
 	proto.Price = contract.Price.Current
 	proto.Summary = contract.Summary
@@ -177,23 +184,13 @@ func (contract *Contract) NextDeadline() (*Deadline, error) {
 	if contract == nil {
 		return nil, errors.New("This contract is nil")
 	}
-	now := time.Now()
 	var earliest *time.Time
 	var earliestDeadline *Deadline
 	for _, deadline := range contract.Deadlines {
-		if deadline.CurrentDate.After(now) {
-			if (earliest == nil || deadline.CurrentDate.Before(*earliest)) && !deadline.Complete {
-				earliest = &deadline.CurrentDate
-				earliestDeadline = deadline
-			}
+		if (earliest == nil || deadline.CurrentDate.Before(*earliest)) && !deadline.Complete {
+			earliest = &deadline.CurrentDate
+			earliestDeadline = deadline
 		}
-	}
-	if earliestDeadline == nil {
-		earliestDeadline = contract.Deadlines[len(contract.Deadlines)-1]
-	}
-	earliest = &contract.Deadlines[len(contract.Deadlines)-1].CurrentDate
-	if earliest == nil {
-		return nil, errors.New("This contract is missing deadlines")
 	}
 	return earliestDeadline, nil
 }
@@ -338,6 +335,9 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	nextDeadline, err := contract.NextDeadline()
 	if err != nil {
 		return nil, err
+	}
+	if nextDeadline == nil {
+		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
 	}
 	contract.CurrentDeadline = nextDeadline
 	contract.CurrentDeadlineId = nextDeadline.Id
@@ -613,6 +613,9 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 	if err != nil {
 		return err
 	}
+	if nextDeadline == nil {
+		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
+	}
 	contract.CurrentDeadline = nextDeadline
 	contract.CurrentDeadlineId = nextDeadline.Id
 
@@ -672,6 +675,20 @@ func ContractReplace(contract *Contract, database *mongo.Database) error {
 func ContractSavePrice(contract *Contract, database *mongo.Database) error {
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"price", contract.Price}}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ContractSaveSettleStage(contract *Contract, database *mongo.Database) error {
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set",
+		bson.D{
+			{"stage", contract.Stage},
+			{"current_deadline_id", contract.CurrentDeadline.Id},
+		}}}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err

@@ -24,17 +24,6 @@ export default (state = initialState, action) => {
         case actions.CONTRACT_CREATE:
             return {
                 ...state,
-                contractNubs: {
-                    ...state.contractNubs,
-                    [action.payload.id]: {
-                        id: action.payload.id,
-                        title: action.payload.title,
-                        deadline: action.payload.deadlinesList[0].currentDate,
-                        price: action.payload.price.current,
-                        stage: action.payload.stage,
-                        user_type: action.payload.user_type,
-                    }
-                },
                 curContract: action.payload
             }
         case actions.CONTRACT_CLAIM:
@@ -50,11 +39,6 @@ export default (state = initialState, action) => {
                     buyerApproved: state.curContract.buyerApproved || action.payload.buyerApproved,
                     stage: action.payload.stage,
                 },
-                contractNubs: helpers.replaceContractNubStage(
-                    state.contractNubs, 
-                    action.payload.id,
-                    action.payload.stage,
-                ),
                 contractChanged: !state.contractChanged
             }
         
@@ -85,14 +69,6 @@ export default (state = initialState, action) => {
                 ...state,
                 loadingContract: false,
                 selectedId: action.payload.id,
-                contractNubs: helpers.replaceContractNub(state.contractNubs, {
-                    id: action.payload.id,
-                    title: action.payload.title,
-                    deadline: action.payload.deadlinesList[0].currentDate,
-                    price: action.payload.price.current,
-                    stage: action.payload.stage,
-                    user_type: action.payload.user_type,
-                }),
                 curContract: action.payload
             }
 

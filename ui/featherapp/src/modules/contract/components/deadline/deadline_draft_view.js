@@ -34,7 +34,15 @@ const DeadlineDraftView = (props) => {
 
   useEffect( () => {
     setDeadlineName(props.deadlines[selectedIdx]?.name)
-  }, [selectedIdx])
+  }, [selectedIdx, props.deadlines[selectedIdx]])
+
+  useEffect( () => {
+    for (let i = 0; i < props.deadlines.length; i++) {
+      if (props.curContract?.currentDeadlineId === props.deadlines[i]?.id) {
+        setSelectedIdx(i)
+      }
+    }
+  }, [props.curContract?.currentDeadlineId, props.deadlines])
 
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg w-full flex flex-row h-full">
@@ -47,7 +55,14 @@ const DeadlineDraftView = (props) => {
       <div className="px-4 py-5 sm:p-6 grow">
         <div className="flex flex-col h-full">
           <div>
-            <h3 className="text-lg leading-6 font-medium text-gray-900">{deadlineName}</h3>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              {deadlineName}
+              {props.deadlines[selectedIdx]?.complete ? (
+                <i className="ml-2 font-medium text-indigo-400">(complete)</i>
+              ) : (props.deadlines[selectedIdx]?.id === props.curContract.currentDeadlineId) ? (
+                <i className="ml-2 font-medium text-indigo-400">(current)</i>
+              ): null}
+            </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
               <b className="text-indigo-500">{props.deadlines[selectedIdx]?.currentPayout}%</b> will be payed out on{" "}
               <b className="text-indigo-500">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 

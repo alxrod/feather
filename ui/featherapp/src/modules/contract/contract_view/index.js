@@ -17,11 +17,12 @@ import OverviewCard from "../components/summary/overview_card";
 import SettleContract from "../components/advance_cards/settle_contract";
 import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
-import DraftUpload from "../components/draft/draft_upload";
 import UniversalLockCard from "../components/universal_lock/universal_lock_card";
 
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
+  const [completeMode, setCompleteMode] = useState(false)
+
   const [reload, setReload] = useState(true)
 
   const [nextItemName, setNextItemName] = useState("")
@@ -34,8 +35,11 @@ const ContractDraft = (props) => {
       } else {
         setUniversalLock(false)
       }
-      if (props.curContract.stage > contractStages.ACTIVE) {
+      if (props.curContract.stage > contractStages.ACTIVE && props.curContract.stage !== contractStages.COMPLETE) {
         props.push("/contract/"+props.curContract.id)
+      } else if (props.curContract.stage === contractStages.COMPLETE) {
+        setCompleteMode(true)
+        setUniversalLock(true)
       }
     }
   }, [props.curContract])
@@ -81,12 +85,14 @@ const ContractDraft = (props) => {
       <div className="p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">
-            <div className="mb-2">
-              <UniversalLockCard 
-                universalLock={universalLock}
-                requestLockChange={requestLockChange}
-              />
-            </div>
+            {!completeMode && (
+              <div className="mb-2">
+                <UniversalLockCard 
+                  universalLock={universalLock}
+                  requestLockChange={requestLockChange}
+                />
+              </div>
+            )}
             <OverviewCard title={props.curContract.title} summary={props.curContract.summary} universalLock={universalLock}/>
             <DeadlineField
               createMode={false} 
@@ -98,9 +104,11 @@ const ContractDraft = (props) => {
             <MainChat roomId={props.curContract.roomId}/>
           </div>
         </div>
-        <div className="mt-5">
-          <SettleContract/>
-        </div>
+        {!completeMode && (
+          <div className="mt-5">
+            <SettleContract/>
+          </div>
+        )}
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>

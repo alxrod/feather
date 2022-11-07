@@ -79,7 +79,7 @@ const DeadlineField = (props) => {
     if (props.curContract.id) {
       setRole(props.curContract.role)
     }
-    if (props.curContract.stage === contractStages.ACTIVE) {
+    if (props.curContract.stage === contractStages.ACTIVE || props.curContract.stage === contractStages.COMPLETE) {
       setInDraftMode(true)
       setItemsHeight(200)
     }

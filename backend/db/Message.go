@@ -36,6 +36,7 @@ const (
 	RESOLVE_ADMIN        = 16
 	FINALIZE_SETTLE      = 17
 	DEADLINE_EXPIRED     = 18
+	DEADLINE_SETTLED     = 19
 )
 
 // Editing Typs
@@ -375,6 +376,16 @@ func (b *MessageBody) ExpireProto() *comms.ChatMessage_DeadlineExpireBody {
 	}
 }
 
+func (b *MessageBody) DeadlineSettledProto() *comms.ChatMessage_DeadlineSettledBody {
+	return &comms.ChatMessage_DeadlineSettledBody{
+		DeadlineSettledBody: &comms.DeadlineSettledMsgBody{
+			ContractId:    b.ContractId.Hex(),
+			ContractStage: b.ContractStage,
+			DeadlineId:    b.DeadlineId.Hex(),
+		},
+	}
+}
+
 func (msg *Message) RequiresResol() bool {
 	if msg.Method == DATE {
 		return true
@@ -477,6 +488,8 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.FinalizeProto()
 	} else if m.Method == DEADLINE_EXPIRED {
 		proto.Body = m.Body.ExpireProto()
+	} else if m.Method == DEADLINE_SETTLED {
+		proto.Body = m.Body.DeadlineSettledProto()
 	}
 
 	return proto
