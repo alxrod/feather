@@ -21,13 +21,17 @@ const CalendarTime = (props) => {
   const [timeoutId, setTimeoutId] = useState(-1)
 
   useEffect( () => {
-    if (props.deadline !== undefined) {
-      let datetime = props.deadline.currentDate
+    if (props.deadline !== undefined || (props.newDeadline !== undefined && !props.createMode)) {
+      let deadline = props.deadline
+      if (props.newDeadline.currentDate !== undefined && !props.createMode) {
+        deadline = props.newDeadline
+      }
+      let datetime = deadline.currentDate
       if (props.role === WORKER_TYPE) {
-        datetime = props.deadline.workerDate
+        datetime = deadline.workerDate
       }
       if (props.role == BUYER_TYPE) {
-        datetime = props.deadline.buyerDate
+        datetime = deadline.buyerDate
       }
       setYourDate(datetime)
 
@@ -47,7 +51,7 @@ const CalendarTime = (props) => {
       setMinute(datetime.getMinutes())
       setPeriod(period)
     }
-  }, [props.deadline, props.reloadFlag, props.calRefresh])
+  }, [props.deadline, props.newDeadline, props.reloadFlag, props.calRefresh ])
 
   useEffect( () => {
     if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
@@ -95,13 +99,19 @@ const CalendarTime = (props) => {
         return
       }
       const newDeadline = props.deadline
-      if (props.role === WORKER_TYPE) {
+      if (props.createMode === true) {
+        newDeadline.workerDate = newDate
+        newDeadline.currentDate = newDate
+        newDeadline.buyerDate = newDate
+      } else if (props.role === WORKER_TYPE) {
         newDeadline.workerDate = newDate
       } else if (props.role === BUYER_TYPE) {
         newDeadline.buyerDate = newDate
       }
       props.changeDate(newDeadline)
+      setMinute(e.target.value)
     }
+    
   }
 
   const handleHourChange = (e) => {
@@ -118,7 +128,11 @@ const CalendarTime = (props) => {
       return
     }
     const newDeadline = props.deadline
-    if (props.role === WORKER_TYPE) {
+    if (props.createMode === true) {
+      newDeadline.workerDate = newDate
+      newDeadline.currentDate = newDate
+      newDeadline.buyerDate = newDate
+    } else if (props.role === WORKER_TYPE) {
       newDeadline.workerDate = newDate
     } else if (props.role === BUYER_TYPE) {
       newDeadline.buyerDate = newDate

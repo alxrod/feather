@@ -79,7 +79,13 @@ const Calendar = (props) => {
       }
   
     }
-  }, [props.deadline, props.reloadFlag, props.calRefresh])
+  }, [
+    props.deadline?.currentDate.getSeconds(), 
+    props.deadline?.workerDate.getSeconds(),
+    props.deadline?.buyerDate.getSeconds(),
+    props.reloadFlag, 
+    props.calRefresh,
+])
 
   useEffect( () => {
     if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
@@ -106,6 +112,7 @@ const Calendar = (props) => {
         selYear !== oldDate.getFullYear() ||
         selDay !== oldDate.getDate()) {
         
+        
         const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
         const newDeadline = structuredClone(props.deadline)
         if (props.createMode === true) {
@@ -117,6 +124,7 @@ const Calendar = (props) => {
         } else if (props.role === BUYER_TYPE) {
           newDeadline.buyerDate = newDate
         }
+        console.log("Calling date change on ", newDeadline)
         props.changeDate(newDeadline)
       } 
     }

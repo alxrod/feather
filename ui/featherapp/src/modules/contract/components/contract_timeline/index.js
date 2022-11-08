@@ -34,7 +34,7 @@ export default function ContractTimeline(props) {
       <ol role="list" className="grid grid-cols-6">
         {steps.map((step,idx) => (
           <li key={step.name} className="relative flex w-full">
-            {step.status === 'complete' ? (
+            {step.status === 'complete' || (step.status === "current" && idx == steps.length-1) ? (
               <div className="group flex w-full items-center bg-indigo-600 py-0 h-1 sm:py-4">
                 <span className="flex justify-center items-center w-full text-sm font-medium">
                   <span className="flex flex-shrink-0 items-center justify-center hidden md:flex">
@@ -59,7 +59,7 @@ export default function ContractTimeline(props) {
 
             {step.stage != contractStages.COMPLETE ? (
               <>
-                {step.status === 'complete' ? (
+                {step.status === 'complete' || (step.status === "current" && idx == steps.length-1) ? (
                 <div className="absolute top-0 right-0 h-full w-5 block bg-indigo-600" aria-hidden="true">
                   <svg
                     className="h-full w-full text-[#5850ec]"

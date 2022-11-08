@@ -64,7 +64,6 @@ const ContractItem = (props) => {
 
   useEffect( () => {
     if (item_text !== contract_info.oldBody && !lock) {
-
       toggleDecideMode(true)
     } else {
       toggleDecideMode(false)
@@ -79,7 +78,7 @@ const ContractItem = (props) => {
     let final_item_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.ITEM) {
-        if (props.messages[i].body.itemId === props.id) {
+        if (props.messages[i].body.itemId === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
           if (props.messages[i].user.id === props.user.user_id) {
             setProposedByPartner(false)
@@ -88,7 +87,7 @@ const ContractItem = (props) => {
           }
         }
       } else if (props.messages[i].method === msgMethods.ITEM_CREATE) {
-        if (props.messages[i].body.item.id === props.id) {
+        if (props.messages[i].body.item.id === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
           if (props.messages[i].user.id === props.user.user_id) {
             setProposedByPartner(false)
@@ -97,7 +96,7 @@ const ContractItem = (props) => {
           }
         }
       } else if (props.messages[i].method === msgMethods.ITEM_DELETE) {
-        if (props.messages[i].body.item.id === props.id) {
+        if (props.messages[i].body.item.id === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
           if (props.messages[i].user.id === props.user.user_id) {
             setProposedByPartner(false)

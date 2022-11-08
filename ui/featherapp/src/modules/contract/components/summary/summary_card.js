@@ -7,13 +7,6 @@ import { StarIcon, } from '@heroicons/react/outline'
       <div className="bg-white overflow-hidden shadow rounded-lg">
         <div className="px-4 py-5 sm:p-6">
           <div className="flex">
-            <div className="mr-4 flex-shrink-0">
-              <img
-                className="inline-block h-16 w-16 rounded-md"
-                src="https://images.prismic.io/athletic-greens-new/5394a6dc-0a11-4ea5-80ac-95be8893dd98_structured-data-pouch.png?auto=compress,format&rect=0,0,1000,1000&w=1000&h=1000"
-                alt=""
-              />
-            </div>
             <div>
               <h4 className="text-base font-bold">{props.title}</h4>
               <p className="mt-1 text-sm">

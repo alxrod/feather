@@ -54,11 +54,6 @@ const CalendarBundle = (props) => {
     // props.editDeadline(newDeadline)
     if (props.createMode || props.newDeadlineMode) {
       props.editDeadline(new_deadline)
-      console.log("Updated the date on new one")
-      console.log(new_deadline)
-      if (timeoutId !== -1) {
-        clearTimeout(timeoutId);
-      }
       if (props.createMode) {
         // const id = setTimeout(function(){
         props.saveDeadlines()
@@ -104,8 +99,6 @@ const CalendarBundle = (props) => {
 
   const rejectDate = () => {
     props.setErrorMsg("")
-    console.log("Orig deadline")
-    console.log(origDeadline)
     props.editDeadline(origDeadline)
     setDecisionMode(false)
     setTimeoutId(-1)
@@ -121,7 +114,6 @@ const CalendarBundle = (props) => {
         } else {
           setProposedByPartner(true)
         }
-        console.log("SHOULD BE TRIGGERED")
         setDateLock(true)
         
       } else if (props.universalLock) {
@@ -167,6 +159,7 @@ const CalendarBundle = (props) => {
         changeDate={changeDate}
         deadlines = {props.deadlines}
         deadline={props.deadline}
+        newDeadline={newDeadline}
         setErrorMsg={props.setErrorMsg}
         reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
@@ -179,6 +172,7 @@ const CalendarBundle = (props) => {
         changeDate={changeDate}
         deadlines = {props.deadlines}
         deadline={props.deadline}
+        newDeadline={newDeadline}
         setErrorMsg={props.setErrorMsg}
         reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
