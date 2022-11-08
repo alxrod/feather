@@ -50,6 +50,10 @@ const Login = (props) => {
         }
     }
     
+    useEffect( () => {
+      console.log(props.router)
+    }, [props.router])
+    
     if (props.isLoggedIn) {
       console.log("Redirect link")
       console.log(props.redirectLink)
@@ -155,10 +159,11 @@ const Login = (props) => {
       )
 }
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, router }) => ({
     isLoggedIn: user.isLoggedIn,
     message: user.message,
     redirectLink: user.redirectLink,
+    router: router
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

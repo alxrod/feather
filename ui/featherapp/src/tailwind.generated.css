@@ -2512,9 +2512,6 @@ input:checked + .toggle-bg {
 .pr-6 {
   padding-right: 1.5rem;
 }
-.pb-6 {
-  padding-bottom: 1.5rem;
-}
 .pt-12 {
   padding-top: 3rem;
 }
@@ -3995,20 +3992,12 @@ input:checked + .toggle-bg {
     padding-right: 2.5rem;
   }
 
-  .sm\:pt-0 {
-    padding-top: 0px;
-  }
-
-  .sm\:pt-5 {
-    padding-top: 1.25rem;
-  }
-
-  .sm\:pt-2 {
-    padding-top: 0.5rem;
-  }
-
   .sm\:pt-1 {
     padding-top: 0.25rem;
+  }
+
+  .sm\:pt-0 {
+    padding-top: 0px;
   }
 
   .sm\:pr-8 {

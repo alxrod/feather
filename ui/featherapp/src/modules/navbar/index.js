@@ -13,7 +13,7 @@ import { connect } from "react-redux";
 import ContractTimeline from "../contract/components/contract_timeline"
 import { contractStages } from "../../services/contract.service"
 import { useLocation } from 'react-router-dom'
-
+import { push } from "connected-react-router"
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -72,10 +72,10 @@ const NavBar = (props) => {
                       
                     </div>
                     
-                    <div className="flex hover:border-gray-300 ">
+                    <div className="flex px-1 pt-1 font-medium">
                       <Link
                           to="/messages"
-                          className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 font-medium"
+                          className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center mr-1"
                       >
                         Messages
                       </Link>
@@ -95,14 +95,13 @@ const NavBar = (props) => {
                   </button>
 
                   {/* Profile dropdown */}
-                  <Menu as="div" className="ml-3 relative z-3">
+                  {props.isLoggedIn ? (
+                  <Menu as="div" className="ml-3 relative z-10">
                     <div>
                       <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
-                          {props.isLoggedIn && (
-                            <h1 className="mr-2 text-gray-400 text-lg">@{props.user.username}</h1>
-                          )}
+                          <h1 className="mr-2 text-gray-400 text-lg">@{props.user.username}</h1>
                           <img
                             className="h-8 w-8 rounded-full"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -131,39 +130,13 @@ const NavBar = (props) => {
                             </Link>
                           )}
                         </Menu.Item>
-                        {!props.isLoggedIn && (
-                          <>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  to="/login"
-                                  className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                >
-                                  Log in
-                                </Link>
-                              )}
-                            </Menu.Item>
-
-                            <Menu.Item>
-                              {({ active }) => (
-                                <Link
-                                  to="/register"
-                                  className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                                >
-                                  Sign up
-                                </Link>
-                              )}
-                            </Menu.Item>
-                          </>
-                        )}
-                        {props.isLoggedIn && (
                         <Menu.Item>
                           {({ active }) => (
                             <Link
                               to="#"
                               onClick={() => {
                                 props.logout()
-                                window.location.reload(false);
+                                props.push("/")
                               }}
                               className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                             >
@@ -171,10 +144,26 @@ const NavBar = (props) => {
                             </Link>
                           )}
                         </Menu.Item>
-                        )}
                       </Menu.Items>
                     </Transition>
                   </Menu>
+                  ) : (
+                    <div className="flex px-1 pt-1 font-medium space-x-4">
+                        <Link
+                          to="/login"
+                          className={classNames('text-indigo-500 hover:text-indigo-600 inline-flex items-center')}
+                        >
+                          Log in
+                        </Link>
+    
+                        <Link
+                          to="/register"
+                          className={classNames('text-gray-700 hover:text-gray-900 inline-flex items-center')}
+                        >
+                          Sign up
+                        </Link>
+                    </div>
+                  )}
                 </div>
                 <div className="-mr-2 flex items-center sm:hidden">
                   {/* Mobile menu button */}
@@ -214,49 +203,52 @@ const NavBar = (props) => {
                     to="/messages"
                     className=" text-gray-900 inline-flex items-center"
                   >
-                    Contracts
+                    Messages
                   </Link>
                 </Disclosure.Button>
               </div>
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center px-4">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        alt=""
-                      />
-                      {props.isLoggedIn && (
-                        <h1 className="ml-1">@{props.user.username}</h1>
-                      )}
+                  {props.isLoggedIn && (
+                  <>
+                    <div className="flex-shrink-0">
+                      <div className="flex items-center">
+                        <img
+                          className="h-10 w-10 rounded-full"
+                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          alt=""
+                        />
+                        {props.isLoggedIn && (
+                          <h1 className="ml-1">@{props.user.username}</h1>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{props.isLoggedIn && (props.user.full_name)}</div>
-                    <div className="text-sm font-medium text-gray-500">{props.isLoggedIn && (props.user.email)}</div>
-                  </div>
+
+                  </>
+                  )}
                 </div>
                 <div className="mt-3 space-y-1">
-                <Disclosure.Button
-                  as="a"
-                  href="#"
-                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                >
-                {({ active }) => (
+                {props.isLoggedIn &&(
+                  <Disclosure.Button
+                    as="a"
+                    href="/profile"
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                  {({ active }) => (
                     <Link
                       to="/profile"
                       className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
                     >
-                      Your Account
+                      Account
                     </Link>
                   )}
                 </Disclosure.Button>
+                )}
                 {!props.isLoggedIn && (
                   <>
                     <Disclosure.Button
                       as="a"
-                      href="#"
+                      href="/login"
                       className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     >
                       {({ active }) => (
@@ -271,7 +263,7 @@ const NavBar = (props) => {
 
                     <Disclosure.Button
                       as="a"
-                      href="#"
+                      href="/register"
                       className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     >
                       {({ active }) => (
@@ -296,7 +288,7 @@ const NavBar = (props) => {
                       to="#"
                       onClick={() => {
                         props.logout()
-                        window.location.reload(false);
+                        props.push("/")
                       }}
                       className={classNames(active ? 'bg-gray-100' : '', 'text-sm text-gray-700')}
                     >
@@ -332,6 +324,7 @@ const mapStateToProps = ({ user, site, contract }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   logout,
+  push,
 }, dispatch)
 
 export default connect(

@@ -8,6 +8,7 @@ import { queryContractNubs } from "../../../reducers/contract/dispatchers/contra
 
 const ContractRedirect = (props) => {
     const { params: { contractId } } = props.match;
+    const [redirectPath, setPath] = useState("")
     useEffect( () => {
         props.queryContractNubs().then((newContracts) => {
           let path="/contracts"
@@ -29,11 +30,15 @@ const ContractRedirect = (props) => {
               }
             }
           }
-          props.push(path)
+          setPath(path)
         })
     },[])
     return (
-       <></>
+      redirectPath !== "" ? (
+        <Redirect to={redirectPath}/>
+      ) : (
+        <></>
+      )
     )
 }
 
