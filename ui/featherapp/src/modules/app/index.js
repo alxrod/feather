@@ -35,9 +35,9 @@ import {
   setNavbar
 } from "../../reducers/site/site.reducer"
 
-const ADMIN_ROLE = 7 // 111
 const STD_ROLE = 3 // 011
 const UNAUTH_ROLE = 1 //001
+
 const routes = {
   "/": UNAUTH_ROLE,
   "/messages": STD_ROLE,
@@ -54,7 +54,6 @@ const routes = {
   "/login": UNAUTH_ROLE,
   "/register": UNAUTH_ROLE,
   "/profile": STD_ROLE,
-  
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
@@ -81,22 +80,8 @@ const App = (props) => {
     
   }, [loc, props.isLoggedIn]) 
 
-
-  useEffect( () => {
-    if (pullReq == true && props.user !== null && props.user.type === undefined) {
-      console.log("Pulling user data")
-
-      props.pullUser(props.user.user_id).then(() => {
-        // console.log("Finished pull")
-        setPullReq(false);
-      });
-    }
-  }, [pullReq])
-
   const authRedirect = (pathname, wholepath) => {
     if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
-      console.log("You aren't logged in yet")
-      console.log(props.user)
       props.setRedirect(wholepath)
       props.push("/login")
       return false
@@ -110,6 +95,17 @@ const App = (props) => {
     }
     return true
   }
+
+  useEffect( () => {
+    if (pullReq == true && props.user !== null && props.user.type === undefined) {
+      console.log("Pulling user data")
+
+      props.pullUser(props.user.user_id).then(() => {
+        // console.log("Finished pull")
+        setPullReq(false);
+      });
+    }
+  }, [pullReq])
 
   return (
 

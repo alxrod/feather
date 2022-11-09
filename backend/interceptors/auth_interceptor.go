@@ -14,11 +14,11 @@ import (
 // AuthInterceptor is a server interceptor for authentication and authorization
 type AuthInterceptor struct {
 	jwtManager      *services.JWTManager
-	accessibleRoles map[string]uint32
+	accessibleRoles []string
 }
 
 // NewAuthInterceptor returns a new auth interceptor
-func NewAuthInterceptor(jwtManager *services.JWTManager, accessibleRoles map[string]uint32) *AuthInterceptor {
+func NewAuthInterceptor(jwtManager *services.JWTManager, accessibleRoles []string) *AuthInterceptor {
 	return &AuthInterceptor{jwtManager, accessibleRoles}
 }
 
@@ -61,8 +61,13 @@ func (interceptor *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
 }
 
 func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string) error {
-	accessibleRoles, ok := interceptor.accessibleRoles[method]
-	if !ok {
+	isPublic := false
+	for _, route := range interceptor.accessibleRoles {
+		if route == method {
+			isPublic = true
+		}
+	}
+	if isPublic {
 		// everyone can access
 		// log.Println("Public link")
 		return nil
@@ -79,14 +84,10 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 	}
 
 	accessToken := values[0]
-	claims, err := interceptor.jwtManager.Verify(accessToken)
+	_, err := interceptor.jwtManager.Verify(accessToken)
 	if err != nil {
 		return status.Errorf(codes.Unauthenticated, "access token is invalid: %v", err)
-	}
-
-	if (accessibleRoles & claims.Role) == accessibleRoles {
+	} else {
 		return nil
 	}
-
-	return status.Error(codes.PermissionDenied, "no permission to access this RPC")
 }

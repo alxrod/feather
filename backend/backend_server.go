@@ -9,7 +9,6 @@ import (
 
 	"github.com/TwiN/go-color"
 
-	db "github.com/alxrod/feather/backend/db"
 	interceptors "github.com/alxrod/feather/backend/interceptors"
 	services "github.com/alxrod/feather/backend/services"
 	comms "github.com/alxrod/feather/communication"
@@ -30,20 +29,12 @@ const (
 	tokenDuration = 15 * time.Minute
 )
 
-func accessibleRoles() map[string]uint32 {
+// All the public
+func accessibleRoles() []string {
 
-	return map[string]uint32{
-		"/main.Auth/Pull":              db.STD_ROLE,
-		"/main.Social/AddInstagram":    db.STD_ROLE,
-		"/main.Social/AddTiktok":       db.STD_ROLE,
-		"/main.Social/VerifyInstagram": db.STD_ROLE,
-		"/main.Social/VerifyTiktok":    db.STD_ROLE,
-		"/main.Payment/SetupPayment":   db.STD_ROLE,
-		"/main.Chat/JoinChat":          db.STD_ROLE,
-		"/main.Chat/SendMessage":       db.STD_ROLE,
-		"/main.Chat/PullChatHistory":   db.STD_ROLE,
-		"/main.Chat/LeaveChat":         db.STD_ROLE,
-		"/main.Chat/Claim":             db.STD_ROLE,
+	return []string{
+		"/main.Auth/Register",
+		"/main.Auth/Login",
 	}
 }
 
