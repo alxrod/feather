@@ -111,9 +111,9 @@ export const getDeadline = (deadlines, id) => {
 } 
 
 export const updateSettleInfo = (deadline, info) => {
-    deadline.workerSettled = info.workerSettled
-    deadline.buyerSettled = info.buyerSettled
-    deadline.workerConfirmed = info.workerConfirmed
-    deadline.buyerConfirmed = info.buyerConfirmed
+    deadline.workerSettled = info?.workerSettled
+    deadline.buyerSettled = info?.buyerSettled
+    deadline.workerConfirmed = info?.workerConfirmed
+    deadline.buyerConfirmed = info?.buyerConfirmed
     return deadline
 }

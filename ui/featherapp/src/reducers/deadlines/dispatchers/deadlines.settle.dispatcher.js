@@ -13,7 +13,7 @@ export const finishDeadline = (contract_id, deadline_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -28,7 +28,7 @@ export const confirmDeadline = (contract_id, deadline_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -43,7 +43,7 @@ export const undoDeadline = (contract_id, deadline_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

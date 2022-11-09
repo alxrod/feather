@@ -5,7 +5,7 @@ const CreateSummary = (props) => {
   const [descript, setDescript] = useState("")
 
   return (
-    <form action="#" className="relative flex flex-col min-h-[250px]">
+    <form action="#" className="relative flex grow flex-col min-h-[250px]">
       <div className="flex flex-col grow border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
         <div className="px-6 py-2">
           <SearchUser/>

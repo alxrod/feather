@@ -44,7 +44,7 @@ export const queryContract = (contract_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -63,17 +63,17 @@ export const queryContractNubs = () => {
                     return Promise.resolve(data.contractNubsList);
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         })
     }
 };
 
-export const createContract = (title, summary, intro_message, price_set, deadlines, items, password, role) => {
+export const createContract = (title, summary, price_set, deadlines, items, password, role) => {
     return dispatch => {
         return  helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, intro_message, price_set, deadlines, items, password, role).then(
+            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
                 (data) => {
                     if (data.contract.worker.id == creds.user_id) {
                         data.contract.user_type = WORKER_TYPE
@@ -89,7 +89,7 @@ export const createContract = (title, summary, intro_message, price_set, deadlin
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -108,7 +108,7 @@ export const claimContract = (contract_id, password) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -133,7 +133,7 @@ export const signContract = (contract_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -158,7 +158,7 @@ export const settleContract = (contract_id) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

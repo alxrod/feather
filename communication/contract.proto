@@ -137,7 +137,6 @@ message ContractCreateRequest {
     string title = 2;
     string summary = 3;
     string password = 8;
-    string intro_message = 4;
     uint32 role = 9;
     PriceEntity price = 5;
     repeated DeadlineEntity deadlines = 6;

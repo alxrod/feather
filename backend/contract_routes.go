@@ -13,6 +13,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// type ReqError struct {
+// }
+
 func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateRequest) (*comms.ContractResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
@@ -21,7 +24,6 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 
 	if req.Title == "" ||
 		req.Summary == "" ||
-		req.IntroMessage == "" ||
 		req.Price == nil {
 		return nil, errors.New("Title, summary, intro, and price are all required to create a contract.")
 	}
@@ -51,11 +53,11 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest) (*comms.ContractResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
-		return nil, errors.New("Invalid contract id")
+		return nil, errors.New("invalid contract id")
 	}
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
-		return nil, errors.New("Invalid user id")
+		return nil, errors.New("invalid user id")
 	}
 
 	database := s.dbClient.Database(s.dbName)
@@ -70,7 +72,7 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 			return nil, err
 		}
 		if !user.AdminStatus {
-			return nil, errors.New("The queried contract does not belong to this user")
+			return nil, errors.New("incorrect user for contract")
 		}
 
 	}

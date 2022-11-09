@@ -14,7 +14,7 @@ export const suggestPayout = (contract_id, deadline_id, new_payout) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -29,7 +29,7 @@ export const reactPayout = (contract_id, message_id, deadline_id, status) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

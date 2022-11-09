@@ -494,7 +494,7 @@ func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Co
 	var err error
 	if err = database.Collection(CON_COL).FindOne(context.TODO(), filter).Decode(&contract); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
-		return nil, errors.New("Contract Not Found")
+		return nil, errors.New("contract not found")
 	}
 	items := make([]*ContractItem, len(contract.ItemIds))
 	for idx, id := range contract.ItemIds {

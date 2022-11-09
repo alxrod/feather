@@ -15,7 +15,7 @@ export const settleItem = (contract_id, deadline_id, item_id, new_state) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

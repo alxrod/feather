@@ -22,7 +22,7 @@ export const deleteItem = (contract_id, item_id, item_name, item_body) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -37,7 +37,7 @@ export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

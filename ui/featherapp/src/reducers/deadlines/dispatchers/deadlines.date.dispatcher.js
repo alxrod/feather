@@ -13,7 +13,7 @@ export const suggestDate = (contract_id, deadline_id, new_date) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -28,7 +28,7 @@ export const reactDate = (contract_id, message_id, deadline_id, status) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

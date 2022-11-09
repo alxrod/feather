@@ -35,6 +35,7 @@ func accessibleRoles() []string {
 	return []string{
 		"/main.Auth/Register",
 		"/main.Auth/Login",
+		"/main.Contract/InviteQuery",
 	}
 }
 

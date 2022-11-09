@@ -171,7 +171,7 @@ class ContractService {
         });
     }
     
-    create_contract(token, user_id, title, summary, intro_message, price_set, deadlines, items, password, role) {
+    create_contract(token, user_id, title, summary, price_set, deadlines, items, password, role) {
         // console.log("At service: ")
         // console.log(items)
 
@@ -180,7 +180,6 @@ class ContractService {
         createRequest.setUserId(user_id);
         createRequest.setTitle(title);
         createRequest.setSummary(summary);
-        createRequest.setIntroMessage(intro_message);
         createRequest.setPrice(this.generatePriceEntity(price_set));
         createRequest.setPassword(password)
         createRequest.setRole(role)

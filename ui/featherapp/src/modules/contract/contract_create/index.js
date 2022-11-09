@@ -12,7 +12,6 @@ import CombinedCriteria from "../components/criteria/combined_criteria";
 import NewContractItem from "../components/contract_item/new_contract_item";
 
 import CreateSummary from "./components/create_summary.js"
-import IntroMessage from "./components/intro_message.js"
 import PasswordField from "./components/password_field"
 import RoleField from "./components/role_field"
 import ErrorBanner from "./components/error_banner.js"
@@ -85,7 +84,6 @@ const ContractCreate = (props) => {
         
   const [conTitle, setConTitle] = useState("")
   const [conDescript, setConDescript] = useState("")
-  const [conMessage, setConMessage] = useState("")
   const [conPassword, setConPassword] = useState("")
   const [conRole, setConRole] = useState(WORKER_TYPE)
 
@@ -99,7 +97,7 @@ const ContractCreate = (props) => {
       return
     }
 
-    props.createContract(conTitle, conDescript, conMessage, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+    props.createContract(conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
       () => {
         props.push("/contracts")
       }, (error) => {
@@ -128,9 +126,6 @@ const ContractCreate = (props) => {
     if (conDescript === "") {
       errors += "You need a description. "
     }
-    if (conMessage === "") {
-      errors += "You need a introduction message. "
-    }
     if (conPassword.length < 5) {
       errors += "You need at least a 5 character password for your contract"
     }
@@ -156,6 +151,15 @@ const ContractCreate = (props) => {
       <div className="min-w-[50vw] p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between items-stretch">
           <div className="flex flex-col grow min-w-[45vw] mr-10">
+            <CreateSummary
+              title={conTitle}
+              setTitle={setConTitle}
+              descript={conDescript}
+              setDescript={setConDescript}
+            />
+          </div>
+
+          <div className="flex flex-col min-w-[45vw]">
             <div className="mb-5"> 
               <CombinedCriteria 
                 price={price}
@@ -169,22 +173,6 @@ const ContractCreate = (props) => {
                 active={true}
               />
             </div>
-            <div>
-              <CreateSummary
-                title={conTitle}
-                setTitle={setConTitle}
-                descript={conDescript}
-                setDescript={setConDescript}
-              />
-            </div>
-
-          </div>
-
-          <div className="flex flex-col min-w-[45vw]">
-            <IntroMessage
-              message={conMessage}
-              setMessage={setConMessage}
-            />
             <PasswordField
               password={conPassword}
               setPassword={setConPassword}

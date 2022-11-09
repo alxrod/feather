@@ -15,7 +15,7 @@ export const changeDeadlineItems = (contract_id, deadline_id, item_ids) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -30,7 +30,7 @@ export const reactDeadlineItems = (contract_id, deadline_id, message_id, status)
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

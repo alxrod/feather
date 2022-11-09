@@ -5010,7 +5010,6 @@ proto.main.ContractCreateRequest.toObject = function(includeInstance, msg) {
     title: jspb.Message.getFieldWithDefault(msg, 2, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 3, ""),
     password: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    introMessage: jspb.Message.getFieldWithDefault(msg, 4, ""),
     role: jspb.Message.getFieldWithDefault(msg, 9, 0),
     price: (f = msg.getPrice()) && proto.main.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
@@ -5068,10 +5067,6 @@ proto.main.ContractCreateRequest.deserializeBinaryFromReader = function(msg, rea
     case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setPassword(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setIntroMessage(value);
       break;
     case 9:
       var value = /** @type {number} */ (reader.readUint32());
@@ -5146,13 +5141,6 @@ proto.main.ContractCreateRequest.serializeBinaryToWriter = function(message, wri
   if (f.length > 0) {
     writer.writeString(
       8,
-      f
-    );
-  }
-  f = message.getIntroMessage();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
       f
     );
   }
@@ -5259,24 +5247,6 @@ proto.main.ContractCreateRequest.prototype.getPassword = function() {
  */
 proto.main.ContractCreateRequest.prototype.setPassword = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
-};
-
-
-/**
- * optional string intro_message = 4;
- * @return {string}
- */
-proto.main.ContractCreateRequest.prototype.getIntroMessage = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.main.ContractCreateRequest} returns this
- */
-proto.main.ContractCreateRequest.prototype.setIntroMessage = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

@@ -10,7 +10,7 @@ import DeadlineField from "../deadline/deadline_field";
 const CombinedCriteria = (props) => {
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-md w-full mr-5">
-      <ul role="list" className="divide-y divide-gray-200 flex flex-row justify-between">
+      <ul role="list" className="divide-y divide-gray-200">
           <li key="price">
             <div className="block">
               <div className="flex items-center px-4 py-4 sm:px-6">

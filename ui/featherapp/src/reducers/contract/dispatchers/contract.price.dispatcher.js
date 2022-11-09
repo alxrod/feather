@@ -15,7 +15,7 @@ export const suggestPrice = (contract_id, new_price) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -30,7 +30,7 @@ export const reactPrice = (contract_id, message_id, status) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

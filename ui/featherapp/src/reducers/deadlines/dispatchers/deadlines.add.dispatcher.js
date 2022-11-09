@@ -44,7 +44,7 @@ export const addDeadline = (contract_id, deadline) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -59,7 +59,7 @@ export const reactAddDeadline = (contract_id, message_id, deadline_id, status) =
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

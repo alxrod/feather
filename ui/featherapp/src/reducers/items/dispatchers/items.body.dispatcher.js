@@ -23,7 +23,7 @@ export const suggestItem = (contract_id, item_id, new_body) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });
@@ -38,7 +38,7 @@ export const reactItem = (contract_id, message_id, item_id, status) => {
                     return Promise.resolve();
                 },
                 (error) => {
-                    return helpers.parseError(error);
+                    return helpers.parseError(error, dispatch);
                 }
             );
         });

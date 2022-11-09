@@ -125,13 +125,16 @@ class UserService {
         logoutRequest.setUsername(user.username);
         logoutRequest.setToken(user.access_token);
 
+        localStorage.removeItem("user");
+        localStorage.removeItem("creds");
+        localStorage.removeItem("contractNubs");
+        
         authClient.logout(logoutRequest, null, function(err, response) {
             if (err) {
                 return err
             }
             var resp = response.toObject();
-            localStorage.removeItem("user");
-            localStorage.removeItem("creds");
+            
 
         });
         return Error("Request failed")

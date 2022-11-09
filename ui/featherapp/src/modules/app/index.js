@@ -26,6 +26,9 @@ import ContractSettle from '../contract/contract_settle';
 import { push } from 'connected-react-router'
 import { useLocation } from 'react-router-dom'
 
+import UnknownRoute from "../error_handling_routes/unknown_route"
+import UnauthContractRoute from "../error_handling_routes/unauth_contract_route"
+
 import { 
   pullUser,
   setRedirect
@@ -48,6 +51,8 @@ const routes = {
   "/negotiate": STD_ROLE,
   "/view": STD_ROLE,
   "/settle": STD_ROLE,
+  "/unknown": UNAUTH_ROLE,
+  "/unauth-contract": UNAUTH_ROLE,
 
   "/invite": UNAUTH_ROLE,
 
@@ -81,7 +86,9 @@ const App = (props) => {
   }, [loc, props.isLoggedIn]) 
 
   const authRedirect = (pathname, wholepath) => {
-    if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
+    if (!routes.hasOwnProperty(pathname)) {
+      props.push("/unknown")
+    } else if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
       props.setRedirect(wholepath)
       props.push("/login")
       return false
@@ -133,6 +140,10 @@ const App = (props) => {
 
         <Route exact path="/login" element={<Login/>} component={Login} />    
         <Route exact path="/register" element={<Register/>} component={Register} />
+
+        <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />
+        <Route exact path="/unauth-contract" element={<UnauthContractRoute/>} component={UnauthContractRoute} />
+
       </main>
     </div>
   );
