@@ -84,7 +84,6 @@ const PriceField = (props) => {
           }
         }
       } else if (props.universalLock) {
-        console.log("ENDIGN UP IN WORNG PLCE")
         newPrice = price.current
         setTextColor("text-gray-500")
         toggleLock(true)

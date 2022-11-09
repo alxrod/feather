@@ -16,6 +16,7 @@ import UniversalLockCard from "../components/universal_lock/universal_lock_card"
 import CompactSummary from "../components/criteria/compact_summary"
 import SettleHub from "../components/settle/settle_hub"
 import CompleteDeadlineButton from "../components/advance_cards/complete_deadline"
+import RejoinMonitor from "../components/rejoin_monitor"
 
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
@@ -63,6 +64,7 @@ const ContractDraft = (props) => {
 
 	return (
     <>
+      <RejoinMonitor/>
       <div className="p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">

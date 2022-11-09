@@ -12,6 +12,7 @@ const initialState = {
     
     reloadMsg: false,
     reloadIdx: 0,
+    rejoinSequenceActive: false,
 }
 
 export default (state = initialState, action) => {
@@ -37,8 +38,14 @@ export default (state = initialState, action) => {
                 ...state,
                 roomId: action.payload.roomId,
                 isActive: true,
+                rejoinSequenceActive: false,
                 messages: [],
                 messagesChanged: !state.messagesChanged,
+            }
+        case actions.CHAT_REJOIN_BEGIN:
+            return {
+                ...state,
+                rejoinSequenceActive: true,
             }
         case actions.CHAT_LEAVE:
             return {

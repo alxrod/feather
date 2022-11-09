@@ -18,7 +18,7 @@ import SettleContract from "../components/advance_cards/settle_contract";
 import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
 import UniversalLockCard from "../components/universal_lock/universal_lock_card";
-
+import RejoinMonitor from "../components/rejoin_monitor"
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
   const [completeMode, setCompleteMode] = useState(false)
@@ -82,6 +82,7 @@ const ContractDraft = (props) => {
 
 	return (
     <>
+      <RejoinMonitor/>
       <div className="p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">

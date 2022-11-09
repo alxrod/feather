@@ -44,7 +44,7 @@ import {queryContract } from "../reducers/contract/dispatchers/contract.dispatch
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 import {contractStages } from "./contract.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
-import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE } from "../reducers/chat/chat.actions"
+import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE, CHAT_REJOIN_BEGIN} from "../reducers/chat/chat.actions"
 
 export const chatClient = new ChatClient("https://localhost:8080");
 
@@ -124,6 +124,11 @@ class ChatService {
                     payload: formatedMsg,
                 })
             } 
+        })
+        stream.on('error', function (error) {
+            dispatch({
+                type: CHAT_REJOIN_BEGIN,
+            })
         })
         stream.on('status', function(status) {
             console.log(status.code);

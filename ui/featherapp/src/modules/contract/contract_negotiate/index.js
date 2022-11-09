@@ -15,6 +15,7 @@ import MainChat from "../components/chat/main_chat";
 import PartnerCard from "../components/summary/partner_profile_card";
 import SignContract from "../components/advance_cards/sign_contract"
 import { push } from 'connected-react-router'
+import RejoinMonitor from "../components/rejoin_monitor"
 
 const ContractNegotiate = (props) => {
   let [reload, setReload] = useState(true)
@@ -75,6 +76,7 @@ const ContractNegotiate = (props) => {
 
 	return (
     <>
+      <RejoinMonitor/>
       <div className="p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">
