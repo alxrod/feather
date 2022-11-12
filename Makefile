@@ -1,3 +1,5 @@
+include ./creds/Makefile
+
 .PHONY: gencert
 gencert:
 	./cert/certgen.sh

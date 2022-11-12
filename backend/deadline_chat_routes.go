@@ -35,7 +35,7 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggest
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +366,7 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -444,7 +444,7 @@ func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractRe
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -568,7 +568,7 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -643,7 +643,7 @@ func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.Contrac
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -754,7 +754,7 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -822,7 +822,7 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}

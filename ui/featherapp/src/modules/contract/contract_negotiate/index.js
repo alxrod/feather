@@ -40,8 +40,8 @@ const ContractNegotiate = (props) => {
   }, [props.curContract, props.contractChanged])
 
   useEffect(() => {
-    // console.log("Calling the reload effect")
     if (reload) {
+      console.log("Calling the reload effect")
       props.queryContract(contractId)
       setReload(false)
     } 

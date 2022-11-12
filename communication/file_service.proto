@@ -1,0 +1,41 @@
+syntax = "proto3";
+package main;
+option go_package=".;communication";
+// import "google/protobuf/timestamp.proto";
+import "communication/contract.proto";
+
+message ProfileUrlRequest {
+    string user_id = 1;
+    string file_name = 2;
+}
+
+message ProfileUrlResponse {
+    string presigned_url = 1;
+    string file_path = 2;
+}
+
+message ProfileUploadStatus {
+    string user_id = 1;
+    bool upload_succeeded = 2;   
+}
+
+message ProfileGetRequest {
+    string user_id = 1;
+}
+message ProfileGetResponse {
+    string presigned_url = 1;
+}
+
+message ProfileImageEntity {
+    string user_id = 1;
+    string file_type = 2;
+    bool in_cache = 3;
+    string local_path = 4;
+    string bucket_path = 5;
+}
+
+service FileService {
+    rpc PresignProfilePhoto(ProfileUrlRequest) returns (ProfileUrlResponse) {};
+    rpc ConfirmProfileUploaded(ProfileUploadStatus) returns (NullResponse) {};
+    rpc GetProfilePhoto(ProfileGetRequest) returns (ProfileGetResponse) {};
+}

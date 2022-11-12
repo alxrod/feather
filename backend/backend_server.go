@@ -45,11 +45,13 @@ type BackServer struct {
 	comms.UnimplementedAuthServer
 	comms.UnimplementedContractServer
 	comms.UnimplementedChatServer
+	comms.UnimplementedFileServiceServer
 
 	JwtManager    *services.JWTManager
 	ChatAgent     *services.ChatAgent
 	DeadlineAgent *services.DeadlineAgent
 	PaymentAgent  *services.PaymentAgent
+	AWSAgent      *services.AWSAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -102,10 +104,12 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		PaymentAgent: &services.PaymentAgent{
 			Database: client.Database(s_dbName),
 		},
+		AWSAgent: &services.AWSAgent{},
 		dbName:   s_dbName,
 		dbClient: client,
 		dbCtx:    ctx,
 	}
+	s.AWSAgent.Initialize()
 
 	// Have to add this for every service
 	comms.RegisterSocialServer(grpcServer, s)
@@ -113,6 +117,7 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	comms.RegisterPaymentServer(grpcServer, s)
 	comms.RegisterContractServer(grpcServer, s)
 	comms.RegisterChatServer(grpcServer, s)
+	comms.RegisterFileServiceServer(grpcServer, s)
 
 	return s, nil
 }

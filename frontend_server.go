@@ -4,10 +4,13 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"errors"
 
 	"github.com/TwiN/go-color"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
@@ -30,8 +33,9 @@ var routes []string = []string{
 }
 
 type FrontServer struct {
-	router *http.ServeMux
-	webapp http.Handler
+	router     *http.ServeMux
+	webapp     http.Handler
+	assetCache http.Handler
 }
 
 func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
@@ -41,6 +45,7 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 		fmt.Printf(color.Ize(color.Red, fmt.Sprintf("Static Resource Issue: %s\n", err.Error())))
 		return nil, err
 	}
+	// http.Handle("/static/", http.StripPrefix("/static", fs))
 
 	srv := &FrontServer{
 		router: http.NewServeMux(),
@@ -49,8 +54,28 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 	return srv, nil
 }
 
+func (srv *FrontServer) HandleAssetRequest(w http.ResponseWriter, r *http.Request) {
+	path := fmt.Sprintf("%v", r.URL)
+	split_path := strings.Split(path, "/asset-cache/")
+	if len(split_path) != 2 {
+		log.Fatal(errors.New("invalid asset path"))
+	}
+	filename := split_path[1]
+	split_on_dot := strings.Split(filename, ".")
+	filetype := strings.ToLower(split_on_dot[len(split_on_dot)-1])
+	buf, err := ioutil.ReadFile(fmt.Sprintf("./asset_cache/" + filename))
+	if err != nil {
+		errorHandler(w, r, 404)
+	}
+
+	w.Header().Set("Content-Type", fmt.Sprintf("image/%s", filetype))
+	// w.Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=%s", filename))
+
+	w.Write(buf)
+}
+
 func (srv *FrontServer) SetUpHandler(multiplex *grpcMultiplexer) error {
-	srv.router.Handle("/", multiplex.Handler(srv.webapp))
+	srv.router.Handle("/", multiplex.Handler(srv.assetCache, srv.HandleAssetRequest))
 	return nil
 }
 
@@ -68,7 +93,14 @@ type grpcMultiplexer struct {
 	*grpcweb.WrappedGrpcServer
 }
 
-func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
+func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	if status == http.StatusNotFound {
+		fmt.Fprint(w, "custom 404")
+	}
+}
+
+func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
 
@@ -89,8 +121,10 @@ func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
 		path := fmt.Sprintf("%v", r.URL)
 
-		// NOTE TO PAUL, for t3.p5, this is where you need to check the url path to test if the incoming request is a file upload
-		// path, if it is, use the file upload handler that is used in the tutorial you implemented in t3.p4
+		if strings.Contains(path, "/asset-cache/") {
+			assetHandler(w, r)
+			return
+		}
 
 		for _, route := range routes {
 			if (strings.Contains(path, route) && route != "/") || path == "/" {

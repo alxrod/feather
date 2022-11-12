@@ -21,6 +21,8 @@ grpc.web = require('grpc-web');
 
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
+
+var communication_file_service_pb = require('../communication/file_service_pb.js')
 const proto = {};
 proto.main = require('./user_pb.js');
 
@@ -263,13 +265,13 @@ proto.main.AuthPromiseClient.prototype.logout =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.UserPullRequest,
- *   !proto.main.UserPullResponse>}
+ *   !proto.main.UserEntity>}
  */
 const methodDescriptor_Auth_Pull = new grpc.web.MethodDescriptor(
   '/main.Auth/Pull',
   grpc.web.MethodType.UNARY,
   proto.main.UserPullRequest,
-  proto.main.UserPullResponse,
+  proto.main.UserEntity,
   /**
    * @param {!proto.main.UserPullRequest} request
    * @return {!Uint8Array}
@@ -277,7 +279,7 @@ const methodDescriptor_Auth_Pull = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.UserPullResponse.deserializeBinary
+  proto.main.UserEntity.deserializeBinary
 );
 
 
@@ -286,9 +288,9 @@ const methodDescriptor_Auth_Pull = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.UserPullResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.UserEntity)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.UserPullResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.UserEntity>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.AuthClient.prototype.pull =
@@ -307,7 +309,7 @@ proto.main.AuthClient.prototype.pull =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.UserPullResponse>}
+ * @return {!Promise<!proto.main.UserEntity>}
  *     Promise that resolves to the response
  */
 proto.main.AuthPromiseClient.prototype.pull =

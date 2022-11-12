@@ -5,6 +5,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service"
 import * as contractActions from "../contract.actions"
 import * as itemActions from "../../items/items.actions"
 import * as deadlineActions from "../../deadlines/deadlines.actions"
+import * as chatActions from "../../chat/chat.actions"
 import * as helpers from "../../helpers"
 
 
@@ -21,6 +22,9 @@ export const clearSelected = () => {
             type: deadlineActions.CONTRACT_DEADLINE_LOAD,
             payload: [],
         });
+        dispatch({
+            type: chatActions.CHAT_CLEAR_REJOIN,
+        })
     }
 }
 
@@ -29,6 +33,9 @@ export const queryContract = (contract_id) => {
         return  helpers.authCheck(dispatch).then((creds) => {
             return ContractService.query_contract(creds.access_token, creds.user_id, contract_id).then(
                 (data) => {
+                    dispatch({
+                        type: chatActions.CHAT_CLEAR_REJOIN,
+                    })
                     dispatch({
                         type: contractActions.CONTRACT_PULL_CURRENT,
                         payload: data,
@@ -41,6 +48,7 @@ export const queryContract = (contract_id) => {
                         type: deadlineActions.CONTRACT_DEADLINE_LOAD,
                         payload: data.deadlinesList,
                     });
+                    
                     return Promise.resolve();
                 },
                 (error) => {

@@ -3,7 +3,7 @@ package main;
 option go_package=".;communication";
 
 import "google/protobuf/timestamp.proto";
-
+import "communication/file_service.proto";
 
 message UserRegisterRequest {
     string username = 1;
@@ -53,7 +53,7 @@ message UserPullRequest {
     string user_id = 1;
 }
 
-message UserPullResponse {
+message UserEntity {
     string user_id = 1;
     string username = 2;
     uint32 user_type = 3;
@@ -73,7 +73,10 @@ message UserPullResponse {
     bool payment_setup = 13;
 
     bool admin_status = 15;
+    bool profile_photo_uploaded = 16;
 
+    string profile_photo_id = 17;
+    ProfileImageEntity profile_photo = 18;
 
 }
 
@@ -81,7 +84,7 @@ service Auth{
     rpc Register(UserRegisterRequest) returns (UserRegisterResponse) {};
     rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
     rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
-    rpc Pull(UserPullRequest) returns (UserPullResponse) {};
+    rpc Pull(UserPullRequest) returns (UserEntity) {};
 }
 
 message InstagramCreateRequest {

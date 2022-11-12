@@ -5,6 +5,7 @@ export const CHAT_MESSAGE_SUCCESS_SEND = "chat/message/SUCCESS_SEND"
 export const CHAT_MESSAGE_FAIL_SEND = "chat/message/FAIL_SEND"
 
 export const CHAT_REJOIN_BEGIN ="chat/stream/REJOIN"
+export const CHAT_CLEAR_REJOIN ="chat/stream/CLEAR_REJOIN"
 
 export const CHAT_MESSAGE_HISTORY_PULLED = "chat/history/PULLED_MESSAGES"
 export const CHAT_CLEAR_ROOM = "chat/room/CLEAR"

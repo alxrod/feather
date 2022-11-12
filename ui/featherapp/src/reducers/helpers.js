@@ -1,4 +1,4 @@
-import {AUTH_FAILED} from "./user/user.reducer";
+import {AUTH_FAILED} from "./user/user.actions";
 import {WORKER_TYPE, BUYER_TYPE, authChecker} from "../services/user.service";
 import { errorTypes } from "../services/errors";
 import { push } from 'connected-react-router'

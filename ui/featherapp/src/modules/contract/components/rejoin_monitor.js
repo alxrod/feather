@@ -39,7 +39,7 @@ const RejoinMonitor = props => {
   }, []);
 
   useEffect( () => {
-    if (props.rejoinSequenceActive) {
+    if (props.rejoinSequenceActive && props.curContract.id !== "") {
       setTimeout(() => {  
         console.log("Attempting a rejoin to the chat")
         rejoin()

@@ -9,6 +9,7 @@ import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'
 
 const ContractsList = (props) => {
+    const [alreadyPulled, setAlreadyPulled] = useState(false)
     const defaultFilters = {}
     defaultFilters.all = (contracts) => {
         return contracts
@@ -43,7 +44,11 @@ const ContractsList = (props) => {
     }, [props.user])
 
     useEffect(() => {
-        props.queryContractNubs()
+        if (!alreadyPulled) {
+            props.queryContractNubs()
+            setAlreadyPulled(true)
+        }
+        
     })
 
     

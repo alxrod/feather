@@ -106,6 +106,7 @@ class ContractService {
 
     // Calls
     query_contract(token, user_id, contract_id) {
+        console.log("ABOUT TO QUERY W ID: ", contract_id)
         let queryRequest = new QueryByIdRequest();
         queryRequest.setUserId(user_id);
         queryRequest.setContractId(contract_id);

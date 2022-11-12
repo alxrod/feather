@@ -302,7 +302,6 @@ class UserService {
                 if (error) {
                     reject(error)
                 }
-                // console.log(response)
                 var resp = response.toObject();
                 
                 resolve(resp)

@@ -17,7 +17,7 @@ func pullUserContract(req_user_id, req_contract_id string, database *mongo.Datab
 	if err != nil {
 		return nil, nil, errors.New("Invalid user id")
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -50,7 +50,7 @@ func pullUserContractMessage(
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -83,7 +83,7 @@ func pullUserContractDeadline(
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -122,7 +122,7 @@ func pullUserContractDeadlineItem(
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}

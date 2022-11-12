@@ -5,6 +5,7 @@ cert/ca.srl
 cert/server.crt
 cert/server.csr
 cert/server.key
+creds/*
 
 communication/*.go
 

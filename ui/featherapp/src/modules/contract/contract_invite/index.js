@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import ContractService from "../../../services/contract.service";
 import { claimContract } from "../../../reducers/contract/dispatchers/contract.dispatcher";
-import { setRedirect } from "../../../reducers/user/user.reducer"
+import { setRedirect } from "../../../reducers/user/dispatchers/user.dispatcher";
 import { Link, Redirect } from "react-router-dom"
 import BackButton from "../../general_components/back_button"
 

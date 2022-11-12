@@ -536,8 +536,7 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 		return nil, errors.New("Invalid User Id")
 	}
 
-	userCollection := database.Collection(USERS_COL)
-	user, err := UserQueryId(user_id, userCollection)
+	user, err := UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -591,7 +590,7 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 		return nil, errors.New("Contract Not Found")
 	}
 	if !message.SystemMessage {
-		user, err := UserQueryId(message.UserId, database.Collection(USERS_COL))
+		user, err := UserQueryId(message.UserId, database)
 		if err != nil {
 			return nil, err
 		}

@@ -2,11 +2,13 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/TwiN/go-color"
+	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -40,6 +42,46 @@ type User struct {
 	Active_token string `bson:"-"`
 
 	AdminStatus bool `bson:"admin_status"`
+
+	ProfilePhotoUploaded bool               `bson:"profile_photo_uploaded"`
+	ProfilePhotoId       primitive.ObjectID `bson:"profile_photo_id,omitempty"`
+	ProfilePhoto         *ProfileImage      `bson:"-"`
+}
+
+func (user *User) Proto() (*comms.UserEntity, error) {
+	if user.Id.IsZero() {
+		return nil, errors.New("invalid user id")
+	}
+	resp := &comms.UserEntity{
+		UserId:         user.Id.Hex(),
+		Username:       user.Username,
+		Email:          user.Email,
+		UserType:       user.Type,
+		Role:           user.Role,
+		FullName:       user.FullName,
+		InstaAccount:   user.Instagram.Account,
+		InstaFollowers: user.Instagram.Followers,
+		InstaVerified:  user.Instagram.Verified,
+
+		TiktokAccount:   user.Tiktok.Account,
+		TiktokFollowers: user.Tiktok.Followers,
+		TiktokVerified:  user.Tiktok.Verified,
+
+		AdminStatus:          user.AdminStatus,
+		ProfilePhotoUploaded: user.ProfilePhotoUploaded,
+	}
+
+	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
+		resp.ProfilePhotoId = user.ProfilePhotoId.Hex()
+		resp.ProfilePhoto = user.ProfilePhoto.Proto()
+	}
+
+	if user.Payment.CardHolder != "" {
+		resp.PaymentSetup = true
+	} else {
+		resp.PaymentSetup = false
+	}
+	return resp, nil
 }
 
 func (user *User) Handle() *UserHandle {
@@ -117,13 +159,25 @@ func UserQueryUsername(username, password string, collection *mongo.Collection) 
 	return user, nil
 }
 
-func UserQueryId(id primitive.ObjectID, collection *mongo.Collection) (*User, error) {
+func UserQueryId(id primitive.ObjectID, database *mongo.Database) (*User, error) {
 	var user *User
 	filter := bson.D{{"_id", id}}
-	if err := collection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+	if err := database.Collection(USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, &ErrorUserNotFound{id: id}
 	}
+
+	if !user.ProfilePhotoId.IsZero() {
+		log.Println("PULLING PROFILE PHOTO")
+		filter = bson.D{{"_id", user.ProfilePhotoId}}
+		var profilePhoto *ProfileImage
+		if err := database.Collection(PROF_IMAGE_COL).FindOne(context.TODO(), filter).Decode(&profilePhoto); err != nil {
+			log.Println(color.Ize(color.Red, err.Error()))
+			return nil, errors.New("profile image for user not found")
+		}
+		user.ProfilePhoto = profilePhoto
+	}
+
 	return user, nil
 }
 
@@ -186,8 +240,8 @@ func UserAddTiktok(id primitive.ObjectID, tiktok_name string, followers uint32, 
 	}
 	return nil
 }
-func UserVerifyInstagram(id primitive.ObjectID, verified bool, collection *mongo.Collection) (string, uint32, error) {
-	user, err := UserQueryId(id, collection)
+func UserVerifyInstagram(id primitive.ObjectID, verified bool, database *mongo.Database) (string, uint32, error) {
+	user, err := UserQueryId(id, database)
 	if err != nil {
 		return "", 0, err
 	}
@@ -201,14 +255,14 @@ func UserVerifyInstagram(id primitive.ObjectID, verified bool, collection *mongo
 
 	filter := bson.M{"_id": id}
 	update := bson.D{{"$set", bson.D{{"instagram", instagramNub}}}}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	_, err = database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return "", 0, err
 	}
 	return user.Instagram.Account, user.Instagram.Followers, nil
 }
-func UserVerifyTiktok(id primitive.ObjectID, verified bool, collection *mongo.Collection) (string, uint32, error) {
-	user, err := UserQueryId(id, collection)
+func UserVerifyTiktok(id primitive.ObjectID, verified bool, database *mongo.Database) (string, uint32, error) {
+	user, err := UserQueryId(id, database)
 	if err != nil {
 		return "", 0, err
 	}
@@ -222,7 +276,7 @@ func UserVerifyTiktok(id primitive.ObjectID, verified bool, collection *mongo.Co
 
 	filter := bson.D{{"_id", id}}
 	update := bson.D{{"$set", bson.D{{"tiktok", tiktokNub}}}}
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
+	_, err = database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return "", 0, err
 	}

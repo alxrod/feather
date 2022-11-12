@@ -38,7 +38,7 @@ func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggest
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -191,7 +191,7 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +379,7 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -457,7 +457,7 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}

@@ -56,7 +56,7 @@ func (s *BackServer) AddTiktok(ctx context.Context, req *comms.TiktokCreateReque
 }
 
 func (s *BackServer) VerifyInstagram(ctx context.Context, req *comms.InstagramVerifyRequest) (*comms.SocialResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
+	database := s.dbClient.Database(s.dbName)
 
 	id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *BackServer) VerifyInstagram(ctx context.Context, req *comms.InstagramVe
 	// req.Code
 	// Right now this endpoint just automatically verifies you no matter the code.
 
-	account, followers, err := db.UserVerifyInstagram(id, true, userCollection)
+	account, followers, err := db.UserVerifyInstagram(id, true, database)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Mongo Error: %s", err.Error())))
 		return nil, err
@@ -81,7 +81,7 @@ func (s *BackServer) VerifyInstagram(ctx context.Context, req *comms.InstagramVe
 }
 
 func (s *BackServer) VerifyTiktok(ctx context.Context, req *comms.TiktokVerifyRequest) (*comms.SocialResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
+	database := s.dbClient.Database(s.dbName)
 
 	id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *BackServer) VerifyTiktok(ctx context.Context, req *comms.TiktokVerifyRe
 	// req.Code
 	// Right now this endpoint just automatically verifies you no matter the code.
 
-	account, followers, err := db.UserVerifyTiktok(id, true, userCollection)
+	account, followers, err := db.UserVerifyTiktok(id, true, database)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Mongo Error: %s", err.Error())))
 		return nil, err

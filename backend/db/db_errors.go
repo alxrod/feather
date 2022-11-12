@@ -12,8 +12,9 @@ const (
 	DEADLINE_COL = "contract_deadlines"
 	CON_COL      = "contracts"
 
-	ROOM_COL = "chat_rooms"
-	MSG_COL  = "chat_messages"
+	ROOM_COL       = "chat_rooms"
+	MSG_COL        = "chat_messages"
+	PROF_IMAGE_COL = "prof_images"
 )
 
 // Errors:

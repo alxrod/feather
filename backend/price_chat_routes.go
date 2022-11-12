@@ -30,7 +30,7 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 		return nil, err
 	}
 	oldPrice := contract.Price.Current
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 
 	if user == nil || contract == nil {
 		return nil, errors.New("either the user or contract is invalid")
@@ -77,7 +77,7 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	if err != nil {
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}

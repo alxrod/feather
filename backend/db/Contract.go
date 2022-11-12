@@ -437,7 +437,7 @@ func ContractsByUser(user_id primitive.ObjectID, database *mongo.Database) ([]*C
 func ContractsByAdmin(user_id primitive.ObjectID, database *mongo.Database) ([]*Contract, error) {
 	contracts := make([]*Contract, 0)
 
-	user, err := UserQueryId(user_id, database.Collection(USERS_COL))
+	user, err := UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}

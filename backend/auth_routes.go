@@ -91,39 +91,21 @@ func (s *BackServer) Logout(ctx context.Context, req *comms.UserLogoutRequest) (
 	return &comms.UserLogoutResponse{}, nil
 }
 
-func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*comms.UserPullResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
+func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*comms.UserEntity, error) {
+	database := s.dbClient.Database(s.dbName)
 	id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
 	}
-	user, err := db.UserQueryId(id, userCollection)
+	user, err := db.UserQueryId(id, database)
 	if err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
 	}
-	resp := &comms.UserPullResponse{
-		UserId:         user.Id.Hex(),
-		Username:       user.Username,
-		Email:          user.Email,
-		UserType:       user.Type,
-		Role:           user.Role,
-		FullName:       user.FullName,
-		InstaAccount:   user.Instagram.Account,
-		InstaFollowers: user.Instagram.Followers,
-		InstaVerified:  user.Instagram.Verified,
-
-		TiktokAccount:   user.Tiktok.Account,
-		TiktokFollowers: user.Tiktok.Followers,
-		TiktokVerified:  user.Tiktok.Verified,
-
-		AdminStatus: user.AdminStatus,
+	proto, err := user.Proto()
+	if err != nil {
+		return nil, err
 	}
-	if user.Payment.CardHolder != "" {
-		resp.PaymentSetup = true
-	} else {
-		resp.PaymentSetup = false
-	}
-	return resp, nil
+	return proto, nil
 }

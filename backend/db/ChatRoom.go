@@ -69,7 +69,7 @@ func ChatRoomQueryId(room_id primitive.ObjectID, database *mongo.Database) (*Cha
 
 	users := make([]*User, len(room.UserHandles))
 	for idx, handle := range room.UserHandles {
-		user, err := UserQueryId(handle.Id, database.Collection(USERS_COL))
+		user, err := UserQueryId(handle.Id, database)
 		if err != nil {
 			return nil, err
 		}
@@ -94,7 +94,7 @@ func (room *ChatRoom) UserJoin(user_id primitive.ObjectID, database *mongo.Datab
 	if room == nil {
 		return errors.New("You called UserJoin on a nil chat")
 	}
-	user, err := UserQueryId(user_id, database.Collection(USERS_COL))
+	user, err := UserQueryId(user_id, database)
 	if err != nil {
 		return err
 	}

@@ -32,8 +32,8 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 		return nil, errors.New("You must specify at least a start and end deadline for the contract")
 	}
 
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
-	user, err := db.UserQueryId(userId, userCollection)
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 		return nil, err
 	}
 	if (contract.Worker != nil && contract.Worker.Id != user_id) && (contract.Buyer != nil && contract.Buyer.Id != user_id) {
-		user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+		user, err := db.UserQueryId(user_id, database)
 		if err != nil {
 			return nil, err
 		}
@@ -329,7 +329,7 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}
@@ -363,7 +363,7 @@ func (s *BackServer) QueryByAdmin(ctx context.Context, req *comms.QueryByUserReq
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Error querying contracts: %s", err.Error())))
 		return nil, err
 	}
-	user, err := db.UserQueryId(user_id, database.Collection(db.USERS_COL))
+	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
 	}

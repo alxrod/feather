@@ -23,16 +23,19 @@ import ContractView from '../contract/contract_view';
 import ContractNegotiate from '../contract/contract_negotiate';
 import ContractInvite from "../contract/contract_invite";
 import ContractSettle from '../contract/contract_settle';
+
 import { push } from 'connected-react-router'
 import { useLocation } from 'react-router-dom'
 
 import UnknownRoute from "../error_handling_routes/unknown_route"
 import UnauthContractRoute from "../error_handling_routes/unauth_contract_route"
 
+import FileUploadTest from "../file_upload_test";
+
 import { 
   pullUser,
   setRedirect
-} from "../../reducers/user/user.reducer";
+} from "../../reducers/user/dispatchers/user.dispatcher";
 
 import {
   setNavbar
@@ -59,6 +62,9 @@ const routes = {
   "/login": UNAUTH_ROLE,
   "/register": UNAUTH_ROLE,
   "/profile": STD_ROLE,
+
+  "/file-upload-test": STD_ROLE,
+  "/asset-cache": STD_ROLE,
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
@@ -66,7 +72,7 @@ const no_nav_routes = ["/login", "/register", "/invite"]
 
 const App = (props) => {
   const loc = useLocation();
-  const [pullReq, setPullReq] = useState(false);
+  const [pullReq, setPullReq] = useState(true);
   let firstLoad = true
 
   useEffect( () => {
@@ -105,14 +111,16 @@ const App = (props) => {
 
   useEffect( () => {
     if (pullReq == true && props.user !== null && props.user.type === undefined) {
-      console.log("Pulling user data")
 
       props.pullUser(props.user.user_id).then(() => {
         // console.log("Finished pull")
         setPullReq(false);
+        setTimeout(() => {
+          setPullReq(true)
+        }, 30 * 1000)
       });
     }
-  }, [pullReq])
+  }, [pullReq, props.user, props.user?.user_id])
 
   return (
 
@@ -143,6 +151,8 @@ const App = (props) => {
 
         <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />
         <Route exact path="/unauth-contract" element={<UnauthContractRoute/>} component={UnauthContractRoute} />
+
+        <Route exact path="/file-upload-test" element={<FileUploadTest/>} component={FileUploadTest} />
 
       </main>
     </div>

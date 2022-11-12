@@ -1,19 +1,20 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Fragment, useState, useEffect } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { MenuIcon, XIcon } from '@heroicons/react/outline'
+import { MenuIcon, XIcon, UserIcon } from '@heroicons/react/outline'
 import { Link } from 'react-router-dom'
 
 import f_logo from "../../style/logo/f_logo.svg";
 import feather_logo from "../../style/logo/feather_logo.svg";
 
 import { bindActionCreators } from 'redux'
-import { logout } from "../../reducers/user/user.reducer";
+import { logout } from "../../reducers/user/dispatchers/user.dispatcher";
 import { connect } from "react-redux";
 import ContractTimeline from "../contract/components/contract_timeline"
 import { contractStages } from "../../services/contract.service"
 import { useLocation } from 'react-router-dom'
 import { push } from "connected-react-router"
+import ProfilePhoto from "../general_components/profile_photo"
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -102,11 +103,12 @@ const NavBar = (props) => {
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
                           <h1 className="mr-2 text-gray-400 text-lg">@{props.user.username}</h1>
-                          <img
+                          {/* <img
                             className="h-8 w-8 rounded-full"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                             alt=""
-                          />
+                          /> */}
+                          <ProfilePhoto width={8} height={8} user={props.user}/>
                         </div>
                       </Menu.Button>
                     </div>

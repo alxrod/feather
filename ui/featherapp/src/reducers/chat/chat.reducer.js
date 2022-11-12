@@ -47,6 +47,11 @@ export default (state = initialState, action) => {
                 ...state,
                 rejoinSequenceActive: true,
             }
+        case actions.CHAT_CLEAR_REJOIN:
+            return {
+                ...state,
+                rejoinSequenceActive: false,
+            }
         case actions.CHAT_LEAVE:
             return {
                 ...state,
