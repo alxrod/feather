@@ -82,13 +82,13 @@ proto.main.AuthPromiseClient =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.UserRegisterRequest,
- *   !proto.main.UserRegisterResponse>}
+ *   !proto.main.UserSigninResponse>}
  */
 const methodDescriptor_Auth_Register = new grpc.web.MethodDescriptor(
   '/main.Auth/Register',
   grpc.web.MethodType.UNARY,
   proto.main.UserRegisterRequest,
-  proto.main.UserRegisterResponse,
+  proto.main.UserSigninResponse,
   /**
    * @param {!proto.main.UserRegisterRequest} request
    * @return {!Uint8Array}
@@ -96,7 +96,7 @@ const methodDescriptor_Auth_Register = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.UserRegisterResponse.deserializeBinary
+  proto.main.UserSigninResponse.deserializeBinary
 );
 
 
@@ -105,9 +105,9 @@ const methodDescriptor_Auth_Register = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.UserRegisterResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.UserSigninResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.UserRegisterResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.UserSigninResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.AuthClient.prototype.register =
@@ -126,7 +126,7 @@ proto.main.AuthClient.prototype.register =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.UserRegisterResponse>}
+ * @return {!Promise<!proto.main.UserSigninResponse>}
  *     Promise that resolves to the response
  */
 proto.main.AuthPromiseClient.prototype.register =
@@ -143,13 +143,13 @@ proto.main.AuthPromiseClient.prototype.register =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.UserLoginRequest,
- *   !proto.main.UserLoginResponse>}
+ *   !proto.main.UserSigninResponse>}
  */
 const methodDescriptor_Auth_Login = new grpc.web.MethodDescriptor(
   '/main.Auth/Login',
   grpc.web.MethodType.UNARY,
   proto.main.UserLoginRequest,
-  proto.main.UserLoginResponse,
+  proto.main.UserSigninResponse,
   /**
    * @param {!proto.main.UserLoginRequest} request
    * @return {!Uint8Array}
@@ -157,7 +157,7 @@ const methodDescriptor_Auth_Login = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.UserLoginResponse.deserializeBinary
+  proto.main.UserSigninResponse.deserializeBinary
 );
 
 
@@ -166,9 +166,9 @@ const methodDescriptor_Auth_Login = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.UserLoginResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.UserSigninResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.UserLoginResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.UserSigninResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.AuthClient.prototype.login =
@@ -187,7 +187,7 @@ proto.main.AuthClient.prototype.login =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.UserLoginResponse>}
+ * @return {!Promise<!proto.main.UserSigninResponse>}
  *     Promise that resolves to the response
  */
 proto.main.AuthPromiseClient.prototype.login =

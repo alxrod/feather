@@ -10,7 +10,7 @@ export const register = (username, full_name, email, password) => {
             (response) => {
                 dispatch({
                     type: userActions.REGISTER_SUCCESS,
-                    payload: {user: response}
+                    payload: {user: response.user}
                 });
                 dispatch({
                     type: userActions.SET_MESSAGE,
@@ -44,7 +44,7 @@ export const login = (username, password) => {
             (data) => {
                 dispatch({
                     type: userActions.LOGIN_SUCCESS,
-                    payload: {user: data},
+                    payload: {user: data.user},
                 });
                 return Promise.resolve();
             },
@@ -70,10 +70,13 @@ export const login = (username, password) => {
 
 export const logout = () => {
     return dispatch => {
-        UserService.logout();
-        dispatch({
-            type: userActions.LOGOUT,
-        });
+        return helpers.authCheck(dispatch).then((creds) => {
+            console.log("ATTEMPTING TO LOG OUT")
+            UserService.logout(creds.access_token);
+            dispatch({
+                type: userActions.LOGOUT,
+            });
+        })
     }
 }
 
@@ -261,58 +264,17 @@ export const addPayment = (user_id, card_number, card_holder, month, year, zip, 
     }
 };
 
-export const pullUser = (user_id) => {
+export const pullUser = () => {
     return dispatch => {
         return helpers.authCheck(dispatch).then((creds) => {
             return UserService.pull_user(creds.access_token, creds.user_id).then(
                 (data) => {
-                    let user = {
-                        username: data.username,
-                        email: data.email,
-                        type: data.userType,
-                        full_name: data.fullName,
-                        user_id: data.userId,
-                        contract_ids: data.contractIdsList,
-                        payment_setup: data.paymentSetup,
-                        role: data.role,
-
-                        admin_status: data.adminStatus,
-                        profilePhotoUploaded: data.profilePhotoUploaded,
-
-                        instagram: {
-                            account: data.instaAccount, 
-                            followers: data.instaFollowers, 
-                            verified: data.instaVerified, 
-                            platform: "Instagram"
-                        },
-                        tiktok: {
-                            account: data.tiktokAccount, 
-                            followers: data.tiktokFollowers, 
-                            verified: data.tiktokVerified, 
-                            platform: "Tiktok"
-                        }
-                    }
                     dispatch({
                         type: userActions.USER_PULL_SUCCESS,
-                        payload: {user: user},
+                        payload: {user: data},
                     });
                     console.log("HERE WE ARE")
                     console.log(data)
-                    console.log(user)
-                    if (user.profilePhotoUploaded) {
-                        FileService.getProfilePicUrl(creds.access_token, creds.user_id).then(
-                            (url) => {
-                                console.log("Received the url")
-                                dispatch({
-                                    type: userActions.USER_SET_PROFILE,
-                                    payload: url,
-                                })
-                            },
-                            (error) => {
-                                console.log("Failed to query User Profile Pic URL")
-                            }
-                        )
-                    }
                     return Promise.resolve();
                 },
                 (error) => {

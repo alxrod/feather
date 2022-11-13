@@ -42,10 +42,7 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        instagram: {
-                            ...state.user.instagram,
-                            verified: true,
-                        }
+                        instaVerified: true,
                     }
                 }
             } else {
@@ -53,10 +50,7 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        tiktok: {
-                            ...state.user.tiktok,
-                            verified: true,
-                        }
+                        tiktokVerified: true,
                     }
                 }
             }
@@ -66,10 +60,7 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        instagram: {
-                            ...state.user.instagram,
-                            verified: false,
-                        }
+                        instaVerified: false,
                     }
                 }
             } else {
@@ -77,10 +68,7 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        tiktok: {
-                            ...state.user.instagram,
-                            verified: false,
-                        }
+                        tiktokVerified: false,
                     }
                 }
             }
@@ -91,7 +79,9 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        instagram: action.payload
+                        instaVerified: action.payload.verified,
+                        instaAccount: action.payload.account,
+                        instaFollowers: action.payload.followers
                     }
                 }
             } else {
@@ -99,7 +89,9 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        tiktok: action.payload
+                        tiktokVerified: action.payload.verified,
+                        tiktokAccount: action.payload.account,
+                        tiktokFollowers: action.payload.followers
                     }
                 }
             }
@@ -110,7 +102,9 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        instagram: {account: "", followers: 0, verified: false, platform: "INVALID"}
+                        tiktokAccount: "",
+                        tiktokFollowers: 0,
+                        tiktokVerified: false,
                     }
                 }
             } else {
@@ -118,7 +112,9 @@ export default (state = initialState, action) => {
                     ...state,
                     user: {
                         ...state.user,
-                        tiktok: {account: "", followers: 0, verified: false, platform: "INVALID"}
+                        instaAccount: "",
+                        instaFollowers: 0,
+                        instaVerified: false,
                     }
                 }
             }

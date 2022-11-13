@@ -46,11 +46,11 @@ const SettleHub = (props) => {
           
           setWorkerApprovedCount(worker_approved)
           setBuyerApprovedCount(buyer_approved)
-          if (props.user.user_id === props.curContract.worker.id) {
+          if (props.user.id === props.curContract.worker.id) {
             setYourRole(WORKER_TYPE)
-          } else if (props.user.user_id === props.curContract.buyer.id) {
+          } else if (props.user.id === props.curContract.buyer.id) {
             setYourRole(BUYER_TYPE)
-          } else if (props.user.admin_status) {
+          } else if (props.user.adminStatus) {
             setYourRole(ADMIN_TYPE)
           }
         }

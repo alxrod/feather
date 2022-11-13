@@ -3,7 +3,45 @@ import ChatLabel from "../../chat_label"
 import { useState, useEffect } from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-export default (props) => {
+import { UserIcon } from '@heroicons/react/outline'
+
+const ProfileImg = (props) => {
+
+  const [haveProfImg, setHaveProfImg] = useState(false)
+  const [cacheUrl, setCacheUrl] = useState("")
+
+  useEffect( () => {
+    if (props.cachedUrls) {
+      setHaveProfImg(true)
+
+      let url =""
+      for (let i = 0; i < props.cachedUrls.length; i++) {
+        if (props.cachedUrls[i] && props.cachedUrls[i][0] === props.msg.user.id) {
+          console.log("setting true")
+          setHaveProfImg(true)
+          setCacheUrl(props.cachedUrls[i][1])
+        }
+      }
+
+    }
+  },[props.cachedUrls])
+
+  return (
+    <>
+      {haveProfImg ? (
+        <img 
+          className={"h-10 w-10 rounded-full object-cover"}
+          src={cacheUrl}
+        />
+      ) : (
+        <UserIcon className={"h-10 w-10 rounded-full border-2 bg-white border-gray-300 p-1 font-thin text-gray-300"}/>
+      )}
+    </>
+  )
+
+}
+
+const MsgWrapper = (props) => {
 
   function Wrapper({icon: Icon}) {
     return (
@@ -27,12 +65,7 @@ export default (props) => {
   return (
     <>
       <div className="relative">
-        <img
-          className={"h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center " + (props.msg.isAdmin ? "ring-2 ring-indigo-500" : "ring-8 ring-white")}
-          src={"https://images.unsplash.com/photo-1520785643438-5bf77931f493?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80"}
-          alt=""
-        />
-
+        <ProfileImg cachedUrls={props.cachedUrls} msg={props.msg}/>
         <span className={"absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px " + (props.msg.isAdmin ? "border-2 border-indigo-500" : "")}>
           <Wrapper icon={props.icon}/>
         </span>
@@ -59,3 +92,15 @@ export default (props) => {
 
   )
 }
+
+const mapStateToProps = ({ file }) => ({
+  cachedUrls: file.cachedProfileUrls
+})
+  
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+}, dispatch)
+  
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MsgWrapper)

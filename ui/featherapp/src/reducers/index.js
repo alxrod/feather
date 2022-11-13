@@ -9,6 +9,7 @@ import items from './items/items.reducer'
 import deadlines from './deadlines/deadlines.reducer'
 import chat from './chat/chat.reducer'
 import site from './site/site.reducer'
+import file from './file/file.reducer'
 
 export const history = createBrowserHistory()
 
@@ -20,5 +21,6 @@ export default combineReducers({
     items,
     deadlines,
     chat,
+    file,
     
 })

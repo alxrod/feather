@@ -5,7 +5,7 @@ export default (props) => {
     return (
       <img 
         className={"h-"+props.height+" w-"+props.width+" rounded-full object-cover"}
-        src={props.user.profileUrl}
+        src={props.user?.profilePhoto.cacheUrl}
       />
     )
   } else {

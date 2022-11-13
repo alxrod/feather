@@ -20,10 +20,10 @@ message ProfileUploadStatus {
 }
 
 message ProfileGetRequest {
-    string user_id = 1;
+    repeated string user_ids = 1;
 }
 message ProfileGetResponse {
-    string presigned_url = 1;
+    map<string, string> cache_urls = 1;
 }
 
 message ProfileImageEntity {
@@ -31,11 +31,12 @@ message ProfileImageEntity {
     string file_type = 2;
     bool in_cache = 3;
     string local_path = 4;
+    string cache_url = 6;
     string bucket_path = 5;
 }
 
 service FileService {
     rpc PresignProfilePhoto(ProfileUrlRequest) returns (ProfileUrlResponse) {};
     rpc ConfirmProfileUploaded(ProfileUploadStatus) returns (NullResponse) {};
-    rpc GetProfilePhoto(ProfileGetRequest) returns (ProfileGetResponse) {};
+    rpc GetProfilePhotos(ProfileGetRequest) returns (ProfileGetResponse) {};
 }

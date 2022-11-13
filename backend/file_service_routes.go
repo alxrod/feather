@@ -11,6 +11,7 @@ import (
 	// "fmt"
 	// "log"
 	// "time"
+	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson"
@@ -98,6 +99,7 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 	localPath, err := s.AWSAgent.DownloadProfileToCache(user, user.ProfilePhoto.BucketPath)
 	log.Printf("Trying to save local path %s", localPath)
 	user.ProfilePhoto.LocalPath = localPath
+	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
 	user.ProfilePhoto.InCache = true
 	err = user.ProfilePhoto.Save(database)
 	if err != nil {
@@ -107,36 +109,41 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 	return &comms.NullResponse{}, nil
 }
 
-func (s *BackServer) GetProfilePhoto(ctx context.Context, req *comms.ProfileGetRequest) (*comms.ProfileGetResponse, error) {
-	user_id, err := primitive.ObjectIDFromHex(req.UserId)
-	if err != nil {
-		return nil, err
-	}
-
+func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGetRequest) (*comms.ProfileGetResponse, error) {
+	cached_urls := map[string]string{}
 	database := s.dbClient.Database(s.dbName)
-	user, err := db.UserQueryId(user_id, database)
-	if err != nil {
-		return nil, err
-	}
-
-	if user.ProfilePhoto == nil {
-		return nil, errors.New("profile photo does not exist for this user")
-	}
-	if !user.ProfilePhoto.InCache {
-		localPath, err := s.AWSAgent.DownloadProfileToCache(user, user.ProfilePhoto.BucketPath)
-		if err != nil {
-			log.Printf("Error downloading profile: %s", err)
-		}
-		user.ProfilePhoto.LocalPath = localPath
-		user.ProfilePhoto.InCache = true
-		err = user.ProfilePhoto.Save(database)
+	log.Printf("Test", req.UserIds)
+	for _, user_id_str := range req.UserIds {
+		user_id, err := primitive.ObjectIDFromHex(user_id_str)
 		if err != nil {
 			return nil, err
 		}
+		filter := bson.D{{"user_id", user_id}}
+		var profilePhoto *db.ProfileImage
+		if err := database.Collection(db.PROF_IMAGE_COL).FindOne(context.TODO(), filter).Decode(&profilePhoto); err != nil {
+			log.Println(color.Ize(color.Red, err.Error()))
+			return nil, errors.New("profile image for user not found")
+		}
+		if !profilePhoto.InCache {
+			user, err := db.UserQueryId(user_id, database)
+			if err != nil {
+				return nil, err
+			}
+			localPath, err := s.AWSAgent.DownloadProfileToCache(user, user.ProfilePhoto.BucketPath)
+			user.ProfilePhoto.LocalPath = localPath
+			user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
+			user.ProfilePhoto.InCache = true
+			err = user.ProfilePhoto.Save(database)
+			profilePhoto = user.ProfilePhoto
+			if err != nil {
+				return nil, err
+			}
+		}
+		cached_urls[user_id.Hex()] = profilePhoto.CacheUrl
+
 	}
 
-	url := fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
 	return &comms.ProfileGetResponse{
-		PresignedUrl: url,
+		CacheUrls: cached_urls,
 	}, nil
 }

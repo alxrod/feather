@@ -63,7 +63,7 @@ const ContractInvite = (props) => {
         setBody(body)
         console.log(body)
         console.log(props.user)
-        if (props.user !== null && (body.worker.id === props.user.user_id || body.buyer.id === props.user.user_id)) {
+        if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
         } else if (body.buyer.id !== "") {
           setExistingUser(body.buyer)

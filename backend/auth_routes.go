@@ -2,6 +2,7 @@ package backend
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,78 +13,52 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterRequest) (*comms.UserRegisterResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
-	if err := db.UserEmailCheck(req.Username, req.Email, userCollection); err != nil {
-		return &comms.UserRegisterResponse{
-			Success:  false,
-			Error:    err.Error(),
-			Token:    "",
-			Username: "",
-			Id:       "",
-		}, nil
+func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterRequest) (*comms.UserSigninResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	if err := db.UserEmailCheck(req.Username, req.Email, database); err != nil {
+		return nil, err
 	}
 
-	_, err := db.UserQueryUsername(req.Username, req.Password, userCollection)
+	_, err := db.UserQueryUsername(req.Username, req.Password, database)
 	switch err.(type) {
 	case *db.ErrorUserNotFound:
-		user, err := db.UserInsert(req.Username, req.Password, req.Email, req.FullName, req.UserType, userCollection)
+		user, err := db.UserInsert(req.Username, req.Password, req.Email, req.FullName, req.UserType, database)
 		if err != nil {
-			return &comms.UserRegisterResponse{
-				Success:  false,
-				Error:    err.Error(),
-				Token:    "",
-				Username: "",
-				Id:       "",
-			}, nil
+			return nil, err
 		}
 		tkn, tkn_timeout, err := s.JwtManager.Generate(user)
 		if err != nil {
 			return nil, err
 		}
 
-		return &comms.UserRegisterResponse{
-			Success:      true,
-			Error:        "",
+		return &comms.UserSigninResponse{
 			Token:        tkn,
 			TokenTimeout: timestamppb.New(tkn_timeout),
-			Username:     user.Username,
-			Id:           user.Id.Hex(),
-			Role:         user.Role,
-			AdminStatus:  user.AdminStatus,
+			User:         user.Proto(),
 		}, nil
 
 	// Handles nil case, meaning user query was successful, user already exists
 	default:
-		return &comms.UserRegisterResponse{
-			Success:  false,
-			Error:    db.GenErrorUserAlreadyExists(req.Username).Error(),
-			Token:    "",
-			Username: "",
-			Id:       "",
-		}, nil
+		return nil, errors.New("user already exists")
 	}
 }
 
-func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*comms.UserLoginResponse, error) {
-	userCollection := s.dbClient.Database(s.dbName).Collection(db.USERS_COL)
-	user, err := db.UserQueryUsername(req.Username, req.Password, userCollection)
+func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*comms.UserSigninResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryUsername(req.Username, req.Password, database)
 	if err != nil {
 		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Returning error: %s", err.Error())))
-		return &comms.UserLoginResponse{Error: err.Error()}, nil
+		return nil, err
 	}
 	tkn, tkn_timeout, err := s.JwtManager.Generate(user)
 	if err != nil {
-		return &comms.UserLoginResponse{Error: err.Error()}, nil
+		return nil, err
 	}
 	log.Println(color.Ize(color.Yellow, fmt.Sprintf("Username %s is status %b", user.Username, user.AdminStatus)))
-	return &comms.UserLoginResponse{
+	return &comms.UserSigninResponse{
 		Token:        tkn,
 		TokenTimeout: timestamppb.New(tkn_timeout),
-		Username:     user.Username,
-		Id:           user.Id.Hex(),
-		Role:         user.Role,
-		AdminStatus:  user.AdminStatus,
+		User:         user.Proto(),
 	}, nil
 
 }
@@ -103,7 +78,7 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
 	}
-	proto, err := user.Proto()
+	proto := user.Proto()
 	if err != nil {
 		return nil, err
 	}

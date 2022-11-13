@@ -26,8 +26,8 @@ const ChatBox = (props) => {
   const [message, setMessage] = useState("")
 
   useEffect( () => {
-    toggleAdminButton(!props.curContract.adminRequested && !props.user.admin_status)
-    toggleResolveButton(props.curContract.adminRequested && props.user.admin_status)
+    toggleAdminButton(!props.curContract.adminRequested && !props.user.adminStatus)
+    toggleResolveButton(props.curContract.adminRequested && props.user.adminStatus)
   }, [props.curContract, props.contractChanged])
 
   useEffect( () => {

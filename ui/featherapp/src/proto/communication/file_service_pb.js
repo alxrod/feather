@@ -103,7 +103,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.main.ProfileGetRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.main.ProfileGetRequest.repeatedFields_, null);
 };
 goog.inherits(proto.main.ProfileGetRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -636,6 +636,13 @@ proto.main.ProfileUploadStatus.prototype.setUploadSucceeded = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.main.ProfileGetRequest.repeatedFields_ = [1];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -667,7 +674,7 @@ proto.main.ProfileGetRequest.prototype.toObject = function(opt_includeInstance) 
  */
 proto.main.ProfileGetRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userIdsList: (f = jspb.Message.getRepeatedField(msg, 1)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -706,7 +713,7 @@ proto.main.ProfileGetRequest.deserializeBinaryFromReader = function(msg, reader)
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
+      msg.addUserIds(value);
       break;
     default:
       reader.skipField();
@@ -737,9 +744,9 @@ proto.main.ProfileGetRequest.prototype.serializeBinary = function() {
  */
 proto.main.ProfileGetRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUserId();
+  f = message.getUserIdsList();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeRepeatedString(
       1,
       f
     );
@@ -748,20 +755,39 @@ proto.main.ProfileGetRequest.serializeBinaryToWriter = function(message, writer)
 
 
 /**
- * optional string user_id = 1;
- * @return {string}
+ * repeated string user_ids = 1;
+ * @return {!Array<string>}
  */
-proto.main.ProfileGetRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.main.ProfileGetRequest.prototype.getUserIdsList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 1));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.main.ProfileGetRequest} returns this
+ */
+proto.main.ProfileGetRequest.prototype.setUserIdsList = function(value) {
+  return jspb.Message.setField(this, 1, value || []);
 };
 
 
 /**
  * @param {string} value
+ * @param {number=} opt_index
  * @return {!proto.main.ProfileGetRequest} returns this
  */
-proto.main.ProfileGetRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
+proto.main.ProfileGetRequest.prototype.addUserIds = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 1, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.main.ProfileGetRequest} returns this
+ */
+proto.main.ProfileGetRequest.prototype.clearUserIdsList = function() {
+  return this.setUserIdsList([]);
 };
 
 
@@ -797,7 +823,7 @@ proto.main.ProfileGetResponse.prototype.toObject = function(opt_includeInstance)
  */
 proto.main.ProfileGetResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
-    presignedUrl: jspb.Message.getFieldWithDefault(msg, 1, "")
+    cacheUrlsMap: (f = msg.getCacheUrlsMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -835,8 +861,10 @@ proto.main.ProfileGetResponse.deserializeBinaryFromReader = function(msg, reader
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPresignedUrl(value);
+      var value = msg.getCacheUrlsMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readString, null, "", "");
+         });
       break;
     default:
       reader.skipField();
@@ -867,32 +895,33 @@ proto.main.ProfileGetResponse.prototype.serializeBinary = function() {
  */
 proto.main.ProfileGetResponse.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPresignedUrl();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
+  f = message.getCacheUrlsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(1, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeString);
   }
 };
 
 
 /**
- * optional string presigned_url = 1;
- * @return {string}
+ * map<string, string> cache_urls = 1;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,string>}
  */
-proto.main.ProfileGetResponse.prototype.getPresignedUrl = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+proto.main.ProfileGetResponse.prototype.getCacheUrlsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,string>} */ (
+      jspb.Message.getMapField(this, 1, opt_noLazyCreate,
+      null));
 };
 
 
 /**
- * @param {string} value
+ * Clears values from the map. The map will be non-null.
  * @return {!proto.main.ProfileGetResponse} returns this
  */
-proto.main.ProfileGetResponse.prototype.setPresignedUrl = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
+proto.main.ProfileGetResponse.prototype.clearCacheUrlsMap = function() {
+  this.getCacheUrlsMap().clear();
+  return this;};
 
 
 
@@ -931,6 +960,7 @@ proto.main.ProfileImageEntity.toObject = function(includeInstance, msg) {
     fileType: jspb.Message.getFieldWithDefault(msg, 2, ""),
     inCache: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     localPath: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    cacheUrl: jspb.Message.getFieldWithDefault(msg, 6, ""),
     bucketPath: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
@@ -983,6 +1013,10 @@ proto.main.ProfileImageEntity.deserializeBinaryFromReader = function(msg, reader
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setLocalPath(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCacheUrl(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
@@ -1042,6 +1076,13 @@ proto.main.ProfileImageEntity.serializeBinaryToWriter = function(message, writer
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getCacheUrl();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -1124,6 +1165,24 @@ proto.main.ProfileImageEntity.prototype.getLocalPath = function() {
  */
 proto.main.ProfileImageEntity.prototype.setLocalPath = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string cache_url = 6;
+ * @return {string}
+ */
+proto.main.ProfileImageEntity.prototype.getCacheUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ProfileImageEntity} returns this
+ */
+proto.main.ProfileImageEntity.prototype.setCacheUrl = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 

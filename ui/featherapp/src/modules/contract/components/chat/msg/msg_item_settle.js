@@ -90,7 +90,7 @@ const ItemSettleMsg = (props) => {
                   <p className="text-grey-400 mr-1">Admin undid override</p>
                 )}
               </div>
-            ) : !props.user.admin_status ? (
+            ) : !props.user.adminStatus ? (
             <div className="flex">
               <div className="flex items-center justify-between">
                 <p className="text-grey-400 mr-1">You{" "}

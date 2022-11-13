@@ -40,19 +40,22 @@ class FileService {
         });
     }
 
-    getProfilePicUrl(token, user_id) {
+    getProfilePicUrls(token, user_ids) {
         let getRequest = new ProfileGetRequest();
-        getRequest.setUserId(user_id);
+        for (let i = 0; i < user_ids.length; i++) {
+            getRequest.addUserIds(user_ids[i]);
+        }
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
-            fileServiceClient.getProfilePhoto(getRequest, metadata, function(error, response) {
+            fileServiceClient.getProfilePhotos(getRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
+                    return
                 }
                 var resp = response.toObject();
 
-                resolve(resp.presignedUrl)
+                resolve(resp)
             });
         });
     }

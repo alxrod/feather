@@ -6,10 +6,21 @@ const initialState = {
     curPresignedUrl: "",
     uploadActive: false,
     uploadFailed: false,
+    profileCacheUpdated: false,
+    cachedProfileUrls: {},
 }
 
 export default (state = initialState, action) => {
     switch (action.type) {
+
+        case actions.SET_PROFILE_URL_CACHE:
+            console.log("Test reducer: ", action.payload)
+            return {
+                ...state,
+                cachedProfileUrls: action.payload,
+                profileCacheUpdated: !state.profileCacheUpdated
+            }
+
         case actions.PROFILE_REQUEST_URL:
             return {
                 ...state,

@@ -6,13 +6,81 @@ import { push } from 'connected-react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import StageTag from './stage_tag'
+import { getProfilePicUrls } from '../../reducers/file/dispatchers/file.profile_query.dispatcher';
+import { UserIcon } from '@heroicons/react/outline'
 
-const filler_img = "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+
+const ProfileImg = (props) => {
+
+  const [haveProfImg, setHaveProfImg] = useState(false)
+  const [cacheUrl, setCacheUrl] = useState("")
+
+  const [imageHash, setImageHash] = useState(Date.now())
+
+  useEffect( () => {
+    if (props.cachedUrls) {
+      let other_user_id = ""
+      if (props.contract.workerId === props.user.id) {
+        other_user_id = props.contract.buyerId
+      }
+      if (props.contract.buyerId === props.user.id) {
+        other_user_id = props.contract.workerId
+      }
+    
+      for (let i = 0; i < props.cachedUrls.length; i++) {
+        if (props.cachedUrls[i] && props.cachedUrls[i][0] === other_user_id) {
+          setHaveProfImg(true)
+          setCacheUrl(props.cachedUrls[i][1])
+        }
+      }
+
+    }
+  },[props.cachedUrls])
+
+  return (
+    <>
+      {haveProfImg ? (
+        <img 
+          className={"h-10 w-10 rounded-full object-cover"}
+          src={`${cacheUrl}?${imageHash}`}
+        />
+      ) : (
+        <UserIcon className={"h-10 w-10 rounded-full border-2 bg-white border-gray-300 p-1 font-thin text-gray-300"}/>
+      )}
+    </>
+  )
+}
 
 const ContractList = (props) => {
   const [no_contracts, setNoContracts] = useState(true)
   useEffect( () => {
     if (props.contracts !== undefined && props.contracts.length > 0) {
+      // Made so only called once
+      if (no_contracts) {
+        let user_ids = []
+        for (let i = 0; i < props.contracts.length; i++) {
+          let worker_in = false;
+          let buyer_in = false;
+
+          for (let j = 0; j < user_ids.length; j++) {
+            if (user_ids[j] === props.contracts[i].workerId) {
+              worker_in = true
+            }
+            if (user_ids[j] !== props.contracts[i].buyerId) {
+              buyer_in = true
+            }
+          }
+
+          if (!worker_in && props.contracts[i].workerId) {
+            user_ids.push(props.contracts[i].workerId)
+          }
+          if (!buyer_in && props.contracts[i].buyerId) {
+            user_ids.push(props.contracts[i].buyerId)
+          }
+        }
+        console.log("Droppign this: ", user_ids)
+        props.getProfilePicUrls(user_ids)
+      }
       setNoContracts(false)
     }
   }, [props.contracts])
@@ -58,7 +126,7 @@ const ContractList = (props) => {
                           <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6">
                             <div className="flex items-center">
                               <div className="h-10 w-10 flex-shrink-0">
-                                <img className="h-10 w-10 rounded-full" src={filler_img} alt="" />
+                                <ProfileImg cachedUrls={props.cachedUrls} contract={contract} user={props.user}/>
                               </div>
                               <div className="ml-4">
                                 <Link to={"/contract/"+contract.id}>
@@ -128,10 +196,13 @@ const ContractList = (props) => {
   )
 }
 
-const mapStateToProps = ({ contract }) => ({
-  contracts: contract.contractNubs
+const mapStateToProps = ({ contract, file, user }) => ({
+  contracts: contract.contractNubs,
+  cachedUrls: file.cachedProfileUrls,
+  user: user.user,
 })
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  getProfilePicUrls,
 }, dispatch)
 export default connect(
   mapStateToProps,

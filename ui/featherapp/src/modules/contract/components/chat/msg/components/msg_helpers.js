@@ -4,12 +4,12 @@ import { WORKER_TYPE, BUYER_TYPE } from "../../../../../../services/user.service
 export const displayDecide = (msg, status, user) => {
     return  (msg.body.resolStatus === resolTypes.UNDECIDED && !msg.expired) &&
     ((status === decisionTypes.UNDECIDED) ||
-    (user.admin_status && msg.adminStatus === decisionTypes.UNDECIDED))
+    (user.adminStatus && msg.adminStatus === decisionTypes.UNDECIDED))
 }
 
 export const assignStatus = (msg, user, yourRole, setStatus, setOtherStatus) => {
     if (msg) {
-        if (user.admin_status) {
+        if (user.adminStatus) {
           if (msg.adminStatus === undefined) {
             setStatus(decisionTypes.UNDECIDED)
           } else {

@@ -36,9 +36,9 @@ const CompleteDeadlineButton = (props) => {
   useEffect( () => {
     if (props.curContract.id && props.user) {
       let role = WORKER_TYPE
-      if (props.curContract.worker.id === props.user.user_id) {
+      if (props.curContract.worker.id === props.user.id) {
         role = WORKER_TYPE
-      } else if (props.curContract.buyer.id === props.user.user_id) {
+      } else if (props.curContract.buyer.id === props.user.id) {
         role = BUYER_TYPE
       }
       for (let i = 0; i < props.deadlines.length; i++) {

@@ -62,7 +62,7 @@ const ContractTextArea = (props) => {
 }
 
 const mapStateToProps = ({ user, items }) => ({
-  cur_id: (user.user !== null) ? user.user.user_id : "",
+  cur_id: (user.user !== null) ? user.user.id : "",
   contractItemsChanged: items.itemsChanged,
 })
 

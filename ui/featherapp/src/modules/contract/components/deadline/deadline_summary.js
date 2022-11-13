@@ -200,7 +200,7 @@ const DeadlineSummary = (props) => {
           payoutLockShould = true
           setPayoutTextColor("text-green")
           setOldPayout(props.deadline.currentPayout)
-          if (props.deadline.payoutProposerId == props.user.user_id) {
+          if (props.deadline.payoutProposerId == props.user.id) {
             setProposedByPartner(false)
             if (props.role === BUYER_TYPE) {
               setPayout(props.deadline.buyerPayout)

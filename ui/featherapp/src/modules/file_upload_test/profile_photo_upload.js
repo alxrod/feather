@@ -37,7 +37,6 @@ const ProfilePhotoUpload = (props) => {
 
   const handleUpload = async (files) => {
     const file = files[0];
-    console.log("UPLOADING ", file.meta.name)
     props.uploadProfilePhoto(file, file.meta.name)
   }
 

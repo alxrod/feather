@@ -3082,7 +3082,9 @@ proto.main.ContractNub.toObject = function(includeInstance, msg) {
     stage: jspb.Message.getFieldWithDefault(msg, 5, 0),
     userType: jspb.Message.getFieldWithDefault(msg, 6, 0),
     disputed: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
+    adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
+    workerId: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    buyerId: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -3151,6 +3153,14 @@ proto.main.ContractNub.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAdminRequested(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setWorkerId(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBuyerId(value);
       break;
     default:
       reader.skipField();
@@ -3235,6 +3245,20 @@ proto.main.ContractNub.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       8,
+      f
+    );
+  }
+  f = message.getWorkerId();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getBuyerId();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
       f
     );
   }
@@ -3401,6 +3425,42 @@ proto.main.ContractNub.prototype.getAdminRequested = function() {
  */
 proto.main.ContractNub.prototype.setAdminRequested = function(value) {
   return jspb.Message.setProto3BooleanField(this, 8, value);
+};
+
+
+/**
+ * optional string worker_id = 9;
+ * @return {string}
+ */
+proto.main.ContractNub.prototype.getWorkerId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ContractNub} returns this
+ */
+proto.main.ContractNub.prototype.setWorkerId = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string buyer_id = 10;
+ * @return {string}
+ */
+proto.main.ContractNub.prototype.getBuyerId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.ContractNub} returns this
+ */
+proto.main.ContractNub.prototype.setBuyerId = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 
@@ -4161,7 +4221,9 @@ proto.main.UserNubEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     username: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    type: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    hasPhoto: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
+    photoUrl: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -4210,6 +4272,14 @@ proto.main.UserNubEntity.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint32());
       msg.setType(value);
       break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setHasPhoto(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPhotoUrl(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -4257,6 +4327,20 @@ proto.main.UserNubEntity.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint32(
       3,
+      f
+    );
+  }
+  f = message.getHasPhoto();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
+    );
+  }
+  f = message.getPhotoUrl();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -4314,6 +4398,42 @@ proto.main.UserNubEntity.prototype.getType = function() {
  */
 proto.main.UserNubEntity.prototype.setType = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional bool has_photo = 5;
+ * @return {boolean}
+ */
+proto.main.UserNubEntity.prototype.getHasPhoto = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.UserNubEntity} returns this
+ */
+proto.main.UserNubEntity.prototype.setHasPhoto = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
+};
+
+
+/**
+ * optional string photo_url = 4;
+ * @return {string}
+ */
+proto.main.UserNubEntity.prototype.getPhotoUrl = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.main.UserNubEntity} returns this
+ */
+proto.main.UserNubEntity.prototype.setPhotoUrl = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

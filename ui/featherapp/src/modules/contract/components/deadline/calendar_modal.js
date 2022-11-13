@@ -97,7 +97,7 @@ const CalendarModal = (props) => {
         if (props.reducerDeadlines[i].awaitingCreation) {
           setNewDeadlineIndex(i)
           foundNew = true
-          if (props.reducerDeadlines[i].deadlineProposerId === props.user.user_id || props.reducerDeadlines[i].id === "TEMPORARY") {
+          if (props.reducerDeadlines[i].deadlineProposerId === props.user.id || props.reducerDeadlines[i].id === "TEMPORARY") {
             propPartner = false
           } else {
             propPartner = true
@@ -105,7 +105,7 @@ const CalendarModal = (props) => {
         } else if (props.reducerDeadlines[i].awaitingDeletion) {
           setDeleteDeadlineIndex(i)
           foundDelete = true
-          if (props.reducerDeadlines[i].deadlineProposerId === props.user.user_id) {
+          if (props.reducerDeadlines[i].deadlineProposerId === props.user.id) {
             propPartner = false
           } else {
             propPartner = true

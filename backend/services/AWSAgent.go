@@ -104,6 +104,7 @@ func (agent *AWSAgent) GeneratePresignPut(filePath, bucketName string) (string, 
 	presignResult, err := presignClient.PresignPutObject(context.TODO(), presignParams, presignDuration)
 
 	if err != nil {
+		log.Printf("PUT ERROR: ", err)
 		return "", errors.New("Couldn't get presigned URL for PutObject")
 	}
 

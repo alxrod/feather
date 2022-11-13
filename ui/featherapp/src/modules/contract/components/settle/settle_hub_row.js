@@ -37,11 +37,11 @@ const SettleHubOption = (props) => {
     setBuyerStatus(props.item.buyerSettled)
     setAdminStatus(props.item.adminSettled)
 
-    if (props.curContract?.worker.id === props.user.user_id) {
+    if (props.curContract?.worker.id === props.user.id) {
       setYourRole(WORKER_TYPE)
-    } else if (props.curContract?.buyer.id === props.user.user_id) {
+    } else if (props.curContract?.buyer.id === props.user.id) {
       setYourRole(BUYER_TYPE)
-    } else if (props.user.admin_status) {
+    } else if (props.user.adminStatus) {
       setYourRole(ADMIN_TYPE)
     }
   }, [props.user, props.curContract, props.itemsChanged, props.deadlinesChanged])

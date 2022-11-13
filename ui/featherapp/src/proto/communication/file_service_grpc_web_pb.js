@@ -204,8 +204,8 @@ proto.main.FileServicePromiseClient.prototype.confirmProfileUploaded =
  *   !proto.main.ProfileGetRequest,
  *   !proto.main.ProfileGetResponse>}
  */
-const methodDescriptor_FileService_GetProfilePhoto = new grpc.web.MethodDescriptor(
-  '/main.FileService/GetProfilePhoto',
+const methodDescriptor_FileService_GetProfilePhotos = new grpc.web.MethodDescriptor(
+  '/main.FileService/GetProfilePhotos',
   grpc.web.MethodType.UNARY,
   proto.main.ProfileGetRequest,
   proto.main.ProfileGetResponse,
@@ -230,13 +230,13 @@ const methodDescriptor_FileService_GetProfilePhoto = new grpc.web.MethodDescript
  * @return {!grpc.web.ClientReadableStream<!proto.main.ProfileGetResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.main.FileServiceClient.prototype.getProfilePhoto =
+proto.main.FileServiceClient.prototype.getProfilePhotos =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/main.FileService/GetProfilePhoto',
+      '/main.FileService/GetProfilePhotos',
       request,
       metadata || {},
-      methodDescriptor_FileService_GetProfilePhoto,
+      methodDescriptor_FileService_GetProfilePhotos,
       callback);
 };
 
@@ -249,13 +249,13 @@ proto.main.FileServiceClient.prototype.getProfilePhoto =
  * @return {!Promise<!proto.main.ProfileGetResponse>}
  *     Promise that resolves to the response
  */
-proto.main.FileServicePromiseClient.prototype.getProfilePhoto =
+proto.main.FileServicePromiseClient.prototype.getProfilePhotos =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/main.FileService/GetProfilePhoto',
+      '/main.FileService/GetProfilePhotos',
       request,
       metadata || {},
-      methodDescriptor_FileService_GetProfilePhoto);
+      methodDescriptor_FileService_GetProfilePhotos);
 };
 
 

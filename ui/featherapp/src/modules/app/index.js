@@ -99,8 +99,10 @@ const App = (props) => {
       props.push("/login")
       return false
     } else if (props.user !== null) {
+      console.log("CHECKING USER ROLE AS: ", props.user)
       const role = props.user.role
       if ((routes[pathname] & role) !== routes[pathname]) {
+        console.log("Pushing cause ", (routes[pathname] & role))
         props.setRedirect(wholepath)
         props.push("/login")
         return false
@@ -110,17 +112,17 @@ const App = (props) => {
   }
 
   useEffect( () => {
-    if (pullReq == true && props.user !== null && props.user.type === undefined) {
-
-      props.pullUser(props.user.user_id).then(() => {
+    if (pullReq == true && props.user !== null) {
+      console.log("CALLING PULL")
+      setPullReq(false);
+      props.pullUser(props.user.id).then(() => {
         // console.log("Finished pull")
-        setPullReq(false);
         setTimeout(() => {
           setPullReq(true)
-        }, 30 * 1000)
+        }, 10 * 60 * 1000)
       });
     }
-  }, [pullReq, props.user, props.user?.user_id])
+  }, [pullReq, props.user, props.user?.id])
 
   return (
 

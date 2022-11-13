@@ -37,34 +37,19 @@ class UserService {
                     return 
                 }
                 var resp = response.toObject();
-                if (resp.error !== "") {
-                    reject(resp.error)
-                    return
-                } else {
-                    var data = {
-                        username: resp.username,
-                        password: password,
-                        access_token: resp.token,
-                        user_id: resp.id,
-                        role: resp.role,
-                        admin_status: resp.adminStatus,
-                    }
-                    var creds = {
-                        username: resp.username,
-                        password: password,
-                        user_id: resp.id,
-                        access_token: resp.token,
-                        token_timeout: response.getTokenTimeout().toDate(),
-                        admin_status: resp.adminStatus,
-                    }
-                    localStorage.setItem("creds", JSON.stringify(creds));
-
-                    console.log("JUST LOGGED IN, INFO:")
-                    console.log(data)
-                    localStorage.setItem("user", JSON.stringify(data));
-                    resolve(data)
+                var creds = {
+                    username: resp.user.username,
+                    password: password,
+                    user_id: resp.user.id,
+                    access_token: resp.token,
+                    token_timeout: response.getTokenTimeout().toDate(),
+                    admin_status: resp.user.adminStatus,
                 }
-               reject(new Error("Catch all invalid request"))
+                localStorage.setItem("creds", JSON.stringify(creds));
+
+                localStorage.setItem("user", JSON.stringify(resp.user));
+                console.log("Saving creds to storage as ", creds)
+                resolve(resp)
             });
         });
     }   
@@ -86,36 +71,24 @@ class UserService {
                 }
                 var resp = response.toObject();
                 
-                if (resp.token) {
-                    const data = {
-                        username: resp.username,
-                        password: password,
-                        access_token: resp.token,
-                        user_id: resp.id,
-                        role: resp.role,
-                        admin_status: resp.adminStatus,
-                    }
-                    var creds = {
-                        username: resp.username,
-                        password: password,
-                        user_id: resp.id,
-                        access_token: resp.token,
-                        admin_status: resp.adminStatus,
-                        token_timeout: response.getTokenTimeout().toDate(),
-                    }
-                    localStorage.setItem("creds", JSON.stringify(creds));
-                    localStorage.setItem("user", JSON.stringify(data));
-                    resolve(data)
+                var creds = {
+                    username: resp.user.username,
+                    password: password,
+                    user_id: resp.user.id,
+                    access_token: resp.token,
+                    admin_status: resp.user.adminStatus,
+                    token_timeout: response.getTokenTimeout().toDate(),
                 }
-                if (resp.success === false && resp.error !== "") {
-                    reject(resp.error)
-                }
-                reject(new Error("Catch all invalid request"))
+                localStorage.setItem("creds", JSON.stringify(creds));
+                localStorage.setItem("user", JSON.stringify(resp.user));
+                resolve(resp)
+    
+                
             });
         });
     }
 
-    logout() {
+    logout(token) {
         var logoutRequest = new UserLogoutRequest();   
         
         var user = JSON.parse(localStorage.getItem("user"));
@@ -123,7 +96,7 @@ class UserService {
             return Error("You are not currently logged in")
         }
         logoutRequest.setUsername(user.username);
-        logoutRequest.setToken(user.access_token);
+        logoutRequest.setToken(token);
 
         localStorage.removeItem("user");
         localStorage.removeItem("creds");
@@ -160,16 +133,8 @@ class UserService {
                 }
                 var resp = response.toObject();
                 
-                if (resp.account) {
-                    var data = {
-                        account: resp.account,
-                        followers: resp.followers,
-                        verified: resp.verified,
-                        platform: "Instagram"
-                    }
-                    resolve(data)
-                }
-               reject(new Error("Catch all invalid request"))
+                resp.platform = "Instagram"
+                resolve(resp)
             });
         });
     }
@@ -190,17 +155,8 @@ class UserService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                
-                if (resp.account) {
-                    var data = {
-                        account: resp.account,
-                        followers: resp.followers,
-                        verified: resp.verified,
-                        platform: "Tiktok"
-                    }
-                    resolve(data)
-                }
-               reject(new Error("Catch all invalid request"))
+                resp.platform = "Tiktok"
+                resolve(resp)
             });
         });
     }
@@ -220,16 +176,8 @@ class UserService {
                 }
                 var resp = response.toObject();
                 
-                if (resp.account) {
-                    var data = {
-                        account: resp.account,
-                        followers: resp.followers,
-                        verified: resp.verified,
-                        platform: "Instagram"
-                    }
-                    resolve(data)
-                }
-               reject(new Error("Catch all invalid request"))
+                resp.platform = "Instagram"
+                resolve(resp)
             });
         });
     }
@@ -249,16 +197,8 @@ class UserService {
                 }
                 var resp = response.toObject();
                 
-                if (resp.account) {
-                    var data = {
-                        account: resp.account,
-                        followers: resp.followers,
-                        verified: resp.verified,
-                        platform: "Tiktok"
-                    }
-                    resolve(data)
-                }
-               reject(new Error("Catch all invalid request"))
+                resp.platform = "Tiktok"
+                resolve(resp)
             });
         });
     }
@@ -282,11 +222,8 @@ class UserService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                
-                if (resp.valid == true) {
-                    resolve(resp)
-                }
-               reject(new Error("Catch all invalid request"))
+
+                resolve(resp)
             });
         });
     }
@@ -303,7 +240,7 @@ class UserService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                
+                localStorage.setItem("user", JSON.stringify(resp));
                 resolve(resp)
             });
         });
@@ -328,19 +265,17 @@ export const authChecker = (needAuth) => {
                         resolve(null)
                     }
                     var resp = response.toObject();
-                    if (resp.error !== "") {
-                        resolve(null)
-                    } else {
-                        var new_creds = {
-                            username: resp.username,
-                            password: creds.password,
-                            admin_status: creds.admin_status,
-                            user_id: resp.id,
-                            access_token: resp.token,
-                            token_timeout: response.getTokenTimeout().toDate(),
-                        }
-                        localStorage.setItem("creds", JSON.stringify(new_creds));
+        
+                    var new_creds = {
+                        username: resp.user.username,
+                        password: creds.password,
+                        admin_status: creds.adminStatus,
+                        user_id: resp.user.id,
+                        access_token: resp.token,
+                        token_timeout: response.getTokenTimeout().toDate(),
                     }
+                    localStorage.setItem("creds", JSON.stringify(new_creds));
+                    console.log("Acquired new creds")
                     resolve(new_creds)
                 })
             })

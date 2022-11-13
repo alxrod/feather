@@ -60,7 +60,7 @@ func (srv *FrontServer) HandleAssetRequest(w http.ResponseWriter, r *http.Reques
 	if len(split_path) != 2 {
 		log.Fatal(errors.New("invalid asset path"))
 	}
-	filename := split_path[1]
+	filename := strings.Split(split_path[1], "?")[0]
 	split_on_dot := strings.Split(filename, ".")
 	filetype := strings.ToLower(split_on_dot[len(split_on_dot)-1])
 	buf, err := ioutil.ReadFile(fmt.Sprintf("./asset_cache/" + filename))

@@ -48,12 +48,12 @@ type User struct {
 	ProfilePhoto         *ProfileImage      `bson:"-"`
 }
 
-func (user *User) Proto() (*comms.UserEntity, error) {
+func (user *User) Proto() *comms.UserEntity {
 	if user.Id.IsZero() {
-		return nil, errors.New("invalid user id")
+		return &comms.UserEntity{}
 	}
 	resp := &comms.UserEntity{
-		UserId:         user.Id.Hex(),
+		Id:             user.Id.Hex(),
 		Username:       user.Username,
 		Email:          user.Email,
 		UserType:       user.Type,
@@ -81,7 +81,7 @@ func (user *User) Proto() (*comms.UserEntity, error) {
 	} else {
 		resp.PaymentSetup = false
 	}
-	return resp, nil
+	return resp
 }
 
 func (user *User) Handle() *UserHandle {
@@ -103,6 +103,10 @@ func (user *User) Nub(author_status bool) *UserNub {
 	userNub.Username = user.Username
 	userNub.Author = author_status
 	userNub.Type = user.Type
+	if user.ProfilePhoto != nil && user.ProfilePhoto.InCache {
+		userNub.PhotoUrl = user.ProfilePhoto.CacheUrl
+		userNub.HasPhoto = true
+	}
 
 	return userNub
 }
@@ -128,11 +132,11 @@ type TiktokNub struct {
 }
 
 // DB Functions, general style is operation params, collection -> error
-func UserEmailCheck(username, email string, collection *mongo.Collection) error {
+func UserEmailCheck(username, email string, database *mongo.Database) error {
 	var user *User
 	filter := bson.M{"email": email}
 	var err error
-	if err = collection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+	if err = database.Collection(USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil
 	}
@@ -142,11 +146,11 @@ func UserEmailCheck(username, email string, collection *mongo.Collection) error 
 	return nil
 }
 
-func UserQueryUsername(username, password string, collection *mongo.Collection) (*User, error) {
+func UserQueryUsername(username, password string, database *mongo.Database) (*User, error) {
 	var user *User
 	filter := bson.D{{"username", username}}
 	var err error
-	if err = collection.FindOne(context.TODO(), filter).Decode(&user); err != nil {
+	if err = database.Collection(USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, &ErrorUserNotFound{username: username}
 	}
@@ -156,6 +160,12 @@ func UserQueryUsername(username, password string, collection *mongo.Collection) 
 			return nil, &ErrorPasswordIncorrect{username: username, password: password}
 		}
 	}
+
+	user, err = PullProfilePhotoFromDb(user, database)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -167,9 +177,17 @@ func UserQueryId(id primitive.ObjectID, database *mongo.Database) (*User, error)
 		return nil, &ErrorUserNotFound{id: id}
 	}
 
+	user, err := PullProfilePhotoFromDb(user, database)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func PullProfilePhotoFromDb(user *User, database *mongo.Database) (*User, error) {
 	if !user.ProfilePhotoId.IsZero() {
-		log.Println("PULLING PROFILE PHOTO")
-		filter = bson.D{{"_id", user.ProfilePhotoId}}
+		filter := bson.D{{"_id", user.ProfilePhotoId}}
 		var profilePhoto *ProfileImage
 		if err := database.Collection(PROF_IMAGE_COL).FindOne(context.TODO(), filter).Decode(&profilePhoto); err != nil {
 			log.Println(color.Ize(color.Red, err.Error()))
@@ -177,11 +195,10 @@ func UserQueryId(id primitive.ObjectID, database *mongo.Database) (*User, error)
 		}
 		user.ProfilePhoto = profilePhoto
 	}
-
 	return user, nil
 }
 
-func UserInsert(username, password, email, full_name string, user_type uint32, collection *mongo.Collection) (*User, error) {
+func UserInsert(username, password, email, full_name string, user_type uint32, database *mongo.Database) (*User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
 	if err != nil {
 		return nil, err
@@ -196,7 +213,7 @@ func UserInsert(username, password, email, full_name string, user_type uint32, c
 		Role:     STD_ROLE,
 	}
 
-	res, err := collection.InsertOne(context.TODO(), userD)
+	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert User: \nusername: %s, \npassword: %s, \nemail: %s", username, password, email)))
 		return nil, err

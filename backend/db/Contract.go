@@ -144,6 +144,13 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	} else {
 		return nil, errors.New("This user_id is not on this contract")
 	}
+
+	if contract.Worker != nil {
+		proto.WorkerId = contract.Worker.Id.Hex()
+	}
+	if contract.Buyer != nil {
+		proto.BuyerId = contract.Buyer.Id.Hex()
+	}
 	return proto, nil
 }
 
@@ -200,6 +207,8 @@ type UserNub struct {
 	Username string             `bson:"username"`
 	Author   bool               `bson:"is_author"`
 	Type     uint32             `bson:"user_type`
+	HasPhoto bool               `bson:"has_photo"`
+	PhotoUrl string             `bson:"photo_url"`
 }
 
 func (un *UserNub) Proto() *comms.UserNubEntity {
@@ -210,6 +219,8 @@ func (un *UserNub) Proto() *comms.UserNubEntity {
 	if un.Username != "" {
 		proto.Username = un.Username
 		proto.Type = un.Type
+		proto.HasPhoto = un.HasPhoto
+		proto.PhotoUrl = un.PhotoUrl
 		if !un.Id.IsZero() {
 			proto.Id = un.Id.Hex()
 		}

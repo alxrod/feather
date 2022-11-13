@@ -52,7 +52,7 @@ const PriceField = (props) => {
       cur_contract = props.curContract
       let price = cur_contract.price
 
-      if (cur_contract.worker && cur_contract.worker.id === props.user.user_id) {
+      if (cur_contract.worker && cur_contract.worker.id === props.user.id) {
         user_type = WORKER_TYPE
       } else {
         user_type = BUYER_TYPE
@@ -64,7 +64,7 @@ const PriceField = (props) => {
         setClasses("hidden")
         setTextColor("text-green")
         setOldPrice(price.current)
-        if (price.proposerId === props.user.user_id) {
+        if (price.proposerId === props.user.id) {
           setProposedByPartner(false)
 
           if (user_type === WORKER_TYPE) {

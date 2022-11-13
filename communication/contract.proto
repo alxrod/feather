@@ -1,7 +1,6 @@
 syntax = "proto3";
 package main;
 option go_package=".;communication";
-
 import "google/protobuf/timestamp.proto";
 
 message PriceEntity {
@@ -83,6 +82,9 @@ message ContractNub {
 
     bool disputed = 7;
     bool admin_requested = 8;
+
+    string worker_id = 9;
+    string buyer_id = 10;
 }
 
 message InviteDataRequest {
@@ -97,6 +99,7 @@ message InviteNub {
     google.protobuf.Timestamp deadline = 5;
     UserNubEntity worker = 6;
     UserNubEntity buyer = 7;
+    
 }
 
 message ContractNubSet {
@@ -108,6 +111,8 @@ message UserNubEntity {
     string id = 1;
     string username = 2;
     uint32 type = 3;
+    bool has_photo = 5;
+    string photo_url = 4;
 }
 
 message ItemEntity {

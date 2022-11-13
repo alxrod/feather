@@ -27,7 +27,7 @@ const ContractsList = (props) => {
     const [selectedFilter, setSelectedFilter] = useState("all")
     const [refreshFilters, toggleRefreshFilters] = useState(false)
     useEffect( () => {
-        if (props.user && props.user.admin_status) {
+        if (props.user && props.user.adminStatus) {
             const defaults = allFilters
             defaults.adminRequested = (contracts) => {
                 const display = []

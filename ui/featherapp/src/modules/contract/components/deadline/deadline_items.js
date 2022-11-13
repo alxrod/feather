@@ -143,9 +143,9 @@ const DeadlineItems = (props) => {
 
       if (props.deadline.itemsAwaitingApproval) {
         setItemLock(true)
-        if (props.deadline.itemsProposerId !== props.user.user_id) {
+        if (props.deadline.itemsProposerId !== props.user.id) {
           console.log(props.deadline.itemsProposerId)
-          console.log(props.user.user_id)
+          console.log(props.user.id)
           setProposedByPartner(true)
         } else {
           setProposedByPartner(false)

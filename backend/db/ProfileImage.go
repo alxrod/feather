@@ -20,6 +20,7 @@ type ProfileImage struct {
 	InCache    bool               `bson:"in_cache"`
 	LocalPath  string             `bson:"local_path"`
 	BucketPath string             `bson:"bucket_path"`
+	CacheUrl   string             `bson:"cache_url"`
 }
 
 func (img *ProfileImage) Proto() *comms.ProfileImageEntity {
@@ -30,6 +31,7 @@ func (img *ProfileImage) Proto() *comms.ProfileImageEntity {
 		UserId:     img.UserId.Hex(),
 		FileType:   img.FileType,
 		InCache:    img.InCache,
+		CacheUrl:   img.CacheUrl,
 		LocalPath:  img.LocalPath,
 		BucketPath: img.BucketPath,
 	}
@@ -37,7 +39,6 @@ func (img *ProfileImage) Proto() *comms.ProfileImageEntity {
 }
 
 func (img *ProfileImage) Insert(database *mongo.Database) error {
-	log.Printf("Inserting profile")
 	res, err := database.Collection(PROF_IMAGE_COL).InsertOne(context.TODO(), img)
 	if err != nil {
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Profile Image")))

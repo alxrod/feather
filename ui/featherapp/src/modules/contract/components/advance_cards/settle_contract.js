@@ -24,11 +24,11 @@ const SignButton = (props) => {
 
   useEffect( () => {
     if (props.curContract.id && props.user) {
-      if (props.curContract.worker.id === props.user.user_id) {
+      if (props.curContract.worker.id === props.user.id) {
         setRole(WORKER_TYPE)
-      } else if (props.curContract.buyer.id === props.user.user_id) {
+      } else if (props.curContract.buyer.id === props.user.id) {
         setRole(BUYER_TYPE)
-      } else if (props.user.admin_status) {
+      } else if (props.user.adminStatus) {
         setRole(ADMIN_TYPE)
       }
       setWorkerSettled(props.curContract.workerApproved)

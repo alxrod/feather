@@ -61,11 +61,11 @@ const Register = (props) => {
         // console.log("Trying to verify instagram")
         // console.log(props.user)
         return new Promise((resolve, reject) => {
-            if (props.user.user_id === "") {
+            if (props.user.id === "") {
                 reject("You must log in before trying to add an instagram account")
             }
             // console.log("Adding instagram")
-            props.createInstagram(props.user.user_id, instaName).then( () => {
+            props.createInstagram(props.user.id, instaName).then( () => {
                 console.log("Successfully added instagram")
                 resolve()
             }, err => {
@@ -77,11 +77,11 @@ const Register = (props) => {
 
     const handleAddTiktok = (e) => {
         return new Promise((resolve, reject) => {
-            if (props.user.user_id === "") {
+            if (props.user.id === "") {
                 reject("You must log in before trying to add an tiktok account")
             }
             console.log("Adding instagram")
-            props.createTiktok(props.user.user_id, tiktokName).then( () => {
+            props.createTiktok(props.user.id, tiktokName).then( () => {
                 // console.log("Successfully added instagram")
                 resolve()
             }, err => {
@@ -94,11 +94,11 @@ const Register = (props) => {
     const handleVerifyInstagram = (e) => {
         
         return new Promise((resolve, reject) => {
-            if (props.user.user_id === "") {
+            if (props.user.id === "") {
                 reject("You must log in before trying to verify an instagram account")
             }
             console.log("Verifying instagram")
-            props.verifyInstagram(props.user.user_id).then( () => {
+            props.verifyInstagram(props.user.id).then( () => {
                 // console.log("Successfully verified instagram")
                 resolve()
             }, err => {
@@ -110,11 +110,11 @@ const Register = (props) => {
 
     const handleVerifyTiktok = (e) => {
         return new Promise((resolve, reject) => {
-            if (props.user.user_id === "") {
+            if (props.user.id === "") {
                 reject("You must log in before trying to verify a tiktok account")
             }
             console.log("Verifying tiktok")
-            props.verifyTiktok(props.user.user_id).then( () => {
+            props.verifyTiktok(props.user.id).then( () => {
                 // console.log("Successfully verified tiktok")
                 resolve()
             }, err => {
@@ -126,11 +126,11 @@ const Register = (props) => {
 
     const handleAddPayment = (e) => {
         return new Promise((resolve, reject) => {
-            if (props.user.user_id === "") {
+            if (props.user.id === "") {
                 reject("You must log in before trying to setup a payment method")
             }
             console.log("Setting up payment")
-            props.addPayment(props.user.user_id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
+            props.addPayment(props.user.id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
                 // console.log("Successfully setup Payment")
                 resolve()
             }, err => {
@@ -148,14 +148,12 @@ const Register = (props) => {
         if (props.user === null) {
             return
         }
-        if (props.user.user_id) {
+        if (props.user.id) {
             setPhase(2)
             console.log("Advancing stage")
         }
-        if (props.user.instagram && 
-            props.user.tiktok && 
-            props.user.instagram.verified == true && 
-            props.user.tiktok.verified == true) {
+        if (props.user.instagramVerified == true && 
+            props.user.tiktokVerified == true) {
             setPhase(3)
         } 
         if (props.user.paymentSetup == true) {

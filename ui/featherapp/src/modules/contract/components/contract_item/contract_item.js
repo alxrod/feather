@@ -80,7 +80,7 @@ const ContractItem = (props) => {
       if (props.messages[i].method === msgMethods.ITEM) {
         if (props.messages[i].body.itemId === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
-          if (props.messages[i].user.id === props.user.user_id) {
+          if (props.messages[i].user.id === props.user.id) {
             setProposedByPartner(false)
           } else {
             setProposedByPartner(true)
@@ -89,7 +89,7 @@ const ContractItem = (props) => {
       } else if (props.messages[i].method === msgMethods.ITEM_CREATE) {
         if (props.messages[i].body.item.id === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
-          if (props.messages[i].user.id === props.user.user_id) {
+          if (props.messages[i].user.id === props.user.id) {
             setProposedByPartner(false)
           } else {
             setProposedByPartner(true)
@@ -98,7 +98,7 @@ const ContractItem = (props) => {
       } else if (props.messages[i].method === msgMethods.ITEM_DELETE) {
         if (props.messages[i].body.item.id === props.id && !props.messages[i].body.resolved) {
           final_item_id = props.messages[i].id
-          if (props.messages[i].user.id === props.user.user_id) {
+          if (props.messages[i].user.id === props.user.id) {
             setProposedByPartner(false)
           } else {
             setProposedByPartner(true)
@@ -115,11 +115,11 @@ const ContractItem = (props) => {
       return
     }
     if (props.user !== null && props.curContract.id) {
-      if (props.user.user_id === props.curContract.worker.id) {
+      if (props.user.id === props.curContract.worker.id) {
         setRole(WORKER_TYPE)
-      } else if (props.user.user_id === props.curContract.buyer.id) {
+      } else if (props.user.id === props.curContract.buyer.id) {
         setRole(BUYER_TYPE)
-      } else if (props.user.admin_status) {
+      } else if (props.user.adminStatus) {
         setRole(ADMIN_TYPE)
       }
     }

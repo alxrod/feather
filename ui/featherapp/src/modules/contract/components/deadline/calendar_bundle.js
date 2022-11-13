@@ -109,7 +109,7 @@ const CalendarBundle = (props) => {
   useEffect( () => {
     if (props.deadline) {
       if (props.deadline.dateAwaitingApproval) {
-        if (props.deadline.dateProposerId === props.user.user_id) {
+        if (props.deadline.dateProposerId === props.user.id) {
           setProposedByPartner(false)
         } else {
           setProposedByPartner(true)
