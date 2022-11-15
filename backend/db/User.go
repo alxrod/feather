@@ -169,6 +169,28 @@ func UserQueryUsername(username, password string, database *mongo.Database) (*Us
 	return user, nil
 }
 
+func UserChangePassword(id primitive.ObjectID, password string, database *mongo.Database) (*User, error) {
+	user, err := UserQueryId(id, database)
+	if err != nil {
+		return nil, err
+	}
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = string(hashedPassword)
+
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", bson.D{{"password", user.Password}}}}
+	_, err = database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func UserQueryId(id primitive.ObjectID, database *mongo.Database) (*User, error) {
 	var user *User
 	filter := bson.D{{"_id", id}}

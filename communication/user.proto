@@ -4,6 +4,7 @@ option go_package=".;communication";
 
 import "google/protobuf/timestamp.proto";
 import "communication/file_service.proto";
+import "communication/contract.proto";
 
 message UserRegisterRequest {
     string username = 1;
@@ -62,11 +63,33 @@ message UserEntity {
 
 }
 
+message ForgotRequest {
+    string email = 1;
+}
+
+message ResetConfirmRequest {
+    string reset_id = 1;
+}
+
+message ResetConfirmResponse {
+    bool valid_id = 1;
+}
+
+message ChangePasswordRequest {
+    string reset_id = 1;
+    string new_password = 2;
+}
+
+
 service Auth{
     rpc Register(UserRegisterRequest) returns (UserSigninResponse) {};
     rpc Login(UserLoginRequest) returns (UserSigninResponse) {};
     rpc Logout(UserLogoutRequest) returns (UserLogoutResponse) {};
     rpc Pull(UserPullRequest) returns (UserEntity) {};
+
+    rpc ForgotPassword(ForgotRequest) returns (NullResponse) {};
+    rpc ConfirmResetId(ResetConfirmRequest) returns (ResetConfirmResponse) {};
+    rpc ChangePassword(ChangePasswordRequest) returns (UserSigninResponse) {}
 }
 
 message InstagramCreateRequest {

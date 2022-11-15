@@ -23,6 +23,8 @@ grpc.web = require('grpc-web');
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
 
 var communication_file_service_pb = require('../communication/file_service_pb.js')
+
+var communication_contract_pb = require('../communication/contract_pb.js')
 const proto = {};
 proto.main = require('./user_pb.js');
 
@@ -319,6 +321,189 @@ proto.main.AuthPromiseClient.prototype.pull =
       request,
       metadata || {},
       methodDescriptor_Auth_Pull);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ForgotRequest,
+ *   !proto.main.NullResponse>}
+ */
+const methodDescriptor_Auth_ForgotPassword = new grpc.web.MethodDescriptor(
+  '/main.Auth/ForgotPassword',
+  grpc.web.MethodType.UNARY,
+  proto.main.ForgotRequest,
+  communication_contract_pb.NullResponse,
+  /**
+   * @param {!proto.main.ForgotRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  communication_contract_pb.NullResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ForgotRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.NullResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.NullResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.AuthClient.prototype.forgotPassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Auth/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ForgotPassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ForgotRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.NullResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.AuthPromiseClient.prototype.forgotPassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Auth/ForgotPassword',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ForgotPassword);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ResetConfirmRequest,
+ *   !proto.main.ResetConfirmResponse>}
+ */
+const methodDescriptor_Auth_ConfirmResetId = new grpc.web.MethodDescriptor(
+  '/main.Auth/ConfirmResetId',
+  grpc.web.MethodType.UNARY,
+  proto.main.ResetConfirmRequest,
+  proto.main.ResetConfirmResponse,
+  /**
+   * @param {!proto.main.ResetConfirmRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ResetConfirmResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ResetConfirmRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ResetConfirmResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ResetConfirmResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.AuthClient.prototype.confirmResetId =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Auth/ConfirmResetId',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ConfirmResetId,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ResetConfirmRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ResetConfirmResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.AuthPromiseClient.prototype.confirmResetId =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Auth/ConfirmResetId',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ConfirmResetId);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ChangePasswordRequest,
+ *   !proto.main.UserSigninResponse>}
+ */
+const methodDescriptor_Auth_ChangePassword = new grpc.web.MethodDescriptor(
+  '/main.Auth/ChangePassword',
+  grpc.web.MethodType.UNARY,
+  proto.main.ChangePasswordRequest,
+  proto.main.UserSigninResponse,
+  /**
+   * @param {!proto.main.ChangePasswordRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.UserSigninResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.UserSigninResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.UserSigninResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.AuthClient.prototype.changePassword =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Auth/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ChangePassword,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ChangePasswordRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.UserSigninResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.AuthPromiseClient.prototype.changePassword =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Auth/ChangePassword',
+      request,
+      metadata || {},
+      methodDescriptor_Auth_ChangePassword);
 };
 
 

@@ -60,6 +60,8 @@ const NavBar = (props) => {
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                     {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
+                    {props.isLoggedIn && (
+                    <>
                     <div className="flex px-1 pt-1 font-medium ">
                       <Link
                           to="/contracts"
@@ -86,6 +88,8 @@ const NavBar = (props) => {
                         </span>
                       </div>
                     </div>
+                    </>
+                    )}
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -180,8 +184,9 @@ const NavBar = (props) => {
                 </div>
               </div>
             </div>
-
+            
             <Disclosure.Panel className="sm:hidden">
+              {props.isLoggedIn && (
               <div className="pt-2 pb-3 space-y-1">
                 {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
                 <Disclosure.Button
@@ -209,6 +214,7 @@ const NavBar = (props) => {
                   </Link>
                 </Disclosure.Button>
               </div>
+              )}
               <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center px-4">
                   {props.isLoggedIn && (

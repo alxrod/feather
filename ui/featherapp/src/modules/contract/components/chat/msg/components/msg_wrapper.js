@@ -19,7 +19,7 @@ const ProfileImg = (props) => {
         if (props.cachedUrls[i] && props.cachedUrls[i][0] === props.msg.user.id) {
           console.log("setting true")
           setHaveProfImg(true)
-          setCacheUrl(props.cachedUrls[i][1])
+          setCacheUrl(props.cachedUrls[i][1]+"?"+Date.now())
         }
       }
 
@@ -38,7 +38,6 @@ const ProfileImg = (props) => {
       )}
     </>
   )
-
 }
 
 const MsgWrapper = (props) => {

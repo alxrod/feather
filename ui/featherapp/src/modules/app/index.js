@@ -7,6 +7,10 @@ import NavBar from "../navbar"
 import Home from '../home'
 
 import Login from '../login'
+
+import ForgotPassword from "../forgot_password"
+import ResetPassword from "../reset_password"
+
 import Register from '../register'
 import Profile from '../profile'
 
@@ -65,10 +69,13 @@ const routes = {
 
   "/file-upload-test": STD_ROLE,
   "/asset-cache": STD_ROLE,
+
+  "/forgot-password": UNAUTH_ROLE,
+  "/reset-password": UNAUTH_ROLE,
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
-const no_nav_routes = ["/login", "/register", "/invite"]
+const no_nav_routes = ["/login", "/register", "/invite", "/forgot-password"]
 
 const App = (props) => {
   const loc = useLocation();
@@ -149,6 +156,9 @@ const App = (props) => {
         <Route exact path="/profile" element={<Profile/>} component={Profile} />
 
         <Route exact path="/login" element={<Login/>} component={Login} />    
+        <Route exact path="/forgot-password" element={<ForgotPassword/>} component={ForgotPassword} />
+        <Route exact path="/reset-password/:resetId" element={<ResetPassword/>} component={ResetPassword} />    
+        
         <Route exact path="/register" element={<Register/>} component={Register} />
 
         <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />

@@ -12,6 +12,11 @@ import {
 
     PaymentSetupRequest,
 
+    ForgotRequest,
+
+    ResetConfirmRequest,
+    ChangePasswordRequest,
+
  } from "../proto/communication/user_pb";
 
 export const authClient = new AuthClient("https://localhost:8080");
@@ -241,6 +246,67 @@ class UserService {
                 }
                 var resp = response.toObject();
                 localStorage.setItem("user", JSON.stringify(resp));
+                resolve(resp)
+            });
+        });
+    }
+
+    forgotPassword(email) {
+        var forgotRequest = new ForgotRequest();   
+        forgotRequest.setEmail(email);
+
+        return new Promise( (resolve, reject) => { 
+            authClient.forgotPassword(forgotRequest, null, function(error, response) {
+                if (error) {
+                    reject(error)
+                    return 
+                }
+                var resp = response.toObject();
+                resolve(resp)
+            });
+        });
+    }
+
+    confirmResetId(reset_id) {
+        var confirmRequest = new ResetConfirmRequest();   
+        confirmRequest.setResetId(reset_id);
+
+        return new Promise( (resolve, reject) => { 
+            authClient.confirmResetId(confirmRequest, null, function(error, response) {
+                if (error) {
+                    reject(error)
+                    return 
+                }
+                var resp = response.toObject();
+                resolve(resp)
+            });
+        });
+    }
+
+    changePassword(reset_id, new_password) {
+        var changeRequest = new ChangePasswordRequest();   
+        changeRequest.setResetId(reset_id);
+        changeRequest.setNewPassword(new_password);
+
+        return new Promise( (resolve, reject) => { 
+            authClient.changePassword(changeRequest, null, function(error, response) {
+                if (error) {
+                    reject(error)
+                    return 
+                }
+                var resp = response.toObject();
+                var creds = {
+                    username: resp.user.username,
+                    password: new_password,
+                    user_id: resp.user.id,
+                    access_token: resp.token,
+                    token_timeout: response.getTokenTimeout().toDate(),
+                    admin_status: resp.user.adminStatus,
+                }
+                localStorage.setItem("creds", JSON.stringify(creds));
+
+                localStorage.setItem("user", JSON.stringify(resp.user));
+                console.log("Saving creds to storage as ", creds)
                 resolve(resp)
             });
         });

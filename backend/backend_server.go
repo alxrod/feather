@@ -36,6 +36,9 @@ func accessibleRoles() []string {
 		"/main.Auth/Register",
 		"/main.Auth/Login",
 		"/main.Contract/InviteQuery",
+		"/main.Auth/ForgotPassword",
+		"/main.Auth/ConfirmResetId",
+		"/main.Auth/ChangePassword",
 	}
 }
 
@@ -52,6 +55,7 @@ type BackServer struct {
 	DeadlineAgent *services.DeadlineAgent
 	PaymentAgent  *services.PaymentAgent
 	AWSAgent      *services.AWSAgent
+	EmailAgent    *services.EmailAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -104,12 +108,18 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		PaymentAgent: &services.PaymentAgent{
 			Database: client.Database(s_dbName),
 		},
-		AWSAgent: &services.AWSAgent{},
-		dbName:   s_dbName,
-		dbClient: client,
-		dbCtx:    ctx,
+		AWSAgent:   &services.AWSAgent{},
+		EmailAgent: &services.EmailAgent{},
+		dbName:     s_dbName,
+		dbClient:   client,
+		dbCtx:      ctx,
 	}
+
 	s.AWSAgent.Initialize()
+	// needs to be fixed for actual prod to be valid TLS configs
+	s.EmailAgent.Initialize(&tls.Config{
+		InsecureSkipVerify: true,
+	}, client.Database(s_dbName))
 
 	// Have to add this for every service
 	comms.RegisterSocialServer(grpcServer, s)

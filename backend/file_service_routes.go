@@ -97,6 +97,9 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 	}
 
 	localPath, err := s.AWSAgent.DownloadProfileToCache(user, user.ProfilePhoto.BucketPath)
+	if err != nil {
+		return nil, err
+	}
 	log.Printf("Trying to save local path %s", localPath)
 	user.ProfilePhoto.LocalPath = localPath
 	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
@@ -130,6 +133,9 @@ func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGet
 				return nil, err
 			}
 			localPath, err := s.AWSAgent.DownloadProfileToCache(user, user.ProfilePhoto.BucketPath)
+			if err != nil {
+				return nil, err
+			}
 			user.ProfilePhoto.LocalPath = localPath
 			user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
 			user.ProfilePhoto.InCache = true

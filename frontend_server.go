@@ -16,6 +16,7 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 )
 
+// These need to be updated by final secur verison
 var routes []string = []string{
 	"/messages",
 	"/contracts",
@@ -23,6 +24,7 @@ var routes []string = []string{
 	"/login",
 	"/register",
 	"/logout",
+	"/forgot-password",
 
 	"/chat",
 	"/contract",

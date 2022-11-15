@@ -293,3 +293,67 @@ export const pullUser = () => {
         })
     }
 };
+
+export const forgotPassword = (email) => {
+    return dispatch => {
+        return UserService.forgotPassword(email).then(
+            (resp) => {
+                return Promise.resolve();
+            },
+            (error) => {
+                const message = 
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.messsage ||
+                    error.toString();
+                return Promise.reject(message);
+            }
+        )
+    }
+}
+
+export const confirmResetId = (reset_id) => {
+    return dispatch => {
+        return UserService.confirmResetId(reset_id).then(
+            (resp) => {
+                return Promise.resolve(resp.validId);
+            },
+            (error) => {
+                const message = 
+                    (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                    error.messsage ||
+                    error.toString();
+                return Promise.reject(message);
+            }
+        )
+    }
+}
+
+export const changePassword = (reset_id, new_password) => {
+    return dispatch => {
+        return UserService.changePassword(reset_id, new_password).then(
+            (data) => {
+                dispatch({
+                    type: userActions.LOGIN_SUCCESS,
+                    payload: {user: data.user},
+                });
+                return Promise.resolve();
+            },
+            (error) => {
+                const message = 
+                    (error.response &&
+                     error.response.data &&
+                     error.response.data.message) ||
+                    error.messsage ||
+                    error.toString();
+                dispatch({
+                    type: userActions.LOGIN_FAIL,
+                });
+                return Promise.reject(message);
+            }
+        );
+    }
+};
