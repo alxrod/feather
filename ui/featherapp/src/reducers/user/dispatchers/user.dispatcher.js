@@ -78,7 +78,6 @@ export const logout = () => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                console.log("ATTEMPTING TO LOG OUT")
                 UserService.logout(creds.access_token);
                 dispatch({
                     type: userActions.LOGOUT,
@@ -310,8 +309,6 @@ export const pullUser = () => {
                             type: userActions.USER_PULL_SUCCESS,
                             payload: {user: data},
                         });
-                        console.log("HERE WE ARE")
-                        console.log(data)
                         return Promise.resolve();
                     },
                     (error) => {

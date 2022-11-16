@@ -17,7 +17,6 @@ const ProfileImg = (props) => {
       let url =""
       for (let i = 0; i < props.cachedUrls.length; i++) {
         if (props.cachedUrls[i] && props.cachedUrls[i][0] === props.msg.user.id) {
-          console.log("setting true")
           setHaveProfImg(true)
           setCacheUrl(props.cachedUrls[i][1]+"?"+Date.now())
         }

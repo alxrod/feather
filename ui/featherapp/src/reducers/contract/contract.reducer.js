@@ -47,6 +47,7 @@ export default (state = initialState, action) => {
                 curContract: {
                     ...state.curContract,
                     universalLock: action.payload.lockState,
+                    contractChanged: !state.contractChanged,
                 },
             }
         

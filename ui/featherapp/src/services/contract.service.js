@@ -106,7 +106,6 @@ class ContractService {
 
     // Calls
     query_contract(token, user_id, contract_id) {
-        console.log("ABOUT TO QUERY W ID: ", contract_id)
         let queryRequest = new QueryByIdRequest();
         queryRequest.setUserId(user_id);
         queryRequest.setContractId(contract_id);
@@ -135,12 +134,8 @@ class ContractService {
             if (admin_status) {
                 contractClient.queryByAdmin(queryRequest, metadata, function(error, response) {
                     if (error) {
-                        console.log("Error:")
-                        console.log(error)
                         reject(error)
                     }
-                    console.log("RESPONSE")
-                    console.log(response)
                     var resp = response.toObject();
                     // Convert proto times to js times
                     const protoNubs = response.getContractNubsList()
@@ -153,12 +148,8 @@ class ContractService {
             } else {
                 contractClient.queryByUser(queryRequest, metadata, function(error, response) {
                     if (error) {
-                        console.log("Error:")
-                        console.log(error)
                         reject(error)
                     }
-                    console.log("RESPONSE")
-                    console.log(response)
                     var resp = response.toObject();
                     // Convert proto times to js times
                     const protoNubs = response.getContractNubsList()
@@ -199,7 +190,6 @@ class ContractService {
             createRequest.addDeadlines(deadlineEntity, i)
             i++
         }
-        console.log(createRequest)
         // console.log(createRequest)
         
 
@@ -260,11 +250,9 @@ class ContractService {
         suggestRequest.setDeadlineId(deadline_id);
         suggestRequest.setNewPayout(new_payout);
 
-        console.log("Sending payout")
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.suggestPayout(suggestRequest, metadata, function(error, response) {
-                console.log("...Received")
                 if (error) {
                     reject(error)
                 }
@@ -274,11 +262,6 @@ class ContractService {
     }
     reactPayout(token, user_id, contract_id, deadline_id, message_id, status) {
         let reactRequest = new ContractReactPayout();
-        console.log("Reacing to payout...");
-        console.log(user_id)
-        console.log(contract_id)
-        console.log(deadline_id)
-        console.log(message_id)
 
         reactRequest.setUserId(user_id);
         reactRequest.setContractId(contract_id);
@@ -366,12 +349,7 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setItemId(item_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
-        console.log(user_id)
-        console.log(contract_id)
-        console.log(item_id)
-        console.log(message_id)
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.reactItem(reactRequest, metadata, function(error, response) {
@@ -417,7 +395,6 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setItemId(item_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -448,9 +425,6 @@ class ContractService {
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.suggestDeleteItem(delRequest, metadata, function(error, response) {
-                console.log("Call back")
-                console.log(error)
-                console.log(response)
                 if (error) {
                     reject(error)
                 }
@@ -468,7 +442,6 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setItemId(item_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -510,7 +483,6 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setDeadlineId(deadline_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -525,13 +497,9 @@ class ContractService {
     }
 
     deleteDeadline(token, user_id, contract_id, deadline) {
-        console.log("DELETING DEADLINE W")
-        console.log(user_id)
-        console.log(contract_id)
         
         let delRequest = new ContractSuggestDelDeadline();
         let deadlineEntity = this.generateDeadlineEntity(deadline)
-        console.log(deadline)
         delRequest.setDeadline(deadlineEntity)
         delRequest.setUserId(user_id)
         delRequest.setContractId(contract_id)
@@ -556,7 +524,6 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setDeadlineId(deadline_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -579,9 +546,6 @@ class ContractService {
         for (let i = 0; i < item_ids.length; i++) {
             changeRequest.addItemIds(item_ids[i], i)
         }
-        console.log(contract_id)
-        console.log(user_id)
-        console.log(deadline_id)
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -601,7 +565,6 @@ class ContractService {
         reactRequest.setMessageId(message_id);
         reactRequest.setDeadlineId(deadline_id);
         reactRequest.setStatus(status);
-        console.log("attempting to send")
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -803,7 +766,6 @@ class ContractService {
     queryInvite(contract_id) {
         let queryRequest = new InviteDataRequest();
         queryRequest.setId(contract_id);
-        console.log("Trying")
         return new Promise( (resolve, reject) => { 
             contractClient.inviteQuery(queryRequest, null, function(error, response) {
                 if (error) {
@@ -829,7 +791,6 @@ class ContractService {
         entity.setContractId(deadline_info.contractId);
         entity.setName(deadline_info.name)
         if (this.isHexId(deadline_info.id)) {
-            console.log("GOING FOR IT")
             entity.setId(deadline_info.id)
         }
         // proposer id generated by server sidebar

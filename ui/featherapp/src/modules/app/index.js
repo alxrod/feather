@@ -106,10 +106,8 @@ const App = (props) => {
       props.push("/login")
       return false
     } else if (props.user !== null) {
-      console.log("CHECKING USER ROLE AS: ", props.user)
       const role = props.user.role
       if ((routes[pathname] & role) !== routes[pathname]) {
-        console.log("Pushing cause ", (routes[pathname] & role))
         props.setRedirect(wholepath)
         props.push("/login")
         return false
@@ -120,7 +118,6 @@ const App = (props) => {
 
   useEffect( () => {
     if (pullReq == true && props.user !== null) {
-      console.log("CALLING PULL")
       setPullReq(false);
       props.pullUser(props.user.id).then(() => {
         // console.log("Finished pull")

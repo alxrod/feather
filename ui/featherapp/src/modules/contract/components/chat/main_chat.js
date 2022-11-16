@@ -32,7 +32,6 @@ const MainChat = (props) => {
 
         }
         setUserIds(new_ids)
-        console.log("New ids are: ", new_ids)
         props.getProfilePicUrls(new_ids)
     }, [props.messages.length])
 

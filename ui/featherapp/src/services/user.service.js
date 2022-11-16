@@ -71,7 +71,6 @@ class UserService {
         registerRequest.setPassword(password);
         registerRequest.setUserType(WORKER_TYPE);
 
-        // console.log(registerRequest.toObject());
         return new Promise (function (resolve, reject) {
             authClient.register(registerRequest, null, function(err, response) {
                 if (err) {
@@ -316,12 +315,9 @@ class UserService {
     authChecker(needAuth) {
         let remember = true
         let creds = JSON.parse(localStorage.getItem("creds"))
-        console.log("AUTH CHECKINGs")
         if (!creds) {
             remember = false
             creds = JSON.parse(sessionStorage.getItem("creds"))
-        } else {
-            console.log("DW creds is ", creds)
         }
         if (needAuth && creds === null) {
             return Promise.reject({})
@@ -329,7 +325,6 @@ class UserService {
             const d = new Date(creds.token_timeout)
             if (d <= Date.now()) {
                 return new Promise((resolve, reject) => {
-                    console.log("Auth token expired, requesting a new one")
                     var loginRequest = new UserLoginRequest();   
                     loginRequest.setUsername(creds.username);
                     loginRequest.setPassword(creds.password);
@@ -354,7 +349,6 @@ class UserService {
                             sessionStorage.setItem("creds", JSON.stringify(new_creds));
                         }
                        
-                        console.log("Acquired new creds")
                         resolve(new_creds)
                     })
                 })

@@ -142,7 +142,7 @@ const ContractItem = (props) => {
         }
       }
     }
-  }, [props.curItems, props.id, props.contractItemsChanged])
+  }, [props.curItems, props.id, props.contractItemsChanged, props.universalLock])
 
 
   const setContractText = (new_text) => {
