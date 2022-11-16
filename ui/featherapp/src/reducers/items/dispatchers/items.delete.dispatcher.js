@@ -16,31 +16,41 @@ export const deleteSuggestContractItem = (id) => {
 
 export const deleteItem = (contract_id, item_id, item_name, item_body) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.deleteItem(creds.access_token, creds.user_id, contract_id, item_id, item_name, item_body).then(
-                (data) => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.deleteItem(creds.access_token, creds.user_id, contract_id, item_id, item_name, item_body).then(
+                    (data) => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.reactDeleteItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.reactDeleteItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 }
 

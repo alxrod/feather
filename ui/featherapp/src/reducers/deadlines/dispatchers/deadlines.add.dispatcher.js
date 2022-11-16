@@ -38,31 +38,41 @@ export const loadLocalDeadlines = (new_deadlines) => {
 
 export const addDeadline = (contract_id, deadline) => {
     return dispatch => {
-        return helpers.authCheck().then((creds) => {
-            return ContractService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ContractService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const reactAddDeadline = (contract_id, message_id, deadline_id, status) => {
     return dispatch => {
-        return helpers.authCheck().then((creds) => {
-            return ContractService.reactAddDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ContractService.reactAddDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 }
 

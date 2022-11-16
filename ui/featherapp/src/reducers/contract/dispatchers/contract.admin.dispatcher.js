@@ -9,36 +9,46 @@ import * as helpers from "../../helpers"
 
 export const requestAdmin = (contract_id) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.requestAdmin(creds.access_token, creds.user_id, contract_id).then(
-                (resp) => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.requestAdmin(creds.access_token, creds.user_id, contract_id).then(
+                    (resp) => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const resolveAdmin = (contract_id) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.resolveAdmin(creds.access_token, creds.user_id, contract_id).then(
-                (resp) => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.resolveAdmin(creds.access_token, creds.user_id, contract_id).then(
+                    (resp) => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 
-export const updateAdminRequested= (newRequestState) => {
+export const updateAdminRequested = (newRequestState) => {
     return dispatch => {
         dispatch({
             type: contractActions.CONTRACT_ADMIN_REQUEST_CHANGED,

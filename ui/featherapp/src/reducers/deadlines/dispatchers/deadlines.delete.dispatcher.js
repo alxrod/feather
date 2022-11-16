@@ -7,16 +7,21 @@ import * as deadlineActions from "../deadlines.actions";
 
 export const deleteDeadline = (contract_id, deadline) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.deleteDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
-                (data) => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.deleteDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
+                    (data) => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
@@ -32,16 +37,21 @@ export const deleteLocalDeadline = (del_deadline) => {
 
 export const reactDeleteDeadline = (contract_id, message_id, deadline_id, status) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.reactDeleteDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.reactDeleteDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 }
 

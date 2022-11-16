@@ -26,6 +26,7 @@ const Login = (props) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [genError, setGenError] = useState("")
+    const [remember, toggleRemember] = useState(true)
 
     const form = useRef(null)
     
@@ -40,7 +41,7 @@ const Login = (props) => {
         e.preventDefault()
         form.current.validateAll();
         if (username !== "" && password !== "") {
-            props.login(username, password)
+            props.login(username, password, remember)
             .then(() => {
             })
             .catch((error) => {
@@ -127,6 +128,12 @@ const Login = (props) => {
                         id="remember-me"
                         name="remember-me"
                         type="checkbox"
+                        value={remember}
+                        checked={remember}
+                        onChange={(e) => {
+                          console.log("test: ", e.target)
+                          toggleRemember(!remember)
+                        }}
                         className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                       />
                       <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">

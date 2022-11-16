@@ -8,31 +8,41 @@ import * as deadlineActions from "../deadlines.actions";
 
 export const suggestPayout = (contract_id, deadline_id, new_payout) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.suggestPayout(creds.access_token, creds.user_id, contract_id, deadline_id, new_payout).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.suggestPayout(creds.access_token, creds.user_id, contract_id, deadline_id, new_payout).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const reactPayout = (contract_id, message_id, deadline_id, status) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.reactPayout(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.reactPayout(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 }
 

@@ -2,9 +2,18 @@ import UserService from "../../services/user.service";
 import FileService from "../../services/file.service";
 import * as userActions from "./user.actions";
 const user = JSON.parse(localStorage.getItem("user"));
-const initialState = user
-? { isLoggedIn: true, user, redirectLink: "/contracts" }
-: { isLoggedIn: false, user: null, redirectLink: "/contracts"};
+const creds = JSON.parse(localStorage.getItem("creds"));
+const initialState = {
+    redirectLink: "/contracts"
+    
+} 
+if (user) {
+    initialState.isLoggedIn =true
+    initialState.user = user
+} else {
+    initialState.isLoggedIn = false
+    initialState.user = null
+}
 
 export default (state = initialState, action) => {
     switch (action.type) {
@@ -118,7 +127,6 @@ export default (state = initialState, action) => {
                     }
                 }
             }
-        
 
         case userActions.SET_MESSAGE:
             return {
@@ -145,6 +153,8 @@ export default (state = initialState, action) => {
                 ...state,
                 isLoggedIn: true,
                 user: action.payload.user,
+                creds: action.payload.creds,
+                credsInCookies: true,
             };
         
         case userActions.REGISTER_FAIL:
@@ -166,6 +176,7 @@ export default (state = initialState, action) => {
                 ...state,
                 isLoggedIn: false,
                 user: null,
+
             };
         
         case userActions.LOGOUT:

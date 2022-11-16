@@ -30,146 +30,172 @@ export const clearSelected = () => {
 
 export const queryContract = (contract_id) => {
     return dispatch => {
-        return  helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.query_contract(creds.access_token, creds.user_id, contract_id).then(
-                (data) => {
-                    dispatch({
-                        type: chatActions.CHAT_CLEAR_REJOIN,
-                    })
-                    dispatch({
-                        type: contractActions.CONTRACT_PULL_CURRENT,
-                        payload: data,
-                    });
-                    dispatch({
-                        type: itemActions.CONTRACT_ITEM_LOAD,
-                        payload: data.itemsList,
-                    })
-                    dispatch({
-                        type: deadlineActions.CONTRACT_DEADLINE_LOAD,
-                        payload: data.deadlinesList,
-                    });
-                    
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.query_contract(creds.access_token, creds.user_id, contract_id).then(
+                    (data) => {
+                        dispatch({
+                            type: chatActions.CHAT_CLEAR_REJOIN,
+                        })
+                        dispatch({
+                            type: contractActions.CONTRACT_PULL_CURRENT,
+                            payload: data,
+                        });
+                        dispatch({
+                            type: itemActions.CONTRACT_ITEM_LOAD,
+                            payload: data.itemsList,
+                        })
+                        dispatch({
+                            type: deadlineActions.CONTRACT_DEADLINE_LOAD,
+                            payload: data.deadlinesList,
+                        });
+                        
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const queryContractNubs = () => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            // console
-            return ContractService.query_contract_nubs(creds.access_token, creds.user_id, creds.admin_status).then(
-                (data) => {
-                    dispatch({
-                        type: contractActions.CONTRACT_NUB_PULL_ALL,
-                        payload: data.contractNubsList,
-                    });
-                    return Promise.resolve(data.contractNubsList);
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        })
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                // console
+                return ContractService.query_contract_nubs(creds.access_token, creds.user_id, creds.admin_status).then(
+                    (data) => {
+                        dispatch({
+                            type: contractActions.CONTRACT_NUB_PULL_ALL,
+                            payload: data.contractNubsList,
+                        });
+                        return Promise.resolve(data.contractNubsList);
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        )
     }
 };
 
 export const createContract = (title, summary, price_set, deadlines, items, password, role) => {
     return dispatch => {
-        return  helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
-                (data) => {
-                    if (data.contract.worker.id == creds.user_id) {
-                        data.contract.user_type = WORKER_TYPE
-                    } else {
-                        data.contract.user_type = BUYER_TYPE
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
+                    (data) => {
+                        if (data.contract.worker.id == creds.user_id) {
+                            data.contract.user_type = WORKER_TYPE
+                        } else {
+                            data.contract.user_type = BUYER_TYPE
+                        }
+                        dispatch({
+                            type: contractActions.CONTRACT_CREATE,
+                            payload: data.contract
+                        });
+                        // console.log("Finished Contract Creation")
+                        // console.log(data)
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
                     }
-                    dispatch({
-                        type: contractActions.CONTRACT_CREATE,
-                        payload: data.contract
-                    });
-                    // console.log("Finished Contract Creation")
-                    // console.log(data)
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const claimContract = (contract_id, password) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.claimContract(creds.access_token, creds.user_id, contract_id, password).then(
-                () => {
-                    console.log("Approval received")
-                    dispatch({
-                        type: contractActions.CONTRACT_CLAIM,
-                    });
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.claimContract(creds.access_token, creds.user_id, contract_id, password).then(
+                    () => {
+                        console.log("Approval received")
+                        dispatch({
+                            type: contractActions.CONTRACT_CLAIM,
+                        });
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            }, () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const signContract = (contract_id) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.signContract(creds.access_token, creds.user_id, contract_id).then(
-                (resp) => {
-                    dispatch({
-                        type: contractActions.CONTRACT_STAGE_UPDATE,
-                        payload: {
-                            role: resp.role,
-                            workerApproved: resp.contract.workerApproved,
-                            buyerApproved: resp.contract.buyerApproved,
-                            stage: resp.contract.stage,
-                            id: resp.contract.id,
-                        }
-                    });
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.signContract(creds.access_token, creds.user_id, contract_id).then(
+                    (resp) => {
+                        dispatch({
+                            type: contractActions.CONTRACT_STAGE_UPDATE,
+                            payload: {
+                                role: resp.role,
+                                workerApproved: resp.contract.workerApproved,
+                                buyerApproved: resp.contract.buyerApproved,
+                                stage: resp.contract.stage,
+                                id: resp.contract.id,
+                            }
+                        });
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            }, () => {
+                helpers.bailAuth(dispatch)
+            });
     }
 };
 
 export const settleContract = (contract_id) => {
     return dispatch => {
-        return helpers.authCheck(dispatch).then((creds) => {
-            return ContractService.settleContract(creds.access_token, creds.user_id, contract_id).then(
-                (resp) => {
-                    dispatch({
-                        type: contractActions.CONTRACT_STAGE_UPDATE,
-                        payload: {
-                            role: resp.role,
-                            workerApproved: resp.contract.workerApproved,
-                            buyerApproved: resp.contract.buyerApproved,
-                            stage: resp.contract.stage,
-                            id: resp.contract.id,
-                        }
-                    });
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.settleContract(creds.access_token, creds.user_id, contract_id).then(
+                    (resp) => {
+                        dispatch({
+                            type: contractActions.CONTRACT_STAGE_UPDATE,
+                            payload: {
+                                role: resp.role,
+                                workerApproved: resp.contract.workerApproved,
+                                buyerApproved: resp.contract.buyerApproved,
+                                stage: resp.contract.stage,
+                                id: resp.contract.id,
+                            }
+                        });
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            }, () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };

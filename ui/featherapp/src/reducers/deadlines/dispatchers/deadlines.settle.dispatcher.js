@@ -7,45 +7,60 @@ import * as deadlineActions from "../deadlines.actions";
 
 export const finishDeadline = (contract_id, deadline_id) => {
     return dispatch => {
-        return helpers.authCheck().then((creds) => {
-            return ContractService.finishDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ContractService.finishDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const confirmDeadline = (contract_id, deadline_id) => {
     return dispatch => {
-        return helpers.authCheck().then((creds) => {
-            return ContractService.confirmDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ContractService.confirmDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };
 
 export const undoDeadline = (contract_id, deadline_id) => {
     return dispatch => {
-        return helpers.authCheck().then((creds) => {
-            return ContractService.undoDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
-                () => {
-                    return Promise.resolve();
-                },
-                (error) => {
-                    return helpers.parseError(error, dispatch);
-                }
-            );
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ContractService.undoDeadline(creds.access_token, creds.user_id, contract_id, deadline_id).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
     }
 };

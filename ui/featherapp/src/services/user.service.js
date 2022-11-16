@@ -30,7 +30,7 @@ export const ADMIN_TYPE = 2
 class UserService {
 
     // Auth Requests
-    login(username, password) {
+    login(username, password, remember) {
         var loginRequest = new UserLoginRequest();   
         loginRequest.setUsername(username);
         loginRequest.setPassword(password);
@@ -50,10 +50,13 @@ class UserService {
                     token_timeout: response.getTokenTimeout().toDate(),
                     admin_status: resp.user.adminStatus,
                 }
-                localStorage.setItem("creds", JSON.stringify(creds));
-
-                localStorage.setItem("user", JSON.stringify(resp.user));
-                console.log("Saving creds to storage as ", creds)
+                if (remember) {
+                    localStorage.setItem("creds", JSON.stringify(creds));
+                    localStorage.setItem("user", JSON.stringify(resp.user));
+                } else {
+                    sessionStorage.setItem("creds", JSON.stringify(creds));
+                    sessionStorage.setItem("user", JSON.stringify(resp.user));
+                }
                 resolve(resp)
             });
         });
@@ -304,54 +307,66 @@ class UserService {
                     admin_status: resp.user.adminStatus,
                 }
                 localStorage.setItem("creds", JSON.stringify(creds));
-
                 localStorage.setItem("user", JSON.stringify(resp.user));
-                console.log("Saving creds to storage as ", creds)
                 resolve(resp)
             });
         });
     }
-}
 
-export const authChecker = (needAuth) => {
-    const creds = JSON.parse(localStorage.getItem("creds"))
-    if (needAuth && creds === null) {
-        return Promise.resolve(null)
-    } else if (needAuth && creds) {
-        const d = new Date(creds.token_timeout)
-        if (d <= Date.now()) {
-            return new Promise(resolve => {
-                console.log("Auth token expired, requesting a new one")
-                var loginRequest = new UserLoginRequest();   
-                loginRequest.setUsername(creds.username);
-                loginRequest.setPassword(creds.password);
-        
-                authClient.login(loginRequest, null, function(error, response) {
-                    if (error) {
-                        resolve(null)
-                    }
-                    var resp = response.toObject();
-        
-                    var new_creds = {
-                        username: resp.user.username,
-                        password: creds.password,
-                        admin_status: creds.adminStatus,
-                        user_id: resp.user.id,
-                        access_token: resp.token,
-                        token_timeout: response.getTokenTimeout().toDate(),
-                    }
-                    localStorage.setItem("creds", JSON.stringify(new_creds));
-                    console.log("Acquired new creds")
-                    resolve(new_creds)
-                })
-            })
+    authChecker(needAuth) {
+        let remember = true
+        let creds = JSON.parse(localStorage.getItem("creds"))
+        console.log("AUTH CHECKINGs")
+        if (!creds) {
+            remember = false
+            creds = JSON.parse(sessionStorage.getItem("creds"))
         } else {
-            return Promise.resolve(creds)
+            console.log("DW creds is ", creds)
         }
-    } else {
-        return Promise.resolve({})
+        if (needAuth && creds === null) {
+            return Promise.reject({})
+        } else if (needAuth && creds) {
+            const d = new Date(creds.token_timeout)
+            if (d <= Date.now()) {
+                return new Promise((resolve, reject) => {
+                    console.log("Auth token expired, requesting a new one")
+                    var loginRequest = new UserLoginRequest();   
+                    loginRequest.setUsername(creds.username);
+                    loginRequest.setPassword(creds.password);
+            
+                    authClient.login(loginRequest, null, function(error, response) {
+                        if (error) {
+                            reject(error)
+                        }
+                        var resp = response.toObject();
+            
+                        var new_creds = {
+                            username: resp.user.username,
+                            password: creds.password,
+                            admin_status: creds.adminStatus,
+                            user_id: resp.user.id,
+                            access_token: resp.token,
+                            token_timeout: response.getTokenTimeout().toDate(),
+                        }
+                        if (remember) {
+                            localStorage.setItem("creds", JSON.stringify(new_creds));
+                        } else {
+                            sessionStorage.setItem("creds", JSON.stringify(new_creds));
+                        }
+                       
+                        console.log("Acquired new creds")
+                        resolve(new_creds)
+                    })
+                })
+            } else {
+                return Promise.resolve(creds)
+            }
+        } else {
+            return Promise.reject({})
+        }
     }
 }
+
 
 export const ownership_format = (data, user_type) => {
     if (user_type === WORKER_TYPE) {
