@@ -1,222 +1,261 @@
 import React, {useState, useRef, useEffect} from "react";
 import { Redirect } from 'react-router-dom';
+import feather_logo from "../../style/logo/feather_logo.svg";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import { 
         register,
-        createInstagram,
-        createTiktok,
-        verifyInstagram,
-        verifyTiktok,
         addPayment,
 } from "../../reducers/user/dispatchers/user.dispatcher";
+import { push } from 'connected-react-router'
 
-import PersonalInfo from "./personal_info"
-import PaymentSetup from "./payment_setup"
-import AccountConnect from "./account_connect"
+// const handleRegister = (e) => {
+//     return new Promise((resolve, reject) => {
+//         console.log("Registering: ")
+//         props.register(username, name, email, password).then( () => {
+//             console.log("Success")
+//             resolve()
+//         }, err => {
+//             console.log("Error: " + err)
+//             reject(err)
+//         })
+//     })
+// }
+
+// const handleAddPayment = (e) => {
+//     return new Promise((resolve, reject) => {
+//         if (props.user.id === "") {
+//             reject("You must log in before trying to setup a payment method")
+//         }
+//         console.log("Setting up payment")
+//         props.addPayment(props.user.id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
+//             // console.log("Successfully setup Payment")
+//             resolve()
+//         }, err => {
+//             // console.log("Payment Setup Error: " + err)
+//             reject(err)
+//         })
+//     })
+// }
 
 const Register = (props) => {
 
     const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
     const [name, setName] = useState("")
-    const [password, setPassword] = useState("")
 
-    const [instaName, setInstaName] = useState("")
-    const [instaCode, setInstaCode] = useState("")
+    const [usernameError, setUsernameError] = useState("")
+    const [nameError, setNameError] = useState("")
+    const [emailError, setEmailError] = useState("")
+    const [passwordError, setPasswordError] = useState("")
+    const [generalError, setGenError] = useState("")
+    const [errorExists, setErrorExists] = useState(false)
 
-    const [tiktokName, setTiktokName] = useState("")
-    const [tiktokCode, setTiktokCode] = useState("")
+    const handleUsername = (e) => {
+        const newUsername = e.target.value
+        setUsername(newUsername)
+        if (newUsername.length === 0) {
+            setUsernameError("You must provide a username")
+        } else {
+            setUsernameError("")
+        }
+    }
 
-    const [cardNumber, setCardNumber] = useState("")
-    const [cardHolder, setCardHolder] = useState("")
-    const [expDate, setExpDate] = useState("")
-    let month = ""
-    let year = ""
+    const handleName = (e) => {
+        const newName = e.target.value
+        setName(newName)
+        if (newName.length === 0) {
+            setNameError("You must provide a name")
+        } else {
+            setNameError("")
+        }
+    }
 
-    useEffect( () => {
-        month = parseInt(expDate.split("/")[0])
-        year = parseInt(expDate.split("/")[1])
-    }, [expDate])
-    const [zip, setZip] = useState("")
-    const [cvv, setCvv] = useState("")
+    const handlePassword = (e) => {
+        const newPassword = e.target.value
+        setPassword(newPassword)
+        if (newPassword.length < 5) {
+            setPasswordError("Your password must be at least 5 characters")
+        } else {
+            setPasswordError("")
+        }
+    }
 
-    const [phase, setPhase] = useState(1)
+    const handleEmail = (e) => {
+        const newEmail = e.target.value
+        setEmail(newEmail)
+        if (!newEmail.match(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        )) {
+            setEmailError("You haven't entered a real email")
+        } else {
+            setEmailError("")
+        }
+    }
+
+    useEffect(()=> {
+        if (
+            email === "" ||
+            username === "" ||
+            password === "" ||
+            name === "") {
+            setGenError("Please fill out all fields")
+            setErrorExists(true)
+        } else if (errorExists && 
+            emailError === "" &&
+            passwordError === "" &&
+            usernameError === "" &&
+            nameError === "") {
+            setErrorExists(false)
+        } else {
+            setGenError("")
+            setErrorExists(true)
+        }
+    }, [emailError, nameError, usernameError, passwordError])
 
     const handleRegister = (e) => {
-        return new Promise((resolve, reject) => {
-            console.log("Registering: ")
-            props.register(username, name, email, password).then( () => {
-                console.log("Success")
-                resolve()
-            }, err => {
-                console.log("Error: " + err)
-                reject(err)
-            })
+        e.preventDefault()
+        props.register(username, name, email, password).then( () => {
+            props.push("/")
+        }, err => {
+            setGenError(err)
+            setErrorExists(true)
         })
-    }
-
-    const handleAddInstagram = (e) => {
-        // console.log("Trying to verify instagram")
-        // console.log(props.user)
-        return new Promise((resolve, reject) => {
-            if (props.user.id === "") {
-                reject("You must log in before trying to add an instagram account")
-            }
-            // console.log("Adding instagram")
-            props.createInstagram(props.user.id, instaName).then( () => {
-                console.log("Successfully added instagram")
-                resolve()
-            }, err => {
-                // console.log("Instagram Add Error: " + err)
-                reject(err)
-            })
-        })
-    }
-
-    const handleAddTiktok = (e) => {
-        return new Promise((resolve, reject) => {
-            if (props.user.id === "") {
-                reject("You must log in before trying to add an tiktok account")
-            }
-            console.log("Adding instagram")
-            props.createTiktok(props.user.id, tiktokName).then( () => {
-                // console.log("Successfully added instagram")
-                resolve()
-            }, err => {
-                // console.log("Tiktok Add Error: " + err)
-                reject(err)
-            })
-        })
-    }
     
-    const handleVerifyInstagram = (e) => {
-        
-        return new Promise((resolve, reject) => {
-            if (props.user.id === "") {
-                reject("You must log in before trying to verify an instagram account")
-            }
-            console.log("Verifying instagram")
-            props.verifyInstagram(props.user.id).then( () => {
-                // console.log("Successfully verified instagram")
-                resolve()
-            }, err => {
-                // console.log("Instagram Verify Error: " + err)
-                reject(err)
-            })
-        })
     }
 
-    const handleVerifyTiktok = (e) => {
-        return new Promise((resolve, reject) => {
-            if (props.user.id === "") {
-                reject("You must log in before trying to verify a tiktok account")
-            }
-            console.log("Verifying tiktok")
-            props.verifyTiktok(props.user.id).then( () => {
-                // console.log("Successfully verified tiktok")
-                resolve()
-            }, err => {
-                // console.log("Tiktok Verify Error: " + err)
-                reject(err)
-            })
-        })
-    }
+    return (
+        <>
+          <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+              <img
+                className="mx-auto h-12 w-auto"
+                src={feather_logo}
+                alt="Workflow"
+              />
+              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Welcome Aboard!</h2>
+              <p className="mt-2 text-center text-sm text-gray-600">
+                We're so excited to have you
+              </p>
+              <p className="mt-2 text-center text-sm text-red">
+                {generalError}
+              </p>
 
-    const handleAddPayment = (e) => {
-        return new Promise((resolve, reject) => {
-            if (props.user.id === "") {
-                reject("You must log in before trying to setup a payment method")
-            }
-            console.log("Setting up payment")
-            props.addPayment(props.user.id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
-                // console.log("Successfully setup Payment")
-                resolve()
-            }, err => {
-                // console.log("Payment Setup Error: " + err)
-                reject(err)
-            })
-        })
-    }
-
-    const nextPhase = () => {
-        setPhase(phase+1)
-    }
-
-    useEffect(() =>{
-        if (props.user === null) {
-            return
-        }
-        if (props.user.id) {
-            setPhase(2)
-            console.log("Advancing stage")
-        }
-        if (props.user.instagramVerified == true && 
-            props.user.tiktokVerified == true) {
-            setPhase(3)
-        } 
-        if (props.user.paymentSetup == true) {
-            setPhase(4)
-        }
-    })
+            </div>
     
-    if (phase === 1) {
-        return (<PersonalInfo 
-                    username={username}
-                    name={name}
-                    email={email}
-                    password={password}
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+              <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <form className="space-y-6" onSubmit={handleRegister}>
+                  <div>
+                    <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                      Username
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autoComplete="username"
+                        value={username}
+                        onChange={handleUsername}
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {(usernameError !== "") && (
+                        <p className="text-red text-sm">{usernameError}</p>
+                      )}
+                    </div>
+                  </div>   
+                   
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                      Full Name
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        autoComplete="name"
+                        value={name}
+                        onChange={handleName}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {(nameError !== "") && (
+                        <p className="text-red text-sm">{nameError}</p>
+                      )}
+                    </div>
+                  </div>   
 
-                    setUsername={setUsername} 
-                    setName={setName}
-                    setEmail={setEmail} 
-                    setPassword={setPassword}
-                    nextPhase={nextPhase}
 
-                    handleRegister={handleRegister}
-                />)
-    } else if (phase === 2) {
-        return (<AccountConnect 
-                    instaName={instaName}
-                    tiktokName={tiktokName}
-                    instaCode={instaCode}
-                    tiktokCode={tiktokCode}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                      Email address
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        value={email}
+                        onChange={handleEmail}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {(emailError !== "") && (
+                        <p className="text-red text-sm">{emailError}</p>
+                      )}
+                    </div>
+                  </div>
+    
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                      Password
+                    </label>
+                    <div className="mt-1">
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={handlePassword}
+                        required
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      />
+                      {(passwordError !== "") && (
+                        <p className="text-red text-sm">{passwordError}</p>
+                      )}
+                    </div>
+                  </div>
 
-                    setInstaName={setInstaName}
-                    setTiktokName={setTiktokName}
-                    setInstaCode={setInstaCode}
-                    setTiktokCode={setTiktokCode}
+    
+                  <div>
+                    <button
+                      type="submit"
+                      disabled={errorExists}
+                      className={"w-full flex justify-center py-2 px-4 "+
+                                "border border-transparent rounded-md "+
+                                "shadow-sm text-sm font-medium text-white "+
+                                "bg-indigo-600 hover:bg-indigo-700 focus:outline-none "+
+                                "focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "+
+                                "disabled:bg-indigo-400"}
+                    >
+                      Create Your Account
+                    </button>
+                  </div>
+                </form>
+                <br/>
+              </div>
+              
+            </div>
+          </div>
+        </>
+    )
 
-                    nextPhase={nextPhase}
-
-                    handleAddInstagram={handleAddInstagram}
-                    handleAddTiktok={handleAddTiktok}
-                    handleVerifyInstagram={handleVerifyInstagram}
-                    handleVerifyTiktok={handleVerifyTiktok}
-
-                />)
-    } else if (phase === 3) {
-        return (<PaymentSetup 
-                    cardNumber={cardNumber}
-                    cardHolder={cardHolder}
-                    expDate={expDate}
-                    zip={zip}
-                    cvv={cvv}
-                    
-                    setCardNumber={setCardNumber}
-                    setCardHolder={setCardHolder}
-                    setExpDate={setExpDate}
-                    setZip={setZip}
-                    setCvv={setCvv}
-                    
-                    nextPhase={nextPhase}
-                    
-                    handleAddPayment={handleAddPayment}
-                />)
-    } else {
-        return ( <Redirect to={props.redirectLink}/>)
-    }
    
 }
 
@@ -228,10 +267,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     register,
-    createInstagram,
-    createTiktok,
-    verifyInstagram,
-    verifyTiktok,
+    push,
     addPayment,
 
 }, dispatch)

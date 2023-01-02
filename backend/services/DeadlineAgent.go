@@ -190,6 +190,7 @@ func (agent *DeadlineAgent) DeadlineLoop(sendMsg SendExpireMsg) {
 			if agent.DeadlinePassed(curDeadline) && contract.Stage == db.ACTIVE {
 				log.Println(color.Colorize(color.Green, fmt.Sprintf("DEADLINE AGENT: contract %s deadline expired", contract.Id.Hex())))
 				contract.Stage = db.SETTLE
+				// Need to add the logic that if it is the last deadline the entire contract is expired.
 				curDeadline.Expired = true
 				err := agent.RevertContractSuggestions(contract)
 				if err != nil {
