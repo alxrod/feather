@@ -23,6 +23,7 @@ var routes []string = []string{
 
 	"/login",
 	"/register",
+	"/setup-payment",
 	"/logout",
 	"/forgot-password",
 

@@ -1,12 +1,7 @@
-import React, {} from "react";
+import React, {useEffect, useState} from "react";
 
 import { UserIcon, LibraryIcon, CreditCardIcon } from '@heroicons/react/outline'
 
-const navigation = [
-  { name: 'Account', icon: UserIcon, href: '#', current: true },
-  { name: 'Payments', icon: CreditCardIcon, href: '#', current: false },
-  { name: 'Taxes', icon: LibraryIcon, href: '#', current: false },
-]
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -14,8 +9,24 @@ function classNames(...classes) {
 
 
 const ProfileSidebar = (props) => {
+  const [navigation, setNavigation] = useState([
+    { code: 0, name: 'Account', icon: UserIcon, href: '#', current: true },
+    { code: 1, name: 'Payments', icon: CreditCardIcon, href: '#', current: false },
+    { code: 2, name: 'Taxes', icon: LibraryIcon, href: '#', current: false },
+  ])
+  
+  useEffect(() => {
+    for (let i = 0; i < navigation.length; i++) {
+      if (navigation[i].code === props.selectedTab) {
+        navigation[i].current = true
+      } else {
+        navigation[i].current = false
+      }
+    }
+    setNavigation(navigation)
+  }, [props.selectedTab])
 
-    return (
+  return (
     <div className="flex flex-col flex-grow pt-0 pb-4 bg-white overflow-y-auto">
 
       <div className="mt-0 flex-grow flex flex-col">
@@ -30,6 +41,7 @@ const ProfileSidebar = (props) => {
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                 'group flex items-center px-3 py-2 text-sm font-medium border-l-4'
               )}
+              onClick={() => {props.setSelectedTab(item.code)}}
             >
               <item.icon
                 className={classNames(

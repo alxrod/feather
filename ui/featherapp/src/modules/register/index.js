@@ -5,39 +5,14 @@ import feather_logo from "../../style/logo/feather_logo.svg";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import { 
-        register,
-        addPayment,
+    register,
+    addPayment,
 } from "../../reducers/user/dispatchers/user.dispatcher";
+import {
+    toggleFromRegister
+} from "../../reducers/site/site.reducer";
+
 import { push } from 'connected-react-router'
-
-// const handleRegister = (e) => {
-//     return new Promise((resolve, reject) => {
-//         console.log("Registering: ")
-//         props.register(username, name, email, password).then( () => {
-//             console.log("Success")
-//             resolve()
-//         }, err => {
-//             console.log("Error: " + err)
-//             reject(err)
-//         })
-//     })
-// }
-
-// const handleAddPayment = (e) => {
-//     return new Promise((resolve, reject) => {
-//         if (props.user.id === "") {
-//             reject("You must log in before trying to setup a payment method")
-//         }
-//         console.log("Setting up payment")
-//         props.addPayment(props.user.id, cardNumber, cardHolder, month, year, zip, cvv).then( () => {
-//             // console.log("Successfully setup Payment")
-//             resolve()
-//         }, err => {
-//             // console.log("Payment Setup Error: " + err)
-//             reject(err)
-//         })
-//     })
-// }
 
 const Register = (props) => {
 
@@ -118,7 +93,8 @@ const Register = (props) => {
     const handleRegister = (e) => {
         e.preventDefault()
         props.register(username, name, email, password).then( () => {
-            props.push("/")
+            props.toggleFromRegister(true)
+            props.push("/setup-payment")
         }, err => {
             setGenError(err)
             setErrorExists(true)
@@ -260,7 +236,6 @@ const Register = (props) => {
 }
 
 const mapStateToProps = ({ user }) => ({
-    message: user.message,
     user: user.user,
     redirectLink: user.redirectLink
 })
@@ -268,6 +243,7 @@ const mapStateToProps = ({ user }) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     register,
     push,
+    toggleFromRegister,
     addPayment,
 
 }, dispatch)

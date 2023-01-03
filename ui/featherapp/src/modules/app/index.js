@@ -12,6 +12,7 @@ import ForgotPassword from "../forgot_password"
 import ResetPassword from "../reset_password"
 
 import Register from '../register'
+import SetupPayment from "../setup_payment"
 import Profile from '../profile'
 
 import { clearSelected } from "../../reducers/contract/dispatchers/contract.dispatcher";
@@ -42,7 +43,8 @@ import {
 } from "../../reducers/user/dispatchers/user.dispatcher";
 
 import {
-  setNavbar
+  setNavbar,
+  toggleFromRegister,
 } from "../../reducers/site/site.reducer"
 
 const STD_ROLE = 3 // 011
@@ -65,6 +67,7 @@ const routes = {
 
   "/login": UNAUTH_ROLE,
   "/register": UNAUTH_ROLE,
+  "/setup-payment": STD_ROLE,
   "/profile": STD_ROLE,
 
   "/file-upload-test": STD_ROLE,
@@ -93,6 +96,9 @@ const App = (props) => {
     if (!select_routes.includes(route_base)) {
       props.clearSelected()
     }
+    if (props.fromRegister && !(route_base === "/register" || route_base === "/setup-payment")) {
+      props.toggleFromRegister(false)
+    }
     props.clearChat()
     authRedirect(route_base, loc.pathname)
     
@@ -104,6 +110,9 @@ const App = (props) => {
     } else if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
       props.setRedirect(wholepath)
       props.push("/login")
+      return false
+    } else if (props.user !== null && routes[pathname] === UNAUTH_ROLE) {
+      props.push("/contracts")
       return false
     } else if (props.user !== null) {
       const role = props.user.role
@@ -157,6 +166,7 @@ const App = (props) => {
         <Route exact path="/reset-password/:resetId" element={<ResetPassword/>} component={ResetPassword} />    
         
         <Route exact path="/register" element={<Register/>} component={Register} />
+        <Route exact path="/setup-payment" element={<SetupPayment/>} component={SetupPayment} />
 
         <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />
         <Route exact path="/unauth-contract" element={<UnauthContractRoute/>} component={UnauthContractRoute} />
@@ -169,9 +179,10 @@ const App = (props) => {
 }
 
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, site }) => ({
     user: user.user,
     isLoggedIn: user.isLoggedIn,
+    fromRegister: site.fromRegister,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -180,6 +191,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   setNavbar,
   clearSelected,
   clearChat,
+  toggleFromRegister,
   push,
 }, dispatch)
 
