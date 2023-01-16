@@ -43,19 +43,20 @@ func accessibleRoles() []string {
 }
 
 type BackServer struct {
-	comms.UnimplementedSocialServer
-	comms.UnimplementedPaymentServer
 	comms.UnimplementedAuthServer
 	comms.UnimplementedContractServer
 	comms.UnimplementedChatServer
+
 	comms.UnimplementedFileServiceServer
+	comms.UnimplementedStripeServiceServer
 
 	JwtManager    *services.JWTManager
 	ChatAgent     *services.ChatAgent
 	DeadlineAgent *services.DeadlineAgent
-	PaymentAgent  *services.PaymentAgent
-	AWSAgent      *services.AWSAgent
-	EmailAgent    *services.EmailAgent
+
+	StripeAgent *services.StripeAgent
+	AWSAgent    *services.AWSAgent
+	EmailAgent  *services.EmailAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -105,14 +106,13 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 			Database:      client.Database(s_dbName),
 			INTERVAL_TIME: 5,
 		},
-		PaymentAgent: &services.PaymentAgent{
-			Database: client.Database(s_dbName),
-		},
-		AWSAgent:   &services.AWSAgent{},
-		EmailAgent: &services.EmailAgent{},
-		dbName:     s_dbName,
-		dbClient:   client,
-		dbCtx:      ctx,
+		AWSAgent:    &services.AWSAgent{},
+		EmailAgent:  &services.EmailAgent{},
+		StripeAgent: &services.StripeAgent{},
+
+		dbName:   s_dbName,
+		dbClient: client,
+		dbCtx:    ctx,
 	}
 
 	s.AWSAgent.Initialize()
@@ -122,12 +122,11 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	}, client.Database(s_dbName))
 
 	// Have to add this for every service
-	comms.RegisterSocialServer(grpcServer, s)
 	comms.RegisterAuthServer(grpcServer, s)
-	comms.RegisterPaymentServer(grpcServer, s)
 	comms.RegisterContractServer(grpcServer, s)
 	comms.RegisterChatServer(grpcServer, s)
 	comms.RegisterFileServiceServer(grpcServer, s)
+	comms.RegisterStripeServiceServer(grpcServer, s)
 
 	return s, nil
 }

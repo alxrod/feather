@@ -36,6 +36,8 @@ import UnknownRoute from "../error_handling_routes/unknown_route"
 import UnauthContractRoute from "../error_handling_routes/unauth_contract_route"
 
 import FileUploadTest from "../file_upload_test";
+import AccountOnboardingRefresh from "../payment_redirects/account_onboarding_refresh"
+
 
 import { 
   pullUser,
@@ -47,8 +49,9 @@ import {
   toggleFromRegister,
 } from "../../reducers/site/site.reducer"
 
-const STD_ROLE = 3 // 011
-const UNAUTH_ROLE = 1 //001
+const STD_ROLE = 3
+const UNAUTH_ROLE = 1 
+const STD_UNAUTH_ROLE = 4
 
 const routes = {
   "/": UNAUTH_ROLE,
@@ -60,15 +63,16 @@ const routes = {
   "/negotiate": STD_ROLE,
   "/view": STD_ROLE,
   "/settle": STD_ROLE,
-  "/unknown": UNAUTH_ROLE,
+  "/unknown": STD_UNAUTH_ROLE,
   "/unauth-contract": UNAUTH_ROLE,
 
-  "/invite": UNAUTH_ROLE,
+  "/invite": STD_UNAUTH_ROLE,
 
   "/login": UNAUTH_ROLE,
   "/register": UNAUTH_ROLE,
   "/setup-payment": STD_ROLE,
   "/profile": STD_ROLE,
+  "/profile/onboarding-refresh": STD_ROLE,
 
   "/file-upload-test": STD_ROLE,
   "/asset-cache": STD_ROLE,
@@ -85,6 +89,7 @@ const App = (props) => {
   const [pullReq, setPullReq] = useState(true);
   let firstLoad = true
 
+  
   useEffect( () => {
     // console.log("Calling a link change to path: " + loc.pathname)
     const route_base = "/"+loc.pathname.split("/")[1]
@@ -107,20 +112,13 @@ const App = (props) => {
   const authRedirect = (pathname, wholepath) => {
     if (!routes.hasOwnProperty(pathname)) {
       props.push("/unknown")
-    } else if (props.user === null && routes[pathname] !== UNAUTH_ROLE) {
+    } else if (props.user === null && routes[pathname] === STD_ROLE) {
       props.setRedirect(wholepath)
       props.push("/login")
       return false
     } else if (props.user !== null && routes[pathname] === UNAUTH_ROLE) {
       props.push("/contracts")
       return false
-    } else if (props.user !== null) {
-      const role = props.user.role
-      if ((routes[pathname] & role) !== routes[pathname]) {
-        props.setRedirect(wholepath)
-        props.push("/login")
-        return false
-      }
     }
     return true
   }
@@ -138,7 +136,6 @@ const App = (props) => {
   }, [pullReq, props.user, props.user?.id])
 
   return (
-
     <div className="App">
       <header>
         <NavBar/>
@@ -160,6 +157,7 @@ const App = (props) => {
         <Route path="/settle/:contractId" element={<ContractSettle/>} component={ContractSettle} />
         
         <Route exact path="/profile" element={<Profile/>} component={Profile} />
+        <Route exact path="/profile/onboarding-refresh" element={<AccountOnboardingRefresh/>} component={AccountOnboardingRefresh} />
 
         <Route exact path="/login" element={<Login/>} component={Login} />    
         <Route exact path="/forgot-password" element={<ForgotPassword/>} component={ForgotPassword} />
@@ -179,10 +177,11 @@ const App = (props) => {
 }
 
 
-const mapStateToProps = ({ user, site }) => ({
+const mapStateToProps = ({ user, site, stripe }) => ({
     user: user.user,
     isLoggedIn: user.isLoggedIn,
     fromRegister: site.fromRegister,
+    clientSecret: stripe.clientSecret
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

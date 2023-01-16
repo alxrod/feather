@@ -36,9 +36,9 @@ var routes []string = []string{
 }
 
 type FrontServer struct {
-	router     *http.ServeMux
-	webapp     http.Handler
-	assetCache http.Handler
+	router  *http.ServeMux
+	webapp  http.Handler
+	webhook *WebhookServer
 }
 
 func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
@@ -51,8 +51,9 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 	// http.Handle("/static/", http.StripPrefix("/static", fs))
 
 	srv := &FrontServer{
-		router: http.NewServeMux(),
-		webapp: http.FileServer(http.FS(contentStatic)),
+		router:  http.NewServeMux(),
+		webapp:  http.FileServer(http.FS(contentStatic)),
+		webhook: NewWebHookServer(),
 	}
 	return srv, nil
 }
@@ -78,7 +79,7 @@ func (srv *FrontServer) HandleAssetRequest(w http.ResponseWriter, r *http.Reques
 }
 
 func (srv *FrontServer) SetUpHandler(multiplex *grpcMultiplexer) error {
-	srv.router.Handle("/", multiplex.Handler(srv.assetCache, srv.HandleAssetRequest))
+	srv.router.Handle("/", multiplex.Handler(srv.webapp, srv.HandleAssetRequest, srv.webhook))
 	return nil
 }
 
@@ -103,7 +104,7 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
-func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.ResponseWriter, r *http.Request)) http.Handler {
+func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.ResponseWriter, r *http.Request), webhook *WebhookServer) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
 
@@ -120,9 +121,15 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 			m.ServeHTTP(w, r)
 			return
 		}
+		path := fmt.Sprintf("%v", r.URL)
+
+		if strings.Contains(path, "/web-hook/") {
+			fmt.Printf(color.Ize(color.Blue, fmt.Sprintf("Web Hook Request for : %s\n", r.URL)))
+			webhook.router.ServeHTTP(w, r)
+			return
+		}
 
 		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
-		path := fmt.Sprintf("%v", r.URL)
 
 		if strings.Contains(path, "/asset-cache/") {
 			assetHandler(w, r)

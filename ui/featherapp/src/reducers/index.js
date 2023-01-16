@@ -10,6 +10,7 @@ import deadlines from './deadlines/deadlines.reducer'
 import chat from './chat/chat.reducer'
 import site from './site/site.reducer'
 import file from './file/file.reducer'
+import stripe from './stripe/stripe.reducer'
 
 export const history = createBrowserHistory()
 
@@ -22,5 +23,5 @@ export default combineReducers({
     deadlines,
     chat,
     file,
-    
+    stripe,
 })

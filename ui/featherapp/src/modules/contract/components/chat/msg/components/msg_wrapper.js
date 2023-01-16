@@ -12,11 +12,11 @@ const ProfileImg = (props) => {
 
   useEffect( () => {
     if (props.cachedUrls) {
-      setHaveProfImg(true)
+      setHaveProfImg(false)
 
       let url =""
       for (let i = 0; i < props.cachedUrls.length; i++) {
-        if (props.cachedUrls[i] && props.cachedUrls[i][0] === props.msg.user.id) {
+        if (props.cachedUrls[i][1] !== "" && props.cachedUrls[i][0] === props.msg.user.id) {
           setHaveProfImg(true)
           setCacheUrl(props.cachedUrls[i][1]+"?"+Date.now())
         }

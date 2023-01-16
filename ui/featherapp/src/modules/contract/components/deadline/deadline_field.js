@@ -238,6 +238,10 @@ const DeadlineField = (props) => {
         saveDeadlines={saveDeadlines}
         submitPayout={submitPayout}
 
+        curPrice={
+          (props.createMode ? props.curPrice : (props.curContract.id ? props.curContract.price.current : 0))
+        }
+
       />
     </>
   )

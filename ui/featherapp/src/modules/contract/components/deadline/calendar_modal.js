@@ -387,6 +387,7 @@ const CalendarModal = (props) => {
                               deleteDeadlineMode={deleteDeadlineSelected}
                               newDeadlineLocalMode={newDeadlineLocalMode}
 
+                              curPrice={props.curPrice}
                               submitPayout={props.submitPayout}
                             />
                             <DeadlineItems

@@ -43,6 +43,7 @@ const Login = (props) => {
         if (username !== "" && password !== "") {
             props.login(username, password, remember)
             .then(() => {
+              props.push(props.redirectLink)
             })
             .catch((error) => {
               console.log("Caught error")
@@ -62,6 +63,7 @@ const Login = (props) => {
         <Redirect to={props.redirectLink}/>
       )
     }
+    
     return (
         <>
           <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">

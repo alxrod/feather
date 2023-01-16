@@ -56,8 +56,8 @@ const DeadlineSummary = (props) => {
       let newVal = parseInt(e.target.value)
       if (e.target.value === "") {
         newVal = 0
-      } else if (!isNumeric(e.target.value) || newVal < 0 || newVal > 100) {
-        setPayoutError("Payout must be between 0-100%")
+      } else if (!isNumeric(e.target.value) || newVal < 0 || newVal > props.curPrice) {
+        setPayoutError("Payout must be between 0 and " + props.curPrice +" dollars")
         return
       }
 
@@ -75,8 +75,8 @@ const DeadlineSummary = (props) => {
           payout_sum += newVal
         }
       }
-      if (payout_sum > 100) {
-        setPayoutError("The sum of all payouts must be 100% or less")
+      if (payout_sum > props.curPrice) {
+        setPayoutError("The sum of all payouts must be " + props.curPrice + " or less")
         return
       } else {
         setPayoutError("")
@@ -140,8 +140,8 @@ const DeadlineSummary = (props) => {
           payout_sum += payoutValue
         }
       }
-      if (payout_sum < 100 && !props.universalLock) {
-        setPayoutError("you still have " + (100 - payout_sum) + "% of contract to allocate")
+      if (payout_sum < props.curPrice && !props.universalLock) {
+        setPayoutError("you still have $" + (props.curPrice - payout_sum) + " of contract to allocate")
       } else {
         setPayoutError("")
       }
@@ -167,7 +167,6 @@ const DeadlineSummary = (props) => {
     }
 
     const rejectPayout = () => {
-      setCurPayout(oldPayout)
       setPayout(oldPayout)
       togglePayoutEditInProgress(false)
       setPayoutTextColor("text-gray-500")
@@ -224,11 +223,11 @@ const DeadlineSummary = (props) => {
       }
     }, [props.deadline, props.reloadDeadlines])
 
-    const [curPayout, setCurPayout] = useState(0)
+    const [curPayoutPerc, setCurPayoutPerc] = useState(0)
     useEffect(() => {
-      setCurPayout(payoutValue)
-    }, [props.deadline, payoutValue])
-    const [prevPayout, setPrevPayout] = useState(0)
+      setCurPayoutPerc((payoutValue / props.curPrice) * 100)
+    }, [props.deadline, payoutValue, props.curPrice])
+    const [prevPayoutPerc, setPrevPayoutPerc] = useState(0)
 
     useEffect(() => {
       let total = 0.0
@@ -241,11 +240,11 @@ const DeadlineSummary = (props) => {
           total += props.deadlines[i].currentPayout
         }
       }
-      if (curPayout && (total + curPayout > 100)) {
-        setPrevPayout(100 - curPayout)
+      if (payoutValue && (total + payoutValue > props.curPrice)) {
+        setPrevPayoutPerc( ( (props.curPrice - total) / props.curPrice) * 100)
       }
-      setPrevPayout(total)
-    }, [props.deadlines, curPayout, props.deadline])
+      setPrevPayoutPerc(( total / props.curPrice) * 100)
+    }, [props.deadlines, curPayoutPerc, props.deadline])
     
     const approveChange = () => {
       props.reactPayout(props.curContract.id, payoutMsgId, props.deadline.id, decisionTypes.YES)
@@ -269,23 +268,23 @@ const DeadlineSummary = (props) => {
 
                 <div className="my-1 max-w-sm h-5 flex flex-col justify-end">
                   <div className="flex">
-                    {(prevPayout > 5) && (
-                      <div className="flex justify-end" style={{width: prevPayout+"%"}}>
+                    {(prevPayoutPerc > 5) && (
+                      <div className="flex justify-end" style={{width: prevPayoutPerc+"%"}}>
                         <Tooltip
-                          content={prevPayout+"% of contract has been paid before deadline " + (props.deadline.idx+1)}
+                          content={prevPayoutPerc+"% of contract has been paid before deadline " + (props.deadline.idx+1)}
                           style="light"
                         >
-                          <p className="cursor-pointer text-gray-400 text-xs">{prevPayout}%</p>
+                          <p className="cursor-pointer text-gray-400 text-xs">{prevPayoutPerc}%</p>
                         </Tooltip>
                       </div>
                     )}
-                    {(curPayout > 5) && (
-                      <div className="flex justify-end" style={{width: curPayout+"%"}}>
+                    {(curPayoutPerc > 5) && (
+                      <div className="flex justify-end" style={{width: curPayoutPerc+"%"}}>
                         <Tooltip
-                          content={curPayout+"% of contract will be paid for deadline " + (props.deadline.idx+1)}
+                          content={curPayoutPerc+"% of contract will be paid for deadline " + (props.deadline.idx+1)}
                           style="light"
                         >
-                          <p className="cursor-pointer text-gray-400 text-xs">{curPayout}%</p>
+                          <p className="cursor-pointer text-gray-400 text-xs">{curPayoutPerc}%</p>
                         </Tooltip>
                       </div>
                     )}
@@ -297,7 +296,7 @@ const DeadlineSummary = (props) => {
                       data-tooltip-style="light" 
                       type="button" 
                       className={"bg-indigo-500 h-1.5 rounded-l-full " + (props.deadlines.length === 1 ? "rounded-r-full" : "")} 
-                      style={{width: prevPayout+"%"}}
+                      style={{width: prevPayoutPerc+"%"}}
                     >
                     </button>
 
@@ -306,7 +305,7 @@ const DeadlineSummary = (props) => {
                       data-tooltip-style="light" 
                       type="button" 
                       className={"bg-indigo-400 h-1.5 rounded-r-full " + (props.deadline.idx === 0 ? "rounded-l-full" : "")} 
-                      style={{width: curPayout+"%"}}
+                      style={{width: curPayoutPerc+"%"}}
                     >
                     </button>
                   </div>

@@ -125,7 +125,8 @@ func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGet
 		var profilePhoto *db.ProfileImage
 		if err := database.Collection(db.PROF_IMAGE_COL).FindOne(context.TODO(), filter).Decode(&profilePhoto); err != nil {
 			log.Println(color.Ize(color.Red, err.Error()))
-			return nil, errors.New("profile image for user not found")
+			cached_urls[user_id.Hex()] = ""
+			continue
 		}
 		if !profilePhoto.InCache {
 			user, err := db.UserQueryId(user_id, database)

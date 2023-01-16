@@ -64,6 +64,19 @@ export const queryContract = (contract_id) => {
     }
 };
 
+export const queryInvite = (contract_id) => {
+    return dispatch => {
+        return ContractService.queryInvite(contract_id).then(
+            (data) => {
+                return Promise.resolve(data);
+            },
+            (error) => {
+                return helpers.parseError(error, dispatch);
+            }
+        );
+    }
+};
+
 export const queryContractNubs = () => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(

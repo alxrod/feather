@@ -5,13 +5,23 @@ option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 import "communication/file_service.proto";
 import "communication/contract.proto";
+import "communication/stripe.proto";
 
 message UserRegisterRequest {
     string username = 1;
     string email = 2;
     string password = 3;
-    string full_name = 4;
+
     uint32 user_type = 5;
+
+    string first_name = 4;
+    string last_name = 6;
+    string phone_number = 7;
+
+    DOBEntity dob = 8; 
+    
+    bool worker_requested = 9;
+    bool buyer_requested = 10;
 }
 
 message UserLoginRequest {
@@ -42,7 +52,12 @@ message UserEntity {
     uint32 user_type = 3;
     uint32 role = 14;
     string email = 4;
-    string full_name = 5;
+    
+    string first_name = 20;
+    string last_name = 21;
+    string phone_number = 22;
+    DOBEntity dob = 23;
+
     repeated uint32 contract_ids = 6 [packed=true];
 
     string insta_account = 7;
@@ -61,8 +76,23 @@ message UserEntity {
     string profile_photo_id = 17;
     ProfileImageEntity profile_photo = 18;
 
+    bool stripe_connected = 24;
+    StripeEntity stripe_info = 19;
+
+    bool worker_requested = 25;
+    bool buyer_requested = 26;
+    bool worker_enabled = 27;
+    bool buyer_enabled = 28;
+
+    string default_fca = 29;
+
 }
 
+message DOBEntity {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+}
 message ForgotRequest {
     string email = 1;
 }
@@ -90,58 +120,4 @@ service Auth{
     rpc ForgotPassword(ForgotRequest) returns (NullResponse) {};
     rpc ConfirmResetId(ResetConfirmRequest) returns (ResetConfirmResponse) {};
     rpc ChangePassword(ChangePasswordRequest) returns (UserSigninResponse) {}
-}
-
-message InstagramCreateRequest {
-    string user_id = 1;
-    string account = 2;
-    uint32 followers = 3;
-    bool verified = 4;
-}
-
-message TiktokCreateRequest {
-    string user_id = 1;
-    string account = 2;
-    uint32 followers = 3;
-    bool verified = 4;
-}
-
-message InstagramVerifyRequest {
-    string user_id = 1;
-    string code = 2;
-}
-message TiktokVerifyRequest {
-    string user_id = 1;
-    bool code = 2;
-}
-
-message SocialResponse {
-    string account = 2;
-    uint32 followers = 3;
-    bool verified = 4;
-    string platform = 5;
-}
-service Social{
-    rpc AddInstagram(InstagramCreateRequest) returns (SocialResponse) {};
-    rpc AddTiktok(TiktokCreateRequest) returns (SocialResponse) {};
-    rpc VerifyInstagram(InstagramVerifyRequest) returns (SocialResponse) {};
-    rpc VerifyTiktok(TiktokVerifyRequest) returns (SocialResponse) {};
-}
-
-message PaymentSetupRequest {
-    string user_id = 1;
-    string card_number = 2;
-    string card_holder = 3;
-    uint32 month = 4;
-    uint32 year = 5;
-    string zip = 6;
-    string CVV = 7;
-}
-
-message PaymentSetupResponse {
-    bool valid = 1;
-}
-
-service Payment {
-    rpc SetupPayment(PaymentSetupRequest) returns (PaymentSetupResponse) {};
 }

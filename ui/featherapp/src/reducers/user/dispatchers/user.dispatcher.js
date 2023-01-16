@@ -4,9 +4,9 @@ import FileService from "../../../services/file.service";
 import * as userActions from "../user.actions";
 import * as helpers from "../../helpers"
 
-export const register = (username, full_name, email, password) => {
+export const register = (username, first_name, last_name, email, password, phone, date, user_type) => {
     return dispatch => {
-        return UserService.register(username, full_name, email, password).then(
+        return UserService.register(username, first_name, last_name, email, password, phone, date, user_type).then(
             (response) => {
                 dispatch({
                     type: userActions.REGISTER_SUCCESS,
@@ -91,6 +91,7 @@ export const logout = () => {
 }
 
 export const setRedirect = (link) => {
+    console.log("setting redirect to ", link)
     return dispatch => {
         dispatch({
             type: userActions.SET_REDIRECT_LINK,
@@ -106,198 +107,6 @@ export const clearMessage = () => {
         });
     }
 }
-
-export const createInstagram = (user_id, account) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return UserService.add_instagram(creds.access_token, creds.user_id, account).then(
-                    (data) => {
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_SUCCESS,
-                            payload: data,
-                        });
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        const message = 
-                            (error.response &&
-                            error.response.data &&
-                            error.response.data.message) ||
-                            error.messsage ||
-                            error.toString();
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_FAIL,
-                            payload: {platform: "Tiktok"},
-                        });
-                        dispatch({
-                            type: userActions.SET_MESSAGE,
-                            payload: message,
-                        });
-                        return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                helpers.bailAuth(dispatch)
-            }
-        )
-    }
-};
-
-export const createTiktok = (user_id, account) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return UserService.add_tiktok(creds.access_token, creds.user_id, account).then(
-                    (data) => {
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_SUCCESS,
-                            payload: data,
-                        });
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        const message = 
-                            (error.response &&
-                                error.response.data &&
-                                error.response.data.message) ||
-                            error.messsage ||
-                            error.toString();
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_FAIL,
-                            payload: {platform: "Tiktok"},
-                        });
-                        dispatch({
-                            type: userActions.SET_MESSAGE,
-                            payload: message,
-                        });
-                        return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                helpers.bailAuth(dispatch)
-            }
-        )
-    }
-};
-
-export const verifyInstagram = (user_id, code) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return UserService.verify_instagram(creds.access_token, creds.user_id, code).then(
-                    (data) => {
-                        dispatch({
-                            type: userActions.SOCIAL_LINK_SUCCESS,
-                            payload: data,
-                        });
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        const message = 
-                            (error.response &&
-                                error.response.data &&
-                                error.response.data.message) ||
-                                error.messsage ||
-                                error.toString();
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_FAIL,
-                            payload: {platform: "Instagram"},
-                        });
-                        dispatch({
-                            type: userActions.SET_MESSAGE,
-                            payload: message,
-                        });
-                        return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                helpers.bailAuth(dispatch)
-            }
-        )
-    }
-};
-
-export const verifyTiktok = (user_id, code) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return UserService.verify_tiktok(creds.access_token, creds.user_id, code).then(
-                    (data) => {
-                        dispatch({
-                            type: userActions.SOCIAL_LINK_SUCCESS,
-                            payload: data,
-                        });
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        const message = 
-                            (error.response &&
-                                error.response.data &&
-                                error.response.data.message) ||
-                            error.messsage ||
-                            error.toString();
-                        dispatch({
-                            type: userActions.SOCIAL_CREATE_FAIL,
-                            payload: {platform: "Tiktok"},
-                        });
-                        dispatch({
-                            type: userActions.SET_MESSAGE,
-                            payload: message,
-                        });
-                        return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                helpers.bailAuth(dispatch)
-            }
-        )
-    }
-    // add_payment(user_id, card_number, card_holder, month, year, zip, cvv)
-};
-
-export const addPayment = (user_id, card_number, card_holder, month, year, zip, cvv) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return UserService.add_payment(creds.access_token, creds.user_id, card_number, card_holder, month, year, zip, cvv).then(
-                    (data) => {
-                        if (data.valid == true) {
-                            dispatch({
-                                type: userActions.PAYMENT_SETUP_SUCCESS,
-                            });
-                            return Promise.resolve();
-                        } else {
-                            dispatch({
-                                type: userActions.PAYMENT_SETUP_FAIL,
-                            });
-                            return Promise.reject("Our services did not find your card information to be correct")
-                        }
-                    },
-                    (error) => {
-                        const message = 
-                            (error.response &&
-                                error.response.data &&
-                                error.response.data.message) ||
-                            error.messsage ||
-                            error.toString();
-                        dispatch({
-                            type: userActions.PAYMENT_SETUP_FAIL,
-                        });
-                        return Promise.reject(message);
-                    }
-                );
-            },
-            () => {
-                helpers.bailAuth(dispatch)
-            }
-        )
-    }
-};
 
 export const pullUser = () => {
     return dispatch => {

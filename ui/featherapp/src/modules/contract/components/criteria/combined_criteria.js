@@ -44,6 +44,7 @@ const CombinedCriteria = (props) => {
                       deadlines={props.deadlines} 
                       changeDeadlines={props.changeDeadlines} 
                       disabled={!props.active} 
+                      curPrice={props.price}
 
                       contractItemIds={props.contractItemIds}
                     />

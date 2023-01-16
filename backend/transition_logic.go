@@ -27,7 +27,7 @@ func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contrac
 			}
 		}
 		if all_approved {
-			err := s.PaymentAgent.Payout(deadline, contract)
+			err := s.StripeAgent.ChargeContract(contract, deadline, database)
 			if err != nil {
 				return err
 			}

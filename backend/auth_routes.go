@@ -24,11 +24,24 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 	_, err := db.UserQueryUsername(req.Username, req.Password, database)
 	switch err.(type) {
 	case *db.ErrorUserNotFound:
-		user, err := db.UserInsert(req.Username, req.Password, req.Email, req.FullName, req.UserType, database)
+		user, err := db.UserInsert(req, database)
+
 		if err != nil {
 			return nil, err
 		}
 		tkn, tkn_timeout, err := s.JwtManager.Generate(user)
+		if err != nil {
+			return nil, err
+		}
+
+		if user.WorkerRequested {
+			log.Printf("Making it worker")
+			user, err = s.StripeAgent.CreateConnectedAccount(user, database)
+		}
+		if user.BuyerRequested {
+			log.Printf("Making it buyer")
+			user, err = s.StripeAgent.CreateCustomer(user, database)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -57,6 +70,7 @@ func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*c
 		return nil, err
 	}
 	log.Println(color.Ize(color.Yellow, fmt.Sprintf("Username %s is status %b", user.Username, user.AdminStatus)))
+
 	return &comms.UserSigninResponse{
 		Token:        tkn,
 		TokenTimeout: timestamppb.New(tkn_timeout),

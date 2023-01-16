@@ -3,9 +3,10 @@ import { Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import ProfileSidebar from "./sidebar";
-import AccountInfo from "./account_info"
-import PaymentModule from "../setup_payment/payment_module"
+import AccountInfo from "./account_info";
+import PaymentInfo from "./payment_info";
 import { CheckIcon } from '@heroicons/react/outline'
+
 const Profile = (props) => {
     const currentUser = props.user
 
@@ -40,14 +41,16 @@ const Profile = (props) => {
                     ) : selectedTab === tabOptions.PAY ? (
                         <div className="w-full flex justify-center">
                             <div className="flex flex-col">
-                                {paymentAdded ? (
+                                {/* {paymentAdded ? (
                                     <h1 className="text-center font-medium text-2xl text-gray-800 flex justify-center"><CheckIcon className="text-green w-8 h-8 mr-2"/>Payment Method Added</h1>
                                 ) : (
                                     <h1 className="text-center font-medium text-2xl text-gray-800">Enter your information to add a payment method</h1>
                                 )}
                                 <PaymentModule
                                     paymentSuccess={paymentSuccess}
-                                />
+                                /> */}
+                                {/* <StripePaymentSetup/> */}
+                                <PaymentInfo/>
                             </div>
                         </div>
                         

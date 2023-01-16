@@ -6,8 +6,15 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import { 
     register,
-    addPayment,
 } from "../../reducers/user/dispatchers/user.dispatcher";
+
+import {
+  ADMIN_TYPE,
+  BUYER_TYPE,
+  WORKER_TYPE,
+  BOTH_TYPE,
+} from "../../services/user.service.js";
+
 import {
     toggleFromRegister
 } from "../../reducers/site/site.reducer";
@@ -19,14 +26,24 @@ const Register = (props) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
+    
     const [name, setName] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
 
+    const [dob, setDOB] = useState("")
+    const [phone, setPhone] = useState("+1")
+    const [userType, setUserType] = useState(WORKER_TYPE)
+
+    const [phoneError, setPhoneError] = useState("")
+    const [dobError, setDobError] = useState("")
     const [usernameError, setUsernameError] = useState("")
     const [nameError, setNameError] = useState("")
     const [emailError, setEmailError] = useState("")
     const [passwordError, setPasswordError] = useState("")
     const [generalError, setGenError] = useState("")
     const [errorExists, setErrorExists] = useState(false)
+
 
     const handleUsername = (e) => {
         const newUsername = e.target.value
@@ -41,10 +58,15 @@ const Register = (props) => {
     const handleName = (e) => {
         const newName = e.target.value
         setName(newName)
-        if (newName.length === 0) {
-            setNameError("You must provide a name")
+        const seped = newName.split(" ")
+        if (seped.length === 0) {
+          setNameError("You must provide a name")
+        } else if (seped.length === 1) {
+          setNameError("You must provide a first and last name")
         } else {
-            setNameError("")
+          setFirstName(seped[0])
+          setLastName(seped[seped.length - 1])
+          setNameError("")
         }
     }
 
@@ -70,29 +92,65 @@ const Register = (props) => {
         }
     }
 
+    const handleDOB = (e) => {
+      const date_info = e.target.value.split("-")
+      setDOB(e.target.value)
+      if (date_info.length !== 3) {
+        setDobError("Please enter your birthday")
+      }
+    }
+    
+
+    const handlePhone = (e) => {
+      const num = e.target.value
+      setPhone(num)
+      if (!num.match(/^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g)) {
+        setPhoneError("Please provide a real number")
+      } else if(num.length < 10 || num.length > 13) {
+        setPhoneError("Please provide a full number")
+      } else {
+        setPhoneError("")
+      }
+    }
+
+    const handleType = (e) => {
+      setUserType(e.target.value)
+    }
+
     useEffect(()=> {
         if (
             email === "" ||
             username === "" ||
             password === "" ||
-            name === "") {
+            name === "" ||
+            phone === "" ||
+            dob === "") {
             setGenError("Please fill out all fields")
             setErrorExists(true)
         } else if (errorExists && 
             emailError === "" &&
             passwordError === "" &&
             usernameError === "" &&
-            nameError === "") {
+            nameError === "" &&
+            dobError === "" &&
+            phoneError === "") {
             setErrorExists(false)
         } else {
             setGenError("")
             setErrorExists(true)
         }
-    }, [emailError, nameError, usernameError, passwordError])
+    }, [emailError, nameError, usernameError, passwordError, phoneError, dobError])
 
     const handleRegister = (e) => {
         e.preventDefault()
-        props.register(username, name, email, password).then( () => {
+        const inf = dob.split("-")
+        const date = {
+          day: inf[2],
+          month: inf[1],
+          year: inf[0]
+        }
+        props.register(username, firstName, lastName, email, password, phone, date, userType).then( () => {
+
             props.toggleFromRegister(true)
             props.push("/setup-payment")
         }, err => {
@@ -164,8 +222,83 @@ const Register = (props) => {
                       )}
                     </div>
                   </div>   
-
-
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 mb-1">
+                      Role
+                    </label>
+                    <div className="mt-1 sm:col-span-2 sm:mt-0">
+                      <select
+                        id="type"
+                        name="type"
+                        autoComplete="user-type"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        onChange={handleType}
+                      >
+                        <option value={WORKER_TYPE} >Worker</option>
+                        <option value={BUYER_TYPE} >Buyer</option>
+                        <option value={BOTH_TYPE} >Both</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700">
+                      Phone Number
+                    </label>
+                    <div className="relative mt-1 rounded-md shadow-sm">
+                      <div className="absolute inset-y-0 left-0 flex items-center">
+                        <label htmlFor="country" className="sr-only">
+                          Country
+                        </label>
+                        <select
+                          id="country"
+                          name="country"
+                          autoComplete="country"
+                          disabled
+                          className="h-full rounded-md border-transparent bg-transparent py-0 pl-3 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        >
+                          <option>US</option>
+                        </select>
+                      </div>
+                      <input
+                        type="text"
+                        name="phone-number"
+                        id="phone-number"
+                        className="block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        value={phone}
+                        onChange={handlePhone}
+                      />
+                      
+                    </div>
+                    {(phoneError !== "") && (
+                      <p className="text-red text-sm">{phoneError}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="account-number" className="block text-sm font-medium text-gray-700">
+                      Date of Birth
+                    </label>
+                    <div className="relative mt-1 rounded-md shadow-sm">
+                      <input 
+                        type="date" 
+                        className="
+                          mt-1
+                          block
+                          w-full
+                          rounded-md
+                          border-gray-300
+                          shadow-sm
+                          focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                          text-gray-500
+                        "
+                        value={dob}
+                        onChange={handleDOB}/>
+                    </div>
+                    {(dobError !== "") && (
+                      <p className="text-red text-sm">{dobError}</p>
+                    )}
+                  </div>
+                
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                       Email address
@@ -244,7 +377,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     register,
     push,
     toggleFromRegister,
-    addPayment,
 
 }, dispatch)
 

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/TwiN/go-color"
 	comms "github.com/alxrod/feather/communication"
@@ -18,6 +17,7 @@ import (
 const (
 	WORKER = uint32(0)
 	BUYER  = uint32(1)
+	BOTH   = uint32(3)
 	ADMIN  = uint32(2)
 )
 
@@ -28,24 +28,38 @@ const (
 )
 
 type User struct {
-	Username  string             `bson:"username"`
-	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	Type      uint32             `bson:"user_type"`
-	Role      uint32             `bson:"role"`
-	Password  string             `bson:"password"`
-	Email     string             `bson:"email"`
-	FullName  string             `bson:"full_name"`
-	Instagram InstagramNub       `bson:"instagram"`
-	Tiktok    TiktokNub          `bson:"tiktok"`
-	Payment   PaymentNub         `bson:"payment"`
+	Username string             `bson:"username"`
+	Id       primitive.ObjectID `bson:"_id,omitempty"`
+	Type     uint32             `bson:"user_type"`
+	Role     uint32             `bson:"role"`
+	Password string             `bson:"password"`
+	Email    string             `bson:"email"`
+
+	FirstName   string  `bson:"first_name"`
+	LastName    string  `bson:"last_name"`
+	PhoneNumber string  `bson:"phone"`
+	DOB         *DOBNub `bson:"DOB"`
 
 	Active_token string `bson:"-"`
-
-	AdminStatus bool `bson:"admin_status"`
+	AdminStatus  bool   `bson:"admin_status"`
 
 	ProfilePhotoUploaded bool               `bson:"profile_photo_uploaded"`
 	ProfilePhotoId       primitive.ObjectID `bson:"profile_photo_id,omitempty"`
 	ProfilePhoto         *ProfileImage      `bson:"-"`
+
+	BuyerRequested  bool `bson:"buyer_requested"`
+	WorkerRequested bool `bson:"worker_requested"`
+	BuyerEnabled    bool `bson:"buyer_enabled"`
+	WorkerEnabled   bool `bson:"worker_enabled"`
+
+	StripeCustomerId         string `bson:"stripe_customer_id,omitempty"`
+	StripeConnectedAccountId string `bson:"stripe_account_id,omitempty"`
+	StripeConnected          bool   `bson:"stripe_connected"`
+
+	StripeDefaultFCA string   `bson:"default_fca,omitempty"`
+	StripeFCAlist    []string `bson:"fca_ids,omitempty"`
+
+	StripeInfo *StripeNub `bson:"stripe_info"`
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -53,22 +67,25 @@ func (user *User) Proto() *comms.UserEntity {
 		return &comms.UserEntity{}
 	}
 	resp := &comms.UserEntity{
-		Id:             user.Id.Hex(),
-		Username:       user.Username,
-		Email:          user.Email,
-		UserType:       user.Type,
-		Role:           user.Role,
-		FullName:       user.FullName,
-		InstaAccount:   user.Instagram.Account,
-		InstaFollowers: user.Instagram.Followers,
-		InstaVerified:  user.Instagram.Verified,
+		Id:       user.Id.Hex(),
+		Username: user.Username,
+		Email:    user.Email,
+		UserType: user.Type,
+		Role:     user.Role,
 
-		TiktokAccount:   user.Tiktok.Account,
-		TiktokFollowers: user.Tiktok.Followers,
-		TiktokVerified:  user.Tiktok.Verified,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		PhoneNumber: user.PhoneNumber,
+		Dob:         user.DOB.Proto(),
 
 		AdminStatus:          user.AdminStatus,
 		ProfilePhotoUploaded: user.ProfilePhotoUploaded,
+
+		StripeConnected: user.StripeConnected,
+		StripeInfo:      user.StripeInfo.Proto(),
+
+		WorkerRequested: user.WorkerRequested,
+		BuyerRequested:  user.BuyerRequested,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
@@ -76,11 +93,11 @@ func (user *User) Proto() *comms.UserEntity {
 		resp.ProfilePhoto = user.ProfilePhoto.Proto()
 	}
 
-	if user.Payment.CardHolder != "" {
-		resp.PaymentSetup = true
-	} else {
-		resp.PaymentSetup = false
+	if user.BuyerRequested {
+		resp.DefaultFca = user.StripeDefaultFCA
 	}
+
+	resp.PaymentSetup = false
 	return resp
 }
 
@@ -111,24 +128,21 @@ func (user *User) Nub(author_status bool) *UserNub {
 	return userNub
 }
 
-type PaymentNub struct {
-	CardNumber string    `bson: card_number`
-	CardHolder string    `bson: card_holder`
-	Expiration time.Time `bson: expiration_date`
-	CVV        string    `bson: CVV`
-	Zip        string    `bson: zipcode`
+type DOBNub struct {
+	Day   uint32 `bson: "day"`
+	Month uint32 `bson:"month"`
+	Year  uint32 `bson:"year"`
 }
 
-type InstagramNub struct {
-	Account   string `bson:"account"`
-	Verified  bool   `bson:"verified"`
-	Followers uint32 `bson:"followers"`
-}
-
-type TiktokNub struct {
-	Account   string `bson:"account"`
-	Verified  bool   `bson:"verified"`
-	Followers uint32 `bson:"followers"`
+func (nub *DOBNub) Proto() *comms.DOBEntity {
+	if nub == nil {
+		return &comms.DOBEntity{}
+	}
+	return &comms.DOBEntity{
+		Day:   nub.Day,
+		Month: nub.Month,
+		Year:  nub.Year,
+	}
 }
 
 // DB Functions, general style is operation params, collection -> error
@@ -220,24 +234,37 @@ func PullProfilePhotoFromDb(user *User, database *mongo.Database) (*User, error)
 	return user, nil
 }
 
-func UserInsert(username, password, email, full_name string, user_type uint32, database *mongo.Database) (*User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 8)
 	if err != nil {
 		return nil, err
 	}
 
 	userD := &User{
-		Username: username,
-		Password: string(hashedPassword),
-		Email:    email,
-		FullName: full_name,
-		Type:     user_type,
-		Role:     STD_ROLE,
+		Username:    req.Username,
+		Password:    string(hashedPassword),
+		Email:       req.Email,
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		PhoneNumber: req.PhoneNumber,
+
+		WorkerRequested: req.WorkerRequested,
+		BuyerRequested:  req.BuyerRequested,
+
+		DOB: &DOBNub{
+			Day:   req.Dob.Day,
+			Month: req.Dob.Month,
+			Year:  req.Dob.Year,
+		},
+
+		Type:            req.UserType,
+		Role:            STD_ROLE,
+		StripeConnected: false,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)
 	if err != nil {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert User: \nusername: %s, \npassword: %s, \nemail: %s", username, password, email)))
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert User: \nusername: %s", req.Username)))
 		return nil, err
 	} else {
 		id := res.InsertedID
@@ -249,100 +276,4 @@ func UserInsert(username, password, email, full_name string, user_type uint32, d
 		}
 		return userD, nil
 	}
-}
-
-func UserAddInstagram(id primitive.ObjectID, insta_name string, followers uint32, verifed bool, collection *mongo.Collection) error {
-	filter := bson.D{{"_id", id}}
-	instaNub := InstagramNub{
-		Account:   insta_name,
-		Followers: followers,
-		Verified:  verifed,
-	}
-	update := bson.D{{"$set", bson.D{{"instagram", instaNub}}}}
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func UserAddTiktok(id primitive.ObjectID, tiktok_name string, followers uint32, verifed bool, collection *mongo.Collection) error {
-	filter := bson.D{{"_id", id}}
-	tiktokNub := TiktokNub{
-		Account:   tiktok_name,
-		Followers: followers,
-		Verified:  verifed,
-	}
-	update := bson.D{{"$set", bson.D{{"tiktok", tiktokNub}}}}
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-func UserVerifyInstagram(id primitive.ObjectID, verified bool, database *mongo.Database) (string, uint32, error) {
-	user, err := UserQueryId(id, database)
-	if err != nil {
-		return "", 0, err
-	}
-
-	if user.Instagram.Account == "" {
-		return "", 0, GenErrorInvalidSocialVerify("Instagram", user.Username)
-	}
-
-	instagramNub := user.Instagram
-	instagramNub.Verified = verified
-
-	filter := bson.M{"_id": id}
-	update := bson.D{{"$set", bson.D{{"instagram", instagramNub}}}}
-	_, err = database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return "", 0, err
-	}
-	return user.Instagram.Account, user.Instagram.Followers, nil
-}
-func UserVerifyTiktok(id primitive.ObjectID, verified bool, database *mongo.Database) (string, uint32, error) {
-	user, err := UserQueryId(id, database)
-	if err != nil {
-		return "", 0, err
-	}
-
-	if user.Tiktok.Account == "" {
-		return "", 0, GenErrorInvalidSocialVerify("Tiktok", user.Username)
-	}
-
-	tiktokNub := user.Tiktok
-	tiktokNub.Verified = verified
-
-	filter := bson.D{{"_id", id}}
-	update := bson.D{{"$set", bson.D{{"tiktok", tiktokNub}}}}
-	_, err = database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return "", 0, err
-	}
-	return user.Tiktok.Account, user.Tiktok.Followers, nil
-}
-
-func UserAddPayment(
-	id primitive.ObjectID,
-	card_number string,
-	card_holder string,
-	exp_date time.Time,
-	zip string,
-	cvv string,
-	collection *mongo.Collection) error {
-
-	filter := bson.D{{"_id", id}}
-	paymentNub := PaymentNub{
-		CardNumber: card_number,
-		CardHolder: card_holder,
-		Expiration: exp_date,
-		Zip:        zip,
-		CVV:        cvv,
-	}
-	update := bson.D{{"$set", bson.D{{"payment", paymentNub}}}}
-	_, err := collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return err
-	}
-	return nil
 }

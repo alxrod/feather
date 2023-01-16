@@ -28,7 +28,7 @@ const ProfileImg = (props) => {
       }
     
       for (let i = 0; i < props.cachedUrls.length; i++) {
-        if (props.cachedUrls[i] && props.cachedUrls[i][0] === other_user_id) {
+        if (props.cachedUrls[i][1] !== "" && props.cachedUrls[i][0] === other_user_id) {
           setHaveProfImg(true)
           setCacheUrl(props.cachedUrls[i][1])
         }

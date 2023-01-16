@@ -73,13 +73,9 @@ const ContractCreate = (props) => {
     setConPassword(new_password)
   }
 
-  const changeRole = () => {
-    if (conRole === WORKER_TYPE) {
-      setConRole(BUYER_TYPE)
-    } else {
-      setConRole(WORKER_TYPE)
-    }
-
+  const changeRole = (role) => {
+    console.log("CHANGING ROLE to ", role)
+    setConRole(role)
   }
         
   const [conTitle, setConTitle] = useState("")

@@ -56,6 +56,8 @@ type Contract struct {
 	// Query Flags
 	Disputed       bool `bson:"disputed"`
 	AdminRequested bool `bson:"admin_requested"`
+
+	SetupIntentId string `bson:"setup_intent_id"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {

@@ -4,9 +4,11 @@ import { DocumentIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react
 import {useState, useEffect} from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import ContractService from "../../../services/contract.service";
-import { claimContract } from "../../../reducers/contract/dispatchers/contract.dispatcher";
+
+import { claimContract, queryInvite} from "../../../reducers/contract/dispatchers/contract.dispatcher";
 import { setRedirect } from "../../../reducers/user/dispatchers/user.dispatcher";
+import { BUYER_TYPE, WORKER_TYPE, BOTH_TYPE } from "../../../services/user.service";
+
 import { Link, Redirect } from "react-router-dom"
 import BackButton from "../../general_components/back_button"
 
@@ -27,6 +29,9 @@ const ContractInvite = (props) => {
   }, [inviteBody])
 
   const [isOwner, setOwner] = useState(false)
+  const [incompatWContract, setIncompatWContract] = useState(false)
+  const [incompatMsg, setIncompatMsg] = useState(false)
+
   const [existingUser, setExistingUser] = useState({
     username: "",
   })
@@ -59,18 +64,26 @@ const ContractInvite = (props) => {
   useEffect( () => {
     if (inviteBody.id === "") {
       props.setRedirect("/invite/"+contractId)
-      ContractService.queryInvite(contractId).then((body) => {
+      props.queryInvite(contractId).then((body) => {
+        console.log("GOT A RESPONSEs")
         setBody(body)
         console.log(body)
         console.log(props.user)
         if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
-        } else if (body.buyer.id !== "") {
+        } else if (body.buyer.id === "" && props.user.buyerRequested) {
           setExistingUser(body.buyer)
-        } else {
+        } else if (body.worker.id === "" && props.user.workerRequested) {
           setExistingUser(body.worker)
+        } else {
+          setIncompatWContract(true)
+          if (body.worker.id !== "") {
+            setIncompatMsg("This contract needs a worker, but you are a buyer")
+          } else {
+            setIncompatMsg("This contract needs a buyer, but you are a worker")
+          }
+
         }
-        
       })
     }
   }, [contractId])
@@ -115,30 +128,37 @@ const ContractInvite = (props) => {
             
             {(!isOwner && props.isLoggedIn) && (
               <div>
-                <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">Enter the contract password to claim it</p>
-                <div className="mt-1 ml-5">
-                  <div className="mt-1 relative flex items-center">
-                    <input
-                      type="text"
-                      name="email"
-                      id="email"
-                      className="text-gray-600 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
-                      placeholder="your contract password"
-                      value={contractPassword}
-                      onChange={changePassword}
-                    />
-                    <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
-                      <button className="inline-flex items-center bg-indigo-500 rounded px-2 text-sm font-sans font-medium text-white" onClick={handleClick}>
-                        Claim
-                      </button>
+                {incompatWContract ? (
+                   <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
+                     {incompatMsg}
+                   </p>
+                ) : (
+                  <>
+                    <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">Enter the contract password to claim it</p>
+                    <div className="mt-1 ml-5">
+                      <div className="mt-1 relative flex items-center">
+                        <input
+                          type="text"
+                          name="email"
+                          id="email"
+                          className="text-gray-600 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
+                          placeholder="your contract password"
+                          value={contractPassword}
+                          onChange={changePassword}
+                        />
+                        <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                          <button className="inline-flex items-center bg-indigo-500 rounded px-2 text-sm font-sans font-medium text-white" onClick={handleClick}>
+                            Claim
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex justify-center">
+                        <p className="text-red mt-1">{errorMessage}</p>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex justify-center">
-                    <p className="text-red mt-1">{errorMessage}</p>
-                  </div>
-                </div>
-              </div>
+                  </>
+                )}
+              </div>    
             )}
             {(!isOwner && !props.isLoggedIn) && (
               <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
@@ -201,6 +221,7 @@ const mapStateToProps = ({ contract, user }) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   setRedirect,
   claimContract,
+  queryInvite,
 }, dispatch)
 
 export default connect(

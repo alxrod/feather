@@ -3,15 +3,24 @@ package main
 import (
 	"embed"
 	"log"
+	"os"
 
 	BackEndLib "github.com/alxrod/feather/backend"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/stripe/stripe-go/v74"
 )
 
 //go:embed ui/featherapp/build
 var content embed.FS
 
 func main() {
+
+	key_name := "REACT_APP_STRIPE_PRIVATE_KEY"
+	_, found := os.LookupEnv(key_name)
+	if !found {
+		log.Fatalln("You need to have a private stripe key in your environment first")
+	}
+	stripe.Key = os.Getenv(key_name)
 
 	// Create backend server
 	backend, err := BackEndLib.NewBackServer("cert/server.crt", "cert/server.key", "127.0.0.1:9990")

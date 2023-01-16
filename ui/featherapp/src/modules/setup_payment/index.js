@@ -6,7 +6,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import { 
         register,
-        addPayment,
 } from "../../reducers/user/dispatchers/user.dispatcher";
 import { push } from 'connected-react-router'
 import {
@@ -51,7 +50,6 @@ const mapStateToProps = ({ user, site }) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
     register,
     push,
-    addPayment,
     toggleFromRegister,
 }, dispatch)
 

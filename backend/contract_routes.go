@@ -142,12 +142,34 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 	if err != nil {
 		return nil, err
 	}
+
 	role := db.BUYER
+	var worker *db.User
+	var buyer *db.User
 	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		role = db.WORKER
+		worker = user
+		buyer, err = db.UserQueryId(contract.Buyer.Id, database)
+		if err != nil {
+			return nil, err
+		}
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
+		buyer = user
+		worker, err = db.UserQueryId(contract.Worker.Id, database)
+		if err != nil {
+			return nil, err
+		}
 	} else if user.AdminStatus {
 		role = db.ADMIN
 	}
+	if contract.Stage == db.ACTIVE {
+		err = s.StripeAgent.CreateContractSetupIntent(worker, buyer, contract, database)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// CreateContractSetupIntent
 
 	err = s.ChatAgent.SendContractSignMessage(contract, user, database)
 	if err != nil {

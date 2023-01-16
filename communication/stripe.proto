@@ -1,0 +1,102 @@
+syntax = "proto3";
+package main;
+option go_package=".;communication";
+// import "google/protobuf/timestamp.proto";
+import "communication/contract.proto";
+
+message StripeEntity {
+    string first_name = 1;
+    string last_name = 7;
+    string phone = 2;
+    AddressEntity address = 3;
+    DobEntity dob = 4;
+    string last_four_account = 5;
+    string routing_number = 6;
+}
+
+message AddressEntity {
+    string city = 1;
+    string country = 2;
+    string line1 = 3;
+    string line2 = 4;
+    string postal_code = 5;
+    string state = 6;
+}
+
+message DobEntity {
+    uint32 day = 1;
+    uint32 month = 2;
+    uint32 year = 3;
+}
+message PaymentRegisterRequest {
+    string user_id = 1;
+}
+message FCSSecret {
+    string client_secret = 1;
+}
+message AccountLinkResp {
+    string url = 1;
+}
+
+message FCAccountSet {
+    repeated string account_ids = 1;
+    string user_id = 2;
+}
+
+message IntentCreateReq {
+    string user_id = 1;
+}
+
+message IntentSecret {
+    string client_secret = 1;
+}
+
+message BankAccountEntity {
+    string account_id = 1;
+    string account_last4 = 2;
+    string routing = 3;
+    string account_type = 4;
+    string payment_method_id = 5;
+}
+
+message ListRequest {
+    string user_id = 1;
+}
+message BASet {
+    repeated BankAccountEntity accounts = 1;
+}
+
+message SetupConfirm {
+    string user_id = 1;
+    string pm_id= 2;
+}
+
+message FcaQuery {
+    string user_id = 1;
+    string fca_id = 2;
+}
+
+message ContractIntentRequest {
+    string worker_id = 1;
+    string buyer_id = 2;
+}
+
+
+service StripeService {
+    rpc GetAccountOnboardLink(PaymentRegisterRequest) returns (AccountLinkResp) {};
+
+    rpc GetInitialSetupSecret(PaymentRegisterRequest) returns (IntentSecret) {};
+    rpc GetCustomerFCSecret(PaymentRegisterRequest) returns (FCSSecret) {};
+
+    rpc ConfirmPaymentConnected(SetupConfirm) returns (NullResponse) {};
+
+    rpc ListFcas(ListRequest) returns (BASet) {};
+    rpc ListExBAs(ListRequest) returns (BASet) {};
+
+    rpc DisconnectFca(FcaQuery) returns (NullResponse) {};
+    rpc SetDefaultFca(FcaQuery) returns (NullResponse) {};
+
+    rpc TestCharge(IntentCreateReq) returns (IntentSecret) {};
+
+    // rpc CreateContractIntentSecret(ContractIntentRequest) returns (NullResponse) {};
+}

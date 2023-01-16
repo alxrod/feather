@@ -769,10 +769,12 @@ class ContractService {
         return new Promise( (resolve, reject) => { 
             contractClient.inviteQuery(queryRequest, null, function(error, response) {
                 if (error) {
+                    console.log("Info got error of ", error)
                     reject(error)
                 }
                 const resp = response.toObject()
                 resp.deadline = response.getDeadline().toDate()
+                console.log("Success: ", resp)
                 resolve(resp)
             });
         });
