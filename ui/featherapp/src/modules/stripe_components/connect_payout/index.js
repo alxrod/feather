@@ -20,7 +20,7 @@ const ConnectPayout = (props) => {
   }
 
   return (
-    <button className="px-2 py-1 text-sm text-white bg-indigo-500 rounded-md"onClick={handleConnect}>Connect Payouts</button>
+    <button className="px-2 py-1 text-sm text-white bg-primary4 rounded-md"onClick={handleConnect}>Connect Payouts</button>
   )
 }
 

@@ -2,7 +2,6 @@ import NoContracts from "./no_contracts_view"
 import { Link } from 'react-router-dom';
 import React, {useState, useEffect} from 'react';
 
-import { push } from 'connected-react-router'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import StageTag from './stage_tag'
@@ -66,15 +65,16 @@ const ContractList = (props) => {
             if (user_ids[j] === props.contracts[i].workerId) {
               worker_in = true
             }
-            if (user_ids[j] !== props.contracts[i].buyerId) {
+            if (user_ids[j] === props.contracts[i].buyerId) {
               buyer_in = true
             }
           }
 
-          if (!worker_in && props.contracts[i].workerId) {
+          if (!worker_in && props.contracts[i].workerId && props.user.id != props.contracts[i].workerId) {
             user_ids.push(props.contracts[i].workerId)
           }
-          if (!buyer_in && props.contracts[i].buyerId) {
+          if (!buyer_in && props.contracts[i].buyerId && props.user.id != props.contracts[i].buyerId) {
+            console.log("Adding ", props.contracts[i].buyerId)
             user_ids.push(props.contracts[i].buyerId)
           }
         }
@@ -101,18 +101,18 @@ const ContractList = (props) => {
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 {!no_contracts && (
                   <table className="min-w-full divide-y divide-gray-300">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-secondary1">
                       <tr>
-                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-secondary7 sm:pl-6">
                           Contract
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-secondary7">
                           Deadline
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-secondary7">
                           Stage
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-secondary7">
                           Price
                         </th>
                         <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -145,7 +145,7 @@ const ContractList = (props) => {
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">${contract.price}</td> 
                           <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                            <Link to={"/contract/"+contract.id} className="text-indigo-700">
+                            <Link to={"/contract/"+contract.id} className="text-secondary4">
                               View<span className="sr-only">, {contract.name}</span>
                             </Link>
                           </td>

@@ -19,7 +19,7 @@ export default function DeadlineHistory() {
                     <span className="flex items-start">
                       <span className="flex-shrink-0 relative h-5 w-5 flex items-center justify-center">
                         <CheckCircleIcon
-                          className="h-full w-full text-indigo-600 group-hover:text-indigo-800"
+                          className="h-full w-full text-primary5 group-hover:text-primary7"
                           aria-hidden="true"
                         />
                       </span>
@@ -31,10 +31,10 @@ export default function DeadlineHistory() {
                 ) : step.status === 'current' ? (
                   <a href={step.href} className="flex items-start" aria-current="step">
                     <span className="flex-shrink-0 h-5 w-5 relative flex items-center justify-center" aria-hidden="true">
-                      <span className="absolute h-4 w-4 rounded-full bg-indigo-200" />
-                      <span className="relative block w-2 h-2 bg-indigo-600 rounded-full" />
+                      <span className="absolute h-4 w-4 rounded-full bg-primary2" />
+                      <span className="relative block w-2 h-2 bg-primary5 rounded-full" />
                     </span>
-                    <span className="ml-3 text-sm font-medium text-indigo-600">{step.name}</span>
+                    <span className="ml-3 text-sm font-medium text-primary5">{step.name}</span>
                   </a>
                 ) : (
                   <a href={step.href} className="group">

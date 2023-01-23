@@ -3,7 +3,7 @@ import { CheckIcon, XIcon, QuestionMarkCircleIcon } from '@heroicons/react/outli
 import ChatLabel from "./chat_label"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import {useEffect, useRef, useState } from 'react'
+import {useEffect, useRef, useState, Fragment } from 'react'
 
 import {msgMethods} from "../../../../services/chat.service"
 
@@ -47,8 +47,21 @@ const MainTimeline = (props) => {
   const chat = useRef(null)
   const bottomOfChat = useRef(null)
   const isVisible = useOnScreen(chat)
+  const [lastReadMsg, setLastReadMsg] = useState(-1)
 
   useEffect( () => {
+    for (let i = props.messages.length-1; i >= 0; i--) {
+      let read = false
+      for (let j = 0; j < props.messages[i].readReceiptsList.length; j++) {
+        if (props.messages[i].readReceiptsList[j].userId === props.user.id && props.messages[i].readReceiptsList[j].read) {
+          read = true;
+        }
+      }
+      if (read) {
+        setLastReadMsg(i)
+        break
+      }
+    }
     if (isVisible) {
       bottomOfChat.current?.scrollIntoView({behavior: 'auto', block: 'nearest', inline: 'start' });
     }
@@ -58,6 +71,7 @@ const MainTimeline = (props) => {
     <div ref={chat} className="flow-root overflow-y-scroll grow h-[45vh]">
       <ul role="list" className="-mb-8">
         {props.messages.map((msg, msgIdx) => (
+          <Fragment key={msgIdx}>
           <li key={msgIdx}>
             <div className="relative pb-8">
               {msgIdx !== props.messages.length - 1 ? (
@@ -106,6 +120,18 @@ const MainTimeline = (props) => {
               </div>
             </div>
           </li>
+          {(lastReadMsg === msgIdx && msgIdx != props.messages.length-1) && (
+            <div className="mt-2 text-sm text-gray-700 w-full border-gray-400">
+              <div className="flex justify-center items-center">
+                <div className="grow border-gray-300 border-b h-1"></div>
+                <div className="flex items-center">
+                  <h3 className="text-xl font-medium text-gray-500 px-4">New Messages</h3>
+                </div>
+                <div className="grow border-gray-300 border-b h-1"></div>
+              </div>
+            </div>
+          )}
+          </Fragment>
         ))}
         <div ref={bottomOfChat} className="h-10"></div>
       </ul>
@@ -113,10 +139,11 @@ const MainTimeline = (props) => {
   )
 }
 
-const mapStateToProps = ({ chat }) => ({
+const mapStateToProps = ({ chat, user}) => ({
   messages: chat.messages,
   reloadMsg: chat.reloadMsg,
   reloadIdx: chat.reloadIdx,
+  user: user.user
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

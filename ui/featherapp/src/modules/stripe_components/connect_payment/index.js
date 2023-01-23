@@ -82,10 +82,8 @@ const ConnectPayment = (props) => {
   
   return (
     <>
-
-    <button className="px-2 py-1 text-sm text-white bg-indigo-500 rounded-md" onClick={handleCreate}>Add Payment</button>
+    <button className="px-2 py-1 text-sm text-white bg-primary4 rounded-md" onClick={handleCreate}>Add Payment</button>
     <MandateModal confirmMandate={handleAccept} showMandate={showMandate}/>
-    
     </>
   )
 }

@@ -100,6 +100,15 @@ export const setRedirect = (link) => {
     }
 }
 
+export const setRegisterRole = (role) => {
+    return dispatch => {
+        dispatch({
+            type: userActions.SET_REGISTER_ROLE,
+            payload: role,
+        })
+    }
+}
+
 export const clearMessage = () => {
     return dispatch => {
         dispatch({

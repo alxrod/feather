@@ -64,6 +64,11 @@ func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullReq
 		return nil, errors.New("You must pass a room_id to get messages")
 	}
 
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You passed an invalid user id")
+	}
+
 	room_id, err := primitive.ObjectIDFromHex(req.RoomId)
 	if err != nil {
 		return nil, errors.New("You passed an invalid room id")
@@ -78,9 +83,46 @@ func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullReq
 	protos := make([]*comms.ChatMessage, len(room.Messages))
 	for idx, message := range room.Messages {
 		protos[idx] = message.Proto()
+		message.UpdateReadReceipts(user_id, database)
 	}
 	return &comms.ChatMessageSet{
 		RoomId:   room.Id.Hex(),
 		Messages: protos,
 	}, nil
+}
+
+func (s *BackServer) PullNewMessages(ctx context.Context, req *comms.NewMessagesRequest) (*comms.NewMessageSet, error) {
+	database := s.dbClient.Database(s.dbName)
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You passed an invalid user id")
+	}
+
+	user, err := db.UserQueryId(user_id, database)
+
+	contracts, err := db.ContractsByUser(user_id, database)
+	protos := make([]*comms.NewMessageEntity, 0)
+
+	for _, contract := range contracts {
+		room, err := db.ChatRoomQueryId(contract.RoomId, database)
+		if err != nil {
+			return nil, err
+		}
+		for _, message := range room.Messages {
+			for _, receipt := range message.ReadReceipts {
+				if receipt.UserId == user_id && !receipt.Read {
+					msgProto := message.Proto()
+					contractNub, _ := contract.NubProto(user)
+					protos = append(protos, &comms.NewMessageEntity{
+						Contract: contractNub,
+						Message:  msgProto,
+					})
+				}
+			}
+		}
+	}
+	return &comms.NewMessageSet{
+		Messages: protos,
+	}, nil
+
 }

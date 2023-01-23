@@ -30,42 +30,70 @@ export default function ContractTimeline(props) {
 		setSteps(newSteps)
 	}, [])
   return (
-    <nav aria-label="Progress" className="bg-white">
+    <nav aria-label="Progress" className="bg-secondary1">
       <ol role="list" className="grid grid-cols-6">
         {steps.map((step,idx) => (
           <li key={step.name} className="relative flex w-full">
             {step.status === 'complete' || (step.status === "current" && idx == steps.length-1) ? (
-              <div className="group flex w-full items-center bg-indigo-600 py-0 h-1 sm:py-4">
+              <div className="group flex w-full items-center py-1">
                 <span className="flex justify-center items-center w-full text-sm font-medium">
+                  <span className="flex flex-shrink-0 items-center justify-center hidden md:flex">
+                    <CheckIcon className="h-6 w-6 text-primary5" aria-hidden="true" />
+                  </span>
+                  <span className="ml-2 text-sm font-medium text-primary5 hidden sm:flex">{step.name}</span>
+                </span>
+              </div>
+            ) : step.status === 'current' ? (
+              <div className="group flex w-full items-center py-1">
+                <span className="flex items-center justify-center w-full text-sm font-medium" >
+                  <span className="ml-2 text-sm font-medium text-primary5 hidden sm:flex">{step.name}</span>
+                </span>
+              </div>
+            ) : (
+              <div className="group flex w-full justify-center items-center py-1">
+                <span className="items-center flex justify-center w-full text-sm font-medium">
+                  <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900 hidden sm:flex">{step.name}</span>
+                </span>
+              </div>
+            )}
+          </li>
+        ))}
+      </ol>
+      <ol role="list" className="grid grid-cols-6">
+        {steps.map((step,idx) => (
+          <li key={step.name} className="relative flex w-full">
+            {step.status === 'complete' || (step.status === "current" && idx == steps.length-1) ? (
+              <div className="group flex w-full items-center bg-primary5 py-0 h-1">
+                {/* <span className="flex justify-center items-center w-full text-sm font-medium">
                   <span className="flex flex-shrink-0 items-center justify-center hidden md:flex">
                     <CheckIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </span>
                   <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step.name}</span>
-                </span>
+                </span> */}
               </div>
             ) : step.status === 'current' ? (
-              <div className="group flex w-full items-center bg-indigo-600 py-0 h-1 sm:py-4">
-                <span className="flex items-center justify-center w-full text-sm font-medium" >
+              <div className="group flex w-full items-center bg-primary5 py-0 h-1">
+                {/* <span className="flex items-center justify-center w-full text-sm font-medium" >
                   <span className="ml-2 text-sm font-medium text-white hidden sm:flex">{step.name}</span>
-                </span>
+                </span> */}
               </div>
             ) : (
-              <div className="group flex w-full justify-center items-center py-0 h-1 sm:py-4">
-                <span className="items-center flex justify-center w-full text-sm font-medium">
+              <div className="group flex w-full justify-center items-center py-0 h-1">
+                {/* <span className="items-center flex justify-center w-full text-sm font-medium">
                   <span className="ml-4 text-sm font-medium text-gray-500 group-hover:text-gray-900 hidden sm:flex">{step.name}</span>
-                </span>
+                </span> */}
               </div>
             )}
 
             {step.stage != contractStages.COMPLETE ? (
               <>
                 {step.status === 'complete' || (step.status === "current" && idx == steps.length-1) ? (
-                <div className="absolute top-0 right-0 h-full w-5 block bg-indigo-600" aria-hidden="true">
+                <div className="absolute top-0 right-0 h-full w-5 block bg-primary5" aria-hidden="true">
                   <svg
-                    className="h-full w-full text-[#5850ec]"
+                    className="h-full w-full text-[#1C6D3A]"
                     viewBox="0 0 22 80"
-										// is equivalent to indigo-600
-                    fill="#5850ec"
+										// is equivalent to primary5
+                    fill="#1C6D3A"
                     preserveAspectRatio="none"
                   >
                     <path
@@ -77,12 +105,12 @@ export default function ContractTimeline(props) {
                   </svg>
                 </div>
 								) : step.status === 'current' ? (
-									<div className="absolute top-0 right-0 h-full w-5 block bg-white" aria-hidden="true">
+									<div className="absolute top-0 right-0 h-full w-5 block bg-secondary1" aria-hidden="true">
 										<svg
-											className="h-full w-full text-[#5850ec]"
+											className="h-full w-full text-[#1C6D3A]"
 											viewBox="0 0 22 80"
-											// is equivalent to indigo-500
-											fill="#5850ec"
+											// is equivalent to primary4
+											fill="#1C6D3A"
 											preserveAspectRatio="none"
 										>
 											<path
@@ -94,22 +122,8 @@ export default function ContractTimeline(props) {
 										</svg>
 									</div>
 								) : (
-									<div className="absolute top-0 right-0 h-full w-5 block bg-white" aria-hidden="true">
-                  <svg
-                    className="h-full w-full text-white"
-                    viewBox="0 0 22 80"
-										// is equivalent to indigo-500
-                    fill="white"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d="M0 -2L20 40L0 82"
-                      vectorEffect="non-scaling-stroke"
-                      stroke="currentcolor"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+									<div className="absolute top-0 right-0 h-full w-5 block bg-secondary1" aria-hidden="true">
+                  </div>
 								)}
               </>
             ) : null}

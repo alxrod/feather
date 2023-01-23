@@ -130,8 +130,7 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 	}
 	entry.mu.Unlock()
 
-	proto := msg.Proto()
-	err = agent.BroadcastMessage(room_id, proto)
+	err = agent.BroadcastMessage(room_id, msg, database)
 
 	return err
 }
@@ -162,15 +161,15 @@ func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Dat
 	}
 	entry.mu.Unlock()
 
-	proto := msg.Proto()
 	go func(
 		agent *ChatAgent,
 		room_id primitive.ObjectID,
-		proto *comms.ChatMessage) {
+		msg *db.Message,
+		database *mongo.Database) {
 
-		agent.BroadcastMessage(room_id, proto)
+		agent.BroadcastMessage(room_id, msg, database)
 
-	}(agent, room_id, proto)
+	}(agent, room_id, msg, database)
 
 	return nil
 }
@@ -180,7 +179,7 @@ type ConnLog struct {
 	index int
 }
 
-func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *comms.ChatMessage) error {
+func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *db.Message, database *mongo.Database) error {
 	log.Println("Broadcasting")
 	entry, ok := agent.ActiveRooms[room_id]
 	if !ok {
@@ -221,10 +220,11 @@ func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *comms.
 	for idx, conn := range entry.conns {
 		wait.Add(1)
 
-		go func(msg *comms.ChatMessage, conn *Connection, idx int) {
+		go func(msg *db.Message, conn *Connection, idx int, database *mongo.Database) {
 			defer wait.Done()
 			if conn.Active {
-				err := conn.Stream.Send(msg)
+				msg.UpdateReadReceipts(conn.Id, database)
+				err := conn.Stream.Send(msg.Proto())
 				log.Println(color.Ize(color.Yellow, fmt.Sprintf("Sending message %v to user %v", msg.Id, conn.Id)))
 
 				if err != nil {
@@ -235,7 +235,7 @@ func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *comms.
 			} else {
 				removals = append(removals, idx)
 			}
-		}(msg, conn, idx)
+		}(msg, conn, idx, database)
 	}
 
 	go func() {

@@ -34,7 +34,7 @@ const ContractTextArea = (props) => {
     <div className={"flex flex-col items-start space-x-4" + (props.embedded && " grow")}>
       <div className="grow w-full">
           <div 
-            className={"h-full focus-within:border-indigo-600" + (props.embedded ? " rounded-lg border border-gray-200 p-4" : " border-b")}
+            className={"h-full focus-within:border-primary5" + (props.embedded ? " rounded-lg border border-gray-200 p-4" : " border-b")}
             onClick={(e) => e.preventDefault()}
           >
             <label htmlFor="comment" className="sr-only">

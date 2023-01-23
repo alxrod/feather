@@ -37,7 +37,7 @@ const ProfileSidebar = (props) => {
               href={item.href}
               className={classNames(
                 item.current
-                  ? 'bg-indigo-50 border-indigo-600 text-indigo-600'
+                  ? 'bg-indigo-50 border-primary5 text-primary5'
                   : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                 'group flex items-center px-3 py-2 text-sm font-medium border-l-4'
               )}
@@ -45,7 +45,7 @@ const ProfileSidebar = (props) => {
             >
               <item.icon
                 className={classNames(
-                  item.current ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500',
+                  item.current ? 'text-primary4' : 'text-gray-400 group-hover:text-gray-500',
                   'mr-3 flex-shrink-0 h-6 w-6'
                 )}
                 aria-hidden="true"

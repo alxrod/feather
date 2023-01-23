@@ -72,16 +72,16 @@ const DeadlineDisplay = (props) => {
                         data-tooltip-target="tooltip-light" 
                         data-tooltip-style="light"
                         className={"cursor-pointer relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center rounded-full "+
-                                  ((idx === props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-indigo-300 bg-indigo-500 hover:bg-indigo-900" : 
+                                  ((idx === props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-primary3 bg-primary4 hover:bg-primary7" : 
                                    (deadline.awaitingCreation) ? "border-2 bg-green border-green" : 
                                    (deadline.awaitingDeletion) ? "border-2 bg-red border-red" : 
-                                   "bg-indigo-600 hover:bg-indigo-900")
+                                   "bg-primary5 hover:bg-primary7")
                         }
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
                         <CheckIcon className={"w-"+(props.iconSize-2)+" h-"+(props.iconSize-2)+" text-white"} aria-hidden="true" />
                         {/* <span
-                          className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-indigo-500"
+                          className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-primary4"
                           aria-hidden="true"
                         /> */}
                         <span className="sr-only">{deadline.id}</span>
@@ -96,10 +96,10 @@ const DeadlineDisplay = (props) => {
                 //     </div>
                 //     <a
                 //       href="#"
-                //       className="relative w-8 h-8 flex items-center justify-center bg-white border-2 border-indigo-600 rounded-full"
+                //       className="relative w-8 h-8 flex items-center justify-center bg-white border-2 border-primary5 rounded-full"
                 //       aria-current="step"
                 //     >
-                //       <span className="h-2.5 w-2.5 bg-indigo-600 rounded-full" aria-hidden="true" />
+                //       <span className="h-2.5 w-2.5 bg-primary5 rounded-full" aria-hidden="true" />
                 //       <span className="sr-only">{step.name}</span>
                 //     </a>
                 //   </>
@@ -112,10 +112,10 @@ const DeadlineDisplay = (props) => {
                       <p
                         href="#"
                         className={"cursor-pointer group relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-white rounded-full " +
-                                  ((idx == props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-indigo-500" : 
+                                  ((idx == props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-primary4" : 
                                   (deadline.awaitingCreation) ? "border-2 border-green" : 
                                   (deadline.awaitingDeletion) ? "border-2 border-red" :
-                                  "border-2 border-gray-300 hover:border-indigo-400")}
+                                  "border-2 border-gray-300 hover:border-primary3")}
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
                         <span
@@ -131,7 +131,7 @@ const DeadlineDisplay = (props) => {
               </li>
               {((idx !== props.deadlines.length - 1) && deadline.status === "past" ) && (
                 <div key={idx*3-1} className="grow" aria-hidden="true">
-                  <div className="h-0.5 w-full border-b-2 border-indigo-600" />
+                  <div className="h-0.5 w-full border-b-2 border-primary5" />
                 </div>
               )}
               {((idx !== props.deadlines.length - 1) && deadline.status !== "past") && (

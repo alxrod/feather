@@ -92,7 +92,7 @@ const PayoutMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
@@ -107,7 +107,7 @@ const PayoutMsg = (props) => {
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
                       <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
                       </>
@@ -123,7 +123,7 @@ const PayoutMsg = (props) => {
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
+                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
                       <p className="ml-1 text-green text-lg font-medium">{props.msg.body.newVersion}%</p>
                       </>
@@ -135,7 +135,7 @@ const PayoutMsg = (props) => {
           </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(displayDecide(props.msg, yourStatus, props.user)) && (
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -145,6 +145,7 @@ const PayoutMsg = (props) => {
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 
+          embedded={props.embedded}
           yourStatus={yourStatus} 
           otherStatus={otherStatus} 
           adminStatus={props.msg.adminStatus}

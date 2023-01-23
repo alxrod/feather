@@ -9,6 +9,7 @@ export const getProfilePicUrls = (user_ids) => {
             (creds) => {
                 return FileService.getProfilePicUrls(creds.access_token, user_ids).then(
                     (resp) => {
+                        console.log("Cache complete w: ", resp.cacheUrlsMap)
                         dispatch({
                             type: fileActions.SET_PROFILE_URL_CACHE,
                             payload: resp.cacheUrlsMap,

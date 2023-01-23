@@ -1,6 +1,6 @@
 import { UserIcon } from '@heroicons/react/outline'
-
 export default (props) => {
+  console.log()
   if (props.user.profilePhotoUploaded) {
     return (
       <img 

@@ -44,6 +44,7 @@ const Register = (props) => {
     const [generalError, setGenError] = useState("")
     const [errorExists, setErrorExists] = useState(false)
 
+    
 
     const handleUsername = (e) => {
         const newUsername = e.target.value
@@ -116,6 +117,10 @@ const Register = (props) => {
     const handleType = (e) => {
       setUserType(e.target.value)
     }
+    useEffect( () => {
+      console.log("Switching defalt val to ", props.defaultRegisterRole)
+      setUserType(props.defaultRegisterRole)
+    }, [props.defaultRegisterRole])
 
     useEffect(()=> {
         if (
@@ -152,7 +157,7 @@ const Register = (props) => {
         props.register(username, firstName, lastName, email, password, phone, date, userType).then( () => {
 
             props.toggleFromRegister(true)
-            props.push("/setup-payment")
+            props.push("/profile")
         }, err => {
             setGenError(err)
             setErrorExists(true)
@@ -194,7 +199,7 @@ const Register = (props) => {
                         autoComplete="username"
                         value={username}
                         onChange={handleUsername}
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary4 focus:border-primary4 sm:text-sm"
                       />
                       {(usernameError !== "") && (
                         <p className="text-red text-sm">{usernameError}</p>
@@ -215,7 +220,7 @@ const Register = (props) => {
                         value={name}
                         onChange={handleName}
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary4 focus:border-primary4 sm:text-sm"
                       />
                       {(nameError !== "") && (
                         <p className="text-red text-sm">{nameError}</p>
@@ -231,8 +236,9 @@ const Register = (props) => {
                         id="type"
                         name="type"
                         autoComplete="user-type"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary4 focus:ring-primary4 sm:text-sm"
                         onChange={handleType}
+                        value={userType}
                       >
                         <option value={WORKER_TYPE} >Worker</option>
                         <option value={BUYER_TYPE} >Buyer</option>
@@ -254,7 +260,7 @@ const Register = (props) => {
                           name="country"
                           autoComplete="country"
                           disabled
-                          className="h-full rounded-md border-transparent bg-transparent py-0 pl-3 pr-7 text-gray-500 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          className="h-full rounded-md border-transparent bg-transparent py-0 pl-3 pr-7 text-gray-500 focus:border-primary4 focus:ring-primary4 sm:text-sm"
                         >
                           <option>US</option>
                         </select>
@@ -263,7 +269,7 @@ const Register = (props) => {
                         type="text"
                         name="phone-number"
                         id="phone-number"
-                        className="block w-full rounded-md border-gray-300 pl-16 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block w-full rounded-md border-gray-300 pl-16 focus:border-primary4 focus:ring-primary4 sm:text-sm"
                         value={phone}
                         onChange={handlePhone}
                       />
@@ -288,7 +294,7 @@ const Register = (props) => {
                           rounded-md
                           border-gray-300
                           shadow-sm
-                          focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                          focus:border-primary3 focus:ring focus:ring-primary2 focus:ring-opacity-50
                           text-gray-500
                         "
                         value={dob}
@@ -312,7 +318,7 @@ const Register = (props) => {
                         value={email}
                         onChange={handleEmail}
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary4 focus:border-primary4 sm:text-sm"
                       />
                       {(emailError !== "") && (
                         <p className="text-red text-sm">{emailError}</p>
@@ -333,7 +339,7 @@ const Register = (props) => {
                         value={password}
                         onChange={handlePassword}
                         required
-                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary4 focus:border-primary4 sm:text-sm"
                       />
                       {(passwordError !== "") && (
                         <p className="text-red text-sm">{passwordError}</p>
@@ -349,9 +355,9 @@ const Register = (props) => {
                       className={"w-full flex justify-center py-2 px-4 "+
                                 "border border-transparent rounded-md "+
                                 "shadow-sm text-sm font-medium text-white "+
-                                "bg-indigo-600 hover:bg-indigo-700 focus:outline-none "+
-                                "focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 "+
-                                "disabled:bg-indigo-400"}
+                                "bg-primary5 hover:bg-primary6 focus:outline-none "+
+                                "focus:ring-2 focus:ring-offset-2 focus:ring-primary4 "+
+                                "disabled:bg-primary3"}
                     >
                       Create Your Account
                     </button>
@@ -370,6 +376,7 @@ const Register = (props) => {
 
 const mapStateToProps = ({ user }) => ({
     user: user.user,
+    defaultRegisterRole: user.defaultRegisterRole,
     redirectLink: user.redirectLink
 })
 

@@ -14,3 +14,5 @@ export const CHAT_MESSAGE_RECEIVE = "chat/message/RECEIVE"
 export const CHAT_MESSAGE_UPDATE = "chat/message/UPDATE"
 export const CHAT_CLEAR_RELOAD = "chat/message/CLEAR_RELOAD"
 
+export const CHAT_PULL_NEW_MESSAGES = "chat/new_messages/PULL"
+

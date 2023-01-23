@@ -7,6 +7,7 @@ const initialState = {
     roomId: "",
     isActive: false,
     messages: [],
+    newMessages: [],
     messagesChanged: false,
     sending: sendStates.INACTIVE,
     
@@ -18,6 +19,11 @@ const initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
 
+        case actions.CHAT_PULL_NEW_MESSAGES:
+            return {
+                ...state,
+                newMessages: action.payload
+            }
         case actions.CHAT_MESSAGE_HISTORY_PULLED:
             return {
                 ...state,

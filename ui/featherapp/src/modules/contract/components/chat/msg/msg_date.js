@@ -91,7 +91,7 @@ const DateMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper embedded={props.embedded} msg={props.msg} editString={editString} icon={Icon}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex flex-wrap items-center">
@@ -133,7 +133,7 @@ const DateMsg = (props) => {
           </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(displayDecide(props.msg, yourStatus, props.user)) && (
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -143,6 +143,7 @@ const DateMsg = (props) => {
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 
+          embedded={props.embedded}
           yourStatus={yourStatus} 
           otherStatus={otherStatus} 
           adminStatus={props.msg.adminStatus}

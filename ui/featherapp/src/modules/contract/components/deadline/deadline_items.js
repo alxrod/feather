@@ -380,7 +380,7 @@ const DeadlineItems = (props) => {
             Click one to edit
           </span>
           <span>
-            or <b className="text-indigo-500">add</b> to add from existing
+            or <b className="text-primary4">add</b> to add from existing
           </span>
         </p>)}
         <div className="flex flex-wrap">
@@ -397,7 +397,7 @@ const DeadlineItems = (props) => {
             <Listbox onChange={addItem}>
               {({ open }) => (
                 <>
-                    <Listbox.Button className="relative inline-flex items-center rounded-full bg-indigo-300 hover:bg-indigo-400 px-2 py-0.5 mt-1 mx-1 text-sm">
+                    <Listbox.Button className="relative inline-flex items-center rounded-full bg-primary3 hover:bg-primary3 px-2 py-0.5 mt-1 mx-1 text-sm">
                       <span className="text-xs font-medium text-white">add</span>
                     </Listbox.Button>
 
@@ -416,7 +416,7 @@ const DeadlineItems = (props) => {
                               
                               className={({ active }) =>
                                 classNames(
-                                  active ? 'text-indigo-600' : 'text-gray-900',
+                                  active ? 'text-primary5' : 'text-gray-900',
                                   'cursor-default select-none relative p-0 px-4 text-xs',
                                   (props.contractItems.length > 1) ? "py-2 border-b-1 border-gray-700" : ""
                                 )

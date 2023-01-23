@@ -23,7 +23,7 @@ const SetupPayment = (props) => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <h1 className="font-md text-2xl">Connect to our payment provider</h1>
           <div className="flex justify-center mt-2">
-            <button className="text-indigo-500 font-bold" onClick={() => props.push("/profile/onboarding-refresh")}>Set up bank account</button>
+            <button className="text-primary4 font-bold" onClick={() => props.push("/profile/onboarding-refresh")}>Set up bank account</button>
             <p className="mx-1">or</p>
             <button className="text-gray-500" onClick={() => props.push("/contracts")}>setup later</button>
           </div>

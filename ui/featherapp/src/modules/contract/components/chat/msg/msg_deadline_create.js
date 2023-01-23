@@ -95,34 +95,35 @@ const DeadlineCreateMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
-        <div className="mt-2 text-sm text-gray-700">
-          <div className="flex items-center">
-						<p className="text-gray-400 text-lg mr-2">{"Created " + deadlineName}</p>
-            <div className="w-2"></div>
-            <div className="w-16">
-              {(displayDecide(props.msg, yourStatus, props.user)) && (
-                <DecideButton 
-                  approve={acceptChange}
-                  reject={rejectChange}
-                />
-              )} 
-            </div>
+    <MsgWrapper embedded={props.embedded} msg={props.msg} editString={editString} icon={Icon}>
+      <div className="mt-2 text-sm text-gray-700">
+        <div className="flex items-center">
+          <p className="text-gray-400 text-lg mr-2">{"Created " + deadlineName}</p>
+          <div className="w-2"></div>
+          <div className="w-16">
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
+              <DecideButton 
+                approve={acceptChange}
+                reject={rejectChange}
+              />
+            )} 
           </div>
-					<div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
-            <div className="flex">
-              <p className="text-green text-lg mr-2">{"Payout"}</p><p className="mr-1 text-green text-lg">{props.msg.body.deadline.currentPayout}%</p>
-            </div>
-            <p className="text-green" >on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
-          </div>
-          <MsgDecisionFooter 
-            msg={props.msg} 
-            yourStatus={yourStatus} 
-            otherStatus={otherStatus} 
-            adminStatus={props.msg.adminStatus}
-            otherUsername={otherUsername}
-          />
         </div>
+        <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
+          <div className="flex">
+            <p className="text-green text-lg mr-2">{"Payout"}</p><p className="mr-1 text-green text-lg">${props.msg.body.deadline.currentPayout}</p>
+          </div>
+          <p className="text-green" >on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
+        </div>
+        <MsgDecisionFooter 
+          msg={props.msg} 
+          embedded={props.embedded}
+          yourStatus={yourStatus} 
+          otherStatus={otherStatus} 
+          adminStatus={props.msg.adminStatus}
+          otherUsername={otherUsername}
+        />
+      </div>
     </MsgWrapper>
 
   )

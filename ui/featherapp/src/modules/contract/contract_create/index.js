@@ -189,7 +189,7 @@ const ContractCreate = (props) => {
           <button
             type="button"
             onClick={handleCreateContract}
-            className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary6 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
           >
             Send Contract
           </button>

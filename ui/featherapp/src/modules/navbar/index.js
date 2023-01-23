@@ -22,7 +22,9 @@ function classNames(...classes) {
 const NavBar = (props) => {
   const [inContractView, toggleInContractView] = useState(false)
   const [contractStage, setContractStage] = useState(0)
+  const [showShadow, setShowShadow] = useState(true)
   const loc = useLocation()
+
 
   useEffect(() => {
     if (props.curContract.id) {
@@ -35,12 +37,17 @@ const NavBar = (props) => {
         setContractStage(contractStages.CREATE)
       }
     }
+    if (loc.pathname === "/") {
+      setShowShadow(false)
+    } else  {
+      console.log("Path: ", loc.pathname)
+    }
 
   }, [props.curContract, loc])
   
   if (props.showNavbar) {
     return (
-      <Disclosure as="nav" className="bg-white shadow">
+      <Disclosure as="nav" className={"bg-secondary1 " + (showShadow ? "shadow" : "")}>
         {({ open }) => (
           <>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,13 +66,13 @@ const NavBar = (props) => {
                     />
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
+                    {/* Current: "border-primary4 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
                     {props.isLoggedIn && (
                     <>
                     <div className="flex px-1 pt-1 font-medium ">
                       <Link
                           to="/contracts"
-                          className=" text-gray-900 inline-flex items-center"
+                          className=" text-primary7 inline-flex items-center"
                       >
                           Contracts
                       </Link>
@@ -74,36 +81,18 @@ const NavBar = (props) => {
                       </div> */}
                       
                     </div>
-                    
-                    <div className="flex px-1 pt-1 font-medium">
-                      <Link
-                          to="/messages"
-                          className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center mr-1"
-                      >
-                        Messages
-                      </Link>
-                      <div className="inline-flex items-center bg-red m-auto px-1 py-0 rounded-full">
-                        <span className="inline-flex items-center px-0.75 py-0.25 rounded-full text-sm font-light bg-red-100 text-white">
-                          3
-                        </span>
-                      </div>
-                    </div>
+              
                     </>
                     )}
                   </div>
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                  <button
-                    type="button"
-                    className="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                  </button>
 
                   {/* Profile dropdown */}
                   {props.isLoggedIn ? (
                   <Menu as="div" className="ml-3 relative z-10">
                     <div>
-                      <Menu.Button className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      <Menu.Button className="rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4">
                         <span className="sr-only">Open user menu</span>
                         <div className="flex items-center">
                           <h1 className="mr-2 text-gray-400 text-lg">@{props.user.username}</h1>
@@ -157,7 +146,7 @@ const NavBar = (props) => {
                     <div className="flex px-1 pt-1 font-medium space-x-4">
                         <Link
                           to="/login"
-                          className={classNames('text-indigo-500 hover:text-indigo-600 inline-flex items-center')}
+                          className={classNames('text-primary4 hover:text-primary5 inline-flex items-center')}
                         >
                           Log in
                         </Link>
@@ -173,7 +162,7 @@ const NavBar = (props) => {
                 </div>
                 <div className="-mr-2 flex items-center sm:hidden">
                   {/* Mobile menu button */}
-                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                  <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary4">
                     <span className="sr-only">Open main menu</span>
                     {open ? (
                       <XIcon className="block h-6 w-6" aria-hidden="true" />
@@ -188,7 +177,7 @@ const NavBar = (props) => {
             <Disclosure.Panel className="sm:hidden">
               {props.isLoggedIn && (
               <div className="pt-2 pb-3 space-y-1">
-                {/* Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
+                {/* Current: "bg-indigo-50 border-primary4 text-primary6", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" */}
                 <Disclosure.Button
                   as="a"
                   href="#"

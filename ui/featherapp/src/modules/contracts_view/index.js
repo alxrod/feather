@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { queryContractNubs } from "../../reducers/contract/dispatchers/contract.dispatcher";
-
+import { pullNewMessages } from "../../reducers/chat/dispatchers/chat.dispatcher";
+import NewMessages from "../contract/components/new_messages"
 import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'
 
@@ -46,38 +47,44 @@ const ContractsList = (props) => {
     useEffect(() => {
         if (!alreadyPulled) {
             props.queryContractNubs()
+            props.pullNewMessages()
             setAlreadyPulled(true)
         }
-        
     })
-
     
     return (
-        <div>
-            <br/>
-            <div className="px-4 sm:px-6 lg:px-8">
-            <ContractTableHeader 
-                allFilters={allFilters} 
-                selected={selectedFilter} 
-                setSelected={setSelectedFilter}
-                refreshFilters={refreshFilters}
-            />
-            <ContractList 
-                allFilters={allFilters} 
-                selected={selectedFilter}
-                refreshFilters={refreshFilters}
-            />
-            </div>
+      <div>
+        <br/>
+        <div className="px-4 md:px-20 lg:px-24">
+          <div className="mb-8">
+            <NewMessages/>
+          </div>
+
+          <ContractTableHeader 
+            allFilters={allFilters} 
+            selected={selectedFilter} 
+            setSelected={setSelectedFilter}
+            refreshFilters={refreshFilters}
+          />
+
+          <ContractList 
+            allFilters={allFilters} 
+            selected={selectedFilter}
+            refreshFilters={refreshFilters}
+          />
         </div>
+      </div>
     )
 }
 
-const mapStateToProps = ({ user, contract }) => ({
-    user: user.user
+const mapStateToProps = ({ user, contract, chat }) => ({
+    user: user.user,
+    newMessages: chat.newMessages,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-    queryContractNubs
+    queryContractNubs,
+    pullNewMessages,
 }, dispatch)
 
 export default connect(

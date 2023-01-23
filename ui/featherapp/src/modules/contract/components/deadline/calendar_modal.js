@@ -220,7 +220,7 @@ const CalendarModal = (props) => {
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-                      Pick a deadline to <b className="text-indigo-600">edit</b> or <b className="text-indigo-600">add</b> a new one
+                      Pick a deadline to <b className="text-primary5">edit</b> or <b className="text-primary5">add</b> a new one
                     </Dialog.Title>
                     
                     <div className="my-2">
@@ -248,7 +248,7 @@ const CalendarModal = (props) => {
                             />
                           </div>
                           <p className="mt-1 text-sm text-gray-600">
-                            Choose a deadline from the <b className="text-indigo-600">dropdown</b> or click on it on the <b className="text-indigo-600">timeline</b>
+                            Choose a deadline from the <b className="text-primary5">dropdown</b> or click on it on the <b className="text-primary5">timeline</b>
                           </p>
                           <div className="h-4">
                             <p className="mt-1 text-sm text-red">
@@ -261,7 +261,7 @@ const CalendarModal = (props) => {
                             <>
                               <button
                               type="submit"
-                              className="mr-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="mr-2 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
                               onClick={handleAddDeadline}>
                                 <span className="flex items-center font-light">
                                   <PlusIcon className="w-4 h-4"/>
@@ -271,7 +271,7 @@ const CalendarModal = (props) => {
                               </button>
                               <button
                               type="submit"
-                              className="inline-flex justify-center py-2 px-4 border-2 border-indigo-600 shadow-sm text-sm font-medium rounded-md text-indigo-600  hover:bg-grey-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                              className="inline-flex justify-center py-2 px-4 border-2 border-primary5 shadow-sm text-sm font-medium rounded-md text-primary5  hover:bg-grey-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
                               onClick={handleDeleteDeadline}>
                                 <span className="flex items-center font-light">
                                   <TrashIcon className="w-4 h-4 mr-1"/>
@@ -420,7 +420,7 @@ const CalendarModal = (props) => {
                         <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                           <button
                             type="submit"
-                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
                             onClick={() => {props.setOpen(false)}}
                           >
                             Done

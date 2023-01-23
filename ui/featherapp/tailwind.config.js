@@ -45,11 +45,25 @@ module.exports = {
         neutral: colors.neutral,
         stone: colors.stone,
 
+        primary1: "#9ED0B0",
+        primary2: "#5AA475",
+        primary3: "#499866",
+        primary4: "#388956",
+        primary5: "#1C6D3A",
+        primary6: "#125F2F",
+        primary7: "#00290F",
+        
+        secondary1: "#F8F9F9",
+        secondary2: "#D8E0E4",
+        secondary3: "#ABBDC5",
+        secondary4: "#7993A0",
+        secondary5: "#557788",
+        secondary6: "#21495B",
+        secondary7: "#113343",
 
-
-        red: '#d11a2a',
-        yellow: '#f6d365',
-        green: '#64e291',
+        red: '#C84664',
+        yellow: '#FFD757',
+        green: '#91E2AE',
 
         orange: colors.orange,
         amber: colors.amber,
@@ -402,6 +416,7 @@ module.exports = {
           '"Courier New"',
           'monospace',
         ],
+        "bree-serif": ["Bree Serif", 'ui-serif', 'Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif']
       },
       fontSize: {
         xs: ['0.75rem', { lineHeight: '1rem' }],

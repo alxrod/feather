@@ -60,18 +60,25 @@ const MsgWrapper = (props) => {
     return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
   }
 
+  if (props.embedded) {
+    return (
+      <>
+        {props.children}
+      </>
+    )
+  }
   return (
     <>
       <div className="relative">
         <ProfileImg cachedUrls={props.cachedUrls} msg={props.msg}/>
-        <span className={"absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px " + (props.msg.isAdmin ? "border-2 border-indigo-500" : "")}>
+        <span className={"absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px " + (props.msg.isAdmin ? "border-2 border-primary4" : "")}>
           <Wrapper icon={props.icon}/>
         </span>
       </div>
       <div className="min-w-0 flex-1">
         <div>
           <div className="text-sm flex justify-start items-center">
-            <p className={"font-medium " + (props.msg.isAdmin ? "text-indigo-600" : "text-gray-900")}>
+            <p className={"font-medium " + (props.msg.isAdmin ? "text-primary5" : "text-gray-900")}>
               {props.msg.user.username}
             </p>
             {props.msg.isAdmin && (

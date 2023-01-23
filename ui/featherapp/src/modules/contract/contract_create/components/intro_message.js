@@ -2,9 +2,9 @@ const IntroMessage = (props) => {
 
   return (
     <form action="#" className="relative grow flex flex-col mb-5">
-      <div className="flex flex-col grow border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+      <div className="flex flex-col grow border border-gray-300 rounded-lg shadow-sm overflow-hidden focus-within:border-primary4 focus-within:ring-1 focus-within:ring-primary4">
         <div className="grow flex flex-col">
-        <h1 className="text-lg text-indigo-700 font-medium py-3 px-5">Write an Intro Message to get things started</h1>
+        <h1 className="text-lg text-primary6 font-medium py-3 px-5">Write an Intro Message to get things started</h1>
           <div className="grow flex flex-col border-t border-gray-200 px-2 pt-4 pb-4 space-x-3 sm:px-3">
             <div className="w-full grow flex flex-col justify-start">
               <label htmlFor="description" className="sr-only">

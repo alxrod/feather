@@ -8,6 +8,7 @@ export const USER_PULL_SUCCESS = "user/auth/PULL_SUCCESS"
 export const USER_PULL_FAIL = "user/auth/PULL_FAIL"
 
 export const SET_REDIRECT_LINK = "user/auth/REDIRECT_LINK"
+export const SET_REGISTER_ROLE = "user/auth/SET_REGISTER_ROLE"
 
 export const SOCIAL_LINK_SUCCESS = "user/social/LINK_SUCCESS"
 export const SOCIAL_LINK_FAIL = "user/social/LINK_FAIL"

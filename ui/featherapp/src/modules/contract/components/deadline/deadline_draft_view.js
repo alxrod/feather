@@ -48,7 +48,7 @@ const DeadlineDraftView = (props) => {
     <div className="bg-white overflow-hidden shadow rounded-lg w-full flex flex-row h-full">
       <div className="bg-gray-50 px-4 py-5 sm:p-6 flex flex-col">
         <div className="pb-5 hidden md:flex">
-          <h3 className="text-lg leading-6 font-medium text-indigo-400">Deadlines</h3>
+          <h3 className="text-lg leading-6 font-medium text-primary3">Deadlines</h3>
         </div>
         <DeadlineHistory deadlines={props.deadlines} selectedIdx={selectedIdx} changeSelection={changeSelection} openModal={props.openModal}/>
       </div>
@@ -58,22 +58,22 @@ const DeadlineDraftView = (props) => {
             <h3 className="text-lg leading-6 font-medium text-gray-900">
               {deadlineName}
               {props.deadlines[selectedIdx]?.complete ? (
-                <i className="ml-2 font-medium text-indigo-400">(complete)</i>
+                <i className="ml-2 font-medium text-primary3">(complete)</i>
               ) : (props.deadlines[selectedIdx]?.id === props.curContract.currentDeadlineId) ? (
-                <i className="ml-2 font-medium text-indigo-400">(current)</i>
+                <i className="ml-2 font-medium text-primary3">(current)</i>
               ): null}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              <b className="text-indigo-500">{props.deadlines[selectedIdx]?.currentPayout}%</b> will be payed out on{" "}
-              <b className="text-indigo-500">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 
+              <b className="text-primary4">{props.deadlines[selectedIdx]?.currentPayout}%</b> will be payed out on{" "}
+              <b className="text-primary4">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 
               {curItems.map((item, idx) => (
                 <Fragment key={idx}>
                   {(idx === (curItems.length-1)) ? (
-                    <>{idx === 0 ? " if " : " and "}<b className="text-indigo-500">{item.name}</b>{(curItems.length === 1) ? " is complete " : " are completed"}</>
+                    <>{idx === 0 ? " if " : " and "}<b className="text-primary4">{item.name}</b>{(curItems.length === 1) ? " is complete " : " are completed"}</>
                   ) : (idx === 0) ? (
-                    <>{" if "}<b className="text-indigo-500">{item.name}</b>{", "}</>
+                    <>{" if "}<b className="text-primary4">{item.name}</b>{", "}</>
                   ) : (
-                    <><b className="text-indigo-500">{item.name}</b>{", "}</>
+                    <><b className="text-primary4">{item.name}</b>{", "}</>
                   )}
                 </Fragment>
               ))}
@@ -89,7 +89,7 @@ const DeadlineDraftView = (props) => {
                 >
                   <span className="absolute flex-shrink-0 flex items-center justify-center">
                   <span
-                      className='bg-indigo-500 h-1.5 w-1.5 rounded-full'
+                      className='bg-primary4 h-1.5 w-1.5 rounded-full'
                       aria-hidden="true"
                   />
                   </span>

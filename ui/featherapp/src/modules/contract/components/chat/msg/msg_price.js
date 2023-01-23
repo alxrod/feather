@@ -74,7 +74,7 @@ const PriceMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
@@ -116,7 +116,7 @@ const PriceMsg = (props) => {
           </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(displayDecide(props.msg, yourStatus, props.user)) && (
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -125,6 +125,7 @@ const PriceMsg = (props) => {
           </div>
         </div>
         <MsgDecisionFooter 
+          embedded={props.embedded}
           msg={props.msg} 
           yourStatus={yourStatus} 
           otherStatus={otherStatus} 

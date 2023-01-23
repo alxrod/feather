@@ -26,7 +26,7 @@ const ContractSignMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import NavBar from "../navbar"
 
-import Home from '../home'
+import Home from '../landing_page'
 
 import Login from '../login'
 
@@ -20,7 +20,6 @@ import { clearChat } from "../../reducers/chat/dispatchers/chat.dispatcher";
 import {history} from '../../reducers'
 
 import ContractsView from '../contracts_view';
-import MessageView from '../message_view';
 
 import ContractRedirect from '../contract/contract_redirect';
 import ContractCreate from '../contract/contract_create';
@@ -104,7 +103,10 @@ const App = (props) => {
     if (props.fromRegister && !(route_base === "/register" || route_base === "/setup-payment")) {
       props.toggleFromRegister(false)
     }
-    props.clearChat()
+    if (props.chatRoomId !== "") {
+      props.clearChat(props.chatRoomId)
+    }
+    
     authRedirect(route_base, loc.pathname)
     
   }, [loc, props.isLoggedIn]) 
@@ -141,11 +143,10 @@ const App = (props) => {
         <NavBar/>
       </header>
 
-      <main>
+      <main className="noisy">
         <Route exact path="/" element={<Home/>} component={Home} />
 
         <Route exact path="/contracts" element={<ContractsView/>} component={ContractsView} />
-        <Route exact path="/messages" element={<MessageView/>} component={MessageView} />
 
         <Route path="/create" element={<ContractCreate/>} component={ContractCreate} />
 
@@ -177,7 +178,8 @@ const App = (props) => {
 }
 
 
-const mapStateToProps = ({ user, site, stripe }) => ({
+const mapStateToProps = ({ user, site, stripe, chat }) => ({
+    chatRoomId: chat.roomId,
     user: user.user,
     isLoggedIn: user.isLoggedIn,
     fromRegister: site.fromRegister,

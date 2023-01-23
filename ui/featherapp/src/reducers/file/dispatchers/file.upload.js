@@ -12,21 +12,22 @@ export const uploadProfilePhoto = (file, filename) => {
                         type: fileActions.PROFILE_REQUEST_URL,
                         payload: url,
                     })
-                    fetch(url, {
+                    return fetch(url, {
                         method: "PUT",
                         body: file["file"],
                     }).then((response) => {
                         if (response.ok) {
-                            console.log("FILE PUT SUCCESS")
                             dispatch({
                                 type: fileActions.PROFILE_PUT_SUCCESS
                             })
                             FileService.confirmProfileUploaded(creds.access_token, creds.user_id, true)
+                            return Promise.resolve()
                         } else {
                             dispatch({
                                 type: fileActions.PROFILE_PUT_FAIL
                             })
                             FileService.confirmProfileUploaded(creds.access_token, creds.user_id, false)
+                            return Promise.reject()
                         }
                     });
                     

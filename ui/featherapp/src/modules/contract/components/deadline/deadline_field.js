@@ -213,7 +213,7 @@ const DeadlineField = (props) => {
             <button
               type="button"
               onClick={handleOpenCalendar}
-              className="ml-3 inline-flex items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-800 bg-indigo-100 hover:bg-indigo-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="ml-3 inline-flex items-center px-4 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary7 bg-primary1 hover:bg-primary4 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
             >
               Edit
             </button>

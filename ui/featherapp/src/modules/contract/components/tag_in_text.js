@@ -8,7 +8,7 @@ export default (props) => {
             >
             <span className="absolute flex-shrink-0 flex items-center justify-center">
             <span
-                className='bg-indigo-500 h-1.5 w-1.5 rounded-full'
+                className='bg-primary4 h-1.5 w-1.5 rounded-full'
                 aria-hidden="true"
             />
             </span>

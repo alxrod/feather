@@ -85,7 +85,7 @@ const CriticalCriteria = (props) => {
                           {partnerMsg}
                           { !havePartner && (
                             <>
-                              {" "}<Link className="text-indigo-500" to={"/invite/"+props.curContract.id}>click to view invite</Link>{" "}
+                              {" "}<Link className="text-primary4" to={"/invite/"+props.curContract.id}>click to view invite</Link>{" "}
                             </>
                           ) }
                         </p>

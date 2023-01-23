@@ -22,7 +22,7 @@ const CustomPhotoInputView = (props) => {
           <div className="flex flex-wrap items-center justify-center text-sm text-gray-600">
             <label
               htmlFor="file-upload"
-              className="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500"
+              className="relative cursor-pointer rounded-md bg-white font-medium text-primary5 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary4 focus-within:ring-offset-2 hover:text-primary4"
             >
               <span>Upload a file</span>
               <input 
@@ -44,7 +44,7 @@ const CustomPhotoInputView = (props) => {
             </label>
             <p className="pl-1">or drag and drop</p>
           </div>
-          <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          <p className="text-xs text-gray-500">PNG or JPG up to 10MB</p>
         </div>
       </div>
     </div>

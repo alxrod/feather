@@ -99,6 +99,26 @@ func (room *ChatRoom) UserJoin(user_id primitive.ObjectID, database *mongo.Datab
 		return err
 	}
 	room.ActiveUsers = append(room.ActiveUsers, user)
+	notIn := true
+	for _, handle := range room.UserHandles {
+		if handle.Id == user.Id {
+			notIn = false
+		}
+	}
+	if notIn {
+		handle := &UserHandle{
+			Id:       user.Id,
+			Username: user.Username,
+		}
+
+		room.UserHandles = append(room.UserHandles, handle)
+		filter := bson.D{{"_id", room.Id}}
+		update := bson.D{{"$set", bson.D{{"user_handles", room.UserHandles}}}}
+		_, err = database.Collection(ROOM_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -127,7 +147,7 @@ func (room *ChatRoom) AddMessage(req *comms.SendRequest, database *mongo.Databas
 	if room == nil {
 		return nil, errors.New("Attempted to add message to nil room")
 	}
-	added_msg, err := MessageInsert(req, room.Id, database)
+	added_msg, err := MessageInsert(req, room, database)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +172,7 @@ func (room *ChatRoom) AddMessageInternal(msg *Message, database *mongo.Database)
 		return msg, nil
 	}
 	var err error
-	msg.Id, err = MessageInsertInternal(msg, room.Id, database)
+	msg.Id, err = MessageInsertInternal(msg, room, database)
 	if err != nil {
 		return nil, err
 	}

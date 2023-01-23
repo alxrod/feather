@@ -14,6 +14,7 @@ const MainChat = (props) => {
     const [userIds, setUserIds] = useState([])
 
     useEffect( () => {
+        console.log("MESSAGES: ", props.messages)
         const new_ids = [...userIds]
         const orig_length = new_ids.length
         for (let i = 0; i < props.messages.length; i++) {

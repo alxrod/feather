@@ -105,12 +105,14 @@ export const editDeadlineDate = (deadlines, date_info) => {
 export const getDeadline = (deadlines, id) => {
     for (let i = 0; i < deadlines.length; i++) {
         if (deadlines[i].id === id) {
+            console.log("DEADLINE IS: ", deadlines[i])
             return deadlines[i]
         }
     }
 } 
 
 export const updateSettleInfo = (deadline, info) => {
+    console.log("Deadline is: ", deadline)
     deadline.workerSettled = info?.workerSettled
     deadline.buyerSettled = info?.buyerSettled
     deadline.workerConfirmed = info?.workerConfirmed

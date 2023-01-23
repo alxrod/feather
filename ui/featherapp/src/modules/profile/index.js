@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
@@ -6,62 +6,65 @@ import ProfileSidebar from "./sidebar";
 import AccountInfo from "./account_info";
 import PaymentInfo from "./payment_info";
 import { CheckIcon } from '@heroicons/react/outline'
-
+import ProfilePhotoUpload from "../file_upload_test/profile_photo_upload.js"
+import ProfilePhoto from "../general_components/profile_photo.js"
 const Profile = (props) => {
-    const currentUser = props.user
+  const [showProfPic, setShowProfPic] = useState(false)
+  const [profNoExist, setProfNoExist] = useState(false)
+  const [picUrl, setPicUrl] = useState("")
 
-    const tabOptions = {
-        BIO: 0,
-        PAY: 1,
-        TAX: 2,
+  useEffect( () => {
+    if (props.user.profilePhoto?.cacheUrl) {
+      setPicUrl(props.user.profilePhoto.cacheUrl)
+      setShowProfPic(true)
+    } else {
+      setProfNoExist(true)
     }
-    const [selectedTab, setSelectedTab] = useState(tabOptions.BIO)
-    const [paymentAdded, setPaymentAdded] = useState(false)
-    
-    const paymentSuccess = () => {
-        setPaymentAdded(true)
-    }
+  }, [props.user])
+  return (
+    <div>
+      <br/>
+      <div className="flex">
+        <div className="p-5 w-full flex flex-col items-center">
+          {showProfPic ? (
+            <>
+              <img 
+                className={"h-[200px] w-[200px] rounded-md object-cover"}
+                src={picUrl}
+              />
+              
+              <button 
+                className={
+                  `inline-flex items-center px-4 
+                  py-2 border border-transparent 
+                  text-sm font-medium rounded-md 
+                  shadow-sm text-white bg-primary5 
+                  hover:bg-primary6 focus:outline-none 
+                  focus:ring-2 focus:ring-offset-2 
+                  focus:ring-primary4 mt-2`
+                }
+                onClick={() => {setShowProfPic(false)}}>
+                Change
+              </button>
 
-    return (
-        <div>
-            <br/>
-            <div className="flex">
-                <div className="w-100">
-                    <ProfileSidebar 
-                        className="" 
-                        tabOptions={tabOptions}
-                        setSelectedTab={setSelectedTab}
-                        selectedTab={selectedTab}
-                    />
-                </div>
-
-                <div className="p-5 w-full">
-                    {selectedTab === tabOptions.BIO ? (
-                        <AccountInfo/>
-                    ) : selectedTab === tabOptions.PAY ? (
-                        <div className="w-full flex justify-center">
-                            <div className="flex flex-col">
-                                {/* {paymentAdded ? (
-                                    <h1 className="text-center font-medium text-2xl text-gray-800 flex justify-center"><CheckIcon className="text-green w-8 h-8 mr-2"/>Payment Method Added</h1>
-                                ) : (
-                                    <h1 className="text-center font-medium text-2xl text-gray-800">Enter your information to add a payment method</h1>
-                                )}
-                                <PaymentModule
-                                    paymentSuccess={paymentSuccess}
-                                /> */}
-                                {/* <StripePaymentSetup/> */}
-                                <PaymentInfo/>
-                            </div>
-                        </div>
-                        
-                    ) : (
-                        <h1>Unimplemented</h1>
-                    )}
-                    
-                </div>
-            </div>
+            </>
+          ) : (
+            <>
+              {profNoExist && (
+                <h1 className="text-gray-400 font-md text-md mb-1">(choose a profile picture)</h1>
+              )}
+              <ProfilePhotoUpload setShowProfPic={setShowProfPic} setPicUrl={setPicUrl}/> 
+            </>
+          )}
+          <br/>
+          <AccountInfo user={props.user}/>
+          <br/>
+          <PaymentInfo/>
+            
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 const mapStateToProps = ({ user }) => ({

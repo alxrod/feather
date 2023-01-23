@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { claimContract, queryInvite} from "../../../reducers/contract/dispatchers/contract.dispatcher";
-import { setRedirect } from "../../../reducers/user/dispatchers/user.dispatcher";
+import { setRedirect, setRegisterRole } from "../../../reducers/user/dispatchers/user.dispatcher";
 import { BUYER_TYPE, WORKER_TYPE, BOTH_TYPE } from "../../../services/user.service";
 
 import { Link, Redirect } from "react-router-dom"
@@ -68,13 +68,14 @@ const ContractInvite = (props) => {
         console.log("GOT A RESPONSEs")
         setBody(body)
         console.log(body)
-        console.log(props.user)
         if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
-        } else if (body.buyer.id === "" && props.user.buyerRequested) {
-          setExistingUser(body.buyer)
-        } else if (body.worker.id === "" && props.user.workerRequested) {
+        } else if (body.buyer.id === "" && (props.user === null || props.user.buyerRequested)) {
           setExistingUser(body.worker)
+          props.setRegisterRole(BUYER_TYPE)
+        } else if (body.worker.id === "" && (props.user === null ||props.user.workerRequested)) {
+          setExistingUser(body.buyer)
+          props.setRegisterRole(WORKER_TYPE)
         } else {
           setIncompatWContract(true)
           if (body.worker.id !== "") {
@@ -101,7 +102,7 @@ const ContractInvite = (props) => {
         />
       )}
       
-      <div className="py-24 px-12 bg-white">
+      <div className="py-24 px-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col items-center lg:justify-center">
@@ -118,11 +119,11 @@ const ContractInvite = (props) => {
               <>
                 <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
                   We are still waiting for your partner to accept the invite to the contract. Send them 
-                  {" "}<a className="font-medium text-indigo-600" href="#" onClick={copyLinkToClipboard}>this link</a>{" "} 
+                  {" "}<a className="font-medium text-primary5" href="#" onClick={copyLinkToClipboard}>this link</a>{" "} 
                   and give then the contract password 
-                  {" ("}<b className="font-medium text-indigo-600">{inviteBody.password}</b>{") "}to accept.
+                  {" ("}<b className="font-medium text-primary5">{inviteBody.password}</b>{") "}to accept.
                 </p>
-                <p className="mt-1 text-indigo-600">{copyMessage}</p>
+                <p className="mt-1 text-primary5">{copyMessage}</p>
               </>
             )}
             
@@ -141,13 +142,13 @@ const ContractInvite = (props) => {
                           type="text"
                           name="email"
                           id="email"
-                          className="text-gray-600 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
+                          className="text-gray-600 shadow-sm focus:ring-primary4 focus:border-primary4 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
                           placeholder="your contract password"
                           value={contractPassword}
                           onChange={changePassword}
                         />
                         <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
-                          <button className="inline-flex items-center bg-indigo-500 rounded px-2 text-sm font-sans font-medium text-white" onClick={handleClick}>
+                          <button className="inline-flex items-center bg-primary4 rounded px-2 text-sm font-sans font-medium text-white" onClick={handleClick}>
                             Claim
                           </button>
                         </div>
@@ -162,11 +163,11 @@ const ContractInvite = (props) => {
             )}
             {(!isOwner && !props.isLoggedIn) && (
               <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
-                <b className="font-medium text-indigo-600">@{existingUser.username}</b>{" "}
+                <b className="font-medium text-primary5">@{existingUser.username}</b>{" "}
                 has invited you to a contract. To claim this contract and begin negotiating, you have to 
-                {" "}<Link className="font-medium text-indigo-600" to="/login"><u>{"log in"}</u></Link>{" "}
+                {" "}<Link className="font-medium text-primary5" to="/login"><u>{"log in"}</u></Link>{" "}
                 or 
-                {" "}<Link className="font-medium text-indigo-600" to="/register"><u>{"register"}</u></Link>.{" "}
+                {" "}<Link className="font-medium text-primary5" to="/register"><u>{"register"}</u></Link>.{" "}
               </p>
               
             )}
@@ -174,7 +175,7 @@ const ContractInvite = (props) => {
               <dl className="space-y-10">
                   <div key="summary" className="relative">
                     <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
                         <DocumentIcon className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Summary</p>
@@ -184,7 +185,7 @@ const ContractInvite = (props) => {
                   
                   <div key="price" className="relative">
                     <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
                         <CurrencyDollarIcon className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Price</p>
@@ -194,7 +195,7 @@ const ContractInvite = (props) => {
 
                   <div key="deadline" className="relative">
                     <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
+                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
                         <CalendarIcon className="h-6 w-6" aria-hidden="true" />
                       </div>
                       <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Deadline</p>
@@ -222,6 +223,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   setRedirect,
   claimContract,
   queryInvite,
+  setRegisterRole,
 }, dispatch)
 
 export default connect(

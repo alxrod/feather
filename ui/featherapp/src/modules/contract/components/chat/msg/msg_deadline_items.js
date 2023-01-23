@@ -98,13 +98,13 @@ const DeadlineCreateMsg = (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper embedded={props.embedded} msg={props.msg} editString={editString} icon={Icon}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <p className="text-gray-400 text-lg mr-2">{"Changed Required Items"}</p>
           <div className="w-2"></div>
           <div className="w-16">
-            {(displayDecide(props.msg, yourStatus, props.user)) && (
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -129,6 +129,7 @@ const DeadlineCreateMsg = (props) => {
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 
+          embedded={props.embedded}
           yourStatus={yourStatus} 
           otherStatus={otherStatus} 
           adminStatus={props.msg.adminStatus}

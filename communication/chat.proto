@@ -22,6 +22,8 @@ message ChatMessage {
     uint32 admin_status = 23;
     bool expired = 29;
 
+    repeated ReadReceiptEntity read_receipts = 40;
+
     oneof body {
         CommentMsgBody comment_body = 6;
         PayoutMsgBody payout_body = 7;
@@ -44,6 +46,11 @@ message ChatMessage {
         DeadlineExpireMsgBody deadline_expire_body = 27;
         DeadlineSettledMsgBody deadline_settled_body = 39;
     }   
+}
+
+message ReadReceiptEntity {
+    string user_id = 1;
+    bool read = 2;
 }
 message ChatLabel {
     uint32 type = 1;
@@ -236,16 +243,30 @@ message SendResponse{}
 
 message ChatPullRequest{
     string room_id = 1;
+    string user_id = 2;
 }
 message ChatMessageSet{
     string room_id = 1;
     repeated ChatMessage messages = 2;
 }
 
+message NewMessagesRequest{
+    string user_id = 1;
+}
+
+message NewMessageEntity {
+    ChatMessage message = 1;
+    ContractNub contract = 2;
+}
+message NewMessageSet{
+    repeated NewMessageEntity messages = 2;
+}
+
 service Chat {
+    rpc PullNewMessages(NewMessagesRequest) returns (NewMessageSet);
     rpc PullChatHistory(ChatPullRequest) returns (ChatMessageSet);
+    
     rpc JoinChat(UserJoin) returns (stream ChatMessage);
     rpc LeaveChat(UserLeave) returns (UserClose);
-    
     rpc SendCommentMessage(SendRequest) returns (SendResponse);
 }

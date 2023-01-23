@@ -19,7 +19,7 @@ const ContractTableHeader = (props) => {
           <Link to="/create">
             <button
               type="button"
-              className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary4 hover:bg-primary3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
             >
                 Create
             </button>
@@ -34,7 +34,7 @@ const ContractTableHeader = (props) => {
                 key={filter}
                 className={classNames(
                   filter == props.selected
-                    ? 'border-indigo-500 text-indigo-600'
+                    ? 'border-primary3 text-primary3'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
                   'cursor-pointer whitrespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm'
                 )}

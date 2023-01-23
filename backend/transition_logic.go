@@ -18,15 +18,24 @@ func (s *BackServer) DeadlineSettled(deadline *db.Deadline) bool {
 }
 
 func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contract, deadline *db.Deadline, database *mongo.Database) error {
+	log.Printf("Begining Transition logic")
 	if contract.Stage == db.SETTLE && s.DeadlineSettled(deadline) {
+		log.Printf("It has been settled")
 		all_approved := true
 		for _, item := range deadline.Items {
 			if item.WorkerSettled != db.ITEM_APPROVE || item.BuyerSettled != db.ITEM_APPROVE {
 				all_approved = false
+				log.Printf(
+					"Item failed: %v because %v and %v",
+					item.Name,
+					item.WorkerSettled,
+					item.BuyerSettled,
+				)
 				break
 			}
 		}
 		if all_approved {
+			log.Printf("Attempting charge")
 			err := s.StripeAgent.ChargeContract(contract, deadline, database)
 			if err != nil {
 				return err
@@ -39,6 +48,7 @@ func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contrac
 				contract.Deadlines[idx] = deadline
 			}
 		}
+
 		nextDeadline, err := contract.NextDeadline()
 		if err != nil {
 			return err

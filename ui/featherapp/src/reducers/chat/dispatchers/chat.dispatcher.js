@@ -25,11 +25,24 @@ export const joinChat = (room_id, role) => {
     }
 };
 
-export const clearChat = () => {
+export const clearChat = (room_id) => {
     return dispatch => {
-        dispatch({
-            type: chatActions.CHAT_CLEAR_ROOM,
-        });
+        return helpers.authCheck().then(
+            (creds) => {
+                return ChatService.leaveChat(creds.access_token, creds.user_id, room_id).then(
+                    () => {
+                        dispatch({
+                            type: chatActions.CHAT_CLEAR_ROOM,
+                        });
+                        return Promise.resolve();
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+
     }
 };
 export const finishedReload = () => {
@@ -69,10 +82,34 @@ export const pullRecord = (room_id) => {
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
-                return ChatService.pullRecord(creds.access_token, room_id).then(
+                return ChatService.pullRecord(creds.access_token, creds.user_id, room_id).then(
                     (data) => {
                         dispatch({
                             type: chatActions.CHAT_MESSAGE_HISTORY_PULLED,
+                            payload: data
+                        });
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        )
+    }
+};
+
+export const pullNewMessages = () => {
+    return dispatch => {
+        return helpers.authCheck().then(
+            (creds) => {
+                return ChatService.pullNewMessages(creds.access_token, creds.user_id).then(
+                    (data) => {
+                        dispatch({
+                            type: chatActions.CHAT_PULL_NEW_MESSAGES,
                             payload: data
                         });
                         return Promise.resolve();

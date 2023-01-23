@@ -89,7 +89,23 @@ type Message struct {
 
 	User *User `bson:"-"`
 
-	Timestamp time.Time `bson:"timestamp"`
+	Timestamp    time.Time      `bson:"timestamp"`
+	ReadReceipts []*ReadReceipt `bson:"read_receipts"`
+}
+
+type ReadReceipt struct {
+	UserId primitive.ObjectID `bson:"user_id"`
+	Read   bool               `bson:"read"`
+}
+
+func (r *ReadReceipt) Proto() *comms.ReadReceiptEntity {
+	if r == nil {
+		return &comms.ReadReceiptEntity{}
+	}
+	return &comms.ReadReceiptEntity{
+		UserId: r.UserId.Hex(),
+		Read:   r.Read,
+	}
 }
 
 type MessageBody struct {
@@ -492,6 +508,12 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.DeadlineSettledProto()
 	}
 
+	receipts := make([]*comms.ReadReceiptEntity, len(m.ReadReceipts))
+	for i, r := range m.ReadReceipts {
+		receipts[i] = r.Proto()
+	}
+	proto.ReadReceipts = receipts
+
 	return proto
 }
 
@@ -530,7 +552,41 @@ func NewLabel(req *comms.ChatLabel) (*LabelNub, error) {
 	return nub, nil
 }
 
-func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database *mongo.Database) (*Message, error) {
+func (msg *Message) configureReadReceipts(user *User, room *ChatRoom) {
+	receipts := make([]*ReadReceipt, len(room.UserHandles))
+	for i, handle := range room.UserHandles {
+		read := false
+		if user != nil && handle.Id == user.Id {
+			read = true
+		}
+		receipts[i] = &ReadReceipt{
+			UserId: handle.Id,
+			Read:   read,
+		}
+	}
+	msg.ReadReceipts = receipts
+}
+
+func (msg *Message) UpdateReadReceipts(user_id primitive.ObjectID, database *mongo.Database) {
+	update := false
+	for _, receipt := range msg.ReadReceipts {
+		if receipt.UserId == user_id {
+			if !receipt.Read {
+				update = true
+			}
+			receipt.Read = true
+		}
+	}
+	if update {
+		filter := bson.D{{"_id", msg.Id}}
+		update := bson.D{
+			{"$set", bson.D{{"read_receipts", msg.ReadReceipts}}},
+		}
+		database.Collection(MSG_COL).UpdateOne(context.TODO(), filter, update)
+	}
+}
+
+func MessageInsert(req *comms.SendRequest, room *ChatRoom, database *mongo.Database) (*Message, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		return nil, errors.New("Invalid User Id")
@@ -549,7 +605,7 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 	}
 
 	message := &Message{
-		RoomId:        room_id,
+		RoomId:        room.Id,
 		User:          user,
 		UserId:        user.Id,
 		SystemMessage: false,
@@ -560,10 +616,12 @@ func MessageInsert(req *comms.SendRequest, room_id primitive.ObjectID, database 
 		IsAdmin:       user.AdminStatus,
 	}
 
+	message.configureReadReceipts(user, room)
+
 	messageCollection := database.Collection(MSG_COL)
 	res, err := messageCollection.InsertOne(context.TODO(), message)
 	if err != nil {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Message for room %s for user %s", room_id.Hex(), user_id.Hex())))
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Message for room %s for user %s", room.Id.Hex(), user_id.Hex())))
 		return nil, err
 	}
 
@@ -628,14 +686,15 @@ func MessageById(message_id primitive.ObjectID, database *mongo.Database) (*Mess
 	return message, nil
 }
 
-func MessageInsertInternal(msg *Message, room_id primitive.ObjectID, database *mongo.Database) (primitive.ObjectID, error) {
+func MessageInsertInternal(msg *Message, room *ChatRoom, database *mongo.Database) (primitive.ObjectID, error) {
 	messageCollection := database.Collection(MSG_COL)
 	if msg.User != nil && msg.User.AdminStatus {
 		msg.IsAdmin = true
 	}
+	msg.configureReadReceipts(nil, room)
 	res, err := messageCollection.InsertOne(context.TODO(), msg)
 	if err != nil {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Internally Insert Message for room %s", room_id.Hex())))
+		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Internally Insert Message for room %s", room.Id.Hex())))
 		return primitive.NewObjectID(), err
 	}
 

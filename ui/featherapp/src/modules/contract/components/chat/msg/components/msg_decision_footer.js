@@ -26,6 +26,12 @@ const MsgDecisionFooter = (props) => {
       </div> 
     )
   }
+
+  if (props.embedded) {
+    return (
+      <></>
+    )
+  }
   return (
     <div className="flex">
       {(props.msg.adminOverride && props.adminStatus === decisionTypes.YES) && (

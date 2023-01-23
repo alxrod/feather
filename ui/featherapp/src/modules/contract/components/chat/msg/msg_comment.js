@@ -14,7 +14,7 @@ export default (props) => {
     )
   }
   return (
-    <MsgWrapper msg={props.msg} editString={"Commented"} icon={Icon}>
+    <MsgWrapper embedded={props.embedded} msg={props.msg} editString={"Commented"} icon={Icon}>
         <div className="mt-2 text-sm text-gray-700">
           <p>{props.msg.body.message}</p>
         </div>

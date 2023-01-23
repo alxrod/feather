@@ -1,10 +1,11 @@
-import UserService from "../../services/user.service";
+import UserService, {WORKER_TYPE, BUYER_TYPE} from "../../services/user.service";
 import FileService from "../../services/file.service";
 import * as userActions from "./user.actions";
 const user = JSON.parse(localStorage.getItem("user"));
 const creds = JSON.parse(localStorage.getItem("creds"));
 const initialState = {
-    redirectLink: "/contracts"
+    redirectLink: "/contracts",
+    defaultRegisterRole: WORKER_TYPE,
     
 } 
 if (user) {
@@ -21,6 +22,11 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 redirectLink: action.payload
+            }
+        case userActions.SET_REGISTER_ROLE:
+            return {
+                ...state,
+                defaultRegisterRole: action.payload
             }
         case userActions.AUTH_FAILED: 
             return {

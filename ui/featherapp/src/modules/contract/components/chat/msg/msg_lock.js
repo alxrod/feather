@@ -90,19 +90,19 @@ const ContractLockMsg = (props) => {
     
   }
   return (
-    <MsgWrapper msg={props.msg} editString={editString} icon={Icon}>
+    <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
       <div className="mt-2 text-sm text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
             {props.msg.isAdmin ? (
-              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" "}<b className="text-indigo-500">{props.msg.body.contractLock ? "closed" : "opened"}</b>{" the edit lock"}</h3>              
+              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" "}<b className="text-primary4">{props.msg.body.contractLock ? "closed" : "opened"}</b>{" the edit lock"}</h3>              
             ) : (
-              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" requested to "}<b className="text-indigo-500">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
+              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" requested to "}<b className="text-primary4">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
             )}
             </div>
           <div className="w-6"></div>
           <div className="w-16">
-            {(displayDecide(props.msg, yourStatus, props.user)) && (
+            {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
               <DecideButton 
                 approve={acceptChange}
                 reject={rejectChange}
@@ -112,6 +112,7 @@ const ContractLockMsg = (props) => {
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 
+          embedded={props.embedded}
           yourStatus={yourStatus} 
           otherStatus={otherStatus} 
           adminStatus={props.msg.adminStatus}

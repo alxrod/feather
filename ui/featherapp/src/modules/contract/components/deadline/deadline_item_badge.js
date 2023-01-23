@@ -4,7 +4,7 @@ import { XIcon } from '@heroicons/react/outline'
 export default (props) => {
     const [borderStyle, setBorderStyle] = useState("border border-gray-300")
     const [textStyle, setTextStyle] = useState("text-gray-900")
-    const [dotStyle, setDotStyle] = useState("bg-indigo-500")
+    const [dotStyle, setDotStyle] = useState("bg-primary4")
     const [xColor, setXColor] = useState("text-gray-400")
 
     useEffect(() => {
@@ -35,13 +35,13 @@ export default (props) => {
         } else {
             if (props.selected) {
                 setTextStyle("text-gray-900")
-                setDotStyle("bg-indigo-500")
+                setDotStyle("bg-primary4")
                 setXColor("text-gray-400")
-                setBorderStyle("border border-2 border-indigo-500")
+                setBorderStyle("border border-2 border-primary4")
             } else {
                 setBorderStyle("border border-gray-300")
                 setTextStyle("text-gray-900")
-                setDotStyle("bg-indigo-500")
+                setDotStyle("bg-primary4")
                 setXColor("text-gray-400")
             }
         }

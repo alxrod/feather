@@ -295,7 +295,7 @@ const DeadlineSummary = (props) => {
                       data-tooltip-target="tooltip-prevpayout" 
                       data-tooltip-style="light" 
                       type="button" 
-                      className={"bg-indigo-500 h-1.5 rounded-l-full " + (props.deadlines.length === 1 ? "rounded-r-full" : "")} 
+                      className={"bg-primary4 h-1.5 rounded-l-full " + (props.deadlines.length === 1 ? "rounded-r-full" : "")} 
                       style={{width: prevPayoutPerc+"%"}}
                     >
                     </button>
@@ -304,7 +304,7 @@ const DeadlineSummary = (props) => {
                       data-tooltip-target="tooltip-curpayout" 
                       data-tooltip-style="light" 
                       type="button" 
-                      className={"bg-indigo-400 h-1.5 rounded-r-full " + (props.deadline.idx === 0 ? "rounded-l-full" : "")} 
+                      className={"bg-primary3 h-1.5 rounded-r-full " + (props.deadline.idx === 0 ? "rounded-l-full" : "")} 
                       style={{width: curPayoutPerc+"%"}}
                     >
                     </button>
@@ -322,7 +322,7 @@ const DeadlineSummary = (props) => {
                         type="text"
                         name="payout"
                         id="payout"
-                        className={payoutTextColor + " text-right focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-28 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                        className={payoutTextColor + " text-right focus:ring-primary4 focus:border-primary4 block w-full pl-28 pr-12 sm:text-sm border-gray-300 rounded-md"}
                         value={payoutValue}
                         placeholder="0"
                         onChange={changePayout}
@@ -334,7 +334,7 @@ const DeadlineSummary = (props) => {
                           type="text"
                           name="price"
                           id="price"
-                          className={payoutTextColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                          className={payoutTextColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                           value={""}
                           disabled={props.disabled || payoutLock}
                         />
@@ -350,7 +350,7 @@ const DeadlineSummary = (props) => {
                           type="text"
                           name="price"
                           id="price"
-                          className={payoutTextColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                          className={payoutTextColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                           value={""}
                           disabled={props.disabled || payoutLock}
                         />

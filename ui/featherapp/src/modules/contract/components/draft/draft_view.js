@@ -5,7 +5,7 @@ export default function DraftUpload() {
     <div className="bg-white overflow-hidden shadow rounded-lg w-full mt-5 flex flex-row">
       <div className="bg-gray-50 px-4 py-5 sm:p-6">
         <div className="pb-5">
-          <h3 className="text-lg leading-6 font-medium text-indigo-400">Versions</h3>
+          <h3 className="text-lg leading-6 font-medium text-primary3">Versions</h3>
         </div>
         <VersionHistory/>
       </div>
@@ -24,7 +24,7 @@ export default function DraftUpload() {
                 <div className="mt-3 grow pr-6">
                   <div className="sm:grid">
                     <div className="sm:grid sm:pt-1">
-                        <h3 className="block text-sm font-medium text-indigo-700 sm:mt-px sm:pt-0">
+                        <h3 className="block text-sm font-medium text-primary6 sm:mt-px sm:pt-0">
                         Link: <i><a href="#" className="text-gray-400 font-normal">https://www.linktoyourcontent.com</a></i>
                         </h3>
                     </div>
@@ -48,7 +48,7 @@ export default function DraftUpload() {
                           <div className="flex flex-col items-center text-sm text-gray-600">
                             <label
                               htmlFor="file-upload"
-                              className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                              className="relative cursor-pointer bg-white rounded-md font-medium text-primary5 hover:text-primary4 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary4"
                             >
                               <span>Content Placeholder</span>
                             </label>
@@ -62,7 +62,7 @@ export default function DraftUpload() {
                   <div className="mt-6 w-full flex flex-col items-center">
                     <button
                         type="submit"
-                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
                       >
                       Approve All Contract Items!
                     </button>

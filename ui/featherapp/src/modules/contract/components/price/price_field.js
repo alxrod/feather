@@ -160,7 +160,7 @@ const PriceField = (props) => {
                 type="text"
                 name="price"
                 id="price"
-                className={textColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                className={textColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                 value={fieldValue}
                 disabled={props.disabled || lock}
                 onChange={handlePriceChange}
@@ -172,7 +172,7 @@ const PriceField = (props) => {
                   type="text"
                   name="price"
                   id="price"
-                  className={textColor + " focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                  className={textColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                   value={""}
                   disabled={props.disabled || lock}
                   onChange={handlePriceChange}

@@ -85,13 +85,13 @@ const LinkProof = (props) => {
               type="text"
               name="link"
               id="link"
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              className="shadow-sm focus:ring-primary4 focus:border-primary4 block w-full sm:text-sm border-gray-300 rounded-md"
               placeholder="https://thelinktoyourcontent"
             />
           </div>
           <button
             type="submit"
-            className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
           >
             Upload
           </button>

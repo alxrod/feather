@@ -9,6 +9,8 @@ import {
 
     ChatPullRequest,
     ChatLabel,
+    NewMessagesRequest,
+    NewMessageSet
 
 } from "../proto/communication/chat_pb";
 
@@ -125,6 +127,8 @@ class ChatService {
                 })
             } 
         })
+
+        
         stream.on('error', function (error) {
             dispatch({
                 type: CHAT_REJOIN_BEGIN,
@@ -143,9 +147,27 @@ class ChatService {
         return Promise.resolve();
     }
 
-    pullRecord(token, room_id) {
+    leaveChat(token, user_id, room_id) {
+        let leaveRequest = new UserLeave();
+        leaveRequest.setRoomId(room_id);
+        leaveRequest.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            chatClient.leaveChat(leaveRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve()
+                }
+            });
+        });
+    }
+
+    pullRecord(token, user_id, room_id) {
         let pullRequest = new ChatPullRequest();
         pullRequest.setRoomId(room_id);
+        pullRequest.setUserId(user_id);
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -166,6 +188,34 @@ class ChatService {
             });
         });
 
+    }
+
+    pullNewMessages(token, user_id) {
+        let req = new NewMessagesRequest();
+        req.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            chatClient.pullNewMessages(req, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                } else {
+                    var resp = response.toObject();
+                    let messages = []
+                    
+                    for (let i=0; i<resp.messagesList.length; i++) {
+                        const reformMsg = reformatBody(resp.messagesList[i].message)
+                        reformMsg.contractInfo = resp.messagesList[i].contract
+                        messages.push(reformMsg)
+                    }
+                    console.log("New Messages:")
+                    console.log(messages)
+
+                    resolve(messages.reverse())
+                }
+            });
+        });
+        
     }
 
     sendMessage(token, user_id, room_id, text, label) {
@@ -383,9 +433,10 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
     } else if (msg.method === msgMethods.RESOLVE_ADMIN) {
         dispatch({
             type: CONTRACT_ADMIN_REQUEST_CHANGED,
-            payload: false,
+            payload: false
         })
     } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
+        console.log("FINALIZED SETTLE W ", msg.body)
         dispatch({
             type: CONTRACT_DEADLINE_FINALIZE_SETTLE,
             payload: msg.body

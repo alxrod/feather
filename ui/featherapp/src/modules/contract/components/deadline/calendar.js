@@ -316,20 +316,20 @@ const Calendar = (props) => {
                   type="button"
                   className={classNames(
                     isSel(day+1) && 'text-white',
-                    isSel(day+1) && isDay(day+1) && 'bg-indigo-600',
+                    isSel(day+1) && isDay(day+1) && 'bg-primary5',
 
                     isSel(day+1) && !isDay(day+1) && (!props.decisionMode && !props.dateLock) && 'bg-gray-500',
                     isSel(day+1) && !isDay(day+1) && (props.decisionMode || (props.dateLock && !props.universalLock)) && 'bg-green',
-                    isSel(day+1) && !isDay(day+1) && (props.universalLock) && 'bg-indigo-600',
+                    isSel(day+1) && !isDay(day+1) && (props.universalLock) && 'bg-primary5',
 
                     !isSel(day+1) && isOrig(day+1) && 'text-white',
                     !isSel(day+1) && isOrig(day+1) && 'bg-gray-400',
 
                     !isSel(day+1) && isNext(day+1) && 'text-white',
-                    !isSel(day+1) && isNext(day+1) && 'bg-indigo-600 hover:bg-indigo-800',
+                    !isSel(day+1) && isNext(day+1) && 'bg-primary5 hover:bg-primary7',
 
 
-                    !isSel(day+1) && isDay(day+1) && 'text-indigo-600',
+                    !isSel(day+1) && isDay(day+1) && 'text-primary5',
                     !isSel(day+1) && !isDay(day+1) && 'text-gray-900',   
 
                     !isSel(day+1) && !isNext(day+1) && 'hover:bg-gray-200',
@@ -347,7 +347,7 @@ const Calendar = (props) => {
               <button
                   type="button"
                   className={classNames( 
-                    isDay(day+1) && 'text-indigo-600',
+                    isDay(day+1) && 'text-primary5',
                     !isDay(day+1) && 'text-gray-900',   
                     (isDay(day+1)) && 'font-semibold',
                     'hover:bg-gray-200 mx-auto flex h-8 w-8 items-center justify-center rounded-full'

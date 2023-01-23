@@ -248,7 +248,7 @@ const ContractItem = (props) => {
                 >
                   <span className="absolute flex-shrink-0 flex items-center justify-center">
                   <span
-                      className='bg-indigo-500 h-1.5 w-1.5 rounded-full'
+                      className='bg-primary4 h-1.5 w-1.5 rounded-full'
                       aria-hidden="true"
                   />
                   </span>
@@ -294,7 +294,7 @@ const ContractItem = (props) => {
                   )}
                   {(!lock && !props.suggestMode && !decideMode) && (
                     <button onClick={suggestDeleteItem}>
-                      <TrashIcon className="text-indigo-400 hover:text-indigo-500 hover:text-indigo-600 w-6 h-6"/>
+                      <TrashIcon className="text-primary3 hover:text-primary4 hover:text-primary5 w-6 h-6"/>
                     </button>
                   )}
                 </div>

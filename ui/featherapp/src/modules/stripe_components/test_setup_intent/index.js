@@ -39,7 +39,7 @@ const TestSetupIntent = (props) => {
         className="appearance-none block w-full px-3 
                   py-2 border border-gray-300 rounded-md shadow-sm 
                   placeholder-gray-400 focus:outline-none 
-                  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mb-2"
+                  focus:ring-primary4 focus:border-primary4 sm:text-sm mb-2"
       />
       <input
         type="text"
@@ -49,10 +49,10 @@ const TestSetupIntent = (props) => {
         className="appearance-none block w-full px-3 
                   py-2 border border-gray-300 rounded-md shadow-sm 
                   placeholder-gray-400 focus:outline-none 
-                  focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mb-2"
+                  focus:ring-primary4 focus:border-primary4 sm:text-sm mb-2"
       />
       <button 
-        className="px-2 py-1 text-sm text-white bg-indigo-500 rounded-md" 
+        className="px-2 py-1 text-sm text-white bg-primary4 rounded-md" 
         onClick={createIntent}
       >
         Create Intent

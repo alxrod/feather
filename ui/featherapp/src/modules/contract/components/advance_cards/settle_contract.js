@@ -76,7 +76,7 @@ const SignButton = (props) => {
           
         {youSettled ? (
           <div className="w-full flex justify-center items-center mt-2">
-            <h3 className="text-indigo-500 font-medium text-xl">You have already advanced to settling</h3>
+            <h3 className="text-primary4 font-medium text-xl">You have already advanced to settling</h3>
           </div>
         ) : (
           <div className="mt-2 sm:flex sm:items-start sm:justify-between">
@@ -89,7 +89,7 @@ const SignButton = (props) => {
               <button
                 type="button"
                 onClick={advanceContract}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-lg"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4 text-lg"
               >
                 advance
               </button>

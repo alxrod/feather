@@ -18,6 +18,9 @@ import {
   listExBAs,
 } from "../../reducers/stripe/dispatchers/stripe.setup.dispatcher";
 
+import { CreditCardIcon } from '@heroicons/react/outline'
+
+
 import AccountsList from "./accounts_list";
 
 const PaymentInfo = (props) => {
@@ -73,95 +76,42 @@ const PaymentInfo = (props) => {
   }, [props.user])
 
   return (
-    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-      <div>
-        <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Connected Accounts</h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">How you get paid and pay for contracts on feather.</p>
-        </div>
-        {props.user.stripeConnected ? (
-        <div>
-          <div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-              <dl className="sm:divide-y sm:divide-gray-200">
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Full name</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{props.user.stripeInfo.firstName + " " + props.user.stripeInfo.lastName}</dd>
-                </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Email</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{props.user.email}</dd>
-                </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{props.user.stripeInfo.phone}</dd>
-                </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Address</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {props.user.stripeInfo.address.line1 + ", " +
-                    (props.user.stripeInfo.address.line2 !== "" ? (props.user.stripeInfo.address.line2+ ", ") : "") +
-                    props.user.stripeInfo.address.city + " " + props.user.stripeInfo.address.state 
-                    + " " + props.user.stripeInfo.address.postalCode + ", " + props.user.stripeInfo.address.country}
-                    </dd>
-                </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {props.user.stripeInfo.dob.month + "/" + props.user.stripeInfo.dob.day + "/" +props.user.stripeInfo.dob.year }
-                  </dd>
-                </div>
-              </dl>
+
+    <div className="overflow-hidden bg-white shadow sm:rounded-lg max-w-2xl w-full" >
+      {props.user.buyerRequested && (
+        <>
+          <div className="pl-3 pr-4 py-2 sm:pr-6 flex items-center justify-between">
+            <div className="flex items-center">
+              <CreditCardIcon className="m-2 w-6 h-6 text-primary5"/>
+              <h3 className="text-lg font-medium leading-6 text-gray-700">Buyer Settings (payment) </h3>
             </div>
+            <ConnectPayment secondaryHandle={refreshPaymentMethods}/>
           </div>
-          <div>
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Bank Account</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">The account associated with Feather for payments and payouts</p>
-            </div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:p-0">
-              <dl className="sm:divide-y sm:divide-gray-200">
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Account Number</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{"********"+props.user.stripeInfo.lastFourAccount}</dd>
-                </div>
-                <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-gray-500">Routing Number</dt>
-                  <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{props.user.stripeInfo.routingNumber}</dd>
-                </div>
-              </dl>
-            </div>
+          <div className="border-t border-gray-200">
+            <AccountsList 
+              accounts={paymentMethods} 
+              starterDefault={props.user.defaultFca} 
+              setDefault={props.setDefaultFca} 
+              delete={deleteFca}
+            />
           </div>
-        </div>
-        ) : (
-          <></>
-        )}
-        {props.user.buyerRequested && (
-          <div>
-            <div className="flex justify-between w-full px-4 pb-1 items-center">
-              <h1 className="pl-2 pb-2 font-semibold text-gray-900 text-lg">Payment Methods</h1>
-              <ConnectPayment secondaryHandle={refreshPaymentMethods}/>
+        </>
+      )}
+      {props.user.workerRequested && (
+        <>
+          <div className="pl-3 pr-4 py-2 sm:pr-6 flex items-center justify-between">
+            <div className="flex items-center">
+              <CreditCardIcon className="m-2 w-6 h-6 text-primary5"/>
+              <h3 className="text-lg font-medium leading-6 text-gray-700">Worker Settings (payout) </h3>
             </div>
-            <AccountsList accounts={paymentMethods} starterDefault={props.user.defaultFca} setDefault={props.setDefaultFca} delete={deleteFca}/>
+            <ConnectPayout secondaryHandle={refreshPaymentMethods}/>
           </div>
-        )}
-        
-        <div>
-          {props.user.workerRequested && (
-            <div>
-              <div className="flex justify-between w-full px-4 pb-1 items-center">
-                <h1 className="pl-2 pb-2 font-semibold text-gray-900 text-lg">Payout Methods</h1>
-                <ConnectPayout secondaryHandle={refreshPaymentMethods}/>
-              </div>
-              {/* starterDefault={} setDefault={} delete={} */}
-              <AccountsList accounts={exBankAcounts} />
-            </div>
-          )}
-        </div>
-      </div>
-      <TestSetupIntent/>
+          <div className="border-t border-gray-200">
+            <AccountsList accounts={exBankAcounts} />
+          </div>
+        </>
+      )}
     </div>
-    
   )
 }
 

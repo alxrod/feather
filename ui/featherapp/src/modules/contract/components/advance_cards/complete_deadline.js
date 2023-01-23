@@ -171,7 +171,7 @@ const CompleteDeadlineButton = (props) => {
                 {"Currently, "}
                 {disputedItems.map((item,idx) => (
                   <Fragment key={idx}>
-                    <b className="font-normal text-indigo-700">
+                    <b className="font-normal text-primary6">
                       {item.name}
                     </b>
                     {idx < disputedItems.length-2 ? ", " :
@@ -182,7 +182,7 @@ const CompleteDeadlineButton = (props) => {
                 ))}{" "}
                 {disputedItems.length === 1 ? "is " : "are "} 
                 disputed so the{" "}
-                <b className="text-indigo-500">
+                <b className="text-primary4">
                   {percentageString(curDeadline.currentPayout)} 
                 </b>
                 {" "}
@@ -196,7 +196,7 @@ const CompleteDeadlineButton = (props) => {
                 <button
                   type="button"
                   onClick={handleUndoDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-indigo-900 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-200 text-md mr-2"
+                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-primary7 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary2 text-md mr-2"
                 >
                 undo
               </button>
@@ -205,7 +205,7 @@ const CompleteDeadlineButton = (props) => {
                 <button
                   type="button"
                   onClick={handleConfirmDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-md"
+                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4 text-md"
                 >
                   confirm
                 </button>
@@ -213,7 +213,7 @@ const CompleteDeadlineButton = (props) => {
                 <button
                   type="button"
                   onClick={handleFinishDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 text-md"
+                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary5 text-md"
                 >
                   finish
                 </button>
