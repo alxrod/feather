@@ -89,7 +89,7 @@ func (srv *FrontServer) Serve(addr string) {
 		Addr:        addr,
 		ReadTimeout: 15 * time.Second,
 	}
-	log.Println(color.Ize(color.Green, "Serving Frontend on 127.0.0.1:8080"))
+	log.Println(color.Ize(color.Green, fmt.Sprintf("Serving Frontend on %s", addr)))
 	log.Fatal(s.ListenAndServeTLS("cert/server.crt", "cert/server.key"))
 }
 

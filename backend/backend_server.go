@@ -3,8 +3,10 @@ package backend
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/TwiN/go-color"
@@ -160,7 +162,8 @@ func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*g
 func (s *BackServer) Serve() {
 	s.DeadlineAgent.StartDeadlineLoop(s.ChatAgent.SendDeadlineExpireMessage)
 
-	log.Println(color.Ize(color.Green, "Serving Backend on 127.0.0.1:9990"))
+	addr := os.Getenv("SITE_IP")
+	log.Println(color.Ize(color.Green, fmt.Sprintf("Serving Backend on %s:9990", addr)))
 	log.Fatal(s.GrpcSrv.Serve(s.lis))
 }
 
