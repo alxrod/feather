@@ -1,10 +1,5 @@
 # Custom Feather Ignores
-cert/ca.cert
-cert/ca.key
-cert/ca.srl
-cert/server.crt
-cert/server.csr
-cert/server.key
+cert/*
 creds/*
 asset_cache/*
 api

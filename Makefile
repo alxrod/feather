@@ -5,6 +5,10 @@ export
 gencert:
 	./cert/certgen.sh
 
+.PHONY: run
+run:
+	./api
+
 .PHONY: build
 build:
 	PUBLIC_URL=/ npm run build --prefix ui/featherapp/ 
