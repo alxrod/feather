@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"os"
 	"time"
 
 	db "github.com/alxrod/feather/backend/db"
@@ -25,8 +26,6 @@ import (
 )
 
 // Change to secure for prod
-const ACCOUNT_SETUP_RETURN_URL = "http://localhost:3000/profile"
-const ACCOUNT_SETUP_REFRESH_URL = "https://localhost:8080/profile/onboarding-refresh"
 
 type StripeAgent struct {
 	Database   *mongo.Database
@@ -111,6 +110,10 @@ func (agent *StripeAgent) CreateCustomer(user *db.User, database *mongo.Database
 }
 
 func (agent *StripeAgent) GetAccountOnboardingLink(account_id string) (string, error) {
+
+	ACCOUNT_SETUP_RETURN_URL := fmt.Sprintf("%s/profile", os.Getenv("SITE_BASE"))
+	ACCOUNT_SETUP_REFRESH_URL := fmt.Sprintf("%s/profile/onboarding-refresh", os.Getenv("SITE_BASE"))
+
 	params := &stripe.AccountLinkParams{
 		Account:    stripe.String(account_id),
 		RefreshURL: stripe.String(ACCOUNT_SETUP_REFRESH_URL),

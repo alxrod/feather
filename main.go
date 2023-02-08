@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
 	"os"
 
@@ -23,7 +24,8 @@ func main() {
 	stripe.Key = os.Getenv(key_name)
 
 	// Create backend server
-	backend, err := BackEndLib.NewBackServer("cert/server.crt", "cert/server.key", "127.0.0.1:9990")
+	addr := fmt.Sprintf("%s:9990", os.Getenv("SITE_IP"))
+	backend, err := BackEndLib.NewBackServer("cert/server.crt", "cert/server.key", addr)
 	defer backend.Shutdown()
 	if err != nil {
 		log.Fatal(err)
@@ -47,6 +49,7 @@ func main() {
 
 	// Set up the routes and serve it
 	frontend.SetUpHandler(multiplex)
-	frontend.Serve("localhost:8080")
+	addr = fmt.Sprintf("%s:8080", os.Getenv("SITE_IP"))
+	frontend.Serve(addr)
 
 }

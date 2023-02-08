@@ -11,7 +11,7 @@ import {
  } from "../proto/communication/stripe_pb";
 
 
-export const stripeServiceClient = new StripeServiceClient("https://localhost:8080");
+export const stripeServiceClient = new StripeServiceClient(process.env.REACT_APP_SITE_BASE);
 
 class StripeService {
     testCharge(token, user_id) {

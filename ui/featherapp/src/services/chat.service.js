@@ -48,7 +48,7 @@ import {contractStages } from "./contract.service"
 // var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE, CHAT_REJOIN_BEGIN} from "../reducers/chat/chat.actions"
 
-export const chatClient = new ChatClient("https://localhost:8080");
+export const chatClient = new ChatClient(process.env.REACT_APP_SITE_BASE);
 
 export const labelTypes = {
     DEADLINE: 3,

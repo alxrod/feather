@@ -13,7 +13,8 @@ import {
 
  } from "../proto/communication/user_pb";
 
-export const authClient = new AuthClient("https://localhost:8080");
+console.log("Trying: ", process.env.APP_SITE_BASE)
+export const authClient = new AuthClient(process.env.REACT_APP_SITE_BASE);
 
 export const WORKER_TYPE = 0
 export const BUYER_TYPE = 1

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	// "errors"
@@ -17,8 +18,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-const CACHE_URL_BASE = "https://localhost:8080/asset-cache/"
 
 func (s *BackServer) PresignProfilePhoto(ctx context.Context, req *comms.ProfileUrlRequest) (*comms.ProfileUrlResponse, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
@@ -102,7 +101,8 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 	}
 	log.Printf("Trying to save local path %s", localPath)
 	user.ProfilePhoto.LocalPath = localPath
-	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
+	cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("SITE_BASE"))
+	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", cacheBase, user.ProfilePhoto.LocalPath)
 	user.ProfilePhoto.InCache = true
 	err = user.ProfilePhoto.Save(database)
 	if err != nil {
@@ -138,7 +138,8 @@ func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGet
 				return nil, err
 			}
 			user.ProfilePhoto.LocalPath = localPath
-			user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", CACHE_URL_BASE, user.ProfilePhoto.LocalPath)
+			cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("SITE_BASE"))
+			user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", cacheBase, user.ProfilePhoto.LocalPath)
 			user.ProfilePhoto.InCache = true
 			err = user.ProfilePhoto.Save(database)
 			profilePhoto = user.ProfilePhoto

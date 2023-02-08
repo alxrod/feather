@@ -5,7 +5,7 @@ import {
     ProfileGetRequest,
  } from "../proto/communication/file_service_pb";
 
-export const fileServiceClient = new FileServiceClient("https://localhost:8080");
+export const fileServiceClient = new FileServiceClient(process.env.REACT_APP_SITE_BASE);
 
 class FileService {
 
