@@ -10,6 +10,8 @@ asset_cache/*
 
 communication/*.go
 
+api
+
 
 
 
