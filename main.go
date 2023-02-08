@@ -49,7 +49,7 @@ func main() {
 
 	// Set up the routes and serve it
 	frontend.SetUpHandler(multiplex)
-	addr = fmt.Sprintf("%s:8080", os.Getenv("SITE_IP"))
+	addr = fmt.Sprintf("%s:%s", os.Getenv("SITE_IP"), os.Getenv("FRONTEND_IP"))
 	frontend.Serve(addr)
 
 }
