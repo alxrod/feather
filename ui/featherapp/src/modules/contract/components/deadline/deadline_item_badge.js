@@ -10,27 +10,27 @@ export default (props) => {
     useEffect(() => {
         if (props.addMode) {
             if (props.selected) {
-                setDotStyle("bg-green")
-                setTextStyle("text-green")
-                setBorderStyle("border border-2 border-green")
-                setXColor("text-green");
+                setDotStyle("bg-green-400")
+                setTextStyle("text-green-400")
+                setBorderStyle("border border-2 border-green-400")
+                setXColor("text-green-400");
             } else {
                 setBorderStyle("border border-gray-300")
-                setTextStyle("text-green")
-                setDotStyle("bg-green")
-                setXColor("text-green");
+                setTextStyle("text-green-400")
+                setDotStyle("bg-green-400")
+                setXColor("text-green-400");
             }
         } else if (!props.addMode && props.deleteMode) {
             if (props.selected) {
-                setDotStyle("bg-red")
-                setTextStyle("text-red")
+                setDotStyle("bg-red-400")
+                setTextStyle("text-red-400")
                 setBorderStyle("border border-2 border-red")
-                setXColor("text-red");
+                setXColor("text-red-400");
             } else {
                 setBorderStyle("border border-gray-300")
-                setTextStyle("text-red")
-                setDotStyle("bg-red")
-                setXColor("text-red");
+                setTextStyle("text-red-400")
+                setDotStyle("bg-red-400")
+                setXColor("text-red-400");
             }
         } else {
             if (props.selected) {

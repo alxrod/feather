@@ -21,14 +21,14 @@ export default (props) => {
   } else if (props.status === true) {
     if (props.isYou) {
       return (
-        <div className="flex items-center text-green">
+        <div className="flex items-center text-green-400">
           <LockClosedIcon className="w-3 h-3"/>
           <p className="ml-1 text-sm">You are editing</p>
         </div>
       )
     } else {
       return (
-        <div className="flex items-center text-red">
+        <div className="flex items-center text-red-400">
           <LockClosedIcon className="w-3 h-3"/>
           <p className="ml-1 text-sm">Your partner is editing</p>
         </div>

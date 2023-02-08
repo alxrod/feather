@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"errors"
+	"regexp"
 
 	"github.com/TwiN/go-color"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
@@ -18,21 +19,20 @@ import (
 
 // These need to be updated by final secur verison
 var routes []string = []string{
-	"/messages",
-	"/contracts",
+	"^/contracts$",
 
-	"/login",
-	"/register",
-	"/setup-payment",
-	"/logout",
-	"/forgot-password",
+	"^/login$",
+	"^/register$",
+	"^/setup-payment$",
+	"^/logout$",
+	"^/forgot-password$",
 
-	"/chat",
-	"/contract",
-	"/create",
-	"/negotiate",
-	"/view",
-	"/settle",
+	"^/invite/[^/]*$",
+	"^/contract/[^/]*$",
+	"^/create/[^/]*$",
+	"^/negotiate/[^/]*$",
+	"^/view/[^/]*$",
+	"^/settle/[^/]*$",
 }
 
 type FrontServer struct {
@@ -137,7 +137,9 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 		}
 
 		for _, route := range routes {
-			if (strings.Contains(path, route) && route != "/") || path == "/" {
+			r_exp := regexp.MustCompile(route)
+			if r_exp.MatchString(path) || path == "/" {
+				log.Printf(path)
 				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", r.URL)))
 				http.StripPrefix(path, next).ServeHTTP(w, r)
 				return

@@ -114,6 +114,22 @@ func (d *Deadline) Proto() *comms.DeadlineEntity {
 	return proto
 }
 
+func (d *Deadline) Nub() *comms.DeadlineNub {
+	if d == nil {
+		return &comms.DeadlineNub{}
+	}
+	return &comms.DeadlineNub{
+		Id:         d.Id.Hex(),
+		ContractId: d.ContractId.Hex(),
+
+		Complete: d.Complete,
+		Expired:  d.Expired,
+
+		CurrentPayout: d.CurrentPayout,
+		CurrentDate:   timestamppb.New(d.CurrentDate),
+	}
+}
+
 func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {
 	deadline := &Deadline{
 		ContractId: contract_id,

@@ -10,6 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
+import { fontSize } from './components/msg_helpers'
 
 const DeadlineExpiredMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -24,7 +25,7 @@ const DeadlineExpiredMsg = (props) => {
       <div className="flex justify-center items-center">
         <div className="grow border-gray-300 border-b h-1"></div>
         <div className="flex items-center">
-          <h3 className="text-xl font-medium text-gray-500 px-4">Deadline Expired</h3>
+          <h3 className={"font-medium text-gray-500 px-4 " + fontSize(4, props.embedded)}>Deadline Expired</h3>
         </div>
         <div className="grow border-gray-300 border-b h-1"></div>
       </div>

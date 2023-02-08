@@ -8,14 +8,14 @@ const DecideButton = (props) => {
         className="relative inline-flex items-center px-1 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-primary4 focus:border-primary4"
       >
         <span className="sr-only">Previous</span>
-        <CheckIcon onClick={props.approve} className="h-3 w-3 text-green" aria-hidden="true" />
+        <CheckIcon onClick={props.approve} className="h-3 w-3 text-green-400" aria-hidden="true" />
       </button>
       <button
         type="button"
         className="-ml-px relative inline-flex items-center px-1 py-1 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-primary4 focus:border-primary4"
       >
         <span className="sr-only">Next</span>
-        <XIcon onClick={props.reject} className="h-3 w-3 text-red" aria-hidden="true" />
+        <XIcon onClick={props.reject} className="h-3 w-3 text-red-400" aria-hidden="true" />
       </button>
     </span>
   )

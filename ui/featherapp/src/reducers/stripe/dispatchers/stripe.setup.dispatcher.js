@@ -207,42 +207,27 @@ export const createContractIntentSecret = (worker_id, buyer_id) => {
         );
     }
 }
-    // export const renewIntentSecret = () => {
-    //     return dispatch => {
-    //         return helpers.authCheck().then(
-    //             (creds) => {
-    //                 return StripeService.renewIntentSecret(creds.access_token, creds.user_id).then(
-    //                     (secret) => {
-    //                         return Promise.resolve(secret);
-    //                     },
-    //                     (error) => {
-    //                         return helpers.parseError(error, dispatch);
-    //                     }
-    //                 );
-    //             },
-    //             () => {
-    //                 helpers.bailAuth(dispatch)
-    //             }
-    //         );
-    //     }
-    // }
 
-// export const addFCAccounts = (account_ids) => {
-//     return dispatch => {
-//         return helpers.authCheck().then(
-//             (creds) => {
-//                 return StripeService.addFCAccounts(creds.access_token, creds.user_id, account_ids).then(
-//                     () => {
-//                         return Promise.resolve();
-//                     },
-//                     (error) => {
-//                         return helpers.parseError(error, dispatch);
-//                     }
-//                 );
-//             },
-//             () => {
-//                 helpers.bailAuth(dispatch)
-//             }
-//         );
-//     } 
-// }
+export const getInternalCharges = () => {
+    return dispatch => {
+        return helpers.authCheck().then(
+            (creds) => {
+                return StripeService.getInternalCharges(creds.access_token, creds.user_id).then(
+                    (charges) => {
+                        dispatch({
+                            type: stripeActions.SET_INTERNAL_CHARGES,
+                            payload: charges,
+                        })
+                        return Promise.resolve(charges);
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+    }
+}

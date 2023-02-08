@@ -10,6 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
+import { fontSize } from './components/msg_helpers'
 
 const ResolveAdminMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -26,10 +27,10 @@ const ResolveAdminMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-        <div className="mt-2 text-sm text-gray-700">
+        <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
           <div className="flex items-center">
             <div className="flex items-center">
-              <h3 className="text-lg text-gray-400">Admin resolved request for help on this contract</h3>
+              <h3 className={"text-gray-400 " + fontSize(3, props.embedded)}>Admin resolved request for help on this contract</h3>
             </div>
             <div className="w-6"></div>
           </div>

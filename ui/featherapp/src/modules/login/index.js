@@ -86,7 +86,7 @@ const Login = (props) => {
               <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
                 <Form ref={form}>
                   {!(genError === "") && (
-                    <p className="text-red">{genError}</p>
+                    <p className="text-red-400">{genError}</p>
                   )}
                   <div>
                     <label htmlFor="username" className="block text-sm font-medium text-gray-700">

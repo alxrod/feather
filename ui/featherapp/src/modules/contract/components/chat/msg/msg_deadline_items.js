@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
 import DeadlineItemBadge from "../../deadline/deadline_item_badge"
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
-import { displayDecide } from "./components/msg_helpers"
+import { displayDecide, fontSize } from "./components/msg_helpers"
 
 const DeadlineCreateMsg = (props) => {
 
@@ -40,7 +40,7 @@ const DeadlineCreateMsg = (props) => {
 
   const [version, setVersion] = useState(1)
 
-  const [deadlineName, setDeadlineName] = useState("Deadline")
+  const [deadlineName, setDeadlineName] = useState("the current deadline")
 
   useEffect( () => {
     if (props.reloaded === true) {
@@ -99,9 +99,9 @@ const DeadlineCreateMsg = (props) => {
   }
   return (
     <MsgWrapper embedded={props.embedded} msg={props.msg} editString={editString} icon={Icon}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
-          <p className="text-gray-400 text-lg mr-2">{"Changed Required Items"}</p>
+          <p className={"text-gray-400 mr-2 " + fontSize(3, props.embedded)}>{"Changed Required Items"}</p>
           <div className="w-2"></div>
           <div className="w-16">
             {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (

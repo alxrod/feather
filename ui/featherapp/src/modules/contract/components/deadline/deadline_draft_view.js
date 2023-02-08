@@ -64,7 +64,7 @@ const DeadlineDraftView = (props) => {
               ): null}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              <b className="text-primary4">{props.deadlines[selectedIdx]?.currentPayout}%</b> will be payed out on{" "}
+              <b className="text-primary4">${props.deadlines[selectedIdx]?.currentPayout}</b> will be payed out on{" "}
               <b className="text-primary4">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 
               {curItems.map((item, idx) => (
                 <Fragment key={idx}>

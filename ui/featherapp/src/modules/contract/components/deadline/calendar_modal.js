@@ -251,7 +251,7 @@ const CalendarModal = (props) => {
                             Choose a deadline from the <b className="text-primary5">dropdown</b> or click on it on the <b className="text-primary5">timeline</b>
                           </p>
                           <div className="h-4">
-                            <p className="mt-1 text-sm text-red">
+                            <p className="mt-1 text-sm text-red-400">
                               {errorMsg}
                             </p>
                           </div>
@@ -285,7 +285,7 @@ const CalendarModal = (props) => {
                             <div className="w-full flex justify-end">
                               {( ((proposedByPartner || newDeadlineLocalMode) && !newDeadlineSelected ) ? 
                                 (
-                                  <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before creating another deadline</h3>
+                                  <h3 className="text-sm text-gray-500"><b className="font-medium text-green-400">Confirm</b>/<b className="font-medium text-red-400">cancel</b> before creating another deadline</h3>
                                 ) : 
                                 (
                                   ((!newDeadlineSelected || (!proposedByPartner && !newDeadlineLocalMode)) ? (<h3 className="text-sm text-gray-500">Awaiting partner to approve new deadline</h3>) : (<></>))
@@ -297,7 +297,7 @@ const CalendarModal = (props) => {
                             <div className="w-full flex justify-end">
                               {( (proposedByPartner && !deleteDeadlineSelected) ? 
                                 (
-                                  <h3 className="text-sm text-gray-500"><b className="font-medium text-green">Confirm</b>/<b className="font-medium text-red">cancel</b> before deleting another deadline</h3>
+                                  <h3 className="text-sm text-gray-500"><b className="font-medium text-green-400">Confirm</b>/<b className="font-medium text-red-400">cancel</b> before deleting another deadline</h3>
                                 ) : 
                                 (
                                   (!proposedByPartner ? (<h3 className="text-sm text-gray-500">Awaiting partner to approve new deadline</h3>) : (<></>))
@@ -308,7 +308,7 @@ const CalendarModal = (props) => {
                           {(newDeadlineSelected && newDeadlineMode && newDeadlineLocalMode && !deleteDeadlineMode) && (
                             <div className="flex">
                               <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={confirmNewDeadline}>
                                 <span className="flex items-center font-light">
                                   <PlusIcon className="w-4 h-4"/>
@@ -316,7 +316,7 @@ const CalendarModal = (props) => {
                                 </span>
                               </button>
                               <button
-                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={cancelNewDeadline}>
                                 <span className="flex items-center font-light">
                                   <XIcon className="w-4 h-4"/>
@@ -329,7 +329,7 @@ const CalendarModal = (props) => {
                           {(newDeadlineSelected && newDeadlineMode && proposedByPartner && !deleteDeadlineMode) && (
                             <div className="flex">
                               <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={addNewPartnerDeadline}>
                                 <span className="flex items-center font-light">
                                   <PlusIcon className="w-4 h-4"/>
@@ -337,7 +337,7 @@ const CalendarModal = (props) => {
                                 </span>
                               </button>
                               <button
-                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={rejectNewPartnerDeadline}>
                                 <span className="flex items-center font-light">
                                   <XIcon className="w-4 h-4"/>
@@ -350,7 +350,7 @@ const CalendarModal = (props) => {
                           {(deleteDeadlineSelected && deleteDeadlineMode && proposedByPartner && !newDeadlineMode) && (
                             <div className="flex">
                               <button
-                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={confirmDeleteDeadline}>
                                 <span className="flex items-center font-light">
                                   <PlusIcon className="w-4 h-4"/>
@@ -358,7 +358,7 @@ const CalendarModal = (props) => {
                                 </span>
                               </button>
                               <button
-                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red focus:outline-none focus:ring-0 focus:ring-offset-0"
+                              className="inline-flex justify-center ml-2 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-400 focus:outline-none focus:ring-0 focus:ring-offset-0"
                               onClick={rejectDeleteDeadline}>
                                 <span className="flex items-center font-light">
                                   <XIcon className="w-4 h-4"/>

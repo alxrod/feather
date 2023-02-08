@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer" 
-import { displayDecide } from "./components/msg_helpers"
+import { displayDecide, fontSize } from "./components/msg_helpers"
 
 const DeadlineCreateMsg = (props) => {
 
@@ -60,6 +60,9 @@ const DeadlineCreateMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
+    if (props.msg?.label) {
+      setDeadlineName(props.msg.label.name)
+    }
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadline.id) {
         setDeadlineName(props.deadlines[i].name)
@@ -96,9 +99,9 @@ const DeadlineCreateMsg = (props) => {
   }
   return (
     <MsgWrapper embedded={props.embedded} msg={props.msg} editString={editString} icon={Icon}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
-          <p className="text-gray-400 text-lg mr-2">{"Created " + deadlineName}</p>
+          <p className={"text-gray-400 mr-2 " + fontSize(3, props.embedded)}>{"Created " + deadlineName}</p>
           <div className="w-2"></div>
           <div className="w-16">
             {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (
@@ -111,9 +114,9 @@ const DeadlineCreateMsg = (props) => {
         </div>
         <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
           <div className="flex">
-            <p className="text-green text-lg mr-2">{"Payout"}</p><p className="mr-1 text-green text-lg">${props.msg.body.deadline.currentPayout}</p>
+            <p className={"text-primary4 mr-2 " + fontSize(2, props.embedded)}>{"Payout"}</p><p className={"mr-1 text-primary4 " + fontSize(2, props.embedded)}>${props.msg.body.deadline.currentPayout}</p>
           </div>
-          <p className="text-green" >on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
+          <p className="text-primary4" >on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 

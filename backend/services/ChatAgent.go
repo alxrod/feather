@@ -231,6 +231,7 @@ func (agent *ChatAgent) BroadcastMessage(room_id primitive.ObjectID, msg *db.Mes
 					log.Println(color.Ize(color.Red, fmt.Sprintf("Error with stream %v. Error: %v", conn.Stream, err)))
 					conn.Active = false
 					conn.Err <- err
+					msg.UndoUpdateReadReceipts(conn.Id, database)
 				}
 			} else {
 				removals = append(removals, idx)

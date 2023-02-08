@@ -140,7 +140,12 @@ class ContractService {
                     // Convert proto times to js times
                     const protoNubs = response.getContractNubsList()
                     for (let i = 0; i < protoNubs.length; i++) {
+
                         resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
+                        const deadlineNubs = protoNubs[i].getDeadlinesList()
+                        for (let j = 0; j < deadlineNubs.length; j++) {
+                            resp.contractNubsList[i].deadlinesList[j].currentDate = deadlineNubs[j].getCurrentDate().toDate()
+                        }
                     }
                     localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
                     resolve(resp)
@@ -153,10 +158,14 @@ class ContractService {
                     var resp = response.toObject();
                     // Convert proto times to js times
                     const protoNubs = response.getContractNubsList()
+
                     for (let i = 0; i < protoNubs.length; i++) {
                         resp.contractNubsList[i].deadline = protoNubs[i].getDeadline().toDate()
+                        const deadlineNubs = protoNubs[i].getDeadlinesList()
+                        for (let j = 0; j < deadlineNubs.length; j++) {
+                            resp.contractNubsList[i].deadlinesList[j].currentDate = deadlineNubs[j].getCurrentDate().toDate()
+                        }
                     }
-                    localStorage.setItem("contractNubs", JSON.stringify(resp.contractNubsList));
                     resolve(resp)
                 });
             }

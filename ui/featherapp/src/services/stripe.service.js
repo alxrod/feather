@@ -6,6 +6,7 @@ import {
     SetupConfirm,
     FcaQuery,
     ContractIntentRequest,
+    InternalChargeRequest,
 
  } from "../proto/communication/stripe_pb";
 
@@ -181,6 +182,22 @@ class StripeService {
                 resolve()
             });
         }); 
+    }
+
+    getInternalCharges(token, user_id) {
+        let req = new InternalChargeRequest();
+        req.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => {
+            var metadata = {"authorization": token}
+            stripeServiceClient.getInternalCharges(req, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                var resp = response.toObject();
+                resolve(resp.chargesList)
+            });
+        });
     }
     // addFCAccounts(token, user_id, account_ids) {
     //     let req = new FCAccountSet();

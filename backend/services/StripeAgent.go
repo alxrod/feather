@@ -258,7 +258,7 @@ func (agent *StripeAgent) GetExternalBankAccounts(ac_id string) ([]*stripe.BankA
 	return bank_accounts, nil
 }
 
-func (agent *StripeAgent) CreateContractPaymentIntent(customer_id, account_id string, amount int64, seti *stripe.SetupIntent) error {
+func (agent *StripeAgent) CreateContractPaymentIntent(customer_id, account_id string, amount int64, seti *stripe.SetupIntent) (*stripe.PaymentIntent, error) {
 	params := &stripe.PaymentIntentParams{
 		Amount:   stripe.Int64(amount),
 		Currency: stripe.String(string(stripe.CurrencyUSD)),
@@ -274,8 +274,8 @@ func (agent *StripeAgent) CreateContractPaymentIntent(customer_id, account_id st
 		Confirm:    stripe.Bool(true),
 		OffSession: stripe.Bool(true),
 	}
-	_, err := paymentintent.New(params)
-	return err
+	pi, err := paymentintent.New(params)
+	return pi, err
 }
 
 func (agent *StripeAgent) CreateContractSetupIntent(worker, buyer *db.User, contract *db.Contract, database *mongo.Database) error {
@@ -348,14 +348,20 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	if amount == 0 {
 		return nil
 	}
-	err = agent.CreateContractPaymentIntent(
+	pi, err := agent.CreateContractPaymentIntent(
 		buyer.StripeCustomerId,
 		worker.StripeConnectedAccountId,
 		amount,
 		seti,
 	)
+	_, err = db.InitializeInternalCharge(
+		contract,
+		contract.Worker,
+		contract.Buyer,
+		pi.ID,
+		database)
 
-	return nil
+	return err
 }
 
 // func (agent *StripeAgent) CreateContractCharge()

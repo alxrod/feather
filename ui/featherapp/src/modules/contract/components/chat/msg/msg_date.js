@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
 import { displayDecide } from "./components/msg_helpers"
+import { fontSize } from './components/msg_helpers'
 
 const DateMsg = (props) => {
 
@@ -99,15 +100,15 @@ const DateMsg = (props) => {
                   <>
                   {(yourStatus === decisionTypes.NO) ? (
                       <>
-                      <p className="mr-1 text-md">{genTimeString(props.msg.body.oldVersion)}</p>
+                      <p className={"mr-1  " + fontSize(2, props.embedded)}>{genTimeString(props.msg.body.oldVersion)}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-md font-medium"><s>{genTimeString(props.msg.body.newVersion)}</s></p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(2, props.embedded)}><s>{genTimeString(props.msg.body.newVersion)}</s></p>
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-md">{genTimeString(props.msg.body.oldVersion)}</p>
+                      <p className={"mr-1  " + fontSize(2, props.embedded)}>{genTimeString(props.msg.body.oldVersion)}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-md font-medium"><s>{genTimeString(props.msg.body.newVersion)}</s></p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(2, props.embedded)}><s>{genTimeString(props.msg.body.newVersion)}</s></p>
                       </>
                   )}
                   </>
@@ -115,15 +116,15 @@ const DateMsg = (props) => {
                   <>
                   {(yourStatus === decisionTypes.NO) ? (
                       <>
-                      <p className="mr-1 text-md">{genTimeString(props.msg.body.oldVersion)}</p>
+                      <p className={"mr-1 " + fontSize(2, props.embedded)}>{genTimeString(props.msg.body.oldVersion)}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-md font-medium"><s>{genTimeString(props.msg.body.newVersion)}</s></p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(2, props.embedded)}><s>{genTimeString(props.msg.body.newVersion)}</s></p>
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-md">{genTimeString(props.msg.body.oldVersion)}</p>
+                      <p className={"mr-1  " + fontSize(2, props.embedded)}>{genTimeString(props.msg.body.oldVersion)}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-green text-md font-medium">{genTimeString(props.msg.body.newVersion)}</p>
+                      <p className={"ml-1 text-green-400 font-medium " + fontSize(2, props.embedded)}>{genTimeString(props.msg.body.newVersion)}</p>
                       </>
                   )}
                   </>

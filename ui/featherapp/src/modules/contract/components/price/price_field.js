@@ -62,7 +62,7 @@ const PriceField = (props) => {
       if (price.awaitingApproval == true) {
         toggleLock(true)
         setClasses("hidden")
-        setTextColor("text-green")
+        setTextColor("text-green-400")
         setOldPrice(price.current)
         if (price.proposerId === props.user.id) {
           setProposedByPartner(false)
@@ -129,7 +129,7 @@ const PriceField = (props) => {
     console.log("Approving change")
     props.suggestPrice(props.curContract.id, parseFloat(fieldValue)).then(() => {
       toggleProposing(false)
-      setTextColor("text-green")
+      setTextColor("text-green-400")
     })
 
   }
@@ -186,7 +186,7 @@ const PriceField = (props) => {
                         <ArrowRightIcon className="w-3 h-3"/>
                       </>
                     )}
-                    <p className={props.universalLock ? "text-gray-600" : "text-green"}>{fieldValue}</p>
+                    <p className={props.universalLock ? "text-gray-600" : "text-green-400"}>{fieldValue}</p>
                   </span>
                 </div>
               </>
@@ -204,8 +204,8 @@ const PriceField = (props) => {
             </div>
           </div>
           <div className={"flex items-center " + field_classes}>
-            <ExclamationCircleIcon className="h-4 w-4 text-red" aria-hidden="true" />
-            <p className="text-red text-sm">You can only enter a dollar amount</p>
+            <ExclamationCircleIcon className="h-4 w-4 text-red-400" aria-hidden="true" />
+            <p className="text-red-400 text-sm">You can only enter a dollar amount</p>
           </div>
         </div>
         {(proposing && !lock) && (

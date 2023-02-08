@@ -47,7 +47,17 @@ message DeadlineEntity {
     repeated uint32 item_states = 24;
     repeated ItemNub items = 14;
     bool items_awaiting_approval = 15;
+}
 
+message DeadlineNub {
+    string id = 1;
+    string contract_id = 2;
+
+    bool complete = 25;
+    bool expired = 31;
+
+    float current_payout = 4;
+    google.protobuf.Timestamp current_date = 5;
 }
 
 message ContractEntity {
@@ -75,6 +85,8 @@ message ContractEntity {
 message ContractNub {
     string id = 1;
     string title = 2;
+    string summary = 12;
+    
     google.protobuf.Timestamp deadline = 3;
     float price = 4;
     uint32 stage = 5;
@@ -85,6 +97,8 @@ message ContractNub {
 
     string worker_id = 9;
     string buyer_id = 10;
+
+    repeated DeadlineNub deadlines = 11;
 }
 
 message InviteDataRequest {

@@ -13,7 +13,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
-import { displayDecide } from "./components/msg_helpers"
+import { displayDecide, fontSize } from "./components/msg_helpers"
 
 const ContractLockMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -91,13 +91,13 @@ const ContractLockMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-      <div className="mt-2 text-sm text-gray-700">
-        <div className="flex items-center">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
+        <div className={props.embedded ? "" : "flex items-center"}>
           <div className="flex items-center">
             {props.msg.isAdmin ? (
-              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" "}<b className="text-primary4">{props.msg.body.contractLock ? "closed" : "opened"}</b>{" the edit lock"}</h3>              
+              <h3 className={"text-gray-400 font-medium " + fontSize(3, props.embedded)}>{props.msg.user.username}{" "}<b className="text-primary4">{props.msg.body.contractLock ? "closed" : "opened"}</b>{" the edit lock"}</h3>              
             ) : (
-              <h3 className="text-lg text-gray-400 font-medium">{props.msg.user.username}{" requested to "}<b className="text-primary4">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
+              <h3 className={"text-gray-400 font-medium " + fontSize(3, props.embedded)}>{props.msg.user.username}{" requested to "}<b className="text-primary4">{props.msg.body.contractLock ? "close" : "open"}</b>{" the edit lock"}</h3>              
             )}
             </div>
           <div className="w-6"></div>

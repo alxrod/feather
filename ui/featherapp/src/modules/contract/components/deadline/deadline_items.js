@@ -115,10 +115,10 @@ const DeadlineItems = (props) => {
       const deletedIds = []
 
       for (let i = 0; i < props.deadline.itemsList.length; i++) {
-        if (props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_ADDED) {
+        if (!props.createMode && props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_ADDED) {
           addedNubs.push(props.deadline.itemsList[i])
           addedIds.push(props.deadline.itemsList[i].id)
-        } else if (props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_REMOVED) {
+        } else if (!props.createMode &&  props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_REMOVED) {
           deletedNubs.push(props.deadline.itemsList[i])
           deletedIds.push(props.deadline.itemsList[i].id)
         } else {

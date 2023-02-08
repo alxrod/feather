@@ -5,7 +5,10 @@ import { connect } from 'react-redux'
 
 import { queryContractNubs } from "../../reducers/contract/dispatchers/contract.dispatcher";
 import { pullNewMessages } from "../../reducers/chat/dispatchers/chat.dispatcher";
-import NewMessages from "../contract/components/new_messages"
+
+import NewMessages from "./new_messages"
+import ActivePayments from "./active_payments"
+
 import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'
 
@@ -56,8 +59,15 @@ const ContractsList = (props) => {
       <div>
         <br/>
         <div className="px-4 md:px-20 lg:px-24">
-          <div className="mb-8">
-            <NewMessages/>
+          <div className="flex justify-center">
+            <div 
+            className={`w-full
+                        mb-8 flex flex-col 
+                        md:grid md:grid-cols-2 gap-4`}
+            >
+                <NewMessages/>
+                <ActivePayments/>
+            </div>
           </div>
 
           <ContractTableHeader 

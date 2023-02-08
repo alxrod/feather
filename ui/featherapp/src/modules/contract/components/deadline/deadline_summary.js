@@ -150,7 +150,7 @@ const DeadlineSummary = (props) => {
     // Edit Mode Only
     useEffect( () => {
       if (payoutEditInProgress) {
-        setPayoutTextColor("text-green")
+        setPayoutTextColor("text-green-400")
       } else {
         
       }
@@ -197,7 +197,7 @@ const DeadlineSummary = (props) => {
           
         } else {
           payoutLockShould = true
-          setPayoutTextColor("text-green")
+          setPayoutTextColor("text-green-400")
           setOldPayout(props.deadline.currentPayout)
           if (props.deadline.payoutProposerId == props.user.id) {
             setProposedByPartner(false)
@@ -225,7 +225,7 @@ const DeadlineSummary = (props) => {
 
     const [curPayoutPerc, setCurPayoutPerc] = useState(0)
     useEffect(() => {
-      setCurPayoutPerc((payoutValue / props.curPrice) * 100)
+      setCurPayoutPerc((payoutValue / props.curPrice).toFixed(4) * 100)
     }, [props.deadline, payoutValue, props.curPrice])
     const [prevPayoutPerc, setPrevPayoutPerc] = useState(0)
 
@@ -241,9 +241,9 @@ const DeadlineSummary = (props) => {
         }
       }
       if (payoutValue && (total + payoutValue > props.curPrice)) {
-        setPrevPayoutPerc( ( (props.curPrice - total) / props.curPrice) * 100)
+        setPrevPayoutPerc( ( (props.curPrice - total) / props.curPrice).toFixed(4) * 100)
       }
-      setPrevPayoutPerc(( total / props.curPrice) * 100)
+      setPrevPayoutPerc(( total / props.curPrice).toFixed(4) * 100)
     }, [props.deadlines, curPayoutPerc, props.deadline])
     
     const approveChange = () => {
@@ -340,7 +340,7 @@ const DeadlineSummary = (props) => {
                         />
                         <div className="absolute inset-y-0 right-0 pr-12 flex items-center pointer-events-none">
                           <span className="text-gray-400 items-center text-sm flex" id="price-currency">
-                            <p className={props.universalLock ? "text-gray-600" : "text-green"}>{payoutValue}</p>
+                            <p className={props.universalLock ? "text-gray-600" : "text-green-400"}>{payoutValue}</p>
                           </span>
                         </div>
                       </>
@@ -358,7 +358,7 @@ const DeadlineSummary = (props) => {
                           <span className="text-gray-400 items-center text-sm flex" id="price-currency">
                             <p>{oldPayout}</p>
                             <ArrowRightIcon className="w-3 h-3"/>
-                            <p className="text-green">{payoutValue}</p>
+                            <p className="text-green-400">{payoutValue}</p>
                           </span>
                         </div>
                       </>

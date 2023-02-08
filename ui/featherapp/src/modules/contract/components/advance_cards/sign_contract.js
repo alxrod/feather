@@ -77,14 +77,14 @@ const SignButton = (props) => {
             <div className="flex items-center">
               <p className="text-gray-400">Worker</p>
               {workerSigned ? (
-                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+                <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
               ) : (
                 <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
               )}
               <div className="w-4"></div>
               <p className="text-gray-400">Buyer</p>
               {buyerSigned ? (
-                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+                <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
               ) : (
                 <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
               )}

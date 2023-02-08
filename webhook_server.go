@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,13 +11,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/TwiN/go-color"
+	db "github.com/alxrod/feather/backend/db"
 	"github.com/gorilla/mux"
 	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/account"
-	"github.com/stripe/stripe-go/v74/customer"
-	fcaccount "github.com/stripe/stripe-go/v74/financialconnections/account"
-	"github.com/stripe/stripe-go/v74/paymentmethod"
 	"github.com/stripe/stripe-go/v74/webhook"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -66,16 +66,40 @@ func NewWebHookServer(dbName ...string) *WebhookServer {
 
 	r.router.HandleFunc("/web-hook/stripe-event", r.handleStripeEvents).Methods("POST")
 
-	// Testing, remove for prod
-	r.router.HandleFunc("/web-hook/test", r.handleTest)
-	r.router.HandleFunc("/web-hook/account-test/{id}", r.handleAccountTest).Methods("GET")
-	r.router.HandleFunc("/web-hook/pms-test/{id}", r.handleGetPMs).Methods("GET")
-	r.router.HandleFunc("/web-hook/cus-test/{id}", r.handleGetCus).Methods("GET")
-	// r.router.HandleFunc("/web-hook/account-list/{ac_id}", r.handleAccountListFCs).Methods("GET")
-	// r.router.HandleFunc("/web-hook/ba-test/{ac_id}/{ba_id}", r.handleBankAccountTest).Methods("GET")
-	r.router.HandleFunc("/web-hook/fca-test/{fc_id}", r.handleFCAccountTest).Methods("GET")
+	// // Testing, remove for prod
+	// r.router.HandleFunc("/web-hook/test", r.handleTest)
+	// r.router.HandleFunc("/web-hook/account-test/{id}", r.handleAccountTest).Methods("GET")
+	// r.router.HandleFunc("/web-hook/pms-test/{id}", r.handleGetPMs).Methods("GET")
+	// r.router.HandleFunc("/web-hook/cus-test/{id}", r.handleGetCus).Methods("GET")
+	// // r.router.HandleFunc("/web-hook/account-list/{ac_id}", r.handleAccountListFCs).Methods("GET")
+	// // r.router.HandleFunc("/web-hook/ba-test/{ac_id}/{ba_id}", r.handleBankAccountTest).Methods("GET")
+	// r.router.HandleFunc("/web-hook/fca-test/{fc_id}", r.handleFCAccountTest).Methods("GET")
 	// r.router.HandleFunc("/web-hook/pm-test/{pm_id}", r.handleGetPM).Methods("GET")
 	return r
+}
+
+func (srv *WebhookServer) updateInternalChargeState(
+	newState uint32,
+	queryFilter bson.D,
+	database *mongo.Database) (*db.InternalCharge, error) {
+
+	var icharge *db.InternalCharge
+	if err := database.Collection(db.CHARGE_COL).FindOne(context.TODO(), queryFilter).Decode(&icharge); err != nil {
+		log.Println(color.Ize(color.Red, err.Error()))
+		return nil, errors.New(fmt.Sprintf("Error couldn't find PI in internal charges: %v\n", err))
+	}
+	icharge.State = newState
+
+	filter := bson.D{{"_id", icharge.Id}}
+	update := bson.D{{"$set", bson.D{{"state", icharge.State}}}}
+	_, err := database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		return nil, err
+	}
+	return icharge, nil
+
 }
 func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Request) {
 	const MaxBodyBytes = int64(65536)
@@ -106,93 +130,157 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 
 	// Unmarshal the event data into an appropriate struct depending on its Type
 	switch event.Type {
-	case "account.updated":
-		// var account stripe.Account
-		// err := json.Unmarshal(event.Data.Raw, &account)
+
+	case "payment_intent.processing":
+		var pi stripe.PaymentIntent
+		err := json.Unmarshal(event.Data.Raw, &pi)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		filter := bson.D{{"payment_intent_id", pi.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_PROCESSING, filter, database)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		// database := srv.dbClient.Database(srv.dbName)
+
+	case "payment_intent.created":
+		var pi stripe.PaymentIntent
+		err := json.Unmarshal(event.Data.Raw, &pi)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		filter := bson.D{{"payment_intent_id", pi.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_CREATED, filter, database)
+
+		filter = bson.D{{"_id", icharge.Id}}
+		update := bson.D{{"$set", bson.D{{"amount", pi.Amount}}}}
+		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+	case "charge.pending":
+		var charge stripe.Charge
+		err := json.Unmarshal(event.Data.Raw, &charge)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_PROCESSING, filter, database)
+
+		filter = bson.D{{"_id", icharge.Id}}
+		update := bson.D{{"$set", bson.D{{"charge_id", charge.ID}}}}
+		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+	case "balance.available":
+		log.Printf("Not sure what to do w balance rn")
+		// var balance stripe.Balance
+		// err := json.Unmarshal(event.Data.Raw, &balance)
 		// if err != nil {
 		// 	fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
 		// 	w.WriteHeader(http.StatusBadRequest)
 		// 	return
 		// }
 
-		// if account.BusinessType != stripe.AccountBusinessTypeIndividual {
-		// 	fmt.Fprintf(os.Stderr, "Error: We do not account for non-individual businesses yet \n")
-		// 	w.WriteHeader(http.StatusOK)
-		// 	return
-		// }
+	case "transfer.created":
+		var transfer stripe.Transfer
+		err := json.Unmarshal(event.Data.Raw, &transfer)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		charge_id := transfer.SourceTransaction.ID
+		filter := bson.D{{"charge_id", charge_id}}
+		database := srv.dbClient.Database(srv.dbName)
+		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_TRANSFER_CREATED, filter, database)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		filter = bson.D{{"_id", icharge.Id}}
+		update := bson.D{{"$set", bson.D{{"transfer_id", transfer.ID}}}}
+		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
 
-		// database := srv.dbClient.Database(srv.dbName)
-		// var user *db.User
-		// filter := bson.D{{"stripe_account_id", account.ID}}
-		// if err := database.Collection(db.USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
-		// 	log.Println(color.Ize(color.Red, err.Error()))
-		// 	w.WriteHeader(http.StatusOK)
-		// 	return
-		// }
-		// newInfo := &db.StripeNub{
-		// 	FirstName: account.Individual.FirstName,
-		// 	LastName:  account.Individual.LastName,
-		// 	Phone:     account.Company.Phone,
-		// 	Address: &db.AddressNub{
-		// 		City:       account.Company.Address.City,
-		// 		Country:    account.Company.Address.Country,
-		// 		Line1:      account.Company.Address.Line1,
-		// 		Line2:      account.Company.Address.Line2,
-		// 		PostalCode: account.Company.Address.PostalCode,
-		// 		State:      account.Company.Address.State,
-		// 	},
-		// 	Dob: &db.DobNub{
-		// 		Day:   uint32(account.Individual.DOB.Day),
-		// 		Month: uint32(account.Individual.DOB.Month),
-		// 		Year:  uint32(account.Individual.DOB.Year),
-		// 	},
-		// }
-		// if user.StripeInfo != nil {
-		// 	newInfo.LastFourAccount = user.StripeInfo.LastFourAccount
-		// 	newInfo.RoutingNumber = user.StripeInfo.RoutingNumber
-		// }
+	case "charge.updated":
+		var charge stripe.Charge
+		err := json.Unmarshal(event.Data.Raw, &charge)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
-		// if len(account.ExternalAccounts.Data) > 1 {
-		// 	fmt.Fprintf(os.Stderr, "Error: We do not support multiple bank accounts for one account yet \n")
-		// 	w.WriteHeader(http.StatusOK)
-		// 	return
-		// } else if len(account.ExternalAccounts.Data) == 1 {
-		// 	curBankInfo := account.ExternalAccounts.Data[0]
-		// 	if user.StripeBankId != curBankInfo.ID {
-		// 		log.Printf("Polling for the bank account")
+		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_CHARGE_UPDATED, filter, database)
 
-		// 		params := &stripe.BankAccountParams{
-		// 			Account: stripe.String(account.ID),
-		// 		}
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
 
-		// 		ba, err := bankaccount.Get(
-		// 			curBankInfo.ID,
-		// 			params,
-		// 		)
-		// 		if err != nil {
-		// 			log.Println(color.Ize(color.Red, err.Error()))
-		// 			w.WriteHeader(http.StatusOK)
-		// 			return
-		// 		}
-		// 		newInfo.LastFourAccount = ba.Last4
-		// 		newInfo.RoutingNumber = ba.RoutingNumber
-		// 		filter := bson.D{{"_id", user.Id}}
-		// 		update := bson.D{{"$set", bson.D{{"stripe_bank_id", ba.ID}}}}
-		// 		_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-		// 	}
-		// }
+	case "payment_intent.succeeded":
+		var pi stripe.PaymentIntent
+		err := json.Unmarshal(event.Data.Raw, &pi)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
-		// filter = bson.D{{"_id", user.Id}}
-		// update := bson.D{{"$set",
-		// 	bson.D{
-		// 		{"stripe_info", newInfo},
-		// 		{"stripe_connected", true},
-		// 	},
-		// }}
-		// _, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-		// log.Printf("Internal User %s updated with correct stripe info", user.Id)
-		// Then define and call a func to handle the successful payment intent.
-		// handlePaymentIntentSucceeded(paymentIntent)
+		filter := bson.D{{"payment_intent_id", pi.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_PAYMENT_INTENT_SUCCEEDED, filter, database)
+
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+	case "charge.succeeded":
+		var charge stripe.Charge
+		err := json.Unmarshal(event.Data.Raw, &charge)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
+		database := srv.dbClient.Database(srv.dbName)
+		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_CHARGE_SUCCEEDED, filter, database)
+
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+
 	default:
 		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
 	}
@@ -201,59 +289,59 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 }
 
 // TESTING
-func (srv *WebhookServer) handleTest(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Hello World"))
-}
+// func (srv *WebhookServer) handleTest(w http.ResponseWriter, r *http.Request) {
+// 	w.WriteHeader(http.StatusOK)
+// 	w.Write([]byte("Hello World"))
+// }
 
-func (srv *WebhookServer) handleAccountTest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func (srv *WebhookServer) handleAccountTest(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	id := params["id"]
+// 	params := mux.Vars(r)
+// 	id := params["id"]
 
-	ac, err := account.GetByID(
-		id,
-		nil,
-	)
-	if err != nil {
-		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-	} else {
-		json.NewEncoder(w).Encode(ac)
-	}
-}
+// 	ac, err := account.GetByID(
+// 		id,
+// 		nil,
+// 	)
+// 	if err != nil {
+// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
+// 	} else {
+// 		json.NewEncoder(w).Encode(ac)
+// 	}
+// }
 
-func (srv *WebhookServer) handleGetPMs(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func (srv *WebhookServer) handleGetPMs(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	id := params["id"]
+// 	params := mux.Vars(r)
+// 	id := params["id"]
 
-	pm_params := &stripe.PaymentMethodListParams{
-		Customer: stripe.String(id),
-		// Type:     stripe.String("us_bank_account"),
-	}
-	i := paymentmethod.List(pm_params)
+// 	pm_params := &stripe.PaymentMethodListParams{
+// 		Customer: stripe.String(id),
+// 		// Type:     stripe.String("us_bank_account"),
+// 	}
+// 	i := paymentmethod.List(pm_params)
 
-	pms := []*stripe.PaymentMethod{}
-	for i.Next() {
-		pm := i.PaymentMethod()
-		pms = append(pms, pm)
-	}
-	json.NewEncoder(w).Encode(pms)
+// 	pms := []*stripe.PaymentMethod{}
+// 	for i.Next() {
+// 		pm := i.PaymentMethod()
+// 		pms = append(pms, pm)
+// 	}
+// 	json.NewEncoder(w).Encode(pms)
 
-}
+// }
 
-func (srv *WebhookServer) handleGetCus(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func (srv *WebhookServer) handleGetCus(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
-	id := params["id"]
+// 	params := mux.Vars(r)
+// 	id := params["id"]
 
-	cus, _ := customer.Get(id, nil)
-	json.NewEncoder(w).Encode(cus)
+// 	cus, _ := customer.Get(id, nil)
+// 	json.NewEncoder(w).Encode(cus)
 
-}
+// }
 
 // func (srv *WebhookServer) handleBankAccountTest(w http.ResponseWriter, r *http.Request) {
 // 	w.Header().Set("Content-Type", "application/json")
@@ -278,35 +366,35 @@ func (srv *WebhookServer) handleGetCus(w http.ResponseWriter, r *http.Request) {
 // 	}
 // }
 
-func (srv *WebhookServer) handleFCAccountTest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+// func (srv *WebhookServer) handleFCAccountTest(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
 
-	url_params := mux.Vars(r)
-	fc_id := url_params["fc_id"]
+// 	url_params := mux.Vars(r)
+// 	fc_id := url_params["fc_id"]
 
-	ac, err := fcaccount.GetByID(
-		fc_id,
-		nil,
-	)
+// 	ac, err := fcaccount.GetByID(
+// 		fc_id,
+// 		nil,
+// 	)
 
-	// refreshParams := &stripe.
-	// 	FinancialConnectionsAccountRefreshParams{
-	// 	Features: []*string{
-	// 		stripe.String("balance"),
-	// 	},
-	// }
-	// ac, err := fcaccount.Refresh(
-	// 	fc_id,
-	// 	refreshParams,
-	// )
+// 	// refreshParams := &stripe.
+// 	// 	FinancialConnectionsAccountRefreshParams{
+// 	// 	Features: []*string{
+// 	// 		stripe.String("balance"),
+// 	// 	},
+// 	// }
+// 	// ac, err := fcaccount.Refresh(
+// 	// 	fc_id,
+// 	// 	refreshParams,
+// 	// )
 
-	if err != nil {
-		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-	} else {
-		json.NewEncoder(w).Encode(ac)
-	}
+// 	if err != nil {
+// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
+// 	} else {
+// 		json.NewEncoder(w).Encode(ac)
+// 	}
 
-}
+// }
 
 // func (srv *WebhookServer) handleAccountListFCs(w http.ResponseWriter, r *http.Request) {
 // 	w.Header().Set("Content-Type", "application/json")

@@ -68,7 +68,7 @@ const AccountsList = (props) => {
                 {defaultId !== account.accountId && (
                   <button
                     type="button"
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-red"
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-red-400"
                     onClick={(e) => {props.delete(account.accountId)}}
                   >
                     Delete

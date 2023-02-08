@@ -66,7 +66,7 @@ const ForgotPassword = (props) => {
                   <div>
 
                     {errorMsg !== "" ? (
-                      <p className="text-center mb-2 text-red text-xs">{errorMsg}</p>
+                      <p className="text-center mb-2 text-red-400 text-xs">{errorMsg}</p>
                     ) : (
                       <div className="h-4 mb-2"></div>
                     )}

@@ -122,6 +122,7 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 
 	proto.Id = contract.Id.Hex()
 	proto.Title = contract.Title
+	proto.Summary = contract.Summary
 
 	nextDeadline, err := contract.NextDeadline()
 	if err != nil {
@@ -131,6 +132,12 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
 	}
 	proto.Deadline = timestamppb.New(nextDeadline.CurrentDate)
+
+	deadlines := make([]*comms.DeadlineNub, len(contract.Deadlines))
+	for i, deadline := range contract.Deadlines {
+		deadlines[i] = deadline.Nub()
+	}
+	proto.Deadlines = deadlines
 
 	proto.Price = contract.Price.Current
 	proto.Stage = contract.Stage

@@ -1,17 +1,9 @@
 import * as actions from "./contract.actions";
 import * as helpers from "./contract.helpers";
 
-let initialNubs = JSON.parse(localStorage.getItem("contractNubs"));
-if (initialNubs) {
-    for (let i = 0; i < initialNubs.length; i++) {
-        initialNubs[i].deadline = new Date(initialNubs[i].deadline)
-    }
-} else {
-    initialNubs = []
-}
 
 const initialState = {
-    contractNubs: initialNubs,
+    contractNubs: [],
 
     curContract: {id: null},
     contractChanged: false,

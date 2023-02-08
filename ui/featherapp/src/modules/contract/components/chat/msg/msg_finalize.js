@@ -10,6 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
+import { fontSize } from './components/msg_helpers'
 
 const ContractFinalizeMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -22,7 +23,7 @@ const ContractFinalizeMsg = (props) => {
   const [actorUsername, setActorUsername] = useState("Unknown")
 
   useEffect( () => {
-    if (props.curContract.id) {
+    if (props.curContract.id || props.embedded === true) {
       setActorUsername(props.msg.user.username)
     }
   }, [props.curContract])
@@ -34,10 +35,10 @@ const ContractFinalizeMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
           <div className="flex items-center">
-            <h3 className="text-xl text-gray-400 font-medium">
+            <h3 className={"text-gray-400 font-medium " + fontSize(4, props.embedded)}>
               {actorUsername} 
               {props.msg.body.confirmed ? " confirmed the final settlement" : 
               props.msg.body.undo ? " went back to reviewing items" : 

@@ -10,6 +10,7 @@ import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
+import { fontSize } from './components/msg_helpers'
 
 const ContractSignMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -27,10 +28,10 @@ const ContractSignMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className="mt-2 text-gray-700">
         <div className="flex items-center">
           <div className="flex items-center">
-            <h3 className="text-xl text-green font-medium">{props.msg.user.username} signed the contract</h3>
+            <h3 className={"text-primary4 font-medium " + fontSize(4, props.embedded)}>{props.msg.user.username} signed the contract</h3>
           </div>
           <div className="w-6"></div>
         </div>

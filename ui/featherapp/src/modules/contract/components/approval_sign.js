@@ -10,8 +10,8 @@ const ApprovalSign = (props) => {
   if (props.item_state === ITEM_AGREED ) {
     return (
       <div>
-        <p className="flex items-center text-xs text-green">
-          <CheckCircleIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-green" aria-hidden="true" />
+        <p className="flex items-center text-xs text-green-400">
+          <CheckCircleIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-green-400" aria-hidden="true" />
           {ITEM_AGREED}
         </p>
       </div>
@@ -19,8 +19,8 @@ const ApprovalSign = (props) => {
   } else if (props.item_state === ITEM_DISAGREED) {
     return (
       <div>
-        <p className="flex items-center text-xs text-red">
-          <ExclamationIcon className="flex-shrink-0 mr-1.5 h-4 w-4 text-red" aria-hidden="true" />
+        <p className="flex items-center text-xs text-red-400">
+          <ExclamationIcon className="flex-shrink-0 mr-1.5 h-4 w-4 text-red-400" aria-hidden="true" />
           {ITEM_DISAGREED}
         </p>
       </div>

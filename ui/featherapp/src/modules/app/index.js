@@ -37,6 +37,7 @@ import UnauthContractRoute from "../error_handling_routes/unauth_contract_route"
 import FileUploadTest from "../file_upload_test";
 import AccountOnboardingRefresh from "../payment_redirects/account_onboarding_refresh"
 
+import "animate.css/animate.min.css";
 
 import { 
   pullUser,
@@ -103,7 +104,7 @@ const App = (props) => {
     if (props.fromRegister && !(route_base === "/register" || route_base === "/setup-payment")) {
       props.toggleFromRegister(false)
     }
-    if (props.chatRoomId !== "") {
+    if (props.isLoggedIn && props.chatRoomId !== "") {
       props.clearChat(props.chatRoomId)
     }
     

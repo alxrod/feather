@@ -2,7 +2,8 @@ import * as actions from "./stripe.actions";
 import * as helpers from "./stripe.helpers";
 
 const initialState = {
-    clientSecret: ""
+    clientSecret: "",
+    internalCharges: [],
 }
 
 export default (state = initialState, action) => {
@@ -18,7 +19,13 @@ export default (state = initialState, action) => {
                 ...state,
                 clientSecret: action.payload
             }
-        
+
+        case actions.SET_INTERNAL_CHARGES:
+            return {
+                ...state,
+                internalCharges: action.payload,
+            }
+
         default:
             return state
     }

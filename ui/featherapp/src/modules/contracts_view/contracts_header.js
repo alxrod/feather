@@ -13,9 +13,9 @@ const ContractTableHeader = (props) => {
   
   return (
     <div className="relative pb-5 border-b border-gray-200 sm:pb-0">
-      <div className="md:flex md:items-center md:justify-between">
+      <div className="flex items-center justify-between">
         <h3 className="text-lg leading-6 font-medium text-gray-900">Contracts</h3>
-        <div className="mt-3 flex md:mt-0 md:absolute md:top-3 md:right-0">
+        <div className="mt-3 flex mt-0 absolute top-3 right-0">
           <Link to="/create">
             <button
               type="button"

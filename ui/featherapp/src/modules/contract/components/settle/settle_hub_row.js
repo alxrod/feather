@@ -75,9 +75,9 @@ const SettleHubOption = (props) => {
                   <>
                     <b className="hidden sm:flex lg:hidden font-normal text-gray-600 mr-1">Override</b>
                     {adminStatus === ITEM_APPROVED ? (
-                      <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green" aria-hidden="true" />
+                      <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green-400" aria-hidden="true" />
                     ) : adminStatus === ITEM_REJECTED ? (
-                      <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red" aria-hidden="true" />
+                      <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red-400" aria-hidden="true" />
                     ) : null}
                     <b className="hidden lg:flex sm:hidden font-normal">Admin overrode this item</b>
                   </>
@@ -90,32 +90,32 @@ const SettleHubOption = (props) => {
                     
                 ) : (yourRole !== ADMIN_TYPE && adminStatus === ITEM_PENDING && partnerStatus == ITEM_APPROVED) ? (
                     <>
-                    <b className="hidden sm:flex lg:hidden font-normal text-green mr-1">Partner</b>
-                    <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green" aria-hidden="true" />
-                    <b className="hidden lg:flex sm:hidden font-normal text-green">Your partner has approved this item</b>
+                    <b className="hidden sm:flex lg:hidden font-normal text-green-400 mr-1">Partner</b>
+                    <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green-400" aria-hidden="true" />
+                    <b className="hidden lg:flex sm:hidden font-normal text-green-400">Your partner has approved this item</b>
                     </>
                 ) : (yourRole !== ADMIN_TYPE && adminStatus === ITEM_PENDING && partnerStatus == ITEM_REJECTED) ? (
                     <>
-                    <b className="hidden sm:flex lg:hidden font-normal text-red mr-1">Partner</b>
-                    <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red" aria-hidden="true" />
-                    <b className="hidden lg:flex sm:hidden font-normal text-red">Your partner has rejected this item</b>
+                    <b className="hidden sm:flex lg:hidden font-normal text-red-400 mr-1">Partner</b>
+                    <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red-400" aria-hidden="true" />
+                    <b className="hidden lg:flex sm:hidden font-normal text-red-400">Your partner has rejected this item</b>
                     </>
                 ) : (yourRole === ADMIN_TYPE) ? (
                     <div className="flex">
                       <b className="hidden lg:flex sm:hidden font-normal text-gray-600 mr-1">worker</b>
                       {(workerStatus === ITEM_APPROVED) ? (
-                        <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green" aria-hidden="true" />
+                        <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green-400" aria-hidden="true" />
                       ) : (workerStatus === ITEM_REJECTED) ? (
-                        <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red" aria-hidden="true" />
+                        <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red-400" aria-hidden="true" />
                       ) : (
                         <ClockIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-gray-600" aria-hidden="true" />
                       )}
 
                       <b className="hidden lg:flex sm:hidden font-normal text-gray-600 mr-1">buyer</b>
                       {(buyerStatus === ITEM_APPROVED) ? (
-                        <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green" aria-hidden="true" />
+                        <CheckIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-green-400" aria-hidden="true" />
                       ) : (buyerStatus === ITEM_REJECTED) ? (
-                        <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red" aria-hidden="true" />
+                        <XIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-red-400" aria-hidden="true" />
                       ) : (
                         <ClockIcon className="flex-shrink-0 mr-1.5 h-3.5 w-3.5 text-gray-600" aria-hidden="true" />
                       )}

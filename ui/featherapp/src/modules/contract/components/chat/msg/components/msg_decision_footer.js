@@ -36,33 +36,33 @@ const MsgDecisionFooter = (props) => {
     <div className="flex">
       {(props.msg.adminOverride && props.adminStatus === decisionTypes.YES) && (
         <div className="flex items-center justify-between">
-          <p className="text-gray-700 mr-1">Admin <b className="text-green">approved</b></p>
+          <p className="text-gray-700 mr-1">Admin <b className="text-primary4">approved</b></p>
         </div>
       )}
       {(props.msg.adminOverride && props.adminStatus === decisionTypes.NO) && (
         <div className="flex items-center justify-between">
-          <p className="text-gray-700 mr-1">Admin <b className="text-red">rejected</b></p>
+          <p className="text-gray-700 mr-1">Admin <b className="text-red-400">rejected</b></p>
         </div>
       )}
       {(!props.msg.adminOverride && props.yourStatus == decisionTypes.YES ) && (
         <div className="flex items-center justify-between">
-          <p className="text-gray-700 mr-1">You <b className="text-green">approved</b></p>
+          <p className="text-gray-700 mr-1">You <b className="text-primary4">approved</b></p>
         </div>
       )}
       {(!props.msg.adminOverride && props.yourStatus == decisionTypes.NO) && (
         <div>
-          <p className="text-gray-700 mr-1">You <b className="text-red">rejected</b></p>
+          <p className="text-gray-700 mr-1">You <b className="text-red-400">rejected</b></p>
         </div>
       )}
       {" "}
       {(!props.msg.adminOverride && showPartner && props.otherStatus == decisionTypes.YES) && (
         <div className="flex items-center justify-between">
-          <p className="text-gray-700">{props.otherUsername} <b className="text-green">approved</b>{" "}</p>
+          <p className="text-gray-700">{props.otherUsername} <b className="text-primary4">approved</b>{" "}</p>
         </div>
       )}
       {(!props.msg.adminOverride && showPartner && props.otherStatus == decisionTypes.NO) && (
         <div>
-          <p className="text-gray-700">{props.otherUsername} <b className="text-red">rejected</b></p>
+          <p className="text-gray-700">{props.otherUsername} <b className="text-red-400">rejected</b></p>
         </div>
       )}
       

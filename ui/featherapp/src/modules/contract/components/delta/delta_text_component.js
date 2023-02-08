@@ -5,9 +5,9 @@ export const generateContractText = (index, text, type) => {
   if (type === UNEDITED) {
     classes += "text-gray-800"
   } else if (type === ADDED) {
-    classes += "text-green"
+    classes += "text-green-400"
   } else {
-    classes += "text-red line-through"
+    classes += "text-red-400 line-through"
   }
   const start = '<b index="'+index+'" class="'+classes+'">'
   const end = '</b>'

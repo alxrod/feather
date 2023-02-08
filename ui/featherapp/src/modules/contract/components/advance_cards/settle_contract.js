@@ -49,14 +49,14 @@ const SignButton = (props) => {
             <div className="flex items-center">
               <p className="text-gray-400">Worker</p>
               {workerSettled ? (
-                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+                <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
               ) : (
                 <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
               )}
               <div className="w-4"></div>
               <p className="text-gray-400">Buyer</p>
               {buyerSettled ? (
-                <CheckIcon className="w-4 h-4 text-green ml-1"/>
+                <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
               ) : (
                 <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
               )}
@@ -64,7 +64,7 @@ const SignButton = (props) => {
           ) : ((role === WORKER_TYPE && props.curContract.buyerApproved) || (role === BUYER_TYPE && props.curContract.workerApproved)) ? (
             <div className="flex items-center">
               <p className="text-gray-400">Your partner has advanced to settling</p>
-              <CheckIcon className="w-4 h-4 text-green ml-1"/>
+              <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
             </div>
           ) : (
             <div className="flex items-center">

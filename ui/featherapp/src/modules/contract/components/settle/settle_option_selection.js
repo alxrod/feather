@@ -77,13 +77,13 @@ const SettleOption = (props) => {
                                 )}>
               <span className="flex items-center">
               {(selected.action == ITEM_APPROVED) && (
-                <CheckIcon className="flex-shrink-0 inline-block h-4 w-4 text-green"/>
+                <CheckIcon className="flex-shrink-0 inline-block h-4 w-4 text-green-400"/>
               )}
               {(selected.action == ITEM_PENDING) && (
                 <ClockIcon className="flex-shrink-0 inline-block h-4 w-4"/>
               )}
               {(selected.action == ITEM_REJECTED) && (
-                <XIcon className=" flex-shrink-0 inline-block h-4 w-4 text-red"/>
+                <XIcon className=" flex-shrink-0 inline-block h-4 w-4 text-red-400"/>
               )}
               <span className="ml-3 hidden truncate lg:block">{selected.name}</span>
               </span>
@@ -106,9 +106,9 @@ const SettleOption = (props) => {
                     className={({ active }) =>
                       classNames(
                         active ? 'text-white' : 'text-gray-900',
-                        (person.action == ITEM_APPROVED && active) ? 'bg-green' : "",
-                        (person.action == ITEM_PENDING && active) ? 'bg-yellow': "",
-                        (person.action == ITEM_REJECTED && active) ? 'bg-red' : "",
+                        (person.action == ITEM_APPROVED && active) ? 'bg-green-400' : "",
+                        (person.action == ITEM_PENDING && active) ? 'bg-yellow-400': "",
+                        (person.action == ITEM_REJECTED && active) ? 'bg-red-400' : "",
                         'cursor-default select-none relative py-2 pl-3 pr-9'
                       )
                     }

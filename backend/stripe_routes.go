@@ -234,6 +234,27 @@ func (s *BackServer) ConfirmPaymentConnected(ctx context.Context, req *comms.Set
 	return &comms.NullResponse{}, nil
 }
 
+func (s *BackServer) GetInternalCharges(ctx context.Context, req *comms.InternalChargeRequest) (*comms.InternalChargeSet, error) {
+	database := s.dbClient.Database(s.dbName)
+	user_id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	charges, err := db.GetInternalChargesByUser(user_id, database)
+	if err != nil {
+		return nil, err
+	}
+	protos := make([]*comms.InternalChargeEntity, len(charges))
+	for i, charge := range charges {
+		protos[len(charges)-(i+1)] = charge.Proto()
+	}
+
+	return &comms.InternalChargeSet{
+		Charges: protos,
+	}, nil
+
+}
+
 // func (s *BackServer) CreateContractIntentSecret(ctx context.Context, req *comms.ContractIntentRequest) (*comms.NullResponse, error) {
 // 	database := s.dbClient.Database(s.dbName)
 // 	worker, err := stringToUser(req.WorkerId, database)

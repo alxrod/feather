@@ -60,10 +60,12 @@ module.exports = {
         secondary5: "#557788",
         secondary6: "#21495B",
         secondary7: "#113343",
+        
+        red2: '#8B122F',
 
-        red: '#C84664',
-        yellow: '#FFD757',
-        green: '#91E2AE',
+        red: colors.red,
+        yellow: colors.yellow,
+        green: colors.green,
 
         orange: colors.orange,
         amber: colors.amber,

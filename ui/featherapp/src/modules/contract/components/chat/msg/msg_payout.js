@@ -12,7 +12,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
-import { displayDecide } from "./components/msg_helpers"
+import { displayDecide, fontSize } from "./components/msg_helpers"
 
 const PayoutMsg = (props) => {
 
@@ -32,7 +32,7 @@ const PayoutMsg = (props) => {
   const [otherUsername, setOtherUsername] = useState("")
   const [otherStatus, setOtherStatus] = useState(0)
 
-  const [deadlineName, setDeadlineName] = useState("Deadline")
+  const [deadlineName, setDeadlineName] = useState("the current deadline")
 
   const [version, setVersion] = useState(1)
   useEffect( () => {
@@ -93,23 +93,23 @@ const PayoutMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
           <div className="flex items-center">
-              <p className="text-gray-400 text-lg mr-2">{"Payout"}</p>
+              <p className={"text-gray-400 mr-2 " + fontSize(3, props.embedded)}>{"Payout"}</p>
               {(props.msg.body.resolStatus === resolTypes.CANCELED || props.msg.body.resolStatus === resolTypes.REJECTED) ? (
                   <>
                   {(yourStatus === decisionTypes.NO) ? (
                       <>
-                      <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
+                      <p className={"mr-1 " + fontSize(3, props.embedded)}>{props.msg.body.oldVersion}%</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}><s>{props.msg.body.newVersion}</s>%</p>
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <p className={"mr-1 " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}><s>{props.msg.body.newVersion}</s>%</p>
                       </>
                   )}
                   </>
@@ -117,15 +117,15 @@ const PayoutMsg = (props) => {
                   <>
                   {(yourStatus === decisionTypes.NO) ? (
                       <>
-                      <p className="mr-1 text-lg">{props.msg.body.oldVersion}%</p>
+                      <p className={"mr-1 " + fontSize(3, props.embedded)}>{props.msg.body.oldVersion}%</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-gray-400 text-lg font-medium"><s>{props.msg.body.newVersion}</s>%</p>
+                      <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}><s>{props.msg.body.newVersion}</s>%</p>
                       </>
                   ) : (
                       <>
-                      <p className="mr-1 text-lg">${props.msg.body.oldVersion}</p>
+                      <p className={"mr-1 " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
                       <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                      <p className="ml-1 text-green text-lg font-medium">{props.msg.body.newVersion}%</p>
+                      <p className={"ml-1 text-primary4 font-medium " + fontSize(3, props.embedded)}>{props.msg.body.newVersion}%</p>
                       </>
                   )}
                   </>

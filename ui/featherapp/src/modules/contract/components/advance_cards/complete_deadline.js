@@ -98,7 +98,7 @@ const CompleteDeadlineButton = (props) => {
       <div className="flex items-center">
         <p className="text-gray-400 text-sm">{string}</p>
         {settled ? (
-          <CheckIcon className="w-4 h-4 text-green ml-1"/>
+          <CheckIcon className="w-4 h-4 text-green-400 ml-1"/>
         ) : (
           <ClockIcon className="w-4 h-4 text-gray-400 ml-1"/>
         )}

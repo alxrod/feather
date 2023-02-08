@@ -81,6 +81,26 @@ message ContractIntentRequest {
     string buyer_id = 2;
 }
 
+message InternalChargeEntity {
+    string id = 1;
+    string contract_title = 7;
+    string contract_id = 2;
+    UserNubEntity worker = 3;
+    UserNubEntity buyer = 4;
+
+    string state = 5;
+    int64 amount = 6;
+}
+
+message InternalChargeRequest {
+    string user_id = 1;
+}
+
+message InternalChargeSet {
+    repeated InternalChargeEntity charges = 1;
+}
+
+
 
 service StripeService {
     rpc GetAccountOnboardLink(PaymentRegisterRequest) returns (AccountLinkResp) {};
@@ -97,6 +117,8 @@ service StripeService {
     rpc SetDefaultFca(FcaQuery) returns (NullResponse) {};
 
     rpc TestCharge(IntentCreateReq) returns (IntentSecret) {};
+
+    rpc GetInternalCharges(InternalChargeRequest) returns (InternalChargeSet) {};
 
     // rpc CreateContractIntentSecret(ContractIntentRequest) returns (NullResponse) {};
 }

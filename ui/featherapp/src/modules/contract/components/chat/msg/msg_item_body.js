@@ -13,7 +13,7 @@ import { connect } from 'react-redux'
 import DeltaBody from "../../delta/delta_textarea"
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
-import { displayDecide } from "./components/msg_helpers"
+import { displayDecide, fontSize } from "./components/msg_helpers"
 
 const ItemBodyMsg = (props) => {
   let editString = "Suggested"
@@ -83,9 +83,9 @@ const ItemBodyMsg = (props) => {
   }
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
-      <div className="mt-2 text-sm text-gray-700">
+      <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
-          <p className="text-gray-400 text-lg mr-2">{"Text Change"}</p>
+          <p className={"text-gray-400 mr-2 " + fontSize(3, props.embedded)}>{"Text Change"}</p>
           <div className="w-2"></div>
           <div className="w-16">
             {(displayDecide(props.msg, yourStatus, props.user, props.embedded)) && (

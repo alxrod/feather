@@ -1,8 +1,10 @@
 export const SET_NAVBAR = "site/room/JOIN"
 export const TOGGLE_PAYMENT_FROM_REG = "site/room/TOGGLE_PAYMENT_FROM_REG"
+
 const initialState = {
     showNavbar: true,
     fromRegister: false,
+    internalTestMode: true,
 }
 
 export default (state = initialState, action) => {

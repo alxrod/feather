@@ -319,7 +319,7 @@ const Calendar = (props) => {
                     isSel(day+1) && isDay(day+1) && 'bg-primary5',
 
                     isSel(day+1) && !isDay(day+1) && (!props.decisionMode && !props.dateLock) && 'bg-gray-500',
-                    isSel(day+1) && !isDay(day+1) && (props.decisionMode || (props.dateLock && !props.universalLock)) && 'bg-green',
+                    isSel(day+1) && !isDay(day+1) && (props.decisionMode || (props.dateLock && !props.universalLock)) && 'bg-green-200',
                     isSel(day+1) && !isDay(day+1) && (props.universalLock) && 'bg-primary5',
 
                     !isSel(day+1) && isOrig(day+1) && 'text-white',

@@ -20,11 +20,11 @@ export const get_code = (status) => {
 export const get_style_code = (status) => {
     const code = get_code(status)
     if (code === 0) {
-        return "bg-green"
+        return "bg-green-400"
     } else if (code === 1) {
-        return "bg-yellow"
+        return "bg-yellow-400"
     } else {
-        return "bg-red"
+        return "bg-red-400"
     }
 }
 

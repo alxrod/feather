@@ -586,6 +586,25 @@ func (msg *Message) UpdateReadReceipts(user_id primitive.ObjectID, database *mon
 	}
 }
 
+func (msg *Message) UndoUpdateReadReceipts(user_id primitive.ObjectID, database *mongo.Database) {
+	update := false
+	for _, receipt := range msg.ReadReceipts {
+		if receipt.UserId == user_id {
+			if receipt.Read {
+				update = true
+			}
+			receipt.Read = false
+		}
+	}
+	if update {
+		filter := bson.D{{"_id", msg.Id}}
+		update := bson.D{
+			{"$set", bson.D{{"read_receipts", msg.ReadReceipts}}},
+		}
+		database.Collection(MSG_COL).UpdateOne(context.TODO(), filter, update)
+	}
+}
+
 func MessageInsert(req *comms.SendRequest, room *ChatRoom, database *mongo.Database) (*Message, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {

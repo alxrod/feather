@@ -238,7 +238,7 @@ const ContractItem = (props) => {
     )
   }
   return (
-    <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green" : "") + (contract_info.awaitingDeletion ? "border-2 border-red" : "")}>
+    <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green-400" : "") + (contract_info.awaitingDeletion ? "border-2 border-red-400" : "")}>
         <div className="px-2 py-5 sm:p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center">

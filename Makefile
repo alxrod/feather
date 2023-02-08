@@ -1,4 +1,6 @@
 include ./creds/Makefile
+include .env
+export
 
 .PHONY: gencert
 gencert:
@@ -6,7 +8,7 @@ gencert:
 
 .PHONY: build
 build:
-	npm run build --prefix ui/featherapp/ 
+	PUBLIC_URL=/ npm run build --prefix ui/featherapp/ 
 	go build -o api . && ./api    
 
 .PHONY: backend
@@ -16,6 +18,10 @@ backend:
 .PHONY: debug
 debug:
 	npm run dev --prefix ui/featherapp/ 
+
+.PHONY: debug-webhooks
+debug-webhooks:
+	stripe listen --forward-to https://localhost:8080/web-hook/stripe-event --skip-verify --latest
 
 .PHONY: proto
 proto:

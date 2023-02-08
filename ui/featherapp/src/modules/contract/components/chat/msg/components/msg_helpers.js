@@ -24,3 +24,20 @@ export const assignStatus = (msg, user, yourRole, setStatus, setOtherStatus) => 
         } 
     }
 }
+
+export const fontSize = (size, embedded) => {
+  if (embedded) {
+    size -= 1
+  }
+  if (size == 0) {
+    return "text-xs"
+  } else if (size == 1) {
+    return "text-sm" 
+  } else if (size == 2) {
+    return "text-base"
+  } else if (size == 3) {
+    return "text-lg"
+  } else if (size == 4) {
+    return "text-xl"
+  }
+}

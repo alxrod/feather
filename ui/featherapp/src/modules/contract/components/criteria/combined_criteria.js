@@ -16,7 +16,7 @@ const CombinedCriteria = (props) => {
               <div className="flex items-center px-4 py-4 sm:px-6">
                 <div className="min-w-0 flex-1 flex items-center">
                   <div className="flex-shrink-0">
-                    <CurrencyDollarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true" />
+                    <CurrencyDollarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-primary5" aria-hidden="true" />
                   </div>
                   <div className="min-w-0 flex-1 px-2 md:grid md:grid-cols-1 md:gap-4">
                     <div>
@@ -36,7 +36,7 @@ const CombinedCriteria = (props) => {
               <div className="flex items-center px-4 py-4 sm:px-6">
                 <div className="min-w-0 flex-1 flex items-center">
                   <div className="flex-shrink-0">
-                    <CalendarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-green-400" aria-hidden="true"/>
+                    <CalendarIcon className="flex-shrink-0 text-gray-400 mr-1.5 h-9 w-9 text-primary5" aria-hidden="true"/>
                   </div>
                   <div className="px-4 w-full">
                     <DeadlineField 

@@ -15,6 +15,8 @@ const (
 	ROOM_COL       = "chat_rooms"
 	MSG_COL        = "chat_messages"
 	PROF_IMAGE_COL = "prof_images"
+
+	CHARGE_COL = "internal_charge_col"
 )
 
 // Errors:

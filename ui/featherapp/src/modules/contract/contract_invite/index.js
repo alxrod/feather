@@ -136,14 +136,14 @@ const ContractInvite = (props) => {
                 ) : (
                   <>
                     <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">Enter the contract password to claim it</p>
-                    <div className="mt-1 ml-5">
+                    <div className="mt-1">
                       <div className="mt-1 relative flex items-center">
                         <input
                           type="text"
                           name="email"
                           id="email"
                           className="text-gray-600 shadow-sm focus:ring-primary4 focus:border-primary4 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
-                          placeholder="your contract password"
+                          placeholder="contract password"
                           value={contractPassword}
                           onChange={changePassword}
                         />
@@ -162,16 +162,16 @@ const ContractInvite = (props) => {
               </div>    
             )}
             {(!isOwner && !props.isLoggedIn) && (
-              <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
+              <p className="mt-4 max-w-2xl text-md sm:text-xl text-gray-500 w-full lg:text-center">
                 <b className="font-medium text-primary5">@{existingUser.username}</b>{" "}
                 has invited you to a contract. To claim this contract and begin negotiating, you have to 
-                {" "}<Link className="font-medium text-primary5" to="/login"><u>{"log in"}</u></Link>{" "}
+                {" "}<Link className="font-medium text-primary5" to="/login"><b>{"log in"}</b></Link>{" "}
                 or 
-                {" "}<Link className="font-medium text-primary5" to="/register"><u>{"register"}</u></Link>.{" "}
+                {" "}<Link className="font-medium text-primary5" to="/register"><b>{"register"}</b></Link>.{" "}
               </p>
               
             )}
-            <div className="mt-10 w-[30vw]">
+            <div className="mt-10 max-w-2xl xl:max-w-xl md:max-w-lg">
               <dl className="space-y-10">
                   <div key="summary" className="relative">
                     <dt>
@@ -180,7 +180,8 @@ const ContractInvite = (props) => {
                       </div>
                       <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Summary</p>
                     </dt>
-                    <dd className="mt-2 ml-16 text-base text-gray-500">{inviteBody.summary}</dd>
+                    <dd className="hidden sm:block mt-2 ml-16 text-base text-gray-500">{inviteBody.summary}</dd>
+                    <dd className="sm:hidden relative mt-2 ml-16 text-base text-gray-500">{inviteBody.summary.substring(0,100)+"..."}</dd>
                   </div>
                   
                   <div key="price" className="relative">
