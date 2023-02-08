@@ -1,4 +1,3 @@
-include ./creds/Makefile
 include .env
 export
 
