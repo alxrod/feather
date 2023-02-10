@@ -14,7 +14,7 @@ const ContractNub = (props) => {
   useEffect(() => {
     const newPics = []
     if (props.user.profilePhotoUploaded !== "") {
-      newPics.push(props.user.profilePhoto.cacheUrl)
+      newPics.push(props.user.profilePhoto?.cacheUrl)
     }
     for (let i = 0; i < props.cachedProfileUrls.length; i++) {
       if (props.cachedProfileUrls[i][0] === props.contract.workerId) {

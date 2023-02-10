@@ -58,7 +58,7 @@ const ContractInvite = (props) => {
   
   const copyLinkToClipboard = () => {
     console.log("Coppying link")
-    navigator.clipboard.writeText(process.env.REACT_FRONTEND_SITE_BASE+"/invite/"+contractId);
+    navigator.clipboard.writeText(process.env.REACT_APP_FRONTEND_SITE_BASE+"/invite/"+contractId);
     setCopyMessage("Copied link to your clipboard")
   }
   useEffect( () => {

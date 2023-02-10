@@ -80,7 +80,15 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		return nil, err
 	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
+	dbIP := os.Getenv("DB_IP")
+	dbUsername := os.Getenv("DB_USERNAME")
+	dbPassword := os.Getenv("DB_PASSWORD")
+
+	credential := options.Credential{
+		Username: dbUsername,
+		Password: dbPassword,
+ 	}
+	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:27017", dbIP)).SetAuth(credential))
 	if err != nil {
 		return nil, err
 	}

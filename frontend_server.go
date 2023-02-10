@@ -22,6 +22,7 @@ var routes []string = []string{
 	"^/contracts$",
 
 	"^/login$",
+	"^/profile$",
 	"^/register$",
 	"^/setup-payment$",
 	"^/logout$",
