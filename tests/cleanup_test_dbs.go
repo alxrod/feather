@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -19,8 +20,15 @@ func main() {
 	credential := options.Credential{
 		Username: dbUsername,
 		Password: dbPassword,
- 	}
-	client, err := mongo.NewClient(options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:27017", dbIP)).SetAuth(credential))
+	}
+
+	opts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:27017", dbIP))
+
+	if os.Getenv("DB_DEBUG") == "false" {
+		opts.SetAuth(credential)
+	}
+	client, err := mongo.NewClient(opts)
+
 	if err != nil {
 		log.Fatal(err)
 	}
