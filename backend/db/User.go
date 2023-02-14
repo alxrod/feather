@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
@@ -227,9 +226,9 @@ func PullProfilePhotoFromDb(user *User, database *mongo.Database) (*User, error)
 		var profilePhoto *ProfileImage
 		if err := database.Collection(PROF_IMAGE_COL).FindOne(context.TODO(), filter).Decode(&profilePhoto); err != nil {
 			log.Println(color.Ize(color.Red, err.Error()))
-			return nil, errors.New("profile image for user not found")
+		} else {
+			user.ProfilePhoto = profilePhoto
 		}
-		user.ProfilePhoto = profilePhoto
 	}
 	return user, nil
 }

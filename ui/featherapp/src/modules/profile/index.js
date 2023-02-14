@@ -13,14 +13,15 @@ const Profile = (props) => {
   const [profNoExist, setProfNoExist] = useState(false)
   const [picUrl, setPicUrl] = useState("")
 
+  
   useEffect( () => {
-    if (props.user.profilePhoto?.cacheUrl) {
+    if (props.user && props.user.profilePhoto?.cacheUrl) {
       setPicUrl(props.user.profilePhoto.cacheUrl)
       setShowProfPic(true)
     } else {
       setProfNoExist(true)
     }
-  }, [props.user])
+  }, [props.user, props.user?.profilePhoto.cacheUrl])
   return (
     <div>
       <br/>
@@ -56,10 +57,14 @@ const Profile = (props) => {
               <ProfilePhotoUpload setShowProfPic={setShowProfPic} setPicUrl={setPicUrl}/> 
             </>
           )}
-          <br/>
-          <AccountInfo user={props.user}/>
-          <br/>
-          <PaymentInfo/>
+          {props.user && (
+            <>
+              <br/>
+              <AccountInfo user={props.user}/>
+              <br/>
+              <PaymentInfo/>
+            </>
+          )}
             
         </div>
       </div>

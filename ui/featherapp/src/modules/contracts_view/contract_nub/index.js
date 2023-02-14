@@ -12,15 +12,16 @@ const ContractNub = (props) => {
   const [profPics, setProfPics] = useState([])
 
   useEffect(() => {
+    console.log("lookign at cache: ", props.cachedProfileUrls)
     const newPics = []
-    if (props.user.profilePhotoUploaded !== "") {
+    if (props.user.profilePhotoUploaded !== false) {
       newPics.push(props.user.profilePhoto?.cacheUrl)
     }
     for (let i = 0; i < props.cachedProfileUrls.length; i++) {
-      if (props.cachedProfileUrls[i][0] === props.contract.workerId) {
+      if (props.cachedProfileUrls[i][0] === props.contract.workerId && props.cachedProfileUrls[i][1] !== "") {
         newPics.push(props.cachedProfileUrls[i][1])
       }
-      if (props.cachedProfileUrls[i][0] === props.contract.buyerId) {
+      if (props.cachedProfileUrls[i][0] === props.contract.buyerId && props.cachedProfileUrls[i][1] !== "") {
         newPics.push(props.cachedProfileUrls[i][1])
       }
     }

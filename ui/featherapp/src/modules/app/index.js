@@ -89,9 +89,11 @@ const App = (props) => {
   const [pullReq, setPullReq] = useState(true);
   let firstLoad = true
 
-  
   useEffect( () => {
-    // console.log("Calling a link change to path: " + loc.pathname)
+    console.log("Started up ")
+  }, [])
+  useEffect( () => {
+    console.log("Calling a link change to path: " + loc.pathname)
     const route_base = "/"+loc.pathname.split("/")[1]
     if (no_nav_routes.includes(route_base) && !props.isLoggedIn) {
       props.setNavbar(false)
@@ -116,6 +118,7 @@ const App = (props) => {
     if (!routes.hasOwnProperty(pathname)) {
       props.push("/unknown")
     } else if (props.user === null && routes[pathname] === STD_ROLE) {
+      console.log("Redrecting?")
       props.setRedirect(wholepath)
       props.push("/login")
       return false
@@ -123,6 +126,7 @@ const App = (props) => {
       props.push("/contracts")
       return false
     }
+    console.log("Auth redirect ran: ", props.user, routes[pathname])
     return true
   }
 

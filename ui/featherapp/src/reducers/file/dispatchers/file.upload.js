@@ -1,6 +1,7 @@
 import FileService from "../../../services/file.service";
 
 import * as fileActions from "../file.actions";
+import * as userActions from "../../user/user.actions";
 import * as helpers from "../../helpers"
 
 export const uploadProfilePhoto = (file, filename) => {
@@ -14,13 +15,24 @@ export const uploadProfilePhoto = (file, filename) => {
                     })
                     return fetch(url, {
                         method: "PUT",
-                        body: file["file"],
+                        body: file,
                     }).then((response) => {
                         if (response.ok) {
                             dispatch({
                                 type: fileActions.PROFILE_PUT_SUCCESS
                             })
-                            FileService.confirmProfileUploaded(creds.access_token, creds.user_id, true)
+                            FileService.confirmProfileUploaded(creds.access_token, creds.user_id, true).then(
+                                (profileImage) => {
+                                    dispatch({
+                                        type: fileActions.UPDATE_PROFILE_URL_CACHE,
+                                        payload: profileImage,
+                                    })
+                                    dispatch({
+                                        type: userActions.USER_SET_PROFILE,
+                                        payload: profileImage.cacheUrl,
+                                    })
+                                }
+                            )
                             return Promise.resolve()
                         } else {
                             dispatch({

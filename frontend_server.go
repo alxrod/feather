@@ -130,12 +130,13 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 			return
 		}
 
-		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
-
 		if strings.Contains(path, "/asset-cache/") {
+			fmt.Printf(color.Ize(color.Blue, fmt.Sprintf("Asset Request for : %s\n", r.URL)))
 			assetHandler(w, r)
 			return
 		}
+
+		fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Frontend Request for : %s\n", r.URL)))
 
 		for _, route := range routes {
 			r_exp := regexp.MustCompile(route)

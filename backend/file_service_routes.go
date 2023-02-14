@@ -37,31 +37,41 @@ func (s *BackServer) PresignProfilePhoto(ctx context.Context, req *comms.Profile
 		fileType = splitName[len(splitName)-1]
 	}
 
-	newFileName := fmt.Sprintf("%s", user.Id.Hex(), fileType)
-	if fileType != "" {
-		newFileName = fmt.Sprintf("%s.%s", user.Id.Hex(), fileType)
-
-	}
-
-	url, path, err := s.AWSAgent.GenerateProfilePicPresign(user, newFileName)
-	if err != nil {
-		return nil, err
-	}
-
 	user.ProfilePhoto = &db.ProfileImage{
+		Id:         primitive.NewObjectID(),
 		UserId:     user.Id,
 		FileType:   fileType,
 		InCache:    false,
 		LocalPath:  "",
-		BucketPath: path,
+		BucketPath: "",
 	}
-	user.ProfilePhoto.Save(database)
-	user.ProfilePhotoUploaded = true
+
+	newFileName := fmt.Sprintf("%s", user.ProfilePhoto.Id.Hex())
+	if fileType != "" {
+		newFileName = fmt.Sprintf("%s.%s", user.ProfilePhoto.Id.Hex(), fileType)
+	}
+
+	user.ProfilePhotoUploaded = false
 	filter := bson.D{{"_id", user.Id}}
-	update := bson.D{{"$set", bson.D{{"profile_photo_id", user.ProfilePhoto.Id}}}}
+	update := bson.D{{"$set", bson.D{
+		{"profile_photo_id", user.ProfilePhoto.Id},
+		{"profile_photo_uploaded", false},
+	}}}
+
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
+	}
+	url, path, err := s.AWSAgent.GenerateProfilePicPresign(user, newFileName, database)
+	if err != nil {
+		return nil, err
+	}
+
+	user.ProfilePhoto.BucketPath = path
+	err = user.ProfilePhoto.Insert(database)
+
+	if err != nil {
+		log.Printf("Error saving profile: %s", err.Error())
 	}
 
 	return &comms.ProfileUrlResponse{
@@ -71,7 +81,7 @@ func (s *BackServer) PresignProfilePhoto(ctx context.Context, req *comms.Profile
 
 }
 
-func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.ProfileUploadStatus) (*comms.NullResponse, error) {
+func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.ProfileUploadStatus) (*comms.ProfileImageEntity, error) {
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		return nil, err
@@ -99,7 +109,6 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Trying to save local path %s", localPath)
 	user.ProfilePhoto.LocalPath = localPath
 	cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("SITE_BASE"))
 	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", cacheBase, user.ProfilePhoto.LocalPath)
@@ -109,13 +118,12 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 		return nil, err
 	}
 
-	return &comms.NullResponse{}, nil
+	return user.ProfilePhoto.Proto(), nil
 }
 
 func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGetRequest) (*comms.ProfileGetResponse, error) {
 	cached_urls := map[string]string{}
 	database := s.dbClient.Database(s.dbName)
-	log.Printf("Test", req.UserIds)
 	for _, user_id_str := range req.UserIds {
 		user_id, err := primitive.ObjectIDFromHex(user_id_str)
 		if err != nil {

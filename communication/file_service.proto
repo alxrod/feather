@@ -37,6 +37,6 @@ message ProfileImageEntity {
 
 service FileService {
     rpc PresignProfilePhoto(ProfileUrlRequest) returns (ProfileUrlResponse) {};
-    rpc ConfirmProfileUploaded(ProfileUploadStatus) returns (NullResponse) {};
+    rpc ConfirmProfileUploaded(ProfileUploadStatus) returns (ProfileImageEntity) {};
     rpc GetProfilePhotos(ProfileGetRequest) returns (ProfileGetResponse) {};
 }

@@ -3,3 +3,4 @@ export const PROFILE_PUT_SUCCESS = "profile/photo/PUT_SUCCEESS"
 export const PROFILE_PUT_FAIL = "profile/photo/PUT_FAIL"
 
 export const SET_PROFILE_URL_CACHE = "profile/photo/SET_URL_CACHE"
+export const UPDATE_PROFILE_URL_CACHE = "profile/photo/UPDATE_URL_CACHE"

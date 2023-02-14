@@ -197,7 +197,10 @@ export default (state = initialState, action) => {
                 ...state,
                 user: {
                     ...state.user,
-                    profileUrl: action.payload,
+                    profilePhoto: {
+                        ...state.profilePhoto,
+                        cacheUrl: action.payload,
+                    }
                 }
             }
         

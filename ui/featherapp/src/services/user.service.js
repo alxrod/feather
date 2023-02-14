@@ -13,7 +13,6 @@ import {
 
  } from "../proto/communication/user_pb";
 
-console.log("Trying: ", process.env.APP_SITE_BASE)
 export const authClient = new AuthClient(process.env.REACT_APP_SITE_BASE);
 
 export const WORKER_TYPE = 0

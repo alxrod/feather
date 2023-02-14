@@ -7,7 +7,7 @@ const initialState = {
     uploadActive: false,
     uploadFailed: false,
     profileCacheUpdated: false,
-    cachedProfileUrls: {},
+    cachedProfileUrls: [],
 }
 
 export default (state = initialState, action) => {
@@ -17,6 +17,13 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 cachedProfileUrls: action.payload,
+                profileCacheUpdated: !state.profileCacheUpdated
+            }
+
+        case actions.UPDATE_PROFILE_URL_CACHE:
+            return {
+                ...state,
+                cachedProfileUrls: helpers.replaceUrl(state.cachedProfileUrls, action.payload),
                 profileCacheUpdated: !state.profileCacheUpdated
             }
 

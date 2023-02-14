@@ -18,6 +18,7 @@ class FileService {
             fileServiceClient.presignProfilePhoto(urlRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
+                    return
                 }
                 var resp = response.toObject();
 
@@ -30,13 +31,17 @@ class FileService {
         let confirmRequest = new ProfileUploadStatus();
         confirmRequest.setUserId(user_id);
         confirmRequest.setUploadSucceeded(status)
-        let metadata = {"authorization": token}
-        fileServiceClient.confirmProfileUploaded(confirmRequest, metadata, function(error, response) {
-            if (error) {
-                return false
-            } else {
-                return
-            }
+        return new Promise( (resolve, reject) => { 
+            let metadata = {"authorization": token}
+            fileServiceClient.confirmProfileUploaded(confirmRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                    return
+                } else {
+                    var resp = response.toObject();
+                    resolve(resp)
+                }
+            });
         });
     }
 
