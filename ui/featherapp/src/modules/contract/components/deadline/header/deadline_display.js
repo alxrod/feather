@@ -2,7 +2,7 @@
 import { CheckIcon } from '@heroicons/react/solid'
 import {Fragment} from "react"
 import {useState, useEffect, useCallback} from "react"
-import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import {Tooltip} from "flowbite-react"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

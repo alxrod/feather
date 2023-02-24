@@ -174,7 +174,7 @@ func (s *BackServer) ReactItem(ctx context.Context, req *comms.ContractReactItem
 	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSuggestAddItem) (*comms.ContractEditResponse, error) {
+func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSuggestAddItem) (*comms.ItemEntity, error) {
 	log.Println(fmt.Sprintf("Suggesting creating a item %d", req.Item.Name))
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
@@ -236,7 +236,12 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 		return nil, err
 	}
 	// log.Println("Price Message Broadcast")
-	return &comms.ContractEditResponse{}, nil
+	itemProtos := make([]*comms.ItemEntity, len(contract.Items))
+	for i, item := range contract.Items {
+		itemProtos[i] = item.Proto()
+	}
+
+	return item.Proto(), nil
 }
 
 func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactAddItem) (*comms.ContractEditResponse, error) {
@@ -301,7 +306,7 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 			}
 		} else {
 			msg.Body.ResolStatus = db.RESOL_REJECTED
-			err := db.ContractRemoveItem(item, contract, database)
+			err := db.ContractRemoveItem(item, contract, user, database)
 			if err != nil {
 				return nil, err
 			}
@@ -321,7 +326,7 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 		msg.Body.ResolStatus = db.RESOL_REJECTED
 		item.AwaitingApproval = false
 
-		err := db.ContractRemoveItem(item, contract, database)
+		err := db.ContractRemoveItem(item, contract, user, database)
 		if err != nil {
 			return nil, err
 		}
@@ -354,6 +359,7 @@ func (s *BackServer) ReactAddItem(ctx context.Context, req *comms.ContractReactA
 	if err = s.ChatAgent.SendRevMessage(revMsg, database); err != nil {
 		return nil, err
 	}
+
 	return &comms.ContractEditResponse{}, nil
 }
 
@@ -425,7 +431,7 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	}
 
 	if req.Item.AwaitingDeletion == false {
-		err := db.ContractRemoveItem(item, contract, database)
+		err := db.ContractRemoveItem(item, contract, user, database)
 		if err != nil {
 			return nil, err
 		}
@@ -490,7 +496,7 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 		item.AwaitingDeletion = false
 		if req.Status == db.DECISION_YES {
 			msg.Body.ResolStatus = db.RESOL_APPROVED
-			err := db.ContractRemoveItem(item, contract, database)
+			err := db.ContractRemoveItem(item, contract, user, database)
 			if err != nil {
 				return nil, err
 			}
@@ -507,7 +513,7 @@ func (s *BackServer) ReactDeleteItem(ctx context.Context, req *comms.ContractRea
 		msg.Body.ResolStatus = db.RESOL_APPROVED
 		item.AwaitingApproval = false
 		item.AwaitingDeletion = false
-		err := db.ContractRemoveItem(item, contract, database)
+		err := db.ContractRemoveItem(item, contract, user, database)
 		if err != nil {
 			return nil, err
 		}

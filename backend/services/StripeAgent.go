@@ -83,7 +83,10 @@ func (agent *StripeAgent) CreateConnectedAccount(user *db.User, database *mongo.
 	user.StripeConnectedAccountId = acc.ID
 
 	filter := bson.D{{"_id", user.Id}}
-	update := bson.D{{"$set", bson.D{{"stripe_account_id", user.StripeConnectedAccountId}}}}
+	update := bson.D{{"$set", bson.D{
+		{"stripe_account_id", user.StripeConnectedAccountId},
+		{"worker_mode_requested", true},
+	}}}
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 
 	return user, nil
@@ -103,15 +106,18 @@ func (agent *StripeAgent) CreateCustomer(user *db.User, database *mongo.Database
 	user.StripeCustomerId = cus.ID
 
 	filter := bson.D{{"_id", user.Id}}
-	update := bson.D{{"$set", bson.D{{"stripe_customer_id", user.StripeCustomerId}}}}
+	update := bson.D{{"$set", bson.D{
+		{"stripe_customer_id", user.StripeCustomerId},
+		{"buyer_mode_requested", true},
+	}}}
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 
 	return user, nil
 }
 
-func (agent *StripeAgent) GetAccountOnboardingLink(account_id string) (string, error) {
+func (agent *StripeAgent) GetAccountOnboardingLink(account_id string, return_route string) (string, error) {
 
-	ACCOUNT_SETUP_RETURN_URL := fmt.Sprintf("%s/profile", os.Getenv("SITE_BASE"))
+	ACCOUNT_SETUP_RETURN_URL := fmt.Sprintf("%s%s", os.Getenv("SITE_BASE"), return_route)
 	ACCOUNT_SETUP_REFRESH_URL := fmt.Sprintf("%s/profile/onboarding-refresh", os.Getenv("SITE_BASE"))
 
 	params := &stripe.AccountLinkParams{
@@ -211,6 +217,17 @@ func (agent *StripeAgent) DisconnectFca(fca_id string) error {
 	_, err := fcaccount.Disconnect(
 		fca_id,
 		nil,
+	)
+	return err
+}
+
+func (agetn *StripeAgent) DisconnectExBa(acct_id, ba_id string) error {
+	params := &stripe.BankAccountParams{
+		Account: stripe.String(acct_id),
+	}
+	_, err := bankaccount.Del(
+		ba_id,
+		params,
 	)
 	return err
 }

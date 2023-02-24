@@ -27,9 +27,15 @@ func (s *BackServer) GetAccountOnboardLink(ctx context.Context, req *comms.Payme
 	}
 
 	if user.StripeConnectedAccountId == "" {
-		return nil, errors.New("User does not have a stripe account")
+		user, err = s.StripeAgent.CreateConnectedAccount(user, database)
 	}
-	url, err := s.StripeAgent.GetAccountOnboardingLink(user.StripeConnectedAccountId)
+
+	return_route := "/profile"
+	if req.ReturnRoute != "" {
+		return_route = req.ReturnRoute
+	}
+
+	url, err := s.StripeAgent.GetAccountOnboardingLink(user.StripeConnectedAccountId, return_route)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +72,7 @@ func (s *BackServer) GetInitialSetupSecret(ctx context.Context, req *comms.Payme
 	}
 
 	if user.StripeCustomerId == "" {
-		return nil, errors.New("User does not have a stripe account")
+		user, err = s.StripeAgent.CreateCustomer(user, database)
 	}
 	secret, err := s.StripeAgent.CreateInitialSetupIntentSecret(user, database)
 	if err != nil {
@@ -154,11 +160,51 @@ func (s *BackServer) DisconnectFca(ctx context.Context, req *comms.FcaQuery) (*c
 			removedFcas = append(removedFcas, fca)
 		}
 	}
+
 	filter := bson.D{{"_id", user.Id}}
 	update := bson.D{{"$set", bson.D{
 		{"fca_ids", removedFcas},
 	}}}
+	if user.StripeDefaultFCA == req.FcaId && len(removedFcas) > 0 {
+		update = bson.D{{"$set", bson.D{
+			{"fca_ids", removedFcas},
+			{"default_fca", removedFcas[0]},
+		}}}
+	} else if len(removedFcas) == 0 {
+		update = bson.D{{"$set", bson.D{
+			{"fca_ids", removedFcas},
+			{"default_fca", ""},
+			{"buyer_mode_enabled", false},
+		}}}
+	}
+	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
 
+	return &comms.NullResponse{}, nil
+}
+
+func (s *BackServer) DisconnectExBa(ctx context.Context, req *comms.ExBaQuery) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, err := stringToUser(req.UserId, database)
+	if err != nil {
+		return nil, err
+	}
+	if req.BaId == "" {
+		return nil, errors.New("No BA Id provided")
+	}
+	err = s.StripeAgent.DisconnectExBa(user.StripeConnectedAccountId, req.BaId)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", user.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"stripe_customer_id", ""},
+		{"stripe_account_id", ""},
+		{"worker_mode_enabled", false},
+	}}}
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
@@ -224,6 +270,7 @@ func (s *BackServer) ConfirmPaymentConnected(ctx context.Context, req *comms.Set
 	update := bson.D{{"$set", bson.D{
 		{"default_fca", fca_id},
 		{"fca_ids", user.StripeFCAlist},
+		{"buyer_mode_enabled", true},
 	}}}
 
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
@@ -242,7 +289,9 @@ func (s *BackServer) GetInternalCharges(ctx context.Context, req *comms.Internal
 	}
 	charges, err := db.GetInternalChargesByUser(user_id, database)
 	if err != nil {
-		return nil, err
+		return &comms.InternalChargeSet{
+			Charges: make([]*comms.InternalChargeEntity, 0),
+		}, nil
 	}
 	protos := make([]*comms.InternalChargeEntity, len(charges))
 	for i, charge := range charges {

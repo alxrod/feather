@@ -22,16 +22,6 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 		return nil, errors.New("You must provide a valid User Id")
 	}
 
-	if req.Title == "" ||
-		req.Summary == "" ||
-		req.Price == nil {
-		return nil, errors.New("Title, summary, intro, and price are all required to create a contract.")
-	}
-
-	if len(req.Deadlines) < 2 {
-		return nil, errors.New("You must specify at least a start and end deadline for the contract")
-	}
-
 	database := s.dbClient.Database(s.dbName)
 	user, err := db.UserQueryId(userId, database)
 	if err != nil {
@@ -46,6 +36,80 @@ func (s *BackServer) Create(ctx context.Context, req *comms.ContractCreateReques
 	return &comms.ContractResponse{
 		Contract: contractProto,
 		Role:     req.Role,
+	}, nil
+
+}
+
+func (s *BackServer) UpdateDraft(ctx context.Context, req *comms.ContractUpdateRequest) (*comms.ContractResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := db.ContractById(contractId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err = contract.UpdateDraft(req, user, database)
+	if err != nil {
+		return nil, err
+	}
+	contractProto := contract.Proto()
+	return &comms.ContractResponse{
+		Contract: contractProto,
+		Role:     req.Role,
+	}, nil
+
+}
+
+func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFinishCreationRequest) (*comms.ContractResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := db.ContractById(contractId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err = contract.FinishCreation(user, database)
+	if err != nil {
+		return nil, err
+	}
+
+	var role uint32
+	if contract.Worker.Id == user.Id {
+		role = db.WORKER
+	} else if contract.Buyer.Id == user.Id {
+		role = db.BUYER
+	} else {
+		return nil, errors.New("You are neither a worker or buyer of this contract")
+	}
+	if err != nil {
+		return nil, err
+	}
+	contractProto := contract.Proto()
+	return &comms.ContractResponse{
+		Contract: contractProto,
+		Role:     role,
 	}, nil
 
 }
@@ -136,6 +200,9 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
 	if err != nil {
 		return nil, err
+	}
+	if contract.Buyer == nil || contract.Worker == nil {
+		return nil, errors.New("You need both a buyer and worker to sign a contract")
 	}
 
 	err = db.ContractSign(user, contract, database)

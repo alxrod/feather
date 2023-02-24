@@ -5,7 +5,7 @@ import {Tooltip, Button} from "flowbite-react"
 import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import DecideButton from '../decide_button'
-import DraftToggle from "./draft_toggle"
+import DraftToggle from "./draft/draft_toggle"
 
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

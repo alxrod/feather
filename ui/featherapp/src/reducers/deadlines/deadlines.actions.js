@@ -16,3 +16,5 @@ export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
 export const CONTRACT_DEADLINE_SUGGEST_DELETE = "contract/deadline/SUGGEST_DELETE"
 
 export const CONTRACT_DEADLINE_FINALIZE_SETTLE = "contract/deadline/FINALIZE_SETTLE"
+
+export const CONTRACT_DEADLINE_ITEM_PURGE = "contract/deadline/PURGE_ITEM"

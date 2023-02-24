@@ -94,8 +94,11 @@ const PriceField = (props) => {
       }
       setOrigPrice(newPrice)
       setFieldValue(newPrice)
+    } else if (props.createMode && (props.price !== 0 && props.price !== undefined)) {
+      setOrigPrice(props.price)
+      setFieldValue(props.price)
     }
-  }, [props.curContract, props.contractChanged, props.universalLock])
+  }, [props.curContract, props.contractChanged, props.universalLock, props.price])
 
   useEffect( () => {
     if (props.curContract.id) {

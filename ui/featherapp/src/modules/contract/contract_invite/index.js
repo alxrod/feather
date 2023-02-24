@@ -70,18 +70,20 @@ const ContractInvite = (props) => {
         console.log(body)
         if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
-        } else if (body.buyer.id === "" && (props.user === null || props.user.buyerRequested)) {
+        } else if (body.buyer.id === "" && (props.user === null || props.user.buyerModeEnabled)) {
           setExistingUser(body.worker)
           props.setRegisterRole(BUYER_TYPE)
-        } else if (body.worker.id === "" && (props.user === null ||props.user.workerRequested)) {
+        } else if (body.worker.id === "" && (props.user === null || props.user.workerModeEnabled)) {
           setExistingUser(body.buyer)
           props.setRegisterRole(WORKER_TYPE)
         } else {
+          console.log("User is: ", props.user.workerModeEnabled)
+          console.log(body)
           setIncompatWContract(true)
           if (body.worker.id !== "") {
-            setIncompatMsg("This contract needs a worker, but you are a buyer")
-          } else {
             setIncompatMsg("This contract needs a buyer, but you are a worker")
+          } else {
+            setIncompatMsg("This contract needs a worker, but you are a buyer")
           }
 
         }

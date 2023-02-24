@@ -30,6 +30,7 @@ message DobEntity {
 }
 message PaymentRegisterRequest {
     string user_id = 1;
+    string return_route = 2;
 }
 message FCSSecret {
     string client_secret = 1;
@@ -76,6 +77,11 @@ message FcaQuery {
     string fca_id = 2;
 }
 
+message ExBaQuery {
+    string user_id = 1;
+    string ba_id = 2;
+}
+
 message ContractIntentRequest {
     string worker_id = 1;
     string buyer_id = 2;
@@ -113,6 +119,8 @@ service StripeService {
     rpc ListFcas(ListRequest) returns (BASet) {};
     rpc ListExBAs(ListRequest) returns (BASet) {};
 
+    rpc DisconnectExBa(ExBaQuery) returns (NullResponse) {};
+    
     rpc DisconnectFca(FcaQuery) returns (NullResponse) {};
     rpc SetDefaultFca(FcaQuery) returns (NullResponse) {};
 

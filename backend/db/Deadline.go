@@ -130,6 +130,15 @@ func (d *Deadline) Nub() *comms.DeadlineNub {
 	}
 }
 
+func (deadline *Deadline) Delete(database *mongo.Database) error {
+	filter := bson.D{{"_id", deadline.Id}}
+	_, err := database.Collection(DEADLINE_COL).DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {
 	deadline := &Deadline{
 		ContractId: contract_id,
@@ -434,6 +443,30 @@ func DeadlineReactItems(deadline *Deadline, contract *Contract, user *User, deci
 	deadline.ItemStates = newItemStates
 	deadline.ItemsProposerId = user.Id
 	deadline.ItemsAwaitingApproval = false
+	err := DeadlineReplace(deadline, database)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeadlineRemoveItem(deadline *Deadline, contract *Contract, user *User, remove_item *ContractItem, database *mongo.Database) error {
+	newItems := make([]*ContractItem, 0)
+	newItemIds := make([]primitive.ObjectID, 0)
+	newItemStates := make([]uint32, 0)
+
+	for idx, item := range deadline.Items {
+		if remove_item.Id != item.Id {
+			newItems = append(newItems, item)
+			newItemIds = append(newItemIds, item.Id)
+			newItemStates = append(newItemStates, deadline.ItemStates[idx])
+		}
+	}
+
+	deadline.Items = newItems
+	deadline.ItemIds = newItemIds
+	deadline.ItemStates = newItemStates
+
 	err := DeadlineReplace(deadline, database)
 	if err != nil {
 		return err

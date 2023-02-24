@@ -6,18 +6,37 @@ import { connect } from 'react-redux'
 import { queryContractNubs } from "../../reducers/contract/dispatchers/contract.dispatcher";
 import { pullNewMessages } from "../../reducers/chat/dispatchers/chat.dispatcher";
 
+import AccountAlert from "./account_alert"
 import NewMessages from "./new_messages"
 import ActivePayments from "./active_payments"
 
 import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'
+import { contractStages } from "../../services/contract.service";
 
 const ContractsList = (props) => {
     const [alreadyPulled, setAlreadyPulled] = useState(false)
     const defaultFilters = {}
-    defaultFilters.all = (contracts) => {
-        return contracts
+
+    defaultFilters.active = (contracts) => {
+        const active = []
+        for (let i = 0; i < contracts.length; i++) {
+            if (contracts[i].stage > contractStages.CREATE) {
+                active.push(contracts[i])
+            }
+        }
+        return active
     }
+    defaultFilters.drafts = (contracts) => {
+        const drafts = []
+        for (let i = 0; i < contracts.length; i++) {
+            if (contracts[i].stage === contractStages.CREATE) {
+                drafts.push(contracts[i])
+            }
+        }
+        return drafts
+    }
+
     defaultFilters.disputed = (contracts) => {
         const display = []
         for (let i = 0; i < contracts.length; i++) {
@@ -28,8 +47,24 @@ const ContractsList = (props) => {
         return display
     }
     const [allFilters, setAllFilters] = useState(defaultFilters)
-    const [selectedFilter, setSelectedFilter] = useState("all")
+    const [selectedFilter, setSelectedFilter] = useState("active")
     const [refreshFilters, toggleRefreshFilters] = useState(false)
+
+    useEffect( () => {
+        let activesExist = false
+        for (let i = 0; i < props.contractNubs.length; i++) {
+            if (props.contractNubs[i].stage > contractStages.CREATE) {
+                activesExist = true
+                break
+            } 
+        }
+        if (!activesExist) {
+            setSelectedFilter("drafts")
+        } else {
+            setSelectedFilter("active")
+        }
+    }, [props.contractNubs.length])
+
     useEffect( () => {
         if (props.user && props.user.adminStatus) {
             const defaults = allFilters
@@ -57,6 +92,22 @@ const ContractsList = (props) => {
     
     return (
       <div>
+        {(!props.user?.workerModeEnabled && !props.user?.buyerModeEnabled) && (
+            (props.user?.workerModeRequested || props.user?.buyerModeRequested) ? (
+                <AccountAlert
+                    messageType="WARNING"
+                    message="stripe is still connecting your accounts, you will be able to make contracts soon"
+                    level={2}
+                />
+            ) : (
+                <AccountAlert
+                    messageType="WARNING"
+                    message="you have not set up payout or payment yet so you cannot create a problem"
+                    level={3}
+                />
+            )
+        )}
+
         <br/>
         <div className="px-4 md:px-20 lg:px-24">
           <div className="flex justify-center">
@@ -70,12 +121,15 @@ const ContractsList = (props) => {
             </div>
           </div>
 
+        {props.contractNubs.length != 0 && (
           <ContractTableHeader 
             allFilters={allFilters} 
             selected={selectedFilter} 
             setSelected={setSelectedFilter}
             refreshFilters={refreshFilters}
+            user={props.user}
           />
+        )}
 
           <ContractList 
             allFilters={allFilters} 
@@ -89,6 +143,7 @@ const ContractsList = (props) => {
 
 const mapStateToProps = ({ user, contract, chat }) => ({
     user: user.user,
+    contractNubs: contract.contractNubs,
     newMessages: chat.newMessages,
 })
 

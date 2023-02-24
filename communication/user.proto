@@ -12,16 +12,11 @@ message UserRegisterRequest {
     string email = 2;
     string password = 3;
 
-    uint32 user_type = 5;
-
     string first_name = 4;
     string last_name = 6;
     string phone_number = 7;
 
     DOBEntity dob = 8; 
-    
-    bool worker_requested = 9;
-    bool buyer_requested = 10;
 }
 
 message UserLoginRequest {
@@ -49,7 +44,6 @@ message UserPullRequest {
 message UserEntity {
     string id = 1;
     string username = 2;
-    uint32 user_type = 3;
     uint32 role = 14;
     string email = 4;
     
@@ -76,13 +70,10 @@ message UserEntity {
     string profile_photo_id = 17;
     ProfileImageEntity profile_photo = 18;
 
-    bool stripe_connected = 24;
-    StripeEntity stripe_info = 19;
-
-    bool worker_requested = 25;
-    bool buyer_requested = 26;
-    bool worker_enabled = 27;
-    bool buyer_enabled = 28;
+    bool worker_mode_requested = 25;
+    bool buyer_mode_requested = 26;
+    bool worker_mode_enabled = 27;
+    bool buyer_mode_enabled = 28;
 
     string default_fca = 29;
 

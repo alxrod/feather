@@ -296,160 +296,34 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
+	case "capability.updated":
+		var capability stripe.Capability
+		err := json.Unmarshal(event.Data.Raw, &capability)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		if capability.ID == "card_payments" && capability.Status == "active" {
+
+			log.Printf("Enabling worker mode for stripe account")
+			filter := bson.D{{"stripe_account_id", capability.Account.ID}}
+			update := bson.D{{"$set", bson.D{{"worker_mode_enabled", true}}}}
+
+			database := srv.dbClient.Database(srv.dbName)
+			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+			if err != nil {
+				w.WriteHeader(http.StatusServiceUnavailable)
+				return
+			}
+
+		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
 	}
 
 	w.WriteHeader(http.StatusOK)
 }
-
-// TESTING
-// func (srv *WebhookServer) handleTest(w http.ResponseWriter, r *http.Request) {
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write([]byte("Hello World"))
-// }
-
-// func (srv *WebhookServer) handleAccountTest(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	params := mux.Vars(r)
-// 	id := params["id"]
-
-// 	ac, err := account.GetByID(
-// 		id,
-// 		nil,
-// 	)
-// 	if err != nil {
-// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-// 	} else {
-// 		json.NewEncoder(w).Encode(ac)
-// 	}
-// }
-
-// func (srv *WebhookServer) handleGetPMs(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	params := mux.Vars(r)
-// 	id := params["id"]
-
-// 	pm_params := &stripe.PaymentMethodListParams{
-// 		Customer: stripe.String(id),
-// 		// Type:     stripe.String("us_bank_account"),
-// 	}
-// 	i := paymentmethod.List(pm_params)
-
-// 	pms := []*stripe.PaymentMethod{}
-// 	for i.Next() {
-// 		pm := i.PaymentMethod()
-// 		pms = append(pms, pm)
-// 	}
-// 	json.NewEncoder(w).Encode(pms)
-
-// }
-
-// func (srv *WebhookServer) handleGetCus(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	params := mux.Vars(r)
-// 	id := params["id"]
-
-// 	cus, _ := customer.Get(id, nil)
-// 	json.NewEncoder(w).Encode(cus)
-
-// }
-
-// func (srv *WebhookServer) handleBankAccountTest(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	url_params := mux.Vars(r)
-// 	ac_id := url_params["ac_id"]
-// 	ba_id := url_params["ba_id"]
-
-// 	params := &stripe.BankAccountParams{
-// 		Account: stripe.String(ac_id),
-// 	}
-
-// 	ba, err := bankaccount.Get(
-// 		ba_id,
-// 		params,
-// 	)
-
-// 	if err != nil {
-// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-// 	} else {
-// 		json.NewEncoder(w).Encode(ba)
-// 	}
-// }
-
-// func (srv *WebhookServer) handleFCAccountTest(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	url_params := mux.Vars(r)
-// 	fc_id := url_params["fc_id"]
-
-// 	ac, err := fcaccount.GetByID(
-// 		fc_id,
-// 		nil,
-// 	)
-
-// 	// refreshParams := &stripe.
-// 	// 	FinancialConnectionsAccountRefreshParams{
-// 	// 	Features: []*string{
-// 	// 		stripe.String("balance"),
-// 	// 	},
-// 	// }
-// 	// ac, err := fcaccount.Refresh(
-// 	// 	fc_id,
-// 	// 	refreshParams,
-// 	// )
-
-// 	if err != nil {
-// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-// 	} else {
-// 		json.NewEncoder(w).Encode(ac)
-// 	}
-
-// }
-
-// func (srv *WebhookServer) handleAccountListFCs(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	url_params := mux.Vars(r)
-// 	ac_id := url_params["ac_id"]
-
-// 	params := &stripe.
-// 		FinancialConnectionsAccountListParams{
-// 		AccountHolder: &stripe.FinancialConnectionsAccountListAccountHolderParams{
-// 			Account: stripe.String(ac_id),
-// 		},
-// 	}
-// 	i := fcaccount.List(params)
-// 	acs := []*stripe.FinancialConnectionsAccount{}
-// 	for i.Next() {
-// 		acs = append(acs, i.FinancialConnectionsAccount())
-// 	}
-
-// 	json.NewEncoder(w).Encode(acs)
-
-// }
-
-// func (srv *WebhookServer) handleGetPM(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	params := mux.Vars(r)
-// 	id := params["pm_id"]
-
-// 	pm, err := paymentmethod.Get(
-// 		id,
-// 		nil,
-// 	)
-// 	if err != nil {
-// 		w.Write([]byte(fmt.Sprintf("Error: %s", err)))
-// 	} else {
-// 		json.NewEncoder(w).Encode(pm)
-// 	}
-
-// }
 
 // return account.GetByID(
 // 	account_id,

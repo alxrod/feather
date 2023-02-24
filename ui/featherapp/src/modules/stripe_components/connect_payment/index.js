@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect, createContext} from "react";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
@@ -11,6 +11,9 @@ import {
 import { push } from 'connected-react-router'
 import {useStripe} from '@stripe/react-stripe-js';
 import MandateModal from "../mandate_modal"
+
+export const CreatePaymentMethodContext = createContext(() => {})
+
 const ConnectPayment = (props) => {
   const stripe = useStripe();
   const [clientSecret, setClientSecret] = useState("")
@@ -51,6 +54,10 @@ const ConnectPayment = (props) => {
             setSetupIntent(setupIntent)
             setShowMandate(true)
           }
+          if (props.finishedConnecting) {
+            props.finishedConnecting()
+          }
+          
         });
       },
       (error) => {
@@ -72,19 +79,22 @@ const ConnectPayment = (props) => {
         console.log("Success")
         console.log(setupIntent)
         props.confirmPaymentConnected(setupIntent.payment_method).then(() => {
-            props.secondaryHandle()
+          console.log("Props: ", props)
+          props.secondaryHandle()
         })
       } else if (setupIntent.next_action?.type === "verify_with_microdeposits") {
         console.log("Verify")
       }
     });
   }
-  
+  // <button className="px-2 py-1 text-sm text-white bg-primary4 rounded-md" onClick={handleCreate}>Add Payment</button>
   return (
-    <>
-    <button className="px-2 py-1 text-sm text-white bg-primary4 rounded-md" onClick={handleCreate}>Add Payment</button>
-    <MandateModal confirmMandate={handleAccept} showMandate={showMandate}/>
-    </>
+    <div>
+      <CreatePaymentMethodContext.Provider value={handleCreate}>
+          {props.children}
+          <MandateModal confirmMandate={handleAccept} showMandate={showMandate}/>
+      </CreatePaymentMethodContext.Provider>
+    </div>
   )
 }
 

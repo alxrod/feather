@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
-import CalendarModal from "./calendar_modal";
-import DeadlineDisplay from "./deadline_display"
-import DeadlineDraftView from "./deadline_draft_view"
+import EditModal from "./edit_modal";
+import DeadlineDisplay from "./header/deadline_display"
+import DeadlineDraftView from "./draft/deadline_draft_view"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { genEmptyDeadline, addWeeks, inBetweenDates } from "./helpers"
@@ -54,6 +54,7 @@ const DeadlineField = (props) => {
   }, [height, width, props.deadlinesChanged])
   
   useEffect( () => {
+    console.log("REFRESHING DEADLINES TO: ", props.deadlines)
     if (props.deadlines.length > 0) {
       let max = 1
       for (let i = 0; i < props.deadlines.length; i++) {
@@ -206,7 +207,7 @@ const DeadlineField = (props) => {
         <div className=" flex grow" ref={mainElem}>
           <div className="flex grow items-center">
             <div className="grow h-full">
-              <div className="overflow-x-scroll overflow-y-hidden3 h-full" style={{width: displayWidth}}>
+              <div className=" h-full" style={{width: displayWidth}}>
                 <DeadlineDisplay role={role} deadlines={localDeadlines} iconSize={5} showDates={showDates}/>
               </div>
             </div>
@@ -220,7 +221,7 @@ const DeadlineField = (props) => {
           </div>
         </div>
       )}
-      <CalendarModal 
+      <EditModal 
 
         open={openModal} 
         setOpen={setOpenModal} 

@@ -2,7 +2,6 @@ const NewContractButton = (props) => {
     const handleClick = (e) => {
       // console.log("Printed Clicks")
       props.addContractItem()
-      
     }
     return (
       <button

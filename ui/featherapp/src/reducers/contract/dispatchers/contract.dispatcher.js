@@ -50,7 +50,7 @@ export const queryContract = (contract_id) => {
                             payload: data.deadlinesList,
                         });
                         
-                        return Promise.resolve();
+                        return Promise.resolve(data);
                     },
                     (error) => {
                         return helpers.parseError(error, dispatch);
@@ -106,7 +106,7 @@ export const createContract = (title, summary, price_set, deadlines, items, pass
     return dispatch => {
         return  helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.create_contract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
+                return ContractService.createContract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
                     (data) => {
                         if (data.contract.worker.id == creds.user_id) {
                             data.contract.user_type = WORKER_TYPE
@@ -122,7 +122,69 @@ export const createContract = (title, summary, price_set, deadlines, items, pass
                         return Promise.resolve();
                     },
                     (error) => {
-                        return helpers.parseError(error, dispatch);
+                        return Promise.reject(error);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+    }
+};
+
+export const updateContract = (contract_id, title, summary, price_set, deadlines, items, password, role) => {
+    return dispatch => {
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.updateContract(creds.access_token, creds.user_id, contract_id, title, summary, price_set, deadlines, items, password, role).then(
+                    (data) => {
+                        if (data.contract.worker.id == creds.user_id) {
+                            data.contract.user_type = WORKER_TYPE
+                        } else {
+                            data.contract.user_type = BUYER_TYPE
+                        }
+                        dispatch({
+                            type: contractActions.CONTRACT_DRAFT_UPDATE,
+                            payload: data.contract
+                        });
+                        // console.log("Finished Contract Creation")
+                        // console.log(data)
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+    }
+};
+
+export const finishCreation = (contract_id) => {
+    return dispatch => {
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.finishCreation(creds.access_token, creds.user_id, contract_id).then(
+                    (data) => {
+                        if (data.contract.worker.id == creds.user_id) {
+                            data.contract.user_type = WORKER_TYPE
+                        } else {
+                            data.contract.user_type = BUYER_TYPE
+                        }
+                        dispatch({
+                            type: contractActions.CONTRACT_DRAFT_UPDATE,
+                            payload: data.contract
+                        });
+                        // console.log("Finished Contract Creation")
+                        // console.log(data)
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error.message);
                     }
                 );
             },
@@ -175,7 +237,7 @@ export const signContract = (contract_id) => {
                         return Promise.resolve();
                     },
                     (error) => {
-                        return helpers.parseError(error, dispatch);
+                        return Promise.reject(error.message);
                     }
                 );
             }, () => {

@@ -5,6 +5,7 @@ import {
     ListRequest,
     SetupConfirm,
     FcaQuery,
+    ExBaQuery,
     ContractIntentRequest,
     InternalChargeRequest,
 
@@ -92,6 +93,21 @@ class StripeService {
         });
     }
 
+    disconnectExBa(token, user_id, ba_id) {
+        let req = new ExBaQuery();
+        req.setUserId(user_id);
+        req.setBaId(ba_id);
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            stripeServiceClient.disconnectExBa(req, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
+    }
+
     setDefaultFca(token, user_id, fca_id) {
         let req = new FcaQuery();
         req.setUserId(user_id);
@@ -152,9 +168,10 @@ class StripeService {
         });
     }
 
-    getAccountOnboardLink(token, user_id) {
+    getAccountOnboardLink(token, user_id, return_route) {
         let req = new PaymentRegisterRequest();
         req.setUserId(user_id);
+        req.setReturnRoute(return_route);
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             stripeServiceClient.getAccountOnboardLink(req, metadata, function(error, response) {

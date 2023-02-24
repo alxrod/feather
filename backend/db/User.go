@@ -29,7 +29,6 @@ const (
 type User struct {
 	Username string             `bson:"username"`
 	Id       primitive.ObjectID `bson:"_id,omitempty"`
-	Type     uint32             `bson:"user_type"`
 	Role     uint32             `bson:"role"`
 	Password string             `bson:"password"`
 	Email    string             `bson:"email"`
@@ -46,19 +45,18 @@ type User struct {
 	ProfilePhotoId       primitive.ObjectID `bson:"profile_photo_id,omitempty"`
 	ProfilePhoto         *ProfileImage      `bson:"-"`
 
-	BuyerRequested  bool `bson:"buyer_requested"`
-	WorkerRequested bool `bson:"worker_requested"`
-	BuyerEnabled    bool `bson:"buyer_enabled"`
-	WorkerEnabled   bool `bson:"worker_enabled"`
+	BuyerModeRequested  bool `bson:"buyer_mode_requested"`
+	WorkerModeRequested bool `bson:"worker_mode_requested"`
+	BuyerModeEnabled    bool `bson:"buyer_mode_enabled"`
+	WorkerModeEnabled   bool `bson:"worker_mode_enabled"`
 
+	// ================================= STRIPE INFO =================================
 	StripeCustomerId         string `bson:"stripe_customer_id,omitempty"`
 	StripeConnectedAccountId string `bson:"stripe_account_id,omitempty"`
-	StripeConnected          bool   `bson:"stripe_connected"`
 
 	StripeDefaultFCA string   `bson:"default_fca,omitempty"`
 	StripeFCAlist    []string `bson:"fca_ids,omitempty"`
-
-	StripeInfo *StripeNub `bson:"stripe_info"`
+	// ================================================================================
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -69,7 +67,6 @@ func (user *User) Proto() *comms.UserEntity {
 		Id:       user.Id.Hex(),
 		Username: user.Username,
 		Email:    user.Email,
-		UserType: user.Type,
 		Role:     user.Role,
 
 		FirstName:   user.FirstName,
@@ -80,11 +77,10 @@ func (user *User) Proto() *comms.UserEntity {
 		AdminStatus:          user.AdminStatus,
 		ProfilePhotoUploaded: user.ProfilePhotoUploaded,
 
-		StripeConnected: user.StripeConnected,
-		StripeInfo:      user.StripeInfo.Proto(),
-
-		WorkerRequested: user.WorkerRequested,
-		BuyerRequested:  user.BuyerRequested,
+		WorkerModeRequested: user.WorkerModeRequested,
+		BuyerModeRequested:  user.BuyerModeRequested,
+		WorkerModeEnabled:   user.WorkerModeEnabled,
+		BuyerModeEnabled:    user.BuyerModeEnabled,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
@@ -92,7 +88,7 @@ func (user *User) Proto() *comms.UserEntity {
 		resp.ProfilePhoto = user.ProfilePhoto.Proto()
 	}
 
-	if user.BuyerRequested {
+	if user.BuyerModeRequested {
 		resp.DefaultFca = user.StripeDefaultFCA
 	}
 
@@ -118,7 +114,6 @@ func (user *User) Nub(author_status bool) *UserNub {
 	userNub.Id = user.Id
 	userNub.Username = user.Username
 	userNub.Author = author_status
-	userNub.Type = user.Type
 	if user.ProfilePhoto != nil && user.ProfilePhoto.InCache {
 		userNub.PhotoUrl = user.ProfilePhoto.CacheUrl
 		userNub.HasPhoto = true
@@ -247,18 +242,11 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 		LastName:    req.LastName,
 		PhoneNumber: req.PhoneNumber,
 
-		WorkerRequested: req.WorkerRequested,
-		BuyerRequested:  req.BuyerRequested,
-
 		DOB: &DOBNub{
 			Day:   req.Dob.Day,
 			Month: req.Dob.Month,
 			Year:  req.Dob.Year,
 		},
-
-		Type:            req.UserType,
-		Role:            STD_ROLE,
-		StripeConnected: false,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)

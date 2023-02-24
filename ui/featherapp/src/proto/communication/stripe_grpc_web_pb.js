@@ -445,6 +445,67 @@ proto.main.StripeServicePromiseClient.prototype.listExBAs =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ExBaQuery,
+ *   !proto.main.NullResponse>}
+ */
+const methodDescriptor_StripeService_DisconnectExBa = new grpc.web.MethodDescriptor(
+  '/main.StripeService/DisconnectExBa',
+  grpc.web.MethodType.UNARY,
+  proto.main.ExBaQuery,
+  communication_contract_pb.NullResponse,
+  /**
+   * @param {!proto.main.ExBaQuery} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  communication_contract_pb.NullResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ExBaQuery} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.NullResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.NullResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.StripeServiceClient.prototype.disconnectExBa =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.StripeService/DisconnectExBa',
+      request,
+      metadata || {},
+      methodDescriptor_StripeService_DisconnectExBa,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ExBaQuery} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.NullResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.StripeServicePromiseClient.prototype.disconnectExBa =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.StripeService/DisconnectExBa',
+      request,
+      metadata || {},
+      methodDescriptor_StripeService_DisconnectExBa);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.FcaQuery,
  *   !proto.main.NullResponse>}
  */

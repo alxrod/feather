@@ -21,7 +21,7 @@ const CombinedCriteria = (props) => {
                   <div className="min-w-0 flex-1 px-2 md:grid md:grid-cols-1 md:gap-4">
                     <div>
                       <div className="mb-1">
-                        <PriceField createMode={props.createMode ? true : false} price_str={props.price_str} changePrice={props.changePrice} disabled={!props.active}/>
+                        <PriceField createMode={props.createMode ? true : false} price_str={props.price_str} price={props.price} changePrice={props.changePrice} disabled={!props.active}/>
                       </div>
                     </div>
                   </div>

@@ -26,11 +26,11 @@ export const getCustomerFCSecret = () => {
     }
 }
 
-export const getAccountOnboardLink = () => {
+export const getAccountOnboardLink = (return_route) => {
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
-                return StripeService.getAccountOnboardLink(creds.access_token, creds.user_id).then(
+                return StripeService.getAccountOnboardLink(creds.access_token, creds.user_id, return_route).then(
                     (url) => {
                         console.log("Succesfuly created session ")
                         return Promise.resolve(url);
@@ -113,6 +113,26 @@ export const disconnectFca = (fca_id) => {
         return helpers.authCheck().then(
             (creds) => {
                 return StripeService.disconnectFca(creds.access_token, creds.user_id, fca_id).then(
+                    (methods) => {
+                        return Promise.resolve(methods);
+                    },
+                    (error) => {
+                        return helpers.parseError(error, dispatch);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+    }
+}
+
+export const disconnectExBa = (ba_id) => {
+    return dispatch => {
+        return helpers.authCheck().then(
+            (creds) => {
+                return StripeService.disconnectExBa(creds.access_token, creds.user_id, ba_id).then(
                     (methods) => {
                         return Promise.resolve(methods);
                     },

@@ -20,15 +20,15 @@ const (
 )
 
 type ContractItem struct {
-	Id               primitive.ObjectID `bson:"_id,omitempty"`
-	ContractId       primitive.ObjectID `bson:"contract_id"`
-	Name             string             `bson:"name"`
-	
-	CurrentBody      string             `bson:"current_body"`
-	WorkerBody       string             `bson:"worker_body"`
-	BuyerBody        string             `bson:"buyer_body"`
-	AwaitingApproval bool               `bson:"awaiting_approval"`
-	
+	Id         primitive.ObjectID `bson:"_id,omitempty"`
+	ContractId primitive.ObjectID `bson:"contract_id"`
+	Name       string             `bson:"name"`
+
+	CurrentBody      string `bson:"current_body"`
+	WorkerBody       string `bson:"worker_body"`
+	BuyerBody        string `bson:"buyer_body"`
+	AwaitingApproval bool   `bson:"awaiting_approval"`
+
 	Proposer         primitive.ObjectID `bson:"proposer_id"`
 	AwaitingCreation bool               `bson:"awaiting_creation"`
 	AwaitingDeletion bool               `bson:"awaiting_deletion"`
@@ -73,6 +73,15 @@ func (ci *ContractItem) NubProto() *comms.ItemNub {
 	proto.Id = ci.Id.Hex()
 	proto.Name = ci.Name
 	return proto
+}
+
+func (deadline *ContractItem) Delete(database *mongo.Database) error {
+	filter := bson.D{{"_id", deadline.Id}}
+	_, err := database.Collection(DEADLINE_COL).DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func ItemInsert(item *comms.ItemEntity, contract_id primitive.ObjectID, collection *mongo.Collection) (*ContractItem, error) {

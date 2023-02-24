@@ -1,3 +1,4 @@
+import { update } from "autosize";
 import { ContractClient } from "../proto/communication/contract_grpc_web_pb";
 import { 
     DeadlineEntity,
@@ -8,7 +9,9 @@ import {
     
     
     ContractCreateRequest,
-    ContractResponse,
+    ContractUpdateRequest,
+    ContractFinishCreationRequest,
+
     QueryByUserRequest,
     QueryByIdRequest,
     InviteDataRequest,
@@ -172,9 +175,7 @@ class ContractService {
         });
     }
     
-    create_contract(token, user_id, title, summary, price_set, deadlines, items, password, role) {
-        // console.log("At service: ")
-        // console.log(items)
+    createContract(token, user_id, title, summary, price_set, deadlines, items, password, role) {
 
         let createRequest = new ContractCreateRequest();   
 
@@ -205,6 +206,68 @@ class ContractService {
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             contractClient.create(createRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                // console.log(response)
+                var resp = response.toObject();
+                resp.contract.role = resp.role
+                resolve(resp)
+            });
+        });
+    }
+
+    updateContract(token, user_id, contract_id, title, summary, price_set, deadlines, items, password, role) {
+
+        let updateRequest = new ContractUpdateRequest();   
+
+        updateRequest.setContractId(contract_id)
+        updateRequest.setUserId(user_id);
+        updateRequest.setTitle(title);
+        updateRequest.setSummary(summary);
+        updateRequest.setPrice(this.generatePriceEntity(price_set));
+        updateRequest.setPassword(password)
+        updateRequest.setRole(role)
+
+        let i = 0
+        for (const [_, item] of Object.entries(items)) {
+            const itemEntity = this.generateItemEntity(item)
+            updateRequest.addItems(itemEntity, i);
+            i++
+        }
+
+        i = 0
+        for (const [_, deadline] of Object.entries(deadlines)) {
+            deadline.name = "Deadline " + (i+1)
+            const deadlineEntity = this.generateDeadlineEntity(deadline)
+            updateRequest.addDeadlines(deadlineEntity, i)
+            i++
+        }
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.updateDraft(updateRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                // console.log(response)
+                var resp = response.toObject();
+                resp.contract.role = resp.role
+                resolve(resp)
+            });
+        });
+    }
+    
+    finishCreation(token, user_id, contract_id) {
+
+        let finishRequest = new ContractFinishCreationRequest();   
+
+        finishRequest.setContractId(contract_id)
+        finishRequest.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.finishCreation(finishRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }
@@ -411,7 +474,7 @@ class ContractService {
                 if (error) {
                     reject(error)
                 }
-                resolve(response)
+                resolve(response.toObject())
             });
         });
 
@@ -458,7 +521,7 @@ class ContractService {
                 if (error) {
                     reject(error)
                 }
-                resolve(response)
+                resolve(response.toObject())
             });
         });
 

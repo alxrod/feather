@@ -63,7 +63,7 @@ const ContractItem = (props) => {
   })
 
   useEffect( () => {
-    if (item_text !== contract_info.oldBody && !lock) {
+    if (item_text !== contract_info.oldBody && !lock && !props.createMode) {
       toggleDecideMode(true)
     } else {
       toggleDecideMode(false)
@@ -234,75 +234,126 @@ const ContractItem = (props) => {
 
   if (props.embedded === true) {
     return (
-        <ItemTextArea item_id={props.id} embedded={props.embedded} role={role} contract_info={contract_info} override={props.override} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
+      <div className="w-full h-full grow flex flex-col relative">
+        <ItemTextArea 
+          item_id={props.id} 
+          embedded={props.embedded} 
+          role={role} 
+          contract_info={contract_info} 
+          override={props.override} 
+          text_body={item_text} 
+          disabled={props.disabled || (!props.override && lock)} 
+          set_text={setContractText}
+        />
+        <div className="absolute z-10 bottom-5 right-5">
+          {(!props.override && lock) && (
+            <LockClosedIcon className="ml-1 w-6 h-6 text-gray-500"/>
+          )}
+          {(!props.override && props.suggestMode) && (
+            <div className="flex items-center">
+              <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
+              <DecideButton approve={addItem} reject={deleteItem}/>
+            </div>
+          )}
+          {(!props.override && !lock && decideMode && !props.suggestMode) && (
+            <div className="flex items-center">
+              <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
+              <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
+            </div>
+          )}
+          {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation && !(contractStage === contractStages.SETTLE)) && (
+            <div className="flex items-center">
+              <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
+              <DecideButton approve={approveChange} reject={denyChange}/>
+            </div>
+          )}
+          {(lock && contract_info.awaitingCreation && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
+            <div className="flex items-center">
+              <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
+              <DecideButton approve={approveCreate} reject={denyCreate}/>
+            </div>
+          )}
+          {(lock && contract_info.awaitingDeletion && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
+            <div className="flex items-center">
+              <h3 className="text-gray-400 mr-2 text-md">Approve your partner's deleting this item</h3>
+              <DecideButton approve={approveDelete} reject={denyDelete}/>
+            </div>
+          )}
+          {(!lock && !props.suggestMode && !decideMode) && (
+            <button onClick={suggestDeleteItem}>
+              <TrashIcon className="text-primary3 hover:text-primary4 hover:text-primary5 w-6 h-6"/>
+            </button>
+          )}
+        </div>
+      </div>
     )
   }
   return (
     <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green-400" : "") + (contract_info.awaitingDeletion ? "border-2 border-red-400" : "")}>
-        <div className="px-2 py-5 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <a
-                  href="#"
-                  className={"relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-lg "}
-                >
-                  <span className="absolute flex-shrink-0 flex items-center justify-center">
-                  <span
-                      className='bg-primary4 h-1.5 w-1.5 rounded-full'
-                      aria-hidden="true"
-                  />
-                  </span>
-                  <span className="ml-3.5 font-medium text-gray-900">{contract_info.name}</span>
-                </a>
-                {(!props.override && lock) && (
-                  <LockClosedIcon className="ml-1 w-6 h-6 text-gray-500"/>
+      <div className="px-2 py-5 sm:p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <a
+                href="#"
+                className={"relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-lg "}
+              >
+                <span className="absolute flex-shrink-0 flex items-center justify-center">
+                <span
+                    className='bg-primary4 h-1.5 w-1.5 rounded-full'
+                    aria-hidden="true"
+                />
+                </span>
+                <span className="ml-3.5 font-medium text-gray-900">{contract_info.name}</span>
+              </a>
+              {(!props.override && lock) && (
+                <LockClosedIcon className="ml-1 w-6 h-6 text-gray-500"/>
+              )}
+              {(!props.override && !lock)  && (
+                <LockOpenIcon className="ml-1 w-6 h-6 text-gray-500"/>
+              )}
+            </div>
+              <div>
+                {(!props.override && props.suggestMode) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
+                    <DecideButton approve={addItem} reject={deleteItem}/>
+                  </div>
                 )}
-                {(!props.override && !lock)  && (
-                  <LockOpenIcon className="ml-1 w-6 h-6 text-gray-500"/>
+                {(!props.override && !lock && decideMode && !props.suggestMode) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
+                    <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
+                  </div>
+                )}
+                {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation && !(contractStage === contractStages.SETTLE)) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
+                    <DecideButton approve={approveChange} reject={denyChange}/>
+                  </div>
+                )}
+                {(lock && contract_info.awaitingCreation && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
+                    <DecideButton approve={approveCreate} reject={denyCreate}/>
+                  </div>
+                )}
+                {(lock && contract_info.awaitingDeletion && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
+                  <div className="flex items-center">
+                    <h3 className="text-gray-400 mr-2 text-md">Approve your partner's deleting this item</h3>
+                    <DecideButton approve={approveDelete} reject={denyDelete}/>
+                  </div>
+                )}
+                {(!lock && !props.suggestMode && !decideMode) && (
+                  <button onClick={suggestDeleteItem}>
+                    <TrashIcon className="text-primary3 hover:text-primary4 hover:text-primary5 w-6 h-6"/>
+                  </button>
                 )}
               </div>
-                <div>
-                  {(!props.override && props.suggestMode) && (
-                    <div className="flex items-center">
-                      <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
-                      <DecideButton approve={addItem} reject={deleteItem}/>
-                    </div>
-                  )}
-                  {(!props.override && !lock && decideMode && !props.suggestMode) && (
-                    <div className="flex items-center">
-                      <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
-                      <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
-                    </div>
-                  )}
-                  {(lock && proposedByPartner && !contract_info.awaitingDeletion && !contract_info.awaitingCreation && !(contractStage === contractStages.SETTLE)) && (
-                    <div className="flex items-center">
-                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's changes</h3>
-                      <DecideButton approve={approveChange} reject={denyChange}/>
-                    </div>
-                  )}
-                  {(lock && contract_info.awaitingCreation && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
-                    <div className="flex items-center">
-                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's created item</h3>
-                      <DecideButton approve={approveCreate} reject={denyCreate}/>
-                    </div>
-                  )}
-                  {(lock && contract_info.awaitingDeletion && proposedByPartner && !(contractStage === contractStages.SETTLE)) && (
-                    <div className="flex items-center">
-                      <h3 className="text-gray-400 mr-2 text-md">Approve your partner's deleting this item</h3>
-                      <DecideButton approve={approveDelete} reject={denyDelete}/>
-                    </div>
-                  )}
-                  {(!lock && !props.suggestMode && !decideMode) && (
-                    <button onClick={suggestDeleteItem}>
-                      <TrashIcon className="text-primary3 hover:text-primary4 hover:text-primary5 w-6 h-6"/>
-                    </button>
-                  )}
-                </div>
-            </div>
-
-          <div className="mt-2 mr-2 text-sm text-gray-500">
-            <ItemTextArea item_id={props.id} lock={lock} override={props.override} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
           </div>
+
+        <div className="mt-2 mr-2 text-sm text-gray-500">
+          <ItemTextArea item_id={props.id} lock={lock} override={props.override} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
+        </div>
       </div>
     </div>
   )

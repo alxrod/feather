@@ -2,10 +2,10 @@ import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { createContract, clearSelected } from "../../../reducers/contract/dispatchers/contract.dispatcher";
+import { createContract, updateContract, clearSelected, queryContract, finishCreation } from "../../../reducers/contract/dispatchers/contract.dispatcher";
 import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher";
 
-import { ownership_format, WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
+import { WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
 
 import ContractItem from "../components/contract_item/contract_item";
 import CombinedCriteria from "../components/criteria/combined_criteria";
@@ -16,20 +16,49 @@ import PasswordField from "./components/password_field"
 import RoleField from "./components/role_field"
 import ErrorBanner from "./components/error_banner.js"
 
+import SavingNotification from './components/saving_notification';
+
 import { ITEM_AGREED } from "../../../custom_encodings"
 
 import { genEmptyDeadline } from '../../../services/contract.service';
 import { loadLocalDeadlines } from "../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
 
 const ContractCreate = (props) => {
+  const { params: { contractId } } = props.match;
+
+  useEffect(() => {
+    if (contractId === "new" || "") {
+      setNewContractMode(true)
+    } else {
+      if (isFirstLoad) {
+        props.queryContract(contractId).then((contract) => {
+          console.log("Pulled contract draft", contract)
+          setIsFirstLoad(false)
+          setConTitle(contract.title)
+          setConDescript(contract.summary)
+          changePassword(contract.password)
+          changeRole(contract.role)
+          changePrice(contract.price.current)
+        })
+      }
+    }
+  }, [contractId])
+  
   const [price, setPrice] = useState(0.0)
   const [priceObj, setPriceObj] = useState({
     current: 0.0,
     worker: 0.0,
     buyer: 0.0,
   })
+
   const [contractItemIds, setContractItemIds] = useState([])
   const [nextContractName, setNextContractName] = useState("")
+  const [newContractMode, setNewContractMode] = useState(false)
+
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
+  const [updateTimeoutId, setUpdateTimeoutId] = useState(-1)
+  const [showSavingNotif, setShowSavingNotif] = useState(false)
+
   useEffect( () => {
     let ids = []
     let max = 0
@@ -42,7 +71,7 @@ const ContractCreate = (props) => {
     }
     setNextContractName((max+1).toString())
     setContractItemIds(ids)
-  }, [props.contractItems.length, props.contractItemsChanged])
+  }, [props.contractItems.length, props.itemsChanged])
 
   const [error, setError] = useState("")
   const [openBanner, setOpenBanner] = useState(false)
@@ -58,6 +87,7 @@ const ContractCreate = (props) => {
       props.loadLocalDeadlines(new_deadlines)
     }
   })
+  
 
   const changePrice = (new_price) => {
     const fl = parseFloat(new_price)
@@ -85,7 +115,7 @@ const ContractCreate = (props) => {
 
   const [nextId, setNextId] = useState(1)
 
-  const handleCreateContract = (e) => {
+  const handleFinishCreateContract = (e) => {
     const errors = checkErrors()
     if (errors.length !== 0) {
       setOpenBanner(true)
@@ -93,9 +123,9 @@ const ContractCreate = (props) => {
       return
     }
 
-    props.createContract(conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+    props.finishCreation(props.curContract.id).then(
       () => {
-        props.push("/contracts")
+        props.push("/negotiate/"+props.curContract.id)
       }, (error) => {
         setOpenBanner(true)
         console.log(error)
@@ -103,6 +133,63 @@ const ContractCreate = (props) => {
       }
     )
   }
+
+  const emptyContract = (conTitle, conDescript, conPassword, conRole, price, deadlines, items) => {
+    if (conTitle === "" &&
+        conDescript === "" &&
+        conPassword === "" &&
+        price === 0.0 &&
+        deadlines.length === 2 &&
+        items.length === 0) {
+      return true 
+    } else {
+      return false
+    }
+
+  }
+  useEffect(() => {
+    if (!isFirstLoad && !emptyContract(conTitle, conDescript, conPassword, conRole, price, props.deadlines, props.contractItems)) {
+      if (updateTimeoutId !== -1) {
+        clearTimeout(updateTimeoutId)
+      }
+      setShowSavingNotif(true)
+      const updateID = setTimeout(
+      () => {
+        console.log("Syncing with server")
+        if (newContractMode) {
+          props.createContract(conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+            () => {
+              setNewContractMode(false)
+              setUpdateTimeoutId(-1)
+              setShowSavingNotif(false)
+            }, (error) => {
+              setOpenBanner(true)
+              console.log(error)
+              setError(error)
+            }
+          )
+        } else {
+          props.updateContract(props.curContract.id, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+            () => {
+              setNewContractMode(false)
+              setUpdateTimeoutId(-1)
+              setShowSavingNotif(false)
+            }, (error) => {
+              setOpenBanner(true)
+              console.log(error)
+              setError(error)
+            }
+          )
+        }
+      }, 1000)
+      setUpdateTimeoutId(updateID)
+    } else {
+      if (isFirstLoad) {
+        setIsFirstLoad(false)
+      }
+    }
+
+  }, [conTitle, conDescript, conPassword, conRole, price, props.deadlinesChanged, props.itemsChanged])
 
   const checkErrors = () => {
     let errors = ""
@@ -137,12 +224,14 @@ const ContractCreate = (props) => {
     return props.addContractItem(true, new_id, nextContractName)
   }
 
-
-
 	return (
     <>
       {(openBanner) && (
         <ErrorBanner error={error} closeBanner={() => setOpenBanner(false)}/>
+      )}
+
+      {(showSavingNotif && updateTimeoutId !== -1) && (
+        <SavingNotification/>
       )}
       <div className="min-w-[50vw] p-4 sm:p-6 lg:p-8 m-auto">
         <div className="flex flex-row justify-between items-stretch">
@@ -182,13 +271,13 @@ const ContractCreate = (props) => {
         <div className="mt-5 flex flex-col justify-start items-center">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem override={true} id={item_id} disabled={false} />
+              <ContractItem override={true} id={item_id} disabled={false} createMode={true}/>
             </div>
           ))}
           <NewContractItem addContractItem={addContractItem}/>
           <button
             type="button"
-            onClick={handleCreateContract}
+            onClick={handleFinishCreateContract}
             className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary6 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
           >
             Send Contract
@@ -199,18 +288,24 @@ const ContractCreate = (props) => {
 	)
 }
 
-const mapStateToProps = ({ user, items, deadlines }) => ({
+const mapStateToProps = ({ user, items, deadlines, contract }) => ({
+  curContract: contract.curContract,
   user: user,
   contractItems: items.items,
   deadlines: deadlines.deadlines,
-  contractItemsChanged: items.itemsChanged,
+  itemsChanged: items.itemsChanged,
+  deadlinesChanged: deadlines.deadlinesChanged,
+  
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
+  updateContract,
+  queryContract,
   clearSelected,
   addContractItem,
   loadLocalDeadlines,
+  finishCreation,
   push,
 }, dispatch)
 

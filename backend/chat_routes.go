@@ -106,7 +106,7 @@ func (s *BackServer) PullNewMessages(ctx context.Context, req *comms.NewMessages
 	for _, contract := range contracts {
 		room, err := db.ChatRoomQueryId(contract.RoomId, database)
 		if err != nil {
-			return nil, err
+			continue
 		}
 		for _, message := range room.Messages {
 			for _, receipt := range message.ReadReceipts {

@@ -2,14 +2,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import React, {useState, useEffect} from 'react'
-import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
-import { genEmptyDeadline } from "./helpers"
+import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
+import { genEmptyDeadline } from "../helpers"
 import Calendar from "./calendar"
 import CalendarTime from "./calendar_time"
-import DecideButton from '../decide_button'
+import DecideButton from '../../decide_button'
 
-import { reactDate, suggestDate } from '../../../../reducers/deadlines/dispatchers/deadlines.date.dispatcher'
-import { msgMethods, decisionTypes } from "../../../../services/chat.service"
+import { reactDate, suggestDate } from '../../../../../reducers/deadlines/dispatchers/deadlines.date.dispatcher'
+import { msgMethods, decisionTypes } from "../../../../../services/chat.service"
 
 
 

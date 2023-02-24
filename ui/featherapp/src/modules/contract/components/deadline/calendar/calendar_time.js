@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
-import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 
 import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'

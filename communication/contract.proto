@@ -124,9 +124,11 @@ message ContractNubSet {
 message UserNubEntity {
     string id = 1;
     string username = 2;
-    uint32 type = 3;
     bool has_photo = 5;
     string photo_url = 4;
+
+    bool worker_mode_enabled = 6;
+    bool buyer_mode_enabled = 7;
 }
 
 message ItemEntity {
@@ -160,6 +162,23 @@ message ContractCreateRequest {
     PriceEntity price = 5;
     repeated DeadlineEntity deadlines = 6;
     repeated ItemEntity items = 7;
+}
+
+message ContractFinishCreationRequest {
+    string contract_id = 1;
+    string user_id = 2;
+}
+
+message ContractUpdateRequest {
+    string contract_id = 1;
+    string user_id = 2;
+    string title = 3;
+    string summary = 4;
+    string password = 5;
+    uint32 role = 6;
+    PriceEntity price = 7;
+    repeated DeadlineEntity deadlines = 8;
+    repeated ItemEntity items = 9;
 }
 
 message QueryByIdRequest {
@@ -289,12 +308,6 @@ message ContractResponse {
     ContractEntity contract = 2;
     uint32 role = 3;
 }
-
-message ContractAddItemResponse {
-    ContractEntity contract = 2;
-    string item_id = 3;
-}
-
 message QueryByUserRequest {
     string user_id = 1;
 }
@@ -362,7 +375,11 @@ message NullResponse {}
 message ContractEditResponse {}
 
 service Contract {
+
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
+    rpc UpdateDraft(ContractUpdateRequest) returns (ContractResponse) {};
+    rpc FinishCreation(ContractFinishCreationRequest) returns (ContractResponse) {}
+
     rpc InviteQuery(InviteDataRequest) returns (InviteNub) {};
 
     rpc Claim(ClaimContractRequest) returns (ContractResponse) {};
@@ -384,7 +401,7 @@ service Contract {
     rpc SuggestItem(ContractSuggestItem) returns (ContractEditResponse) {};
     rpc ReactItem(ContractReactItem) returns (ContractEditResponse) {};
 
-    rpc SuggestAddItem(ContractSuggestAddItem) returns (ContractEditResponse) {};
+    rpc SuggestAddItem(ContractSuggestAddItem) returns (ItemEntity) {};
     rpc ReactAddItem(ContractReactAddItem) returns (ContractEditResponse) {};
 
     rpc SuggestDeleteItem(ContractSuggestDelItem) returns (ContractEditResponse) {};

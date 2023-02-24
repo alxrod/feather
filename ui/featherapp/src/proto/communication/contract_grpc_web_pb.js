@@ -140,6 +140,128 @@ proto.main.ContractPromiseClient.prototype.create =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractUpdateRequest,
+ *   !proto.main.ContractResponse>}
+ */
+const methodDescriptor_Contract_UpdateDraft = new grpc.web.MethodDescriptor(
+  '/main.Contract/UpdateDraft',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractUpdateRequest,
+  proto.main.ContractResponse,
+  /**
+   * @param {!proto.main.ContractUpdateRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractUpdateRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.updateDraft =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/UpdateDraft',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_UpdateDraft,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractUpdateRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.updateDraft =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/UpdateDraft',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_UpdateDraft);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractFinishCreationRequest,
+ *   !proto.main.ContractResponse>}
+ */
+const methodDescriptor_Contract_FinishCreation = new grpc.web.MethodDescriptor(
+  '/main.Contract/FinishCreation',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractFinishCreationRequest,
+  proto.main.ContractResponse,
+  /**
+   * @param {!proto.main.ContractFinishCreationRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractFinishCreationRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.finishCreation =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/FinishCreation',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_FinishCreation,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractFinishCreationRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.finishCreation =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/FinishCreation',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_FinishCreation);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.InviteDataRequest,
  *   !proto.main.InviteNub>}
  */
@@ -1056,13 +1178,13 @@ proto.main.ContractPromiseClient.prototype.reactItem =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractSuggestAddItem,
- *   !proto.main.ContractEditResponse>}
+ *   !proto.main.ItemEntity>}
  */
 const methodDescriptor_Contract_SuggestAddItem = new grpc.web.MethodDescriptor(
   '/main.Contract/SuggestAddItem',
   grpc.web.MethodType.UNARY,
   proto.main.ContractSuggestAddItem,
-  proto.main.ContractEditResponse,
+  proto.main.ItemEntity,
   /**
    * @param {!proto.main.ContractSuggestAddItem} request
    * @return {!Uint8Array}
@@ -1070,7 +1192,7 @@ const methodDescriptor_Contract_SuggestAddItem = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.main.ContractEditResponse.deserializeBinary
+  proto.main.ItemEntity.deserializeBinary
 );
 
 
@@ -1079,9 +1201,9 @@ const methodDescriptor_Contract_SuggestAddItem = new grpc.web.MethodDescriptor(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.main.ItemEntity)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ItemEntity>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.main.ContractClient.prototype.suggestAddItem =
@@ -1100,7 +1222,7 @@ proto.main.ContractClient.prototype.suggestAddItem =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.main.ContractEditResponse>}
+ * @return {!Promise<!proto.main.ItemEntity>}
  *     Promise that resolves to the response
  */
 proto.main.ContractPromiseClient.prototype.suggestAddItem =

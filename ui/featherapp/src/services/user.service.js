@@ -56,31 +56,17 @@ class UserService {
     }   
 
 
-    register(username, first_name, last_name, email, password, phone, date, user_type) {
+    register(username, first_name, last_name, email, password, phone, date) {
         var registerRequest = new UserRegisterRequest();   
         registerRequest.setUsername(username);
 
         registerRequest.setEmail(email);
         registerRequest.setPassword(password);
-        registerRequest.setUserType(user_type);
 
         registerRequest.setFirstName(first_name)
         registerRequest.setLastName(last_name)
 
         registerRequest.setPhoneNumber(phone);
-
-        
-        if (user_type == BOTH_TYPE) {
-            console.log("Activating this")
-            registerRequest.setWorkerRequested(true);
-            registerRequest.setBuyerRequested(true);
-        } else if (user_type == BUYER_TYPE) {
-            registerRequest.setBuyerRequested(true);
-        } else if (user_type == WORKER_TYPE) {
-            registerRequest.setWorkerRequested(true);
-        } else {
-            console.log("Invalid type: ", user_type)
-        }
         
         const dob = new DOBEntity()
         dob.setDay(date.day)
@@ -265,20 +251,6 @@ class UserService {
             return Promise.reject({})
         }
     }
-}
-
-
-export const ownership_format = (data, user_type) => {
-    if (user_type === WORKER_TYPE) {
-        data.worker = data.you
-        data.buyer = data.partner
-    } else {
-        data.worker = data.partner
-        data.buyer = data.you
-    }
-    delete data.you
-    delete data.partner
-    return data
 }
 
 export default new UserService();

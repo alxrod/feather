@@ -6,8 +6,10 @@ import ProfileSidebar from "./sidebar";
 import AccountInfo from "./account_info";
 import PaymentInfo from "./payment_info";
 import { CheckIcon } from '@heroicons/react/outline'
-import ProfilePhotoUpload from "../file_upload_test/profile_photo_upload.js"
+import ProfilePhotoUpload from "../profile_photo_upload/profile_photo_upload.js"
 import ProfilePhoto from "../general_components/profile_photo.js"
+
+
 const Profile = (props) => {
   const [showProfPic, setShowProfPic] = useState(false)
   const [profNoExist, setProfNoExist] = useState(false)
@@ -21,7 +23,7 @@ const Profile = (props) => {
     } else {
       setProfNoExist(true)
     }
-  }, [props.user, props.user?.profilePhoto.cacheUrl])
+  }, [props.user, props.user?.profilePhoto?.cacheUrl])
   return (
     <div>
       <br/>

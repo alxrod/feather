@@ -34,11 +34,11 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 			return nil, err
 		}
 
-		if user.WorkerRequested {
+		if user.WorkerModeRequested {
 			log.Printf("Making it worker")
 			user, err = s.StripeAgent.CreateConnectedAccount(user, database)
 		}
-		if user.BuyerRequested {
+		if user.BuyerModeRequested {
 			log.Printf("Making it buyer")
 			user, err = s.StripeAgent.CreateCustomer(user, database)
 		}

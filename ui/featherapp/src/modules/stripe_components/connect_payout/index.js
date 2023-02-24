@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect, createContext} from "react";
 
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
@@ -10,17 +10,24 @@ import {
 import { push } from 'connected-react-router'
 import {useStripe} from '@stripe/react-stripe-js';
 
+export const CreatePayoutMethodContext = createContext(() => {})
+
 const ConnectPayout = (props) => {
   const handleConnect = (e) => {
-    props.getAccountOnboardLink().then(
+    props.getAccountOnboardLink(props.returnRoute).then(
       (url) => {
+        if (props.finishedConnecting) {
+          props.finishedConnecting()
+        }
         window.location.replace(url);
       },
     )
   }
 
   return (
-    <button className="px-2 py-1 text-sm text-white bg-primary4 rounded-md"onClick={handleConnect}>Connect Payouts</button>
+    <CreatePayoutMethodContext.Provider value={handleConnect}>
+      {props.children}
+    </CreatePayoutMethodContext.Provider>
   )
 }
 

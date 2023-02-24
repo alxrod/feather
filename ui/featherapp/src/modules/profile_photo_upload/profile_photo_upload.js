@@ -12,7 +12,6 @@ import "react-image-crop/dist/ReactCrop.css";
 import { XIcon } from '@heroicons/react/solid'
 import {Oval} from 'react-loading-icons'
 
-
 const ProfilePhotoUpload = (props) => {
 
   const [photoInTransit, setPhotoInTransit] = useState(false)
@@ -22,38 +21,6 @@ const ProfilePhotoUpload = (props) => {
     console.log("Working w blob: ", blob)
     setPhotoInTransit(true)
 
-    // if (blob.type === "image/heic") {
-      // heic2any({ blob }).then((converted_blob) => {
-
-      //   const converted_image = new File(
-      //     [converted_blob], 
-      //     file.meta.name.split(".heic")[0]+".png", 
-      //     {type: "image/png"}
-      //   );
-
-    //     // var url = URL.createObjectURL(converted_image);
-    //     // var link = document.createElement('a');
-    //     // link.href = url;
-    //     // link.download = 'Download.png';
-    //     // document.body.appendChild(link);
-    //     // link.click();
-    //     // document.body.removeChild(link);
-
-
-    //     console.log("Converted is ", converted_image)
-    //     props.uploadProfilePhoto(converted_image, converted_image.name).then(
-    //       (success) => {
-    //         setPhotoInTransit(false)
-    //         props.setShowProfPic(true)
-    //       },
-    //       (err) => {
-    //         console.log("FAILED PUT")
-    //       }
-    //     )
-    //   })
-
-      
-    // } else {
     const converted_image = new File(
       [blob], 
       blob.name, 
@@ -62,7 +29,12 @@ const ProfilePhotoUpload = (props) => {
     props.uploadProfilePhoto(converted_image, converted_image.name).then(
       (success) => {
         setPhotoInTransit(false)
-        props.setShowProfPic(true)
+        if (props.setShowProfPic) {
+          props.setShowProfPic(true)
+        }
+        if (props.onSave) {
+          props.onSave()
+        }   
       },
       (err) => {
         console.log("FAILED PUT")

@@ -18,6 +18,12 @@ export default (state = initialState, action) => {
                 ...state,
                 curContract: action.payload
             }
+        case actions.CONTRACT_DRAFT_UPDATE:
+            return {
+                ...state,
+                curContract: action.payload
+            }
+            
         case actions.CONTRACT_CLAIM:
             return {
                 ...state,

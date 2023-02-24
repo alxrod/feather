@@ -9,6 +9,13 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+
+        case actions.CONTRACT_DEADLINE_ITEM_PURGE:
+            return {
+                ...state,
+                deadlinesChanged: !state.deadlinesChanged,
+                deadlines: helpers.purgeItem(state.deadlines, action.payload)
+            }
         case actions.CONTRACT_UPDATE_PAYOUT:
             return {
                 ...state,

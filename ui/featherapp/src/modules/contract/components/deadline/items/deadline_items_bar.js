@@ -1,23 +1,25 @@
 import {useEffect, useState, useMemo, Fragment } from 'react'
-import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
-import {deadlineItemTypes, msgMethods, decisionTypes} from '../../../../services/chat.service'
-import {changeDeadlineItems, reactDeadlineItems} from "../../../../reducers/deadlines/dispatchers/deadlines.items.dispatcher"
+import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
+import {deadlineItemTypes, msgMethods, decisionTypes} from '../../../../../services/chat.service'
+import {changeDeadlineItems, reactDeadlineItems} from "../../../../../reducers/deadlines/dispatchers/deadlines.items.dispatcher"
+import {addContractItem} from "../../../../../reducers/items/dispatchers/items.add.dispatcher"
+
 import {Tooltip, Button} from "flowbite-react"
 import DeadlineItemBadge from  "./deadline_item_badge"
 import { Listbox, Transition } from '@headlessui/react'
-import ContractItem from "../contract_item/contract_item"
+import ContractItem from "../../contract_item/contract_item"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import DecideButton from '../decide_button'
+import DecideButton from '../../decide_button'
 
-import { LockOpenIcon } from '@heroicons/react/outline'
+import { LockOpenIcon, PlusIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-const DeadlineItems = (props) => {
+const DeadlineItemsBar = (props) => {
   
   const [deadlineItemIds, setDeadlineItemIds] = useState([])
   const [deadlineItemNubs, setDeadlineItemNubs] = useState([])
@@ -50,13 +52,6 @@ const DeadlineItems = (props) => {
     }
   }
 
-  const [selectedId, setSelectedId] = useState("")
-  const [selectedNub, setSelectedNub] = useState({
-    id: "",
-    name: "",
-    default: true,
-  })
-
   useEffect(() => {
     let final_id = ""
     for (let i = 0; i < props.messages.length; i++) {
@@ -77,13 +72,8 @@ const DeadlineItems = (props) => {
       let contained = 0 
       for (const [_, item] of Object.entries(props.contractItems)) {
         contractItemIds.push(item.id)
-        if (item.id === selectedId) {
-          setSelectedId(item.id)
-          setSelectedNub({
-            id: item.id,
-            name: item.name,
-            default: false,
-          })
+        if (item.id === props.selectedId) {
+          props.setSelectedId(item.id)
         } 
         for (let i = 0; i < deadlineItemNubs.length; i++) {
           if (item.id === deadlineItemNubs[i].id) {
@@ -91,14 +81,12 @@ const DeadlineItems = (props) => {
           }
         }
       }
+      
       setContractItemIds(contractItemIds)
-      if (contained === Object.keys(props.contractItems).length || props.contractItems === undefined) {
-        toggleShowAdd(false)
-      } else {
-        toggleShowAdd(true)
-      }
+      toggleShowAdd(true)
+
     }
-  }, [Object.keys(props.contractItems).length, props.contractItemsChanged, deadlineItemNubs.length])
+  }, [props.contractItems.length, props.contractItemsChanged, deadlineItemNubs.length])
 
   useEffect(() => {
     if (props.deadline) {
@@ -157,12 +145,7 @@ const DeadlineItems = (props) => {
       }
       setSuggestionMode(false)
       if (props.deadline.itemsList.length === 0) {
-        setSelectedNub({
-          id: "",
-          name: "",
-          default: true,
-        })
-        setSelectedId("")
+        props.setSelectedId("")
       }
     }
   }, [props.deadline, props.reloadDeadlines, props.universalLock])
@@ -177,6 +160,9 @@ const DeadlineItems = (props) => {
     console.log("Just clicked on ", item)
     if (itemLock) {
       return
+    }
+    if (item.id === "new_negotiate") {
+      props.setAddItemMode(false)
     }
     let new_ids = []
     let new_nubs = []
@@ -210,9 +196,66 @@ const DeadlineItems = (props) => {
     setDeadlineItemNubs(new_existing_nubs)
     setDeadlineItemDeletedIds(new_deleted_ids)
     setDeadlineItemDeletedNubs(new_deleted_nubs)
+    console.log("Setting selected to empty")
+    props.setSelectedId("")
   }
 
+  useEffect(() => {
+    if (props.confirmItem) {
+      for (let i = 0; i < deadlineItemSuggestedIds.length; i++) {
+        if (deadlineItemSuggestedIds[i] === "new_negotiate") {
+          deadlineItemSuggestedIds[i] = props.createdItem.id
+          deadlineItemSuggestedNubs[i] = props.createdItem
+        }
+      }
+      console.log("Suggested: ", deadlineItemSuggestedIds)
+      setDeadlineItemDeletedIds(deadlineItemSuggestedIds)
+      setDeadlineItemDeletedNubs(deadlineItemSuggestedNubs)
+      confirmItemChange()
+      props.setConfirmItem(false)
+      props.setAddItemMode(false)
+      toggleShowAdd(true)
+      props.setSelectedId(props.createdItem.id)
+    }
+  }, [props.confirmItem])
+
+  useEffect(() => {
+    if (props.deleteSuggestedItem) {
+      const newIds = []
+      const newNubs = []
+      for (let i = 0; i < deadlineItemSuggestedIds.length; i++) {
+        if (deadlineItemSuggestedIds[i] !== "new_negotiate") {
+          newIds.push(deadlineItemSuggestedIds[i])
+          newNubs.push(deadlineItemSuggestedNubs[i])
+        }
+      }
+      setDeadlineItemSuggestedIds(newIds)
+      setDeadlineItemSuggestedNubs(newNubs)
+    }
+    props.setDeleteSuggestedItem(false)
+  }, [props.deleteSuggestedItem])
+
   const addItem = (nub) => {
+    let isNewItem = false
+    if (nub.id === "NEW_ITEM") {
+      let maxNum = 0
+      for (let i = 0; i < props.contractItems.length; i++) {
+        const name = props.contractItems[i].name
+        const split = name.split(" ")
+        const num = parseInt(split[split.length - 1])
+        if (num > maxNum) {
+          maxNum = num
+        }
+      }
+      const newName = (maxNum + 1)
+      props.setAddItemMode(true)
+      nub.name="Item "+newName
+      props.setNewItemName(nub.name)
+      props.setNewItemBody("")
+      nub.id="new_negotiate"
+      isNewItem = true
+    }
+    
     const all_added = [...deadlineItemNubs, ...deadlineItemSuggestedNubs]
     for (let i = 0; i < all_added.length; i++) {
       if (all_added[i] === nub.id) {
@@ -224,12 +267,13 @@ const DeadlineItems = (props) => {
       for (let i = 0; i < contractItemIds.length; i++) {
         if (contractItemIds[i] === nub.id) {
           setDeadlineItemIds([...deadlineItemIds, contractItemIds[i]])
-          setSelectedId(nub.id)
-          setSelectedNub(nub)
+          props.setSelectedId(nub.id)
         }
       }
     } else {
-      setSuggestionMode(true)
+      if (!isNewItem) {
+        setSuggestionMode(true)
+      }
       let foundInDeleted = false
       let foundInContract = false
       for (let i = 0; i < contractItemIds.length; i++) {
@@ -243,7 +287,7 @@ const DeadlineItems = (props) => {
           break
         }
       }
-      if (foundInContract) {
+      if (foundInContract || nub.id === "new_negotiate") {
         if (foundInDeleted) {
           setDeadlineItemNubs([...deadlineItemNubs, nub])
           setDeadlineItemIds([...deadlineItemIds, nub.id])
@@ -251,8 +295,7 @@ const DeadlineItems = (props) => {
           setDeadlineItemSuggestedNubs([...deadlineItemSuggestedNubs, nub])
           setDeadlineItemSuggestedIds([...deadlineItemSuggestedIds, nub.id])
         }
-        setSelectedId(nub.id)
-        setSelectedNub(nub)
+        props.setSelectedId(nub.id)
       }
       const new_deleted_ids = []
       const new_deleted_nubs = []
@@ -278,7 +321,9 @@ const DeadlineItems = (props) => {
   } 
 
   const confirmItemChange = () => {
-    setItemLock(true)
+    if (!props.addItemMode) {
+      setItemLock(true)
+    }
     const newItemsIds = [...deadlineItemSuggestedIds]
     for (let i = 0; i < deadlineItemIds.length; i++) {
       let found = false
@@ -291,8 +336,6 @@ const DeadlineItems = (props) => {
         newItemsIds.push(deadlineItemIds[i])
       }
     }
-    console.log("TESTING")
-    console.log(props.curContract)
     props.changeDeadlineItems(props.curContract.id, props.deadline.id, newItemsIds)
   }
   
@@ -329,165 +372,128 @@ const DeadlineItems = (props) => {
   }
 
   const selectItem = (id) => {
-    setSelectedId(id)
-    for (let i = 0; i < props.contractItems.length; i++) {
-      if (props.contractItems[i].id === id) {
-        setSelectedNub({
-          id:props.contractItems[i].id, name:props.contractItems[i].id,
-        })
-      }
-    }
+    console.log("props.selecting item")
+    props.setSelectedId(id)
   }
   return (
-  <div className="bg-white grow flex ml-1 mt-2 w-full">
-    <div className="flex items-center flex-col w-full pr-0 sm:pr-10">
-      <div className="p-0 mt-2 pb-2 w-full">
-        <div className="flex w-full justify-between">
-          <h3 className="text-base leading-6 font-medium text-gray-900 flex items-center">
-            <span className="mr-2">
+    <div className="p-0 mt-2 pb-2 w-full">
+      <div className="flex w-full justify-between">
+        <h3 className="text-lg leading-6 font-medium text-gray-900 flex items-center">
+          <span className="mr-2">
             Required Items:
-            </span>
-            <span>
-              {(itemLock===true) ? (
-                <LockClosedIcon className="w-5 h-5 text-gray-500"/>
-              ) : (
-                <LockOpenIcon className="w-5 h-5 text-gray-500"/>
-              )}
-            </span>
-          </h3>
-
-          {(suggestionMode && !itemLock && !props.universalLock) && (
-            <div className="flex items-center">
-              <p className="mr-1 text-sm text-gray-400">Commit your new items</p>
-              <DecideButton approve={confirmItemChange} reject={revertItemChange}/>
-            </div>
-          )}
-          {(itemLock && !proposedByPartner && !props.universalLock) && (
-            <div className="flex items-center">
-              <p className="mr-1 text-sm text-gray-400">Awaiting your partner's approval</p>
-            </div>
-          )}
-          {(itemLock && proposedByPartner && !props.universalLock) && (
-            <div className="flex items-center">
-              <p className="mr-1 text-sm text-gray-400">Approve your partner's change</p>
-              <DecideButton approve={acceptNewItemsChange} reject={rejectNewItemsChange}/>
-            </div>
-          )}
-        </div> 
-        {!itemLock && (
-        <p className="mt-1 text-xs text-gray-500">
-          <span>
-            Click one to edit
           </span>
           <span>
-            or <b className="text-primary4">add</b> to add from existing
+            {(itemLock===true) ? (
+              <LockClosedIcon className="w-6 h-6 text-gray-500"/>
+            ) : (
+              <LockOpenIcon className="w-6 h-6 text-gray-500"/>
+            )}
           </span>
-        </p>)}
-        <div className="flex flex-wrap">
-          {deadlineItemNubs.map((item) => (
-              <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={false} deleteMode={false} item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
-          ))}
-          {deadlineItemSuggestedNubs.map((item) => (
-              <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={true} deleteMode={false} item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
-          ))}
-          {deadlineItemDeletedNubs.map((item) => (
-              <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={false} deleteMode={true} item={item} key={item.name} selected={(item.id === selectedId)} selectItem={selectItem}/>
-          ))}
-          {(showAdd && !props.newDeadlineMode && !props.deleteDeadlineMode && !itemLock) && (
-            <Listbox onChange={addItem}>
-              {({ open }) => (
-                <>
-                    <Listbox.Button className="relative inline-flex items-center rounded-full bg-primary3 hover:bg-primary3 px-2 py-0.5 mt-1 mx-1 text-sm">
-                      <span className="text-xs font-medium text-white">add</span>
-                    </Listbox.Button>
+        </h3>
 
-                    <Transition
-                      show={open}
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0"
-                    >
-                      <Listbox.Options className="absolute z-10 mt-1 bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
-                        {props.contractItems.map((item) => (
-                          <Fragment key={item.id}>
-                          {!containsNub({id: item.id, name: item.name}, [...deadlineItemNubs, ...deadlineItemSuggestedNubs]) && (
-                            <Listbox.Option
-                              
-                              className={({ active }) =>
-                                classNames(
-                                  active ? 'text-primary5' : 'text-gray-900',
-                                  'cursor-default select-none relative p-0 px-4 text-xs',
-                                  (props.contractItems.length > 1) ? "py-2 border-b-1 border-gray-700" : ""
-                                )
-                              }
-                              value={{id: item.id, name: item.name}}
-                            >
-                              {({ selected, active }) => (
-                                <>
-                                  <span className={classNames(selected ? 'font-semibold' : 'font-normal', 'block truncate')}>
-                                    {item.name}
-                                  </span>
-
-                                </>
-                              )}
-                            </Listbox.Option>
-                          )}
-                          </Fragment>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
-                </>
-              )}
-            </Listbox>
-          )}
-        </div>
-      </div>
-      <div className="flex grow w-full">
-        
-        {selectedNub.default !== true ? ( 
-          <ContractItem 
-            embedded={true}
-            override={props.createMode}
-            disabled={true}
-            id={selectedId}
-          />
-        ) : (
-          <div className="flex justify-center items-center">
-            <h1 className="text-gray-400 w-[60%] text-center">First <b>click</b> on an item, <b>add</b> one, or <b>create</b> a new one to edit</h1>
+        {(suggestionMode && !itemLock && !props.universalLock && !props.addItemMode) && (
+          <div className="flex items-center">
+            <p className="mr-1 text-base text-gray-400">Commit your new items</p>
+            <DecideButton approve={confirmItemChange} reject={revertItemChange}/>
           </div>
+        )}
+        {(itemLock && !proposedByPartner && !props.universalLock) && (
+          <div className="flex items-center">
+            <p className="mr-1 text-base text-gray-400">Awaiting your partner's approval</p>
+          </div>
+        )}
+        {(itemLock && proposedByPartner && !props.universalLock) && (
+          <div className="flex items-center">
+            <p className="mr-1 text-base text-gray-400">Approve your partner's change</p>
+            <DecideButton approve={acceptNewItemsChange} reject={rejectNewItemsChange}/>
+          </div>
+        )}
+      </div> 
+      <div className="flex flex-wrap items-center">
+        {deadlineItemNubs.map((item) => (
+            <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={false} deleteMode={false} item={item} key={item.name} selected={(item.id === props.selectedId)} selectItem={selectItem}/>
+        ))}
+        {deadlineItemSuggestedNubs.map((item) => (
+            <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={true} deleteMode={false} item={item} key={item.name} selected={(item.id === props.selectedId)} selectItem={selectItem}/>
+        ))}
+        {deadlineItemDeletedNubs.map((item) => (
+            <DeadlineItemBadge itemLock={itemLock} removeItem={removeItem} addMode={false} deleteMode={true} item={item} key={item.name} selected={(item.id === props.selectedId)} selectItem={selectItem}/>
+        ))}
+        {(showAdd && !props.newDeadlineMode && !props.deleteDeadlineMode && !itemLock) && (
+          <Listbox onChange={addItem}>
+            {({ open }) => (
+              <>  
+                  {!props.addItemMode && (
+                    <Listbox.Button ref={props.addButton} className="relative flex items-center rounded-lg bg-primary3 hover:bg-primary3 px-2 py-0.5 mt-1 mx-1 text-sm">
+                      <span className="text-sm p-0.5 font-medium text-white">add</span>
+                    </Listbox.Button>
+                  )}
+
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="max-w-[300px] absolute z-10 mt-1 bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none text-lg">
+                      {props.contractItems.map((item) => (
+                        <Fragment key={item.id}>
+                        {!containsNub({id: item.id, name: item.name}, [...deadlineItemNubs, ...deadlineItemSuggestedNubs]) && (
+                          <Listbox.Option
+                            
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'text-primary5' : 'text-gray-900',
+                                'cursor-default select-none relative p-0 px-4 text-lg',
+                                (props.contractItems.length > 1) ? "py-1 border-b-1 border-gray-700" : ""
+                              )
+                            }
+                            value={{id: item.id, name: item.name}}
+                          >
+                            {({ selected, active }) => (
+                              <>
+                                <span className={classNames(selected ? 'font-semibold' : 'font-normal', 'block truncate flex')}>
+                                  <span>{item.name}:</span>{" "}<div className={"w-[15px]"}/><span>{item.currentBody.substring(0,20)}...</span>
+                                </span>
+
+                              </>
+                            )}
+                          </Listbox.Option>
+                        )}
+                        </Fragment>
+                      ))}
+                      <Listbox.Option    
+                        className={({ active }) =>
+                          classNames(
+                            active ? 'text-primary5' : 'text-gray-900',
+                            'cursor-default select-none relative p-0 px-4 text-lg my-2',
+                          )
+                        }
+                        value={{id: "NEW_ITEM"}}
+                      >
+                        {({ selected, active }) => (
+                          <>
+                            <button className={'mx-auto flex justify-center text-primary4 items-center font-semibold hover:text-primary6'}>
+                              <div className="flex items-center">
+                                <span>New Item</span>{" "}<PlusIcon className={"ml-2 mt-0.5 w-4 h-4"}/>
+                              </div>
+                            </button>
+
+                          </>
+                        )}
+                      </Listbox.Option>
+                    </Listbox.Options>
+                  </Transition>
+              </>
+            )}
+          </Listbox>
         )}
       </div>
     </div>
-
-  </div>
   )
 }
 
-const genTestSet = () => {
-  return [
-    {
-      id: "1",
-      name: "Item 1",
-    },
-    {
-      id: "2",
-      name: "Item 2",
-    },
-    {
-      id: "3",
-      name: "Item 3",
-    },
-    {
-      id: "4",
-      name: "Item 4",
-    },
-    {
-      id: "5",
-      name: "Item 5",
-    }
-  ]
-}
 const mapStateToProps = ({ contract, items, deadlines, user, chat}) => ({
   curContract: contract.curContract,
   reloadDeadlines: deadlines.deadlinesChanged,
@@ -500,9 +506,10 @@ const mapStateToProps = ({ contract, items, deadlines, user, chat}) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   changeDeadlineItems,
   reactDeadlineItems,
+  addContractItem,
 }, dispatch)
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(DeadlineItems) 
+)(DeadlineItemsBar) 

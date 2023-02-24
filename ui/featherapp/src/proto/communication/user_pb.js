@@ -328,13 +328,10 @@ proto.main.UserRegisterRequest.toObject = function(includeInstance, msg) {
     username: jspb.Message.getFieldWithDefault(msg, 1, ""),
     email: jspb.Message.getFieldWithDefault(msg, 2, ""),
     password: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    userType: jspb.Message.getFieldWithDefault(msg, 5, 0),
     firstName: jspb.Message.getFieldWithDefault(msg, 4, ""),
     lastName: jspb.Message.getFieldWithDefault(msg, 6, ""),
     phoneNumber: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    dob: (f = msg.getDob()) && proto.main.DOBEntity.toObject(includeInstance, f),
-    workerRequested: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
-    buyerRequested: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
+    dob: (f = msg.getDob()) && proto.main.DOBEntity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -383,10 +380,6 @@ proto.main.UserRegisterRequest.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {string} */ (reader.readString());
       msg.setPassword(value);
       break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setUserType(value);
-      break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setFirstName(value);
@@ -403,14 +396,6 @@ proto.main.UserRegisterRequest.deserializeBinaryFromReader = function(msg, reade
       var value = new proto.main.DOBEntity;
       reader.readMessage(value,proto.main.DOBEntity.deserializeBinaryFromReader);
       msg.setDob(value);
-      break;
-    case 9:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerRequested(value);
-      break;
-    case 10:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerRequested(value);
       break;
     default:
       reader.skipField();
@@ -462,13 +447,6 @@ proto.main.UserRegisterRequest.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getUserType();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
   f = message.getFirstName();
   if (f.length > 0) {
     writer.writeString(
@@ -496,20 +474,6 @@ proto.main.UserRegisterRequest.serializeBinaryToWriter = function(message, write
       8,
       f,
       proto.main.DOBEntity.serializeBinaryToWriter
-    );
-  }
-  f = message.getWorkerRequested();
-  if (f) {
-    writer.writeBool(
-      9,
-      f
-    );
-  }
-  f = message.getBuyerRequested();
-  if (f) {
-    writer.writeBool(
-      10,
-      f
     );
   }
 };
@@ -566,24 +530,6 @@ proto.main.UserRegisterRequest.prototype.getPassword = function() {
  */
 proto.main.UserRegisterRequest.prototype.setPassword = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional uint32 user_type = 5;
- * @return {number}
- */
-proto.main.UserRegisterRequest.prototype.getUserType = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.main.UserRegisterRequest} returns this
- */
-proto.main.UserRegisterRequest.prototype.setUserType = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -675,42 +621,6 @@ proto.main.UserRegisterRequest.prototype.clearDob = function() {
  */
 proto.main.UserRegisterRequest.prototype.hasDob = function() {
   return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * optional bool worker_requested = 9;
- * @return {boolean}
- */
-proto.main.UserRegisterRequest.prototype.getWorkerRequested = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.main.UserRegisterRequest} returns this
- */
-proto.main.UserRegisterRequest.prototype.setWorkerRequested = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 9, value);
-};
-
-
-/**
- * optional bool buyer_requested = 10;
- * @return {boolean}
- */
-proto.main.UserRegisterRequest.prototype.getBuyerRequested = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.main.UserRegisterRequest} returns this
- */
-proto.main.UserRegisterRequest.prototype.setBuyerRequested = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 
@@ -1538,7 +1448,6 @@ proto.main.UserEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     username: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    userType: jspb.Message.getFieldWithDefault(msg, 3, 0),
     role: jspb.Message.getFieldWithDefault(msg, 14, 0),
     email: jspb.Message.getFieldWithDefault(msg, 4, ""),
     firstName: jspb.Message.getFieldWithDefault(msg, 20, ""),
@@ -1557,12 +1466,10 @@ proto.main.UserEntity.toObject = function(includeInstance, msg) {
     profilePhotoUploaded: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     profilePhotoId: jspb.Message.getFieldWithDefault(msg, 17, ""),
     profilePhoto: (f = msg.getProfilePhoto()) && communication_file_service_pb.ProfileImageEntity.toObject(includeInstance, f),
-    stripeConnected: jspb.Message.getBooleanFieldWithDefault(msg, 24, false),
-    stripeInfo: (f = msg.getStripeInfo()) && communication_stripe_pb.StripeEntity.toObject(includeInstance, f),
-    workerRequested: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    buyerRequested: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
-    workerEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
-    buyerEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
+    workerModeRequested: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
+    buyerModeRequested: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
+    workerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
+    buyerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
     defaultFca: jspb.Message.getFieldWithDefault(msg, 29, "")
   };
 
@@ -1607,10 +1514,6 @@ proto.main.UserEntity.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setUsername(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setUserType(value);
       break;
     case 14:
       var value = /** @type {number} */ (reader.readUint32());
@@ -1688,30 +1591,21 @@ proto.main.UserEntity.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,communication_file_service_pb.ProfileImageEntity.deserializeBinaryFromReader);
       msg.setProfilePhoto(value);
       break;
-    case 24:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setStripeConnected(value);
-      break;
-    case 19:
-      var value = new communication_stripe_pb.StripeEntity;
-      reader.readMessage(value,communication_stripe_pb.StripeEntity.deserializeBinaryFromReader);
-      msg.setStripeInfo(value);
-      break;
     case 25:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerRequested(value);
+      msg.setWorkerModeRequested(value);
       break;
     case 26:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerRequested(value);
+      msg.setBuyerModeRequested(value);
       break;
     case 27:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerEnabled(value);
+      msg.setWorkerModeEnabled(value);
       break;
     case 28:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerEnabled(value);
+      msg.setBuyerModeEnabled(value);
       break;
     case 29:
       var value = /** @type {string} */ (reader.readString());
@@ -1757,13 +1651,6 @@ proto.main.UserEntity.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       2,
-      f
-    );
-  }
-  f = message.getUserType();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
       f
     );
   }
@@ -1895,43 +1782,28 @@ proto.main.UserEntity.serializeBinaryToWriter = function(message, writer) {
       communication_file_service_pb.ProfileImageEntity.serializeBinaryToWriter
     );
   }
-  f = message.getStripeConnected();
-  if (f) {
-    writer.writeBool(
-      24,
-      f
-    );
-  }
-  f = message.getStripeInfo();
-  if (f != null) {
-    writer.writeMessage(
-      19,
-      f,
-      communication_stripe_pb.StripeEntity.serializeBinaryToWriter
-    );
-  }
-  f = message.getWorkerRequested();
+  f = message.getWorkerModeRequested();
   if (f) {
     writer.writeBool(
       25,
       f
     );
   }
-  f = message.getBuyerRequested();
+  f = message.getBuyerModeRequested();
   if (f) {
     writer.writeBool(
       26,
       f
     );
   }
-  f = message.getWorkerEnabled();
+  f = message.getWorkerModeEnabled();
   if (f) {
     writer.writeBool(
       27,
       f
     );
   }
-  f = message.getBuyerEnabled();
+  f = message.getBuyerModeEnabled();
   if (f) {
     writer.writeBool(
       28,
@@ -1981,24 +1853,6 @@ proto.main.UserEntity.prototype.getUsername = function() {
  */
 proto.main.UserEntity.prototype.setUsername = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional uint32 user_type = 3;
- * @return {number}
- */
-proto.main.UserEntity.prototype.getUserType = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.main.UserEntity} returns this
- */
-proto.main.UserEntity.prototype.setUserType = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -2384,65 +2238,10 @@ proto.main.UserEntity.prototype.hasProfilePhoto = function() {
 
 
 /**
- * optional bool stripe_connected = 24;
+ * optional bool worker_mode_requested = 25;
  * @return {boolean}
  */
-proto.main.UserEntity.prototype.getStripeConnected = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 24, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.main.UserEntity} returns this
- */
-proto.main.UserEntity.prototype.setStripeConnected = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 24, value);
-};
-
-
-/**
- * optional StripeEntity stripe_info = 19;
- * @return {?proto.main.StripeEntity}
- */
-proto.main.UserEntity.prototype.getStripeInfo = function() {
-  return /** @type{?proto.main.StripeEntity} */ (
-    jspb.Message.getWrapperField(this, communication_stripe_pb.StripeEntity, 19));
-};
-
-
-/**
- * @param {?proto.main.StripeEntity|undefined} value
- * @return {!proto.main.UserEntity} returns this
-*/
-proto.main.UserEntity.prototype.setStripeInfo = function(value) {
-  return jspb.Message.setWrapperField(this, 19, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.main.UserEntity} returns this
- */
-proto.main.UserEntity.prototype.clearStripeInfo = function() {
-  return this.setStripeInfo(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.main.UserEntity.prototype.hasStripeInfo = function() {
-  return jspb.Message.getField(this, 19) != null;
-};
-
-
-/**
- * optional bool worker_requested = 25;
- * @return {boolean}
- */
-proto.main.UserEntity.prototype.getWorkerRequested = function() {
+proto.main.UserEntity.prototype.getWorkerModeRequested = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
 };
 
@@ -2451,16 +2250,16 @@ proto.main.UserEntity.prototype.getWorkerRequested = function() {
  * @param {boolean} value
  * @return {!proto.main.UserEntity} returns this
  */
-proto.main.UserEntity.prototype.setWorkerRequested = function(value) {
+proto.main.UserEntity.prototype.setWorkerModeRequested = function(value) {
   return jspb.Message.setProto3BooleanField(this, 25, value);
 };
 
 
 /**
- * optional bool buyer_requested = 26;
+ * optional bool buyer_mode_requested = 26;
  * @return {boolean}
  */
-proto.main.UserEntity.prototype.getBuyerRequested = function() {
+proto.main.UserEntity.prototype.getBuyerModeRequested = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
 };
 
@@ -2469,16 +2268,16 @@ proto.main.UserEntity.prototype.getBuyerRequested = function() {
  * @param {boolean} value
  * @return {!proto.main.UserEntity} returns this
  */
-proto.main.UserEntity.prototype.setBuyerRequested = function(value) {
+proto.main.UserEntity.prototype.setBuyerModeRequested = function(value) {
   return jspb.Message.setProto3BooleanField(this, 26, value);
 };
 
 
 /**
- * optional bool worker_enabled = 27;
+ * optional bool worker_mode_enabled = 27;
  * @return {boolean}
  */
-proto.main.UserEntity.prototype.getWorkerEnabled = function() {
+proto.main.UserEntity.prototype.getWorkerModeEnabled = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
 };
 
@@ -2487,16 +2286,16 @@ proto.main.UserEntity.prototype.getWorkerEnabled = function() {
  * @param {boolean} value
  * @return {!proto.main.UserEntity} returns this
  */
-proto.main.UserEntity.prototype.setWorkerEnabled = function(value) {
+proto.main.UserEntity.prototype.setWorkerModeEnabled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 27, value);
 };
 
 
 /**
- * optional bool buyer_enabled = 28;
+ * optional bool buyer_mode_enabled = 28;
  * @return {boolean}
  */
-proto.main.UserEntity.prototype.getBuyerEnabled = function() {
+proto.main.UserEntity.prototype.getBuyerModeEnabled = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 28, false));
 };
 
@@ -2505,7 +2304,7 @@ proto.main.UserEntity.prototype.getBuyerEnabled = function() {
  * @param {boolean} value
  * @return {!proto.main.UserEntity} returns this
  */
-proto.main.UserEntity.prototype.setBuyerEnabled = function(value) {
+proto.main.UserEntity.prototype.setBuyerModeEnabled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 28, value);
 };
 

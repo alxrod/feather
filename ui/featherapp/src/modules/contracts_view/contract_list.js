@@ -95,50 +95,27 @@ const ContractList = (props) => {
   }
 
   return (
+    <>
+    {!no_contracts ? (
       <div className="mt-8 flex flex-col">
         <div>
           <div className="inline-block min-w-full py-2 align-middle md:px-12 lg:px-8">
-            {!no_contracts ? (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
-                { props.allFilters[props.selected](props.contracts).map((contract) => (
-                  <Fragment key={contract.id}>
-                    <ContractNub contract={contract}/>
-                  </Fragment>
-                ))}      
-              </div>
-            ) : ( 
-              <div className="flex justify-center min-h-[50vh] flex-col">
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                        Contract
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Deadline
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Stage
-                      </th>
-                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Price
-                      </th>
-                      <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                        <span className="sr-only">View</span>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                  </tbody>
-                </table>
-                <div className="m-auto text-4xl text-gray-300 font-light pb-5">
-                    <NoContracts/>
-                </div>
-              </div>
-            )}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
+              { props.allFilters[props.selected](props.contracts).map((contract) => (
+                <Fragment key={contract.id}>
+                  <ContractNub contract={contract}/>
+                </Fragment>
+              ))}      
+            </div>
           </div>
         </div>
       </div>
+    ) : ( 
+      <div className="flex justify-center mt-10 flex-col">
+        <NoContracts/>
+      </div>
+    )}
+    </>   
   )
 }
 

@@ -4,11 +4,11 @@ import { Dialog, Transition } from '@headlessui/react'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import CalendarBundle from "./calendar_bundle"
-import DeadlineDisplay from "./deadline_display"
+import CalendarBundle from "./calendar/calendar_bundle"
+import DeadlineDisplay from "./header/deadline_display"
 import DeadlineSummary from "./deadline_summary"
-import DeadlineChoice from "./deadline_choice"
-import DeadlineItems from "./deadline_items"
+import DeadlineChoice from "./header/deadline_choice"
+import DeadlineItems from "./items/deadline_items"
 
 
 import { PlusIcon, TrashIcon } from '@heroicons/react/solid'

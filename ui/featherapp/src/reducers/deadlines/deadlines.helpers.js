@@ -1,4 +1,19 @@
 
+export const purgeItem = (deadlines, item) => {
+    for (let i = 0; i < deadlines.length; i++) {
+        const newItems = []
+        const newStates = []
+        for (let j = 0; j < deadlines[i].itemsList.length; j++) {
+            if (deadlines[i].itemsList[j].id !== item.id) {
+                newItems.push(deadlines[i].itemsList[j])
+                newStates.push(deadlines[i].itemStatesList[j])
+            }
+        }
+        deadlines[i].itemsList = newItems
+        deadlines[i].itemStatesList = newStates
+    }
+    return deadlines
+}
 export const applyRenameDeadlines = (mainDeadlines, newDeadlines) => {
     for (let i = 0; i < mainDeadlines.length; i++) {
         for (let j = 0; j < newDeadlines.length; j++) {

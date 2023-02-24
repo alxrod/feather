@@ -7,8 +7,8 @@ import { bindActionCreators } from 'redux'
 
 import { push } from 'connected-react-router'
 import {useStripe, elements} from '@stripe/react-stripe-js';
-import ConnectPayout from "../stripe_components/connect_payout";
-import ConnectPayment from "../stripe_components/connect_payment";
+
+import { CheckCircleIcon } from '@heroicons/react/outline'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -17,6 +17,7 @@ function classNames(...classes) {
 const AccountsList = (props) => {
 
   const [defaultId, setDefaultId] = useState("")
+
   useEffect(() => {
     setDefaultId(props.starterDefault)
   }, [props.starterDefault])
@@ -27,76 +28,37 @@ const AccountsList = (props) => {
   }
   return (
     <div className="px-4">
-      <table className="min-w-full divide-y divide-gray-300">
-        <thead>
-          <tr>
-            <th
-              scope="col"
-              className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
+      {props.accounts.sort((a, b) => (b.accountId ===defaultId) - (a.accountId ===defaultId)).map((account, accountIdx) => (
+        <div key={accountIdx} className="flex items-center justify-between">
+          <div className="flex items-center">
+            {defaultId === account.accountId ? (
+            <CheckCircleIcon className="text-primary4 w-10 h-10" strokeWidth={1.5}/>
+            ) : (
+              <div className="w-10 h-10"/>
+            )}
+            <h2 className="ml-2 text-xl text-gray-500">Account {"•••••••• "}{account.accountLast4} is connected</h2>
+          </div>
+          <div className="flex items-center"> 
+            {!(defaultId === account.accountId) && (
+            <button
+              type="button"
+              className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary4 focus:ring-offset-2  mr-1"
+              onClick={(e) => setDefault(account.accountId)}
             >
-              Account Number
-            </th>
-            <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-              <span className="sr-only">Set Default</span>
-            </th>
-            <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-              <span className="sr-only">Delete</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {props.accounts.map((account, accountIdx) => (
-            <tr key={accountIdx}>
-              <td
-                className={classNames(
-                  accountIdx === 0 ? '' : 'border-t border-transparent',
-                  'relative py-4 pl-4 sm:pl-6 pr-3 text-sm'
-                )}
-              >
-                <div className="font-medium text-gray-900">
-                  ********{account.accountLast4}
-                </div>
-                {accountIdx !== 0 ? <div className="absolute right-0 left-6 -top-px h-px bg-gray-200" /> : null}
-              </td>
-             
-              <td
-                className={classNames(
-                  accountIdx === 0 ? '' : 'border-t border-transparent',
-                  'relative py-3.5 pl-3 pr-4 sm:pr-6 text-right text-sm font-medium'
-                )}
-              >
-                {defaultId !== account.accountId && (
-                  <button
-                    type="button"
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-red-400"
-                    onClick={(e) => {props.delete(account.accountId)}}
-                  >
-                    Delete
-                  </button>
-                )}
-                {accountIdx !== 0 ? <div className="absolute right-0 left-0 -top-px h-px bg-gray-200" /> : null}
-              </td>
-
-              <td
-                className={classNames(
-                  accountIdx === 0 ? '' : 'border-t border-transparent',
-                  'relative py-3.5 pl-3 pr-4 sm:pr-6 text-right text-sm font-medium'
-                )}
-              >
-                <button
-                  type="button"
-                  className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary4 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-30"
-                  disabled={defaultId === account.accountId}
-                  onClick={(e) => setDefault(account.accountId)}
-                >
-                  {(defaultId === account.accountId) ? "Default" : "Set Default"}
-                </button>
-                {accountIdx !== 0 ? <div className="absolute right-6 left-0 -top-px h-px bg-gray-200" /> : null}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              {(defaultId === account.accountId) ? "Default" : "Set Default"}
+            </button>
+            )}
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-2 text-sm rounded-md shadow-sm font-medium leading-4 bg-red-100 text-red-800"
+              onClick={(e) => {
+                props.delete(account.accountId)}}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
     
   )

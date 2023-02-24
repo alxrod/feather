@@ -1,7 +1,7 @@
 import React, {useState, useEffect, Fragment} from "react";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {WORKER_TYPE, BUYER_TYPE} from "../../../../services/user.service"
+import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import DeadlineHistory from "./deadline_history"
 
 const DeadlineDraftView = (props) => {

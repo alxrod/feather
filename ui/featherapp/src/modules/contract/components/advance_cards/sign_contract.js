@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CheckIcon } from '@heroicons/react/solid'
-import { ClockIcon } from '@heroicons/react/outline'
+import { ClockIcon, ExclamationCircleIcon } from '@heroicons/react/outline'
 import { useEffect, useState, useMemo } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -13,6 +13,7 @@ const SignButton = (props) => {
 
   const [workerSigned, setWorkerSigned] = useState(false)
   const [buyerSigned, setBuyerSigned] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   const youSigned = useMemo(() => {
     if (role === WORKER_TYPE) {
@@ -65,7 +66,14 @@ const SignButton = (props) => {
   }, [props.messages.length, props.messagesChanged])
 
   const signContract = () => {
-    props.signContract(props.curContract.id)
+    props.signContract(props.curContract.id).then(
+      () => {
+
+      },
+      (error) => {
+        setErrorMsg(error)
+      }
+    )
   }
 
   return (
@@ -73,7 +81,13 @@ const SignButton = (props) => {
       <div className="px-4 py-5 sm:p-6">
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">Sign the Contract</h3>
-          {role === ADMIN_TYPE ? (
+          {errorMsg !== "" ? (
+            <div className="flex items-center">
+              <ExclamationCircleIcon className="w-4 h-4 text-red-400 mr-1"/>
+              <p className="text-red-400">{errorMsg}</p>
+              
+            </div>
+          ) : role === ADMIN_TYPE ? (
             <div className="flex items-center">
               <p className="text-gray-400">Worker</p>
               {workerSigned ? (

@@ -12,7 +12,7 @@ import { finishedReload } from '../../../../../reducers/chat/dispatchers/chat.di
 import { resolTypes } from "../../../../../services/chat.service"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import DeadlineItemBadge from "../../deadline/deadline_item_badge"
+import DeadlineItemBadge from "../../deadline/items/deadline_item_badge"
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
 import { displayDecide, fontSize } from "./components/msg_helpers"

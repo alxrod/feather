@@ -4,7 +4,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 import {resolTypes} from "../../../services/chat.service";
 import * as helpers from "../../helpers"
 import * as itemActions from "../items.actions";
-
+import * as deadlineActions from "../../deadlines/deadlines.actions";
 export const deleteSuggestContractItem = (id) => {
     return dispatch => {
         dispatch({
@@ -57,6 +57,10 @@ export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
 export const updateLocalItemDelete = (msg) => {
     return dispatch => {
         if (msg.body.resolStatus == resolTypes.APPROVED) {
+            dispatch({
+                type: deadlineActions.CONTRACT_DEADLINE_ITEM_PURGE,
+                payload: msg.body.item
+            })
             dispatch({
                 type: itemActions.CONTRACT_ITEM_REMOVE,
                 payload: msg.body.item,

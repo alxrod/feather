@@ -16,14 +16,16 @@ const ContractTableHeader = (props) => {
       <div className="flex items-center justify-between">
         <h3 className="text-lg leading-6 font-medium text-gray-900">Contracts</h3>
         <div className="mt-3 flex mt-0 absolute top-3 right-0">
-          <Link to="/create">
-            <button
-              type="button"
-              className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary4 hover:bg-primary3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
-            >
-                Create
-            </button>
-          </Link>
+          {(props.user?.workerModeEnabled || props.user?.buyerModeEnabled) && (
+            <Link to="/create/new">
+              <button
+                type="button"
+                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary4 hover:bg-primary3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
+              >
+                  Create
+              </button>
+            </Link>
+          )}
         </div>
       </div>
       <div className="mt-4">

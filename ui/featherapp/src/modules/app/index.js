@@ -11,8 +11,12 @@ import Login from '../login'
 import ForgotPassword from "../forgot_password"
 import ResetPassword from "../reset_password"
 
-import Register from '../register'
-import SetupPayment from "../setup_payment"
+import Register from '../sign_up/register'
+import SetupPayment from "../sign_up/setup_payment"
+import SetupPayout from "../sign_up/setup_payout"
+import SetupProfilePicture from "../sign_up/setup_profile_pic"
+import SetupChoice from "../sign_up/setup_choice"
+
 import Profile from '../profile'
 
 import { clearSelected } from "../../reducers/contract/dispatchers/contract.dispatcher";
@@ -34,7 +38,6 @@ import { useLocation } from 'react-router-dom'
 import UnknownRoute from "../error_handling_routes/unknown_route"
 import UnauthContractRoute from "../error_handling_routes/unauth_contract_route"
 
-import FileUploadTest from "../file_upload_test";
 import AccountOnboardingRefresh from "../payment_redirects/account_onboarding_refresh"
 
 import "animate.css/animate.min.css";
@@ -70,7 +73,12 @@ const routes = {
 
   "/login": UNAUTH_ROLE,
   "/register": UNAUTH_ROLE,
+
   "/setup-payment": STD_ROLE,
+  "/setup-payout": STD_ROLE,
+  "/setup-profile-pic": STD_ROLE,
+  "/setup-choice": STD_ROLE,
+
   "/profile": STD_ROLE,
   "/profile/onboarding-refresh": STD_ROLE,
 
@@ -82,11 +90,17 @@ const routes = {
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
-const no_nav_routes = ["/login", "/register", "/invite", "/forgot-password"]
+const no_nav_routes = [
+  "/login", 
+  "/register", 
+  "/invite", 
+  "/forgot-password",
+]
 
 const App = (props) => {
   const loc = useLocation();
   const [pullReq, setPullReq] = useState(true);
+  const [reloadStripeEnables, setReloadStripeEnables] = useState(true)
   let firstLoad = true
 
   useEffect( () => {
@@ -95,7 +109,7 @@ const App = (props) => {
   useEffect( () => {
     console.log("Calling a link change to path: " + loc.pathname)
     const route_base = "/"+loc.pathname.split("/")[1]
-    if (no_nav_routes.includes(route_base) && !props.isLoggedIn) {
+    if (no_nav_routes.includes(route_base)) {
       props.setNavbar(false)
     } else {
       props.setNavbar(true)
@@ -142,6 +156,26 @@ const App = (props) => {
     }
   }, [pullReq, props.user, props.user?.id])
 
+
+  useEffect(() => {
+    if ((props.user?.buyerModeRequested && !props.user?.buyerModeEnabled) 
+      || props.user?.workerModeRequested && !props.user?.workerModeEnabled && reloadStripeEnables) {
+      
+      setReloadStripeEnables(false)
+      setTimeout(() => {
+        props.pullUser(props.user.id).then(() => {
+          setReloadStripeEnables(true)
+        });
+      }, 10 * 1000)
+    }
+  }, [
+      props.user?.buyerModeRequested,
+      props.user?.workerModeRequested,
+      props.user?.buyerModeEnabled,
+      props.user?.workerModeEnabled,
+      reloadStripeEnables
+  ])
+
   return (
     <div className="App">
       <header>
@@ -153,7 +187,7 @@ const App = (props) => {
 
         <Route exact path="/contracts" element={<ContractsView/>} component={ContractsView} />
 
-        <Route path="/create" element={<ContractCreate/>} component={ContractCreate} />
+        <Route path="/create/:contractId" element={<ContractCreate/>} component={ContractCreate} />
 
         <Route path="/invite/:contractId" element={<ContractInvite/>} component={ContractInvite} />
 
@@ -171,11 +205,12 @@ const App = (props) => {
         
         <Route exact path="/register" element={<Register/>} component={Register} />
         <Route exact path="/setup-payment" element={<SetupPayment/>} component={SetupPayment} />
-
+        <Route exact path="/setup-payout" element={<SetupPayment/>} component={SetupPayout} />
+        <Route exact path="/setup-profile-pic" element={<SetupProfilePicture/>} component={SetupProfilePicture} />
+        <Route exact path="/setup-choice" element={<SetupChoice/>} component={SetupChoice} />
+        
         <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />
         <Route exact path="/unauth-contract" element={<UnauthContractRoute/>} component={UnauthContractRoute} />
-
-        <Route exact path="/file-upload-test" element={<FileUploadTest/>} component={FileUploadTest} />
 
       </main>
     </div>

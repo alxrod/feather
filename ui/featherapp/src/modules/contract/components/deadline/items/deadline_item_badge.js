@@ -61,10 +61,13 @@ export default (props) => {
                         aria-hidden="true"
                     />
                 </span>
-                <span className={"ml-3.5 text-xs font-medium text-gray-900 " + textStyle}>{props.item.name}</span>
+                <span className={"ml-3.5 text-sm font-medium text-gray-900 " + textStyle}>{props.item.name}</span>
                 {(!props.deleteMode && !props.itemLock) && (
                     <span>
-                        <XIcon className={"ml-1 w-4 h-4 "+xColor} onClick={() => props.removeItem(props.item)} />
+                        <XIcon className={"ml-1 w-4 h-4 "+xColor} onClick={(e) => {
+                            e.stopPropagation()
+                            props.removeItem(props.item)
+                        }} />
                     </span>
                 )}
             </button>

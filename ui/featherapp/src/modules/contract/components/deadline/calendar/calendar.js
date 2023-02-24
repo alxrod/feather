@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import React, {useState, useEffect} from 'react'
-import {WORKER_TYPE, BUYER_TYPE} from '../../../../services/user.service'
+import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import {Tooltip} from "flowbite-react"
 
 import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'

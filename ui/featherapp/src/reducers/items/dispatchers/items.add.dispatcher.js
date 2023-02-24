@@ -27,14 +27,14 @@ export const addItem = (contract_id, item_name, item_body) => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
-                    () => {
+                    (newItem) => {
                         dispatch({
                             type: itemActions.CONTRACT_SUGGEST_ITEM_REMOVE,
                             payload: {
                                 id: "new_negotiate"
                             }
                         });
-                        return Promise.resolve();
+                        return Promise.resolve(newItem);
                     },
                     (error) => {
                         return helpers.parseError(error, dispatch);
