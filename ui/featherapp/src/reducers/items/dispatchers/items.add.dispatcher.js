@@ -4,35 +4,31 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 import {resolTypes} from "../../../services/chat.service";
 import * as helpers from "../../helpers"
 import * as itemActions from "../items.actions";
+import * as deadlineActions from "../../deadlines/deadlines.actions";
 
-export const addContractItem = (create_mode, new_id, new_name) => {
-    return dispatch => {
-        const new_item = {
-            name: "Item " + new_name,
-            id: new_id,
-            currentBody: "",
-            workerBody: "",
-            buyerBody: "",
+export const addItem = (contract_id, item_name, item_body, existing_item_names=[]) => {
+    if (item_name === "") {
+        let maxNum = 0
+        for (let i = 0; i < existing_item_names.length; i++) {
+            const name = existing_item_names[i].name
+            const split = name.split(" ")
+            const num = parseInt(split[split.length - 1])
+            if (num > maxNum) {
+                maxNum = num
+            }
         }
-        dispatch({
-            type: itemActions.CONTRACT_ITEM_ADD,
-            payload: new_item,
-        })
-        return Promise.resolve(new_item)
+        const newName = (maxNum + 1)
+        item_name="Item "+newName
     }
-}
-
-export const addItem = (contract_id, item_name, item_body) => {
+    
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
                     (newItem) => {
                         dispatch({
-                            type: itemActions.CONTRACT_SUGGEST_ITEM_REMOVE,
-                            payload: {
-                                id: "new_negotiate"
-                            }
+                            type: itemActions.CONTRACT_ITEM_ADD,
+                            payload: newItem,
                         });
                         return Promise.resolve(newItem);
                     },
@@ -82,6 +78,10 @@ export const updateLocalItemAdd = (msg) => {
                 type: itemActions.CONTRACT_ITEM_REMOVE,
                 payload: msg.body.item,
             });
+            dispatch({
+                type: deadlineActions.CONTRACT_DEADLINE_ITEM_PURGE,
+                payload: msg.body.item.id
+            })
         }
 
         

@@ -10,6 +10,7 @@ import {
     
     ContractCreateRequest,
     ContractUpdateRequest,
+    ContractDeleteDraftRequest,
     ContractFinishCreationRequest,
 
     QueryByUserRequest,
@@ -228,6 +229,7 @@ class ContractService {
         updateRequest.setPrice(this.generatePriceEntity(price_set));
         updateRequest.setPassword(password)
         updateRequest.setRole(role)
+        console.log("UPDATING W ITEMS: ", items)
 
         let i = 0
         for (const [_, item] of Object.entries(items)) {
@@ -254,6 +256,26 @@ class ContractService {
                 var resp = response.toObject();
                 resp.contract.role = resp.role
                 resolve(resp)
+            });
+        });
+    }
+
+    deleteContractDraft(token, user_id, contract_id) {
+
+        let deleteRequest = new ContractDeleteDraftRequest();   
+
+        deleteRequest.setContractId(contract_id)
+        deleteRequest.setUserId(user_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.deleteDraft(deleteRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                } else {
+                    resolve()
+                }
+                
             });
         });
     }
@@ -610,7 +632,7 @@ class ContractService {
     
     changeDeadlineItems(token, user_id, contract_id, deadline_id, item_ids) {
         let changeRequest = new ContractSuggestDeadlineItems();
-
+        console.log("SHIPPING IDS: ",item_ids )
         changeRequest.setDeadlineId(deadline_id)
         changeRequest.setUserId(user_id)
         changeRequest.setContractId(contract_id)

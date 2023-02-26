@@ -75,9 +75,46 @@ func (ci *ContractItem) NubProto() *comms.ItemNub {
 	return proto
 }
 
-func (deadline *ContractItem) Delete(database *mongo.Database) error {
-	filter := bson.D{{"_id", deadline.Id}}
-	_, err := database.Collection(DEADLINE_COL).DeleteOne(context.TODO(), filter)
+func (item *ContractItem) String() string {
+	if item == nil {
+		fmt.Sprintf("<no item>")
+	}
+	return fmt.Sprintf("<Item name: %s, id: %s>", item.Name, item.Id.Hex())
+}
+
+func (item *ContractItem) Replace(database *mongo.Database) error {
+	filter := bson.D{{"_id", item.Id}}
+	_, err := database.Collection(ITEM_COL).ReplaceOne(context.TODO(), filter, item)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (item *ContractItem) ReplaceFromReq(req *comms.ItemEntity, database *mongo.Database) (*ContractItem, error) {
+	new_item := &ContractItem{
+		Id:         item.Id,
+		Name:       req.Name,
+		ContractId: item.ContractId,
+
+		AwaitingApproval: req.AwaitingApproval,
+		AwaitingCreation: req.AwaitingCreation,
+		AwaitingDeletion: req.AwaitingDeletion,
+		CurrentBody:      req.CurrentBody,
+		WorkerBody:       req.WorkerBody,
+		BuyerBody:        req.BuyerBody,
+	}
+	filter := bson.D{{"_id", item.Id}}
+	_, err := database.Collection(ITEM_COL).ReplaceOne(context.TODO(), filter, new_item)
+	if err != nil {
+		return nil, err
+	}
+	return new_item, nil
+}
+
+func (item *ContractItem) Delete(database *mongo.Database) error {
+	filter := bson.D{{"_id", item.Id}}
+	_, err := database.Collection(ITEM_COL).DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return err
 	}

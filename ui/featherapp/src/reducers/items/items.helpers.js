@@ -1,7 +1,7 @@
 export const replaceSuggestItemCurCon = (items, replacement) => {
     let newItems = []
     for (let i = 0; i < items.length; i++) {
-        if (items[i].id !== "new_negotiate") {
+        if (items[i].id !== replacement.id) {
             newItems.push(items[i])
         }
     }

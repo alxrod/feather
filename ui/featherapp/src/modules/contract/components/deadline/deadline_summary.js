@@ -16,7 +16,12 @@ const DeadlineSummary = (props) => {
 
     const [timeoutId, setTimeoutId] = useState(-1)
     const [payoutValue, setPayout] = useState(0)
+    const [payoutDisplayVal, setPayoutDisplay] = useState(0)
 
+    useEffect(() => {
+      console.log("NEW VAL: ",payoutDisplayVal)
+    }, [payoutDisplayVal])
+    
     //Associated with editing mode not creation 
     const [payoutLock, setPayoutLock] = useState(false)
     const [payoutTextColor, setPayoutTextColor] = useState("text-gray-500")
@@ -25,8 +30,17 @@ const DeadlineSummary = (props) => {
     const [oldPayout, setOldPayout] = useState(0)
     // End editing mode variables
 
+    const [payoutError, setPayoutError] = useState("")
+    const [payoutErrorLevel, setPayourErrorLevel] = useState(0)
+
     const [proposedByPartner, setProposedByPartner] = useState(false)
     const [payoutMsgId, setPayoutMsgId] = useState("")
+
+    const [curPayoutPerc, setCurPayoutPerc] = useState(0)
+    useEffect(() => {
+      setCurPayoutPerc((payoutValue / props.curPrice).toFixed(4) * 100)
+    }, [props.deadline, payoutValue, props.curPrice])
+    const [prevPayoutPerc, setPrevPayoutPerc] = useState(0)
 
     useEffect(() => {
       if ((props.newDeadlineMode && !props.newDeadlineLocalMode) || props.deleteDeadlineMode || props.universalLock) {
@@ -49,18 +63,32 @@ const DeadlineSummary = (props) => {
     const isNumeric = (num) => {
       return !isNaN(num)
     }
-    const [payoutError, setPayoutError] = useState("")
-
 
     const changePayout = (e) => {
-      let newVal = parseInt(e.target.value)
-      if (e.target.value === "") {
-        newVal = 0
-      } else if (!isNumeric(e.target.value) || newVal < 0 || newVal > props.curPrice) {
-        setPayoutError("Payout must be between 0 and " + props.curPrice +" dollars")
+      if (!isNumeric(e.target.value)) {
+        setPayoutError("payout is numeric, letters are not allowed")
+        setPayourErrorLevel(3)        
         return
       }
-
+      setPayoutDisplay(e.target.value)
+      let newVal = parseInt(e.target.value)
+    
+      if (newVal == NaN) {
+        newVal = 0
+      } 
+      if (e.target.value === "") {
+        setPayoutError("you must specify a payout")
+        setPayourErrorLevel(3)        
+        return
+      } else if (newVal < 0 || newVal > props.curPrice) {
+        if (props.curPrice === 0) {
+          setPayoutError("Set up the total contract price before payouts")
+        } else {
+          setPayoutError("Payout must be between 0 and " + props.curPrice +" dollars")
+        }
+        setPayourErrorLevel(3)
+        return
+      }
       let payout_sum = 0
       for (let i = 0; i < props.deadlines.length; i++) {
         if (props.deadline.id !== props.deadlines[i].id) {
@@ -77,9 +105,11 @@ const DeadlineSummary = (props) => {
       }
       if (payout_sum > props.curPrice) {
         setPayoutError("The sum of all payouts must be " + props.curPrice + " or less")
+        setPayourErrorLevel(3)
         return
       } else {
         setPayoutError("")
+        setPayourErrorLevel(0)
       }
 
       // remember when cloning object dates get messed up
@@ -142,8 +172,10 @@ const DeadlineSummary = (props) => {
       }
       if (payout_sum < props.curPrice && !props.universalLock) {
         setPayoutError("you still have $" + (props.curPrice - payout_sum) + " of contract to allocate")
+        setPayourErrorLevel(0)
       } else {
         setPayoutError("")
+        setPayourErrorLevel(0)
       }
     }, [payoutValue])
 
@@ -168,6 +200,7 @@ const DeadlineSummary = (props) => {
 
     const rejectPayout = () => {
       setPayout(oldPayout)
+      setPayoutDisplay(oldPayout)
       togglePayoutEditInProgress(false)
       setPayoutTextColor("text-gray-500")
       setPayoutError("")
@@ -186,10 +219,19 @@ const DeadlineSummary = (props) => {
         if (props.deadline.payoutAwaitingApproval !== true) {
           if (props.role === WORKER_TYPE) {
             setPayout(props.deadline.workerPayout)
+            if (payoutErrorLevel !== 3) {
+              setPayoutDisplay(props.deadline.workerPayout)
+            }
           } else if (props.role === BUYER_TYPE) {
             setPayout(props.deadline.buyerPayout)
+            if (payoutErrorLevel !== 3) {
+              setPayoutDisplay(props.deadline.buyerPayout)
+            }
           } else {
             setPayout(props.deadline.currentPayout)
+            if (payoutErrorLevel !== 3) {
+              setPayoutDisplay(props.deadline.currentPayout)
+            }
           }
           payoutLockShould = false
           setPayoutTextColor("text-gray-500")
@@ -203,15 +245,27 @@ const DeadlineSummary = (props) => {
             setProposedByPartner(false)
             if (props.role === BUYER_TYPE) {
               setPayout(props.deadline.buyerPayout)
+              if (payoutErrorLevel !== 3) {
+                setPayoutDisplay(props.deadline.buyerPayout)
+              }
             } else if (props.role === WORKER_TYPE) {
               setPayout(props.deadline.workerPayout)
+              if (payoutErrorLevel !== 3) {
+                setPayoutDisplay(props.deadline.workerPayout)
+              }
             }
           } else {
             setProposedByPartner(true)
             if (props.role === BUYER_TYPE) {
               setPayout(props.deadline.workerPayout)
+              if (payoutErrorLevel !== 3) {
+                setPayoutDisplay(props.deadline.workerPayout)
+              }
             } else if (props.role === WORKER_TYPE) {
               setPayout(props.deadline.buyerPayout)
+              if (payoutErrorLevel !== 3) {
+                setPayoutDisplay(props.deadline.buyerPayout)
+              }
             }
           }
         }
@@ -223,11 +277,6 @@ const DeadlineSummary = (props) => {
       }
     }, [props.deadline, props.reloadDeadlines])
 
-    const [curPayoutPerc, setCurPayoutPerc] = useState(0)
-    useEffect(() => {
-      setCurPayoutPerc((payoutValue / props.curPrice).toFixed(4) * 100)
-    }, [props.deadline, payoutValue, props.curPrice])
-    const [prevPayoutPerc, setPrevPayoutPerc] = useState(0)
 
     useEffect(() => {
       let total = 0.0
@@ -263,7 +312,11 @@ const DeadlineSummary = (props) => {
                   <label htmlFor="company-website" className="block text-sm font-medium text-gray-700">
                     Payout
                   </label>
-                  <p className="text-red text-sm">{payoutError}</p>
+                  <p 
+                    className={"text-sm " + (payoutErrorLevel === 3 ? "text-red-400" : payoutErrorLevel === 0 ? "text-gray-400" : "")}
+                  >
+                    {payoutError}
+                  </p>
                 </div>
 
                 <div className="my-1 max-w-sm h-5 flex flex-col justify-end">
@@ -315,16 +368,16 @@ const DeadlineSummary = (props) => {
                 <div className="flex flex-row items-center max-w-sm">
                   <div className="grow mt-1 relative flex items-center rounded-md shadow-sm">
                     <span className="absolute inset-y-0 left-0 px-3 flex items-center pointer-events-none rounded-l-md border border-r-1 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                      Percentage
+                      Amount ($)
                     </span>
                     {(payoutLock == false) ? (
                       <input
                         type="text"
                         name="payout"
                         id="payout"
-                        className={payoutTextColor + " text-right focus:ring-primary4 focus:border-primary4 block w-full pl-28 pr-12 sm:text-sm border-gray-300 rounded-md"}
-                        value={payoutValue}
-                        placeholder="0"
+                        className={(payoutErrorLevel === 3 ? "text-red-400" : payoutTextColor) + " text-right focus:ring-primary4 focus:border-primary4 block w-full pl-28 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                        value={payoutDisplayVal}
+                        placeholder=""
                         onChange={changePayout}
                         disabled={props.disabled || payoutLock}
                       />
@@ -334,7 +387,7 @@ const DeadlineSummary = (props) => {
                           type="text"
                           name="price"
                           id="price"
-                          className={payoutTextColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                          className={(payoutErrorLevel === 3 ? "text-red-400" : payoutTextColor) + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                           value={""}
                           disabled={props.disabled || payoutLock}
                         />
@@ -350,7 +403,7 @@ const DeadlineSummary = (props) => {
                           type="text"
                           name="price"
                           id="price"
-                          className={payoutTextColor + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
+                          className={(payoutErrorLevel === 3 ? "text-red-400" : payoutTextColor) + " focus:ring-primary4 focus:border-primary4 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"}
                           value={""}
                           disabled={props.disabled || payoutLock}
                         />
@@ -375,7 +428,7 @@ const DeadlineSummary = (props) => {
                       </span>
                     </div>
                   </div>
-                  {payoutEditInProgress && (
+                  {payoutEditInProgress && !(payoutErrorLevel === 3) && (
                     <div className="mt-1 ml-2 ">
                       <DecideButton approve={submitPayout} reject={rejectPayout}/>
                     </div>

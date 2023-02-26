@@ -20,6 +20,7 @@ const ContractInvite = (props) => {
     title: "",
     buyer: {id: "", username: ""},
     worker: {id: "", username: ""},
+    password: "",
     summary: "",
     deadline: new Date()
   })
@@ -60,6 +61,12 @@ const ContractInvite = (props) => {
     console.log("Coppying link")
     navigator.clipboard.writeText(process.env.REACT_APP_FRONTEND_SITE_BASE+"/invite/"+contractId);
     setCopyMessage("Copied link to your clipboard")
+  }
+
+  const copyPwordToClipboard = () => {
+    console.log("Coppying link")
+    navigator.clipboard.writeText(inviteBody.password);
+    setCopyMessage("Copied password to your clipboard")
   }
   useEffect( () => {
     if (inviteBody.id === "") {
@@ -121,9 +128,9 @@ const ContractInvite = (props) => {
               <>
                 <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
                   We are still waiting for your partner to accept the invite to the contract. Send them 
-                  {" "}<a className="font-medium text-primary5" href="#" onClick={copyLinkToClipboard}>this link</a>{" "} 
+                  {" "}<button className="font-medium text-primary4 focus:text-primary5 mr-1"  onClick={copyLinkToClipboard}>this link</button> 
                   and give then the contract password 
-                  {" ("}<b className="font-medium text-primary5">{inviteBody.password}</b>{") "}to accept.
+                  <button className="font-medium text-primary4 focus:text-primary5 mr-1" onClick={copyPwordToClipboard}>{" ("}{inviteBody.password}{") "}</button>to accept.
                 </p>
                 <p className="mt-1 text-primary5">{copyMessage}</p>
               </>

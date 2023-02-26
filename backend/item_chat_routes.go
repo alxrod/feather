@@ -52,9 +52,14 @@ func (s *BackServer) SuggestItem(ctx context.Context, req *comms.ContractSuggest
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Item Updated, attempting to send message")
 
-	err = s.ChatAgent.SendItemMessage(item, contract, user, req.NewBody, oldBody, db.SUGGEST, database)
+	if !contract.RoomId.IsZero() {
+		log.Println("Item Updated, attempting to send message")
+		err = s.ChatAgent.SendItemMessage(item, contract, user, req.NewBody, oldBody, db.SUGGEST, database)
+		if err != nil {
+			return nil, err
+		}
+	}
 	// log.Println("Finished attempting to send message")
 	// if err != nil {
 	// 	return nil, err
@@ -196,7 +201,10 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 		return nil, err
 	}
 
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if contract.Stage == db.CREATE {
+		req.Item.AwaitingApproval = false
+		req.Item.AwaitingCreation = false
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer != nil {
 			req.Item.AwaitingApproval = true
 			req.Item.AwaitingCreation = true
@@ -228,13 +236,16 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Item Updated, attempting to send message")
 
-	err = s.ChatAgent.SendItemCreateMessage(item, contract, user, db.SUGGEST, database)
-	// log.Println("Finished attempting to send message")
-	if err != nil {
-		return nil, err
+	if !contract.RoomId.IsZero() {
+		log.Println("Item Updated, attempting to send message")
+		err = s.ChatAgent.SendItemCreateMessage(item, contract, user, db.SUGGEST, database)
+		// log.Println("Finished attempting to send message")
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	// log.Println("Price Message Broadcast")
 	itemProtos := make([]*comms.ItemEntity, len(contract.Items))
 	for i, item := range contract.Items {
@@ -395,25 +406,28 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 		return nil, err
 	}
 
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if contract.Stage == db.CREATE {
+		item.AwaitingApproval = false
+		item.AwaitingDeletion = false
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer != nil {
-			req.Item.AwaitingApproval = true
-			req.Item.AwaitingDeletion = true
+			item.AwaitingApproval = true
+			item.AwaitingDeletion = true
 		} else {
-			req.Item.AwaitingApproval = false
-			req.Item.AwaitingDeletion = false
+			item.AwaitingApproval = false
+			item.AwaitingDeletion = false
 		}
 	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
 		if contract.Worker != nil {
-			req.Item.AwaitingApproval = true
-			req.Item.AwaitingDeletion = true
+			item.AwaitingApproval = true
+			item.AwaitingDeletion = true
 		} else {
-			req.Item.AwaitingApproval = false
-			req.Item.AwaitingDeletion = false
+			item.AwaitingApproval = false
+			item.AwaitingDeletion = false
 		}
 	} else if user.AdminStatus {
-		req.Item.AwaitingApproval = false
-		req.Item.AwaitingDeletion = false
+		item.AwaitingApproval = false
+		item.AwaitingDeletion = false
 	} else {
 		return nil, errors.New("Invalid proposing user")
 	}
@@ -422,15 +436,17 @@ func (s *BackServer) SuggestDeleteItem(ctx context.Context, req *comms.ContractS
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Item Updated, attempting to send message")
 
-	err = s.ChatAgent.SendItemDeleteMessage(item, contract, user, db.SUGGEST, database)
-	// log.Println("Finished attempting to send message")
-	if err != nil {
-		return nil, err
+	if !contract.RoomId.IsZero() {
+		log.Printf("Item Updated, attempting to send message w status %b and %b", item.AwaitingApproval, item.AwaitingDeletion)
+		err = s.ChatAgent.SendItemDeleteMessage(item, contract, user, db.SUGGEST, database)
+		// log.Println("Finished attempting to send message")
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	if req.Item.AwaitingDeletion == false {
+	if item.AwaitingDeletion == false {
 		err := db.ContractRemoveItem(item, contract, user, database)
 		if err != nil {
 			return nil, err

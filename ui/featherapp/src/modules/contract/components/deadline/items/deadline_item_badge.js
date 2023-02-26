@@ -24,7 +24,7 @@ export default (props) => {
             if (props.selected) {
                 setDotStyle("bg-red-400")
                 setTextStyle("text-red-400")
-                setBorderStyle("border border-2 border-red")
+                setBorderStyle("border-2 border-red")
                 setXColor("text-red-400");
             } else {
                 setBorderStyle("border border-gray-300")
@@ -37,7 +37,7 @@ export default (props) => {
                 setTextStyle("text-gray-900")
                 setDotStyle("bg-primary4")
                 setXColor("text-gray-400")
-                setBorderStyle("border border-2 border-primary4")
+                setBorderStyle("border-2 border-primary4")
             } else {
                 setBorderStyle("border border-gray-300")
                 setTextStyle("text-gray-900")

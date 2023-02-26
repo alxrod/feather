@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
-import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { genEmptyContract } from '../../../services/contract.service';
 import { contractStages } from '../../../services/contract.service';
 
@@ -52,6 +52,7 @@ const ContractNegotiate = (props) => {
 
   useEffect(() => {
     if (contractItemIds !== undefined) {
+      console.log("ITEMS: ", props.curConItems)
       let ids = []
       let max = 0
       for (let i = 0; i < props.curConItems.length; i++) {
@@ -68,9 +69,8 @@ const ContractNegotiate = (props) => {
   }, [contract, props.contractItemsChanged, props.curConItems.length])
 
 
-
-  const addContractItem = () => {
-    props.addContractItem(false, "new_negotiate", nextContractName)
+  const addItem = (name, body) => {
+    props.addItem(props.curContract.id, name, body, props.curConItems)
     toggleAddItemMode(true)
   }
 
@@ -101,14 +101,11 @@ const ContractNegotiate = (props) => {
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+              <ContractItem createMode={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
             </div>
           ))}
         </div>
-        {(!addItemMode) && (
-          <NewContractItem addContractItem={addContractItem}/>
-        )}
-        
+        <NewContractItem addItem={addItem} createMode={false}/>
       </div>
     </>
 	)
@@ -124,7 +121,7 @@ const mapStateToProps = ({ user, contract, items}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   queryContract,
-  addContractItem,
+  addItem,
   push,
 }, dispatch)
 

@@ -370,6 +370,11 @@ message ContractSettleItemRequest {
     uint32 new_state = 5;
 }
 
+message ContractDeleteDraftRequest {
+    string user_id = 1;
+    string contract_id = 2;
+}
+
 message NullResponse {}
 
 message ContractEditResponse {}
@@ -377,6 +382,8 @@ message ContractEditResponse {}
 service Contract {
 
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
+    rpc DeleteDraft(ContractDeleteDraftRequest) returns (ContractEditResponse) {};
+
     rpc UpdateDraft(ContractUpdateRequest) returns (ContractResponse) {};
     rpc FinishCreation(ContractFinishCreationRequest) returns (ContractResponse) {}
 

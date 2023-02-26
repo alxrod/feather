@@ -4,6 +4,7 @@ import * as helpers from "./deadlines.helpers";
 const initialState = {
     deadlines: [],
     deadlinesChanged: false,
+    deadlinesPurged: false,
     redrawDisplay: false,
 }
 
@@ -14,6 +15,7 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 deadlinesChanged: !state.deadlinesChanged,
+                deadlinesPurged: !state.deadlinesPurged,
                 deadlines: helpers.purgeItem(state.deadlines, action.payload)
             }
         case actions.CONTRACT_UPDATE_PAYOUT:

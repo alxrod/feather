@@ -1,7 +1,42 @@
-const NewContractButton = (props) => {
-    const handleClick = (e) => {
-      // console.log("Printed Clicks")
-      props.addContractItem()
+import React, {useState, useEffect} from 'react'
+import TempContractItem from "./temp_contract_item"
+
+const NewContractItem = (props) => {
+
+    const [tempOpen, setTempOpen] = useState(false)
+    const [itemName, setItemName] = useState("")
+    const [itemBody, setItemBody] = useState("")
+
+    const handleClick = () => {
+      if (props.createMode) {
+        props.addItem(itemName, itemBody)
+      } else {
+        setTempOpen(true)
+      }      
+    }
+
+    const submitItem = () => {
+      props.addItem(itemName, itemBody)
+      setItemName("")
+      setItemBody("")
+      setTempOpen(false)
+    }
+    const discardItem = () => {
+      setItemName("")
+      setItemBody("")
+      setTempOpen(false)
+    }
+    if (tempOpen) {
+      return (
+        <TempContractItem
+          name={itemName}
+          setName={setItemName}
+          body={itemBody}
+          setBody={setItemBody}
+          submitItem={submitItem}
+          discardItem={discardItem}
+        />   
+      )
     }
     return (
       <button
@@ -26,4 +61,4 @@ const NewContractButton = (props) => {
     )
 }
 
-export default NewContractButton
+export default NewContractItem

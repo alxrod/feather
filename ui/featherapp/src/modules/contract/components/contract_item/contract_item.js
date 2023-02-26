@@ -1,4 +1,4 @@
-import React, {Fragment, useState, useEffect, useMemo} from 'react';
+import React, {Fragment, useState, useEffect, useMemo, useRef} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
@@ -16,8 +16,10 @@ import { deleteItem, reactDeleteItem, deleteSuggestContractItem } from "../../..
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 import { contractStages } from "../../../../services/contract.service"
 
+import ItemNameInput from "./item_name_input"
 
 const SAVE_TIME = 350
+
 
 const ContractItem = (props) => {  
   const [contract_info, setContractInfo] = useState({
@@ -49,7 +51,7 @@ const ContractItem = (props) => {
     if (props.contractItemsChanged) {
       i += 1
     }
-    if (props.override) {
+    if (props.createMode) {
       return contract_info.currentBody
     } else if (role === WORKER_TYPE) {
       return contract_info.workerBody
@@ -111,7 +113,7 @@ const ContractItem = (props) => {
   }, [props.messages.length, props.deadline])
 
   useEffect( () => {
-    if (props.override) {
+    if (props.createMode) {
       return
     }
     if (props.user !== null && props.curContract.id) {
@@ -147,7 +149,7 @@ const ContractItem = (props) => {
 
   const setContractText = (new_text) => {
     let new_contract_info = JSON.parse(JSON.stringify(contract_info));
-    if (props.override === true) {
+    if (props.createMode === true) {
       new_contract_info.currentBody = new_text;
       new_contract_info.workerBody = new_text;
       new_contract_info.buyerBody = new_text;
@@ -162,7 +164,7 @@ const ContractItem = (props) => {
     }
     setContractInfo(new_contract_info);
 
-    if (props.override) {
+    if (props.createMode) {
       if (saveTimeoutId !== -1) {
         clearTimeout(saveTimeoutId);
       }
@@ -176,7 +178,7 @@ const ContractItem = (props) => {
   }
 
   const submitBodyEdit = () => {
-    if (!props.override) {
+    if (!props.createMode) {
       props.suggestItem(props.curContract.id, props.id, item_text)
       toggleDecideMode(false)
     }
@@ -216,21 +218,14 @@ const ContractItem = (props) => {
     }
   }
 
-  const deleteItem = () => {
-    if (props.suggestMode) {
-      props.deleteSuggestContractItem(props.id)
-    }
-  }
 
   const suggestDeleteItem = () => {
-    if (props.override) {
-      // console.log("DELETING IN CREATE MODE")
-      props.deleteSuggestContractItem(props.id)
-      return
-    }
-    // console.log(contract_info)
-    props.deleteItem(props.curContract.id, contract_info.id, contract_info.name, contract_info.currentBody)
+    props.deleteItem(props.curContract.id, contract_info.id, contract_info.name, contract_info.currentBody, props.createMode)
   }
+  
+  const inputSpan = useRef()
+  const [content, setContent] = useState("Item 1")
+  const [inputWidth, setInputWidth] = useState(100)
 
   if (props.embedded === true) {
     return (
@@ -240,22 +235,25 @@ const ContractItem = (props) => {
           embedded={props.embedded} 
           role={role} 
           contract_info={contract_info} 
-          override={props.override} 
+          override={props.createMode} 
           text_body={item_text} 
-          disabled={props.disabled || (!props.override && lock)} 
+          disabled={props.disabled || (!props.createMode && lock)} 
           set_text={setContractText}
         />
-        <div className="absolute z-10 bottom-5 right-5">
-          {(!props.override && lock) && (
+        <div className="absolute z-10 bottom-5 right-5 flex">
+          {(contract_info.awaitingDeletion && !proposedByPartner) && (
+            <h3 className="text-gray-400 mr-2 text-md">(awaiting approval to delete)</h3>
+          )}
+          {(!props.createMode && lock) && (
             <LockClosedIcon className="ml-1 w-6 h-6 text-gray-500"/>
           )}
-          {(!props.override && props.suggestMode) && (
+          {(props.suggestMode) && (
             <div className="flex items-center">
               <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
-              <DecideButton approve={addItem} reject={deleteItem}/>
+              <DecideButton approve={addItem} reject={suggestDeleteItem}/>
             </div>
           )}
-          {(!props.override && !lock && decideMode && !props.suggestMode) && (
+          {(!props.createMode && !lock && decideMode && !props.suggestMode) && (
             <div className="flex items-center">
               <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
               <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
@@ -288,38 +286,36 @@ const ContractItem = (props) => {
       </div>
     )
   }
+
   return (
     <div className={"bg-white shadow sm:rounded-lg "  + (contract_info.awaitingCreation ? "border-2 border-green-400" : "") + (contract_info.awaitingDeletion ? "border-2 border-red-400" : "")}>
       <div className="px-2 py-5 sm:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <a
-                href="#"
-                className={"relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-lg "}
-              >
-                <span className="absolute flex-shrink-0 flex items-center justify-center">
-                <span
-                    className='bg-primary4 h-1.5 w-1.5 rounded-full'
-                    aria-hidden="true"
-                />
-                </span>
-                <span className="ml-3.5 font-medium text-gray-900">{contract_info.name}</span>
-              </a>
-              {(!props.override && lock) && (
+              <ItemNameInput
+                value={contract_info.name}
+                setValue={(name) => {contract_info.name = name}}
+                // disabled={!props.createMode}
+                disabled={true}
+              />
+              {(!props.createMode && lock) && (
                 <LockClosedIcon className="ml-1 w-6 h-6 text-gray-500"/>
               )}
-              {(!props.override && !lock)  && (
+              {(!props.createMode && !lock)  && (
                 <LockOpenIcon className="ml-1 w-6 h-6 text-gray-500"/>
+              )}
+              {(contract_info.awaitingDeletion && !proposedByPartner) && (
+                <h3 className="text-gray-400 mr-2 text-md">(awaiting approval to delete)</h3>
               )}
             </div>
               <div>
-                {(!props.override && props.suggestMode) && (
+                {(!props.createMode && props.suggestMode) && (
                   <div className="flex items-center">
                     <h3 className="text-gray-400 mr-2 text-md">Save your new item</h3>
                     <DecideButton approve={addItem} reject={deleteItem}/>
                   </div>
                 )}
-                {(!props.override && !lock && decideMode && !props.suggestMode) && (
+                {(!props.createMode && !lock && decideMode && !props.suggestMode) && (
                   <div className="flex items-center">
                     <h3 className="text-gray-400 mr-2 text-md">Save your changes</h3>
                     <DecideButton approve={submitBodyEdit} reject={rejectBodyEdit}/>
@@ -352,7 +348,7 @@ const ContractItem = (props) => {
           </div>
 
         <div className="mt-2 mr-2 text-sm text-gray-500">
-          <ItemTextArea item_id={props.id} lock={lock} override={props.override} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
+          <ItemTextArea item_id={props.id} lock={lock} override={props.createMode} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
         </div>
       </div>
     </div>
@@ -375,7 +371,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   reactDeleteItem,
   addItem,
   deleteItem,
-  deleteSuggestContractItem,
 }, dispatch)
 
 export default connect(

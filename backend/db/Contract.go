@@ -326,7 +326,19 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 	return contract, nil
 }
 
-func (old_contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *User, database *mongo.Database) (*Contract, error) {
+func (contract *Contract) DeleteDraft(user *User, database *mongo.Database) error {
+	if (contract.Buyer != nil && user.Id != contract.Buyer.Id) || (contract.Worker != nil && user.Id != contract.Worker.Id) {
+		return errors.New("User is not owner of contract draft")
+	}
+	if contract.Stage != CREATE {
+		return errors.New("Contract is not in create stage")
+	}
+	filter := bson.D{{"_id", contract.Id}}
+	_, err := database.Collection(CON_COL).DeleteOne(context.TODO(), filter)
+	return err
+}
+
+func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *User, database *mongo.Database) (*Contract, error) {
 	var price *PriceNub
 	if req.Role == WORKER {
 		price = &PriceNub{
@@ -348,31 +360,32 @@ func (old_contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user
 
 	stage := CREATE
 
-	new_contract := &Contract{
-		Price:          price,
-		Title:          req.Title,
-		Summary:        req.Summary,
-		Password:       req.Password,
-		CreationTime:   time.Now(),
-		Stage:          stage,
-		WorkerApproved: false,
-		BuyerApproved:  false,
-		UniversalLock:  true,
-	}
+	contract.Price = price
+	contract.Title = req.Title
+	contract.Summary = req.Summary
+	contract.Password = req.Password
+	contract.CreationTime = time.Now()
+	contract.Stage = stage
+	contract.WorkerApproved = false
+	contract.BuyerApproved = false
+	contract.UniversalLock = true
+
 	if req.Role == WORKER {
-		new_contract.Worker = user.Nub(true)
+		contract.Worker = user.Nub(true)
+		contract.Buyer = nil
 	} else {
-		new_contract.Buyer = user.Nub(true)
+		contract.Buyer = user.Nub(true)
+		contract.Worker = nil
 	}
 
-	filter := bson.D{{"_id", old_contract.Id}}
-	new_contract.Id = old_contract.Id
-	_, err := database.Collection(CON_COL).ReplaceOne(context.TODO(), filter, new_contract)
+	filter := bson.D{{"_id", contract.Id}}
+
+	_, err := database.Collection(CON_COL).ReplaceOne(context.TODO(), filter, contract)
 	if err != nil {
 		return nil, err
 	}
 
-	new_contract, err = UpdateContractItems(new_contract, req.Items, database)
+	contract, err = UpdateContractItems(contract, req.Items, database)
 	if err != nil {
 		return nil, err
 	}
@@ -380,12 +393,12 @@ func (old_contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user
 	// if len(req.Deadlines) < 2 {
 	// 	return nil, errors.New("Your contract must have at least a start and end deadline")
 	// }
-	new_contract, err = UpdateContractDeadlines(new_contract, user, req.Deadlines, database)
+	contract, err = UpdateContractDeadlines(contract, user, req.Deadlines, database)
 	if err != nil {
 		return nil, err
 	}
 
-	return new_contract, nil
+	return contract, nil
 }
 
 func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (*Contract, error) {
@@ -421,68 +434,97 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 }
 
 func UpdateContractDeadlines(contract *Contract, user *User, deadlines []*comms.DeadlineEntity, database *mongo.Database) (*Contract, error) {
-	if len(contract.Deadlines) > 0 {
-		for _, deadline := range contract.Deadlines {
-			deadline.Delete(database)
+	if len(deadlines) > 0 {
+		contractDeadlines := make([]*Deadline, len(deadlines))
+		deadline_ids := make([]primitive.ObjectID, len(deadlines))
+		keepDeadlines := make([]bool, len(contract.Deadlines))
+
+		for idx, deadline := range deadlines {
+			var res *Deadline
+			if len(deadline.Id) > 0 {
+
+				for idx, existing_deadline := range contract.Deadlines {
+					if existing_deadline.Id.Hex() == deadline.Id {
+						res, _ = existing_deadline.ReplaceFromReq(deadline, database)
+						keepDeadlines[idx] = true
+					}
+				}
+			} else {
+				res, _ = DeadlineInsert(deadline, user.Id, contract.Id, contract.Items, database)
+			}
+			if res == nil {
+				return contract, fmt.Errorf("Couldn't update deadline %s", deadline.Id)
+			}
+			contractDeadlines[idx] = res
+			deadline_ids[idx] = res.Id
 		}
-	}
-	contractDeadlines := make([]*Deadline, len(deadlines))
-	deadline_ids := make([]primitive.ObjectID, len(deadlines))
-	for idx, deadline := range deadlines {
-		res, err := DeadlineInsert(deadline, user.Id, contract.Id, contract.Items, database)
+
+		for idx, status := range keepDeadlines {
+			if !status {
+				contract.Deadlines[idx].Delete(database)
+			}
+		}
+		contract.Deadlines = contractDeadlines
+		contract.DeadlineIds = deadline_ids
+
+		nextDeadline, err := contract.NextDeadline()
 		if err != nil {
 			return nil, err
 		}
-		contractDeadlines[idx] = res
-		deadline_ids[idx] = res.Id
-	}
-	contract.Deadlines = contractDeadlines
-	contract.DeadlineIds = deadline_ids
+		if nextDeadline == nil {
+			nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
+		}
+		contract.CurrentDeadline = nextDeadline
+		contract.CurrentDeadlineId = nextDeadline.Id
 
-	nextDeadline, err := contract.NextDeadline()
-	if err != nil {
-		return nil, err
-	}
-	if nextDeadline == nil {
-		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
-	}
-	contract.CurrentDeadline = nextDeadline
-	contract.CurrentDeadlineId = nextDeadline.Id
-
-	filter := bson.D{{"_id", contract.Id}}
-	update := bson.D{{
-		"$set",
-		bson.D{
-			{"deadline_ids", deadline_ids},
-			{"current_deadline_id", contract.CurrentDeadlineId},
-		},
-	}}
-	_, err = database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with deadline ids")))
-		return nil, err
+		filter := bson.D{{"_id", contract.Id}}
+		update := bson.D{{
+			"$set",
+			bson.D{
+				{"deadline_ids", deadline_ids},
+				{"current_deadline_id", contract.CurrentDeadlineId},
+			},
+		}}
+		_, err = database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to update contract with deadline ids")))
+			return nil, err
+		}
 	}
 	return contract, nil
 }
 
 // gotta delete this
 func UpdateContractItems(contract *Contract, items []*comms.ItemEntity, database *mongo.Database) (*Contract, error) {
-	if len(contract.Items) > 0 {
-		for _, item := range contract.Items {
-			item.Delete(database)
-		}
-	}
 	if len(items) > 0 {
 		itemsCollection := database.Collection(ITEM_COL)
 		contractItems := make([]*ContractItem, len(items))
 		item_ids := make([]primitive.ObjectID, len(items))
+		keepItems := make([]bool, len(contract.Items))
+
 		for idx, item := range items {
-			res, err := ItemInsert(item, contract.Id, itemsCollection)
-			if err != nil {
-				return nil, err
+			var res *ContractItem
+			if len(item.Id) > 0 {
+				for idx, existing_item := range contract.Items {
+					if existing_item.Id.Hex() == item.Id {
+
+						res, _ = existing_item.ReplaceFromReq(item, database)
+						keepItems[idx] = true
+					}
+				}
+			} else {
+				res, _ = ItemInsert(item, contract.Id, itemsCollection)
+			}
+			if res == nil {
+				return contract, fmt.Errorf("Couldn't update item %s", item.String())
 			}
 			contractItems[idx] = res
 			item_ids[idx] = res.Id
+		}
+		for idx, status := range keepItems {
+			if !status {
+				contract.Items[idx].Delete(database)
+			}
 		}
 
 		contract.Items = contractItems

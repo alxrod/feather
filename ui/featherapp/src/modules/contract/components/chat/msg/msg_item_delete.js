@@ -38,6 +38,7 @@ const ItemDeleteMsg = (props) => {
     const now = (new Date()).getTime()/1000;
     if (props.reloaded === true || (now - props.msg.timestamp.seconds) < 5) {
       if ((version+1) > 1) {
+        
         props.updateLocalItemDelete(props.msg)
       }
       setVersion(version+1)

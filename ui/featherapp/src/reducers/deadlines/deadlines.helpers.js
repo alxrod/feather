@@ -1,10 +1,10 @@
 
-export const purgeItem = (deadlines, item) => {
+export const purgeItem = (deadlines, item_id) => {
     for (let i = 0; i < deadlines.length; i++) {
         const newItems = []
         const newStates = []
         for (let j = 0; j < deadlines[i].itemsList.length; j++) {
-            if (deadlines[i].itemsList[j].id !== item.id) {
+            if (deadlines[i].itemsList[j].id !== item_id) {
                 newItems.push(deadlines[i].itemsList[j])
                 newStates.push(deadlines[i].itemStatesList[j])
             }

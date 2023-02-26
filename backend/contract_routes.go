@@ -71,6 +71,33 @@ func (s *BackServer) UpdateDraft(ctx context.Context, req *comms.ContractUpdateR
 
 }
 
+func (s *BackServer) DeleteDraft(ctx context.Context, req *comms.ContractDeleteDraftRequest) (*comms.ContractEditResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := db.ContractById(contractId, database)
+	if err != nil {
+		return nil, err
+	}
+	err = contract.DeleteDraft(user, database)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+
+}
+
 func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFinishCreationRequest) (*comms.ContractResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
@@ -96,9 +123,9 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 	}
 
 	var role uint32
-	if contract.Worker.Id == user.Id {
+	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		role = db.WORKER
-	} else if contract.Buyer.Id == user.Id {
+	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
 		role = db.BUYER
 	} else {
 		return nil, errors.New("You are neither a worker or buyer of this contract")

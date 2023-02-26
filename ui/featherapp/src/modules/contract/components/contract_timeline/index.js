@@ -46,7 +46,7 @@ export default function ContractTimeline(props) {
             ) : step.status === 'current' ? (
               <div className="group flex w-full items-center py-1">
                 <span className="flex items-center justify-center w-full text-sm font-medium" >
-                  <span className="ml-2 text-sm font-medium text-primary5 hidden sm:flex">{step.name}</span>
+                  <span className="ml-2 text-sm font-semibold text-primary5 hidden sm:flex">{step.name}</span>
                 </span>
               </div>
             ) : (

@@ -41,6 +41,7 @@ export const queryContract = (contract_id) => {
                             type: contractActions.CONTRACT_PULL_CURRENT,
                             payload: data,
                         });
+                        console.log("ALL ITEMS: ", data.itemsList)
                         dispatch({
                             type: itemActions.CONTRACT_ITEM_LOAD,
                             payload: data.itemsList,
@@ -117,8 +118,12 @@ export const createContract = (title, summary, price_set, deadlines, items, pass
                             type: contractActions.CONTRACT_CREATE,
                             payload: data.contract
                         });
-                        // console.log("Finished Contract Creation")
-                        // console.log(data)
+                        const nextURL = document.URL.split("/new")[0]+"/"+data.contract.id
+                        const nextTitle = 'Feather';
+                        const nextState = {};
+    
+                        // This will replace the current entry in the browser's history, without reloading
+                        window.history.replaceState(nextState, nextTitle, nextURL);
                         return Promise.resolve();
                     },
                     (error) => {
@@ -150,6 +155,26 @@ export const updateContract = (contract_id, title, summary, price_set, deadlines
                         });
                         // console.log("Finished Contract Creation")
                         // console.log(data)
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error);
+                    }
+                );
+            },
+            () => {
+                helpers.bailAuth(dispatch)
+            }
+        );
+    }
+};
+
+export const deleteContractDraft = (contract_id) => {
+    return dispatch => {
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.deleteContractDraft(creds.access_token, creds.user_id, contract_id).then(
+                    () => {
                         return Promise.resolve();
                     },
                     (error) => {

@@ -140,6 +140,67 @@ proto.main.ContractPromiseClient.prototype.create =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.main.ContractDeleteDraftRequest,
+ *   !proto.main.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_DeleteDraft = new grpc.web.MethodDescriptor(
+  '/main.Contract/DeleteDraft',
+  grpc.web.MethodType.UNARY,
+  proto.main.ContractDeleteDraftRequest,
+  proto.main.ContractEditResponse,
+  /**
+   * @param {!proto.main.ContractDeleteDraftRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.main.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.main.ContractDeleteDraftRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.main.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.main.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.main.ContractClient.prototype.deleteDraft =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/main.Contract/DeleteDraft',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_DeleteDraft,
+      callback);
+};
+
+
+/**
+ * @param {!proto.main.ContractDeleteDraftRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.main.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.main.ContractPromiseClient.prototype.deleteDraft =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/main.Contract/DeleteDraft',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_DeleteDraft);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.main.ContractUpdateRequest,
  *   !proto.main.ContractResponse>}
  */

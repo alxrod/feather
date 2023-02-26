@@ -62,11 +62,11 @@ const CalendarModal = (props) => {
     let final_msg_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.DEADLINE_CREATE) {
-        if (props.messages[i].body.deadline.id === props.deadlines[selected].id) {
+        if (props.messages[i].body.deadline.id === props.deadlines[selected]?.id) {
           final_msg_id = props.messages[i].id
         }
       } else if (props.messages[i].method === msgMethods.DEADLINE_DELETE) {
-        if (props.messages[i].body.deadline.id === props.deadlines[selected].id) {
+        if (props.messages[i].body.deadline.id === props.deadlines[selected]?.id) {
           final_msg_id = props.messages[i].id
         }
       } 
@@ -399,6 +399,7 @@ const CalendarModal = (props) => {
                               newDeadlineLocalMode={newDeadlineLocalMode}
                               deadline={props.deadlines[selected] ? props.deadlines[selected] : genEmptyDeadline(new Date())}
                               editDeadline={props.editDeadline}
+                              saveDeadlines={props.saveDeadlines}
                             />
                           </div>
                           <div className="p-2 flex flex-col ml-1">

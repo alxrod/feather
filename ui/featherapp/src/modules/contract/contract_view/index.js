@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
 import { toggleLock } from "../../../reducers/contract/dispatchers/contract.lock.dispatcher"
-import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { genEmptyContract } from '../../../services/contract.service';
 import { contractStages } from '../../../services/contract.service';
 
@@ -71,8 +71,8 @@ const ContractDraft = (props) => {
     }
   }, [props.curContract, props.contractItemsChanged, props.curConItems.length])
 
-  const addContractItem = () => {
-    props.addContractItem(false, "new_negotiate", nextItemName)
+  const addItem = (name, body) => {
+    props.addItem(props.curContract.id, name, body, props.curConItems)
     toggleAddItemMode(true)
   }
 
@@ -113,12 +113,12 @@ const ContractDraft = (props) => {
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem universalLock={universalLock} override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+              <ContractItem universalLock={universalLock} createMode={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
             </div>
           ))}
         </div>
         {(!addItemMode && !universalLock) && (
-          <NewContractItem addContractItem={addContractItem}/>
+          <NewContractItem addItem={addItem} createMode={false}/>
         )}  
       </div>
     </>
@@ -134,7 +134,7 @@ const mapStateToProps = ({ user, contract, items}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   queryContract,
-  addContractItem,
+  addItem,
   push,
   toggleLock,
 }, dispatch)

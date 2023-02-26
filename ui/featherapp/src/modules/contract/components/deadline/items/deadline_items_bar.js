@@ -2,7 +2,6 @@ import {useEffect, useState, useMemo, Fragment } from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import {deadlineItemTypes, msgMethods, decisionTypes} from '../../../../../services/chat.service'
 import {changeDeadlineItems, reactDeadlineItems} from "../../../../../reducers/deadlines/dispatchers/deadlines.items.dispatcher"
-import {addContractItem} from "../../../../../reducers/items/dispatchers/items.add.dispatcher"
 
 import {Tooltip, Button} from "flowbite-react"
 import DeadlineItemBadge from  "./deadline_item_badge"
@@ -14,6 +13,7 @@ import DecideButton from '../../decide_button'
 
 import { LockOpenIcon, PlusIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
+import { update } from 'autosize'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -43,12 +43,13 @@ const DeadlineItemsBar = (props) => {
 
   const [itemsMsgId, setItemsMsgId] = useState("")
 
-  const updateNubs = (new_nubs) => {
+  const saveNubs = (new_nubs, edit=true) => {
     setDeadlineItemNubs(new_nubs)
-    if (props.editDeadline) {
+    if (props.editDeadline && edit) {
       const newDeadline = props.deadline
       newDeadline.itemsList = new_nubs
       props.editDeadline(newDeadline)
+      props.saveDeadlines()
     }
   }
 
@@ -156,14 +157,44 @@ const DeadlineItemsBar = (props) => {
     }
   }, [deadlineItemSuggestedIds.length, deadlineItemDeletedIds.length])
 
+  useEffect( () => {
+    let found = false
+    for (let i = 0; i < props.contractItems.length; i++) {
+      if (props.contractItems.id === props.selectedId) {
+        found = true
+      }
+    }
+    if (!found) {
+      props.setSelectedId("")
+    }
+  }, [props.deadlinesPurged])
+
   const removeItem = (item) => {
-    console.log("Just clicked on ", item)
     if (itemLock) {
       return
     }
     if (item.id === "new_negotiate") {
       props.setAddItemMode(false)
     }
+
+    props.setSelectedId("")
+
+
+    if (props.createMode) {
+      const new_deadline_ids = []
+      const new_deadline_nubs = []
+      for(let idx=0; idx<deadlineItemIds.length; idx++) {
+        if (item.id !== deadlineItemIds[idx]) {
+          new_deadline_ids.push(deadlineItemIds[idx])
+          new_deadline_nubs.push(deadlineItemNubs[idx])
+        }
+      }
+      setDeadlineItemIds(new_deadline_ids)
+      setDeadlineItemNubs(new_deadline_nubs)
+      saveNubs(new_deadline_nubs, !(item.id === "new_negotiate"))
+      return 
+    }
+
     let new_ids = []
     let new_nubs = []
     let new_deleted_ids = [...deadlineItemDeletedIds]
@@ -181,15 +212,13 @@ const DeadlineItemsBar = (props) => {
 
     for(let idx=0; idx<deadlineItemIds.length; idx++) {
       if (item.id === deadlineItemIds[idx]) {
-        console.log("Found it and the item in question is ", deadlineItemIds[idx])
-        new_deleted_ids.push(deadlineItemIds[idx])
-        new_deleted_nubs.push(deadlineItemNubs[idx])
+          new_deleted_ids.push(deadlineItemIds[idx])
+          new_deleted_nubs.push(deadlineItemNubs[idx])
       } else {
         new_existing_ids.push(deadlineItemIds[idx])
         new_existing_nubs.push(deadlineItemNubs[idx])
       }
     }
-    console.log("Existing ids is ", new_existing_ids, " and  nubs is ", new_existing_nubs)
     setDeadlineItemSuggestedIds(new_ids)
     setDeadlineItemSuggestedNubs(new_nubs)
     setDeadlineItemIds(new_existing_ids)
@@ -202,16 +231,30 @@ const DeadlineItemsBar = (props) => {
 
   useEffect(() => {
     if (props.confirmItem) {
+      const newIds = []
+      const newNubs = []
+
       for (let i = 0; i < deadlineItemSuggestedIds.length; i++) {
-        if (deadlineItemSuggestedIds[i] === "new_negotiate") {
-          deadlineItemSuggestedIds[i] = props.createdItem.id
-          deadlineItemSuggestedNubs[i] = props.createdItem
+        if (deadlineItemSuggestedIds[i] !== "new_negotiate") {
+          newIds.push(deadlineItemSuggestedIds[i])
+          newNubs.push(deadlineItemSuggestedNubs[i])
+        } else {
+          if (props.createdItem?.id) {
+            newIds.push(props.createdItem?.id)
+            newNubs.push(props.createdItem)
+          }
         }
       }
-      console.log("Suggested: ", deadlineItemSuggestedIds)
-      setDeadlineItemDeletedIds(deadlineItemSuggestedIds)
-      setDeadlineItemDeletedNubs(deadlineItemSuggestedNubs)
-      confirmItemChange()
+
+      if (props.createMode) {
+        saveNubs([...deadlineItemNubs, ...newNubs], true)
+        setDeadlineItemSuggestedIds([])
+        setDeadlineItemSuggestedNubs([])
+      
+      } else {
+        confirmItemChange(newIds, deadlineItemIds, deadlineItemDeletedIds)
+      }
+
       props.setConfirmItem(false)
       props.setAddItemMode(false)
       toggleShowAdd(true)
@@ -236,7 +279,6 @@ const DeadlineItemsBar = (props) => {
   }, [props.deleteSuggestedItem])
 
   const addItem = (nub) => {
-    let isNewItem = false
     if (nub.id === "NEW_ITEM") {
       let maxNum = 0
       for (let i = 0; i < props.contractItems.length; i++) {
@@ -248,12 +290,13 @@ const DeadlineItemsBar = (props) => {
         }
       }
       const newName = (maxNum + 1)
-      props.setAddItemMode(true)
       nub.name="Item "+newName
+
+      props.setAddItemMode(true)
       props.setNewItemName(nub.name)
       props.setNewItemBody("")
+
       nub.id="new_negotiate"
-      isNewItem = true
     }
     
     const all_added = [...deadlineItemNubs, ...deadlineItemSuggestedNubs]
@@ -262,16 +305,12 @@ const DeadlineItemsBar = (props) => {
         return
       }
     }
-    if (props.createMode) {
-      updateNubs([...deadlineItemNubs, nub])
-      for (let i = 0; i < contractItemIds.length; i++) {
-        if (contractItemIds[i] === nub.id) {
-          setDeadlineItemIds([...deadlineItemIds, contractItemIds[i]])
-          props.setSelectedId(nub.id)
-        }
-      }
+    if (props.createMode && !(nub.id === "new_negotiate")) {
+      saveNubs([...deadlineItemNubs, nub])
+      setDeadlineItemIds([...deadlineItemIds, nub.id])
+      props.setSelectedId(nub.id)
     } else {
-      if (!isNewItem) {
+      if (!props.addItemMode) {
         setSuggestionMode(true)
       }
       let foundInDeleted = false
@@ -320,23 +359,24 @@ const DeadlineItemsBar = (props) => {
     return false;
   } 
 
-  const confirmItemChange = () => {
+  const confirmItemChange = (suggestedIds, normalIds, deletedIds) => {
     if (!props.addItemMode) {
       setItemLock(true)
     }
-    const newItemsIds = [...deadlineItemSuggestedIds]
-    for (let i = 0; i < deadlineItemIds.length; i++) {
+    const newItemsIds = [...suggestedIds]
+    for (let i = 0; i < normalIds.length; i++) {
       let found = false
-      for (let j = 0; j < deadlineItemDeletedIds.length; j++) {
-        if (deadlineItemIds[i] === deadlineItemDeletedIds[j]) {
+      for (let j = 0; j < deletedIds.length; j++) {
+        if (normalIds[i] === deletedIds[j]) {
           found = true
         }
       }
       if (!found) {
-        newItemsIds.push(deadlineItemIds[i])
+        newItemsIds.push(normalIds[i])
       }
     }
     props.changeDeadlineItems(props.curContract.id, props.deadline.id, newItemsIds)
+  
   }
   
   const revertItemChange = () => {
@@ -394,7 +434,9 @@ const DeadlineItemsBar = (props) => {
         {(suggestionMode && !itemLock && !props.universalLock && !props.addItemMode) && (
           <div className="flex items-center">
             <p className="mr-1 text-base text-gray-400">Commit your new items</p>
-            <DecideButton approve={confirmItemChange} reject={revertItemChange}/>
+            <DecideButton approve={() => {
+              confirmItemChange(deadlineItemSuggestedIds, deadlineItemIds, deadlineItemDeletedIds)
+            }} reject={revertItemChange}/>
           </div>
         )}
         {(itemLock && !proposedByPartner && !props.universalLock) && (
@@ -497,6 +539,7 @@ const DeadlineItemsBar = (props) => {
 const mapStateToProps = ({ contract, items, deadlines, user, chat}) => ({
   curContract: contract.curContract,
   reloadDeadlines: deadlines.deadlinesChanged,
+  deadlinesPurged: deadlines.deadlinesPurged,
   contractItems: items.items,
   contractItemsChanged: items.itemsChanged,
   messages: chat.messages,
@@ -506,7 +549,6 @@ const mapStateToProps = ({ contract, items, deadlines, user, chat}) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   changeDeadlineItems,
   reactDeadlineItems,
-  addContractItem,
 }, dispatch)
 
 export default connect(

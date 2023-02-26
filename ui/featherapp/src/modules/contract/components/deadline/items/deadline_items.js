@@ -37,6 +37,7 @@ const DeadlineItems = (props) => {
   const addNewItem = () => {
     props.addItem(props.curContract?.id, newItemName, newItemBody).then(
       (item) => {
+        console.log("Updating w item: ", item)
         setCreatedItem(item)
         setConfirmItem(true)
       }
@@ -60,6 +61,7 @@ const DeadlineItems = (props) => {
         setNewItemBody={setNewItemBody}
         setAddItemMode={setAddItemMode}
 
+        createMode={props.createMode}
         confirmItem={confirmItem}
         setConfirmItem={setConfirmItem}
         createdItem={createdItem}
@@ -67,6 +69,8 @@ const DeadlineItems = (props) => {
         deleteSuggestedItem={deleteSuggestedItem}
         setDeleteSuggestedItem={setDeleteSuggestedItem}
         addButton={addButton}
+        editDeadline={props.editDeadline}
+        saveDeadlines={props.saveDeadlines}
       />
       <div className="flex grow w-full">
         {addItemMode ? (
@@ -89,14 +93,17 @@ const DeadlineItems = (props) => {
         ) : selectedId !== "" ? ( 
           <ContractItem 
             embedded={true}
-            override={props.createMode}
+            createMode={props.createMode}
             id={selectedId}
           />
         ) : (
-          <div className="flex w-full justify-center items-center cursor-pointer p-8 border border-2 border-gray-400 hover:border-gray-500 border-dashed rounded-md text-gray-400 hover:text-gray-500">
-            <h1 className="grow text-center text-2xl  font-medium" onClick={() => {
+          <div 
+            className="flex w-full justify-center items-center cursor-pointer p-8 border border-2 border-gray-400 hover:border-gray-500 border-dashed rounded-md text-gray-400 hover:text-gray-500"
+            onClick={() => {
               addButton.current?.click();
-            }}>Add an Item</h1>
+            }}
+          >
+            <h1 className="grow text-center text-2xl  font-medium">Add an Item</h1>
           </div>
         )}
       </div>

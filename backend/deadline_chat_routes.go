@@ -788,12 +788,14 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Deadline Items Updated in DB, attempting to send message")
 
-	err = s.ChatAgent.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST, database)
-	log.Println("Finished attempting to send message")
-	if err != nil {
-		return nil, err
+	if !contract.RoomId.IsZero() {
+		log.Println("Deadline Items Updated in DB, attempting to send message")
+		err = s.ChatAgent.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST, database)
+		log.Println("Finished attempting to send message")
+		if err != nil {
+			return nil, err
+		}
 	}
 	log.Println("Date Message Broadcast")
 	return &comms.ContractEditResponse{}, nil

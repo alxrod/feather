@@ -130,6 +130,13 @@ func (d *Deadline) Nub() *comms.DeadlineNub {
 	}
 }
 
+func (deadline *Deadline) String() string {
+	if deadline == nil {
+		fmt.Sprintf("<no item>")
+	}
+	return fmt.Sprintf("<Deadline id: %s>", deadline.Id.Hex())
+}
+
 func (deadline *Deadline) Delete(database *mongo.Database) error {
 	filter := bson.D{{"_id", deadline.Id}}
 	_, err := database.Collection(DEADLINE_COL).DeleteOne(context.TODO(), filter)
@@ -137,6 +144,66 @@ func (deadline *Deadline) Delete(database *mongo.Database) error {
 		return err
 	}
 	return nil
+}
+
+func (deadline *Deadline) ReplaceFromReq(req *comms.DeadlineEntity, database *mongo.Database) (*Deadline, error) {
+	filter := bson.D{{"_id", deadline.Id}}
+	_, err := database.Collection(DEADLINE_COL).ReplaceOne(context.TODO(), filter, deadline)
+	if err != nil {
+		return nil, err
+	}
+
+	new_deadline := &Deadline{
+		ContractId: deadline.ContractId,
+		Name:       req.Name,
+		Id:         deadline.Id,
+
+		DateProposerId:     deadline.DateProposerId,
+		PayoutProposerId:   deadline.PayoutProposerId,
+		DeadlineProposerId: deadline.DeadlineProposerId,
+		Complete:           false,
+
+		DraftRequired: req.DraftRequired,
+
+		AwaitingCreation: req.AwaitingCreation,
+		AwaitingDeletion: req.AwaitingDeletion,
+
+		CurrentPayout:          req.CurrentPayout,
+		WorkerPayout:           req.WorkerPayout,
+		BuyerPayout:            req.BuyerPayout,
+		PayoutAwaitingApproval: false,
+
+		CurrentDate:          req.CurrentDate.AsTime(),
+		WorkerDate:           req.WorkerDate.AsTime(),
+		BuyerDate:            req.BuyerDate.AsTime(),
+		DateAwaitingApproval: false,
+
+		ItemsAwaitingApproval: false,
+	}
+
+	new_deadline.ItemIds = make([]primitive.ObjectID, len(req.Items))
+	new_deadline.Items = make([]*ContractItem, len(req.Items))
+	new_deadline.ItemsProposerId = deadline.ItemsProposerId
+	new_deadline.ItemStates = make([]uint32, len(req.Items))
+	log.Println("Set of incoming id's is ", req.Items)
+	for idx, nub := range req.Items {
+		item_id, err := primitive.ObjectIDFromHex(nub.Id)
+		var item *ContractItem
+
+		item, err = ContractItemById(item_id, database.Collection(ITEM_COL))
+		if err != nil {
+			return nil, err
+		}
+		new_deadline.Items[idx] = item
+		new_deadline.ItemIds[idx] = item.Id
+		new_deadline.ItemStates[idx] = ITEM_RESOLVED
+	}
+	filter = bson.D{{"_id", deadline.Id}}
+	_, err = database.Collection(DEADLINE_COL).ReplaceOne(context.TODO(), filter, new_deadline)
+	if err != nil {
+		return nil, err
+	}
+	return new_deadline, nil
 }
 
 func DeadlineInsert(proto *comms.DeadlineEntity, user_id, contract_id primitive.ObjectID, contract_items []*ContractItem, database *mongo.Database) (*Deadline, error) {

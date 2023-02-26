@@ -4,11 +4,10 @@ import { connect } from 'react-redux'
 
 import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
 import { toggleLock } from "../../../reducers/contract/dispatchers/contract.lock.dispatcher"
-import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
 import { contractStages } from '../../../services/contract.service';
 
 import ContractItem from "../components/contract_item/contract_item";
-import NewContractItem from "../components/contract_item/new_contract_item";
 import MainChat from "../components/chat/main_chat";
 import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
@@ -87,7 +86,7 @@ const ContractDraft = (props) => {
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem universalLock={universalLock} override={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
+              <ContractItem universalLock={universalLock} createMode={false} id={item_id} suggestMode={item_id === "new_negotiate"} createCallback={() => {toggleAddItemMode(false)}}/>
             </div>
           ))}
         </div>
@@ -105,7 +104,7 @@ const mapStateToProps = ({ user, contract, items}) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   queryContract,
-  addContractItem,
+  addItem,
   push,
   toggleLock,
 }, dispatch)

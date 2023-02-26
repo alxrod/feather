@@ -23,42 +23,46 @@ const RoleField = (props) => {
   const [selectedRole, setSelectedRole] = useState(roles.worker)
 
   const [modalOpen, setModalOpen] = useState(false)
-
   useEffect(() => {
+    let newRoles = {...roles}
     if (props.user.workerModeEnabled === true) {
-      const updatedWorker = roles.worker
+      const updatedWorker = newRoles.worker
       updatedWorker.available = true
-      setSelectedRole(roles.worker)
-      setRoles({
-        ...roles,
+      setSelectedRole(newRoles.worker)
+      props.changeRole(newRoles.worker.code)
+      newRoles = {
+        ...newRoles,
         worker: updatedWorker
-      })
+      }
     } else {
-      setRoles({
-        ...roles,
+      newRoles = {
+        ...newRoles,
         worker: {
-          ...roles.worker,
+          ...newRoles.worker,
           available: false,
         }
-      })
+      }
     }
     
     if (props.user.buyerModeEnabled === true) {
-      const updatedBuyer = roles.buyer
+      const updatedBuyer = newRoles.buyer
       updatedBuyer.available = true
-      setRoles({
-        ...roles,
+      setSelectedRole(newRoles.buyer)
+      props.changeRole(newRoles.buyer.code)
+      newRoles = {
+        ...newRoles,
         buyer: updatedBuyer
-      })
+      }
     } else {
-      setRoles({
-        ...roles,
+      newRoles = {
+        ...newRoles,
         buyer: {
-          ...roles.buyer,
+          ...newRoles.buyer,
           available: false,
         }
-      })
+      }
     }
+    setRoles(newRoles)
   }, [props.user])
 
   const setRole = (newRole) => {

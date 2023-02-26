@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -30,6 +32,7 @@ var routes []string = []string{
 	"^/setup-payment$",
 	"^/logout$",
 	"^/forgot-password$",
+	"^/unknown$",
 
 	"^/create/[^/]*$",
 	"^/invite/[^/]*$",
@@ -40,14 +43,17 @@ var routes []string = []string{
 }
 
 type FrontServer struct {
-	router  *http.ServeMux
-	webapp  http.Handler
-	webhook *WebhookServer
+	router         *http.ServeMux
+	fs             http.FileSystem
+	webapp         http.Handler
+	wrapped_webapp http.Handler
+	webhook        *WebhookServer
 }
 
 func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 	fsys := fs.FS(react_fs)
 	contentStatic, err := fs.Sub(fsys, "ui/featherapp/build")
+
 	if err != nil {
 		fmt.Printf(color.Ize(color.Red, fmt.Sprintf("Static Resource Issue: %s\n", err.Error())))
 		return nil, err
@@ -56,12 +62,25 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 
 	srv := &FrontServer{
 		router:  http.NewServeMux(),
-		webapp:  http.FileServer(http.FS(contentStatic)),
+		fs:      http.FS(contentStatic),
 		webhook: NewWebHookServer(),
 	}
+	fileServer := http.FileServer(srv.fs)
+
+	srv.webapp = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, err := srv.fs.Open(path.Clean(r.URL.Path))
+		if os.IsNotExist(err) {
+			log.Println(color.Ize(color.Red, fmt.Sprintf("Unknown path requested %s", r.URL.Path)))
+			r_url := fmt.Sprintf("%s/unknown", os.Getenv("BAR"))
+			http.RedirectHandler(r_url, 301).ServeHTTP(w, r)
+
+			return
+		}
+		fileServer.ServeHTTP(w, r)
+	})
+
 	return srv, nil
 }
-
 func (srv *FrontServer) HandleAssetRequest(w http.ResponseWriter, r *http.Request) {
 	path := fmt.Sprintf("%v", r.URL)
 	split_path := strings.Split(path, "/asset-cache/")

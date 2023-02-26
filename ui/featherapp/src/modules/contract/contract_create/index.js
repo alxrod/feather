@@ -2,8 +2,8 @@ import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { push } from 'connected-react-router'
-import { createContract, updateContract, clearSelected, queryContract, finishCreation } from "../../../reducers/contract/dispatchers/contract.dispatcher";
-import { addContractItem } from "../../../reducers/items/dispatchers/items.add.dispatcher";
+import { createContract, updateContract, clearSelected, queryContract, finishCreation, deleteContractDraft} from "../../../reducers/contract/dispatchers/contract.dispatcher";
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher";
 
 import { WORKER_TYPE, BUYER_TYPE } from "../../../services/user.service";
 
@@ -25,7 +25,6 @@ import { loadLocalDeadlines } from "../../../reducers/deadlines/dispatchers/dead
 
 const ContractCreate = (props) => {
   const { params: { contractId } } = props.match;
-
   useEffect(() => {
     if (contractId === "new" || "") {
       setNewContractMode(true)
@@ -43,6 +42,10 @@ const ContractCreate = (props) => {
       }
     }
   }, [contractId])
+
+  useEffect(() => {
+    console.log("ID: ", props.curContract.id)
+  }, [props.curContract.id])
   
   const [price, setPrice] = useState(0.0)
   const [priceObj, setPriceObj] = useState({
@@ -133,6 +136,18 @@ const ContractCreate = (props) => {
       }
     )
   }
+  const handleDeleteContract = (e) => {
+
+    props.deleteContractDraft(props.curContract.id).then(
+      () => {
+        props.push("/contracts")
+      }, (error) => {
+        setOpenBanner(true)
+        console.log(error)
+        setError(error)
+      }
+    )
+  }
 
   const emptyContract = (conTitle, conDescript, conPassword, conRole, price, deadlines, items) => {
     if (conTitle === "" &&
@@ -189,7 +204,7 @@ const ContractCreate = (props) => {
       }
     }
 
-  }, [conTitle, conDescript, conPassword, conRole, price, props.deadlinesChanged, props.itemsChanged])
+  }, [conTitle, conDescript, conRole, conPassword, price, props.deadlinesChanged, props.itemsChanged])
 
   const checkErrors = () => {
     let errors = ""
@@ -215,13 +230,12 @@ const ContractCreate = (props) => {
     return errors
   } 
 
-  const addContractItem = () => {
-    
-    // console.log("Adding item with value " + nextId)
-    // console.log(contractItems)
-    let new_id = nextId.toString()
-    setNextId(nextId+1)
-    return props.addContractItem(true, new_id, nextContractName)
+  const addItem = () => {
+    if (props.curContract.id === null) {
+      // TODO: handle error
+      return
+    }
+    return props.addItem(props.curContract.id, "", "", props.contractItems)
   }
 
 	return (
@@ -250,7 +264,7 @@ const ContractCreate = (props) => {
                 price={price}
 
                 contractItemIds={contractItemIds}
-                addContractItem={addContractItem}
+                addItem={addItem}
 
                 createMode={true}
                 changePrice={changePrice}                
@@ -271,17 +285,33 @@ const ContractCreate = (props) => {
         <div className="mt-5 flex flex-col justify-start items-center">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
-              <ContractItem override={true} id={item_id} disabled={false} createMode={true}/>
+              <ContractItem 
+                createMode={true} 
+                id={item_id} 
+                disabled={false} 
+                createMode={true}
+              />
             </div>
           ))}
-          <NewContractItem addContractItem={addContractItem}/>
-          <button
-            type="button"
-            onClick={handleFinishCreateContract}
-            className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary6 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
-          >
-            Send Contract
-          </button>
+          <NewContractItem addItem={addItem} createMode={true}/>
+          <div className="flex gap-x-4">
+            <button
+              type="button"
+              onClick={handleFinishCreateContract}
+              className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary6 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
+            >
+              Send Contract
+            </button>
+            {(props.curContract.id !== null && props.curContract.id !== undefined) && ( 
+              <button
+                type="button"
+                onClick={handleDeleteContract}
+                className="inline-flex items-center mt-5 px-6 py-3 border border-transparent text-base font-medium rounded-md text-red-800 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-200"
+              >
+                Delete Draft
+              </button>
+            )}
+          </div>
         </div>
       </div>  
     </>
@@ -303,10 +333,11 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   updateContract,
   queryContract,
   clearSelected,
-  addContractItem,
+  addItem,
   loadLocalDeadlines,
   finishCreation,
   push,
+  deleteContractDraft,
 }, dispatch)
 
 export default connect(
