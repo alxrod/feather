@@ -12,7 +12,7 @@ const initialState = {
     sending: sendStates.INACTIVE,
     
     reloadMsg: false,
-    reloadIdx: 0,
+    reloadId: 0,
     rejoinSequenceActive: false,
 }
 
@@ -102,13 +102,13 @@ export default (state = initialState, action) => {
                 ),
                 messagesChanged: !state.messagesChanged,
                 reloadMsg: true,
-                reloadIdx: idx,
+                reloadId: newMessage.id,
             }
         case actions.CHAT_CLEAR_RELOAD:
             return {
                 ...state,
                 reloadMsg: false,
-                reloadIdx: -1,
+                reloadId: "",
             }
 
         default:

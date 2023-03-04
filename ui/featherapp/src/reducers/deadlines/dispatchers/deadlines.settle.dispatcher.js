@@ -19,7 +19,6 @@ export const finishDeadline = (contract_id, deadline_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -39,7 +38,6 @@ export const confirmDeadline = (contract_id, deadline_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -59,7 +57,6 @@ export const undoDeadline = (contract_id, deadline_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

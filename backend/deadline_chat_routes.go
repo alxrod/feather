@@ -35,6 +35,8 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -53,6 +55,7 @@ func (s *BackServer) SuggestPayout(ctx context.Context, req *comms.ContractSugge
 	}
 
 	oldPayout := deadline.CurrentPayout
+	log.Printf("Found a new payout: %d", req.NewPayout)
 	newPayout := req.NewPayout
 
 	err = db.DeadlineSuggestPayout(contract, deadline, user, userRole, newPayout, database)
@@ -93,6 +96,7 @@ func (s *BackServer) ReactPayout(ctx context.Context, req *comms.ContractReactPa
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -204,6 +208,8 @@ func (s *BackServer) SuggestDate(ctx context.Context, req *comms.ContractSuggest
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -262,6 +268,8 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -349,7 +357,7 @@ func (s *BackServer) ReactDate(ctx context.Context, req *comms.ContractReactDate
 	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.ContractSuggestAddDeadline) (*comms.ContractEditResponse, error) {
+func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.ContractSuggestAddDeadline) (*comms.DeadlineEntity, error) {
 	log.Println(fmt.Sprintf("Suggesting creating a deadline %d", req.Deadline.Name))
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
@@ -366,6 +374,8 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -384,7 +394,9 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 		items[idx] = item
 	}
 
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if contract.Stage == db.CREATE {
+		req.Deadline.AwaitingCreation = false
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer != nil {
 			req.Deadline.AwaitingCreation = true
 		} else {
@@ -412,13 +424,15 @@ func (s *BackServer) SuggestAddDeadline(ctx context.Context, req *comms.Contract
 		return nil, err
 	}
 
-	err = s.ChatAgent.SendDeadlineCreateMessage(deadline, contract, user, db.SUGGEST, database)
+	if !contract.RoomId.IsZero() {
+		err = s.ChatAgent.SendDeadlineCreateMessage(deadline, contract, user, db.SUGGEST, database)
+	}
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
 	}
 	// log.Println("Price Message Broadcast")
-	return &comms.ContractEditResponse{}, nil
+	return deadline.Proto(), nil
 }
 
 func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractReactAddDeadline) (*comms.ContractEditResponse, error) {
@@ -444,6 +458,8 @@ func (s *BackServer) ReactAddDeadline(ctx context.Context, req *comms.ContractRe
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -568,6 +584,8 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -578,7 +596,9 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 		return nil, err
 	}
 
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if contract.Stage == db.CREATE {
+		req.Deadline.AwaitingDeletion = false
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer != nil {
 			deadline.AwaitingDeletion = true
 		} else {
@@ -603,7 +623,9 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 	}
 	log.Println("Deadline suggested to delete, attempting to send message")
 
-	err = s.ChatAgent.SendDeadlineDeleteMessage(deadline, contract, user, db.SUGGEST, database)
+	if !contract.RoomId.IsZero() {
+		err = s.ChatAgent.SendDeadlineDeleteMessage(deadline, contract, user, db.SUGGEST, database)
+	}
 	// log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -623,18 +645,22 @@ func (s *BackServer) SuggestDeleteDeadline(ctx context.Context, req *comms.Contr
 func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.ContractReactDelDeadline) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
+		log.Println("Invalid contract id")
 		return nil, err
 	}
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
+		log.Println("Invalid user id")
 		return nil, err
 	}
 	deadline_id, err := primitive.ObjectIDFromHex(req.DeadlineId)
 	if err != nil {
+		log.Println("Invalid deadline id")
 		return nil, err
 	}
 	message_id, err := primitive.ObjectIDFromHex(req.MessageId)
 	if err != nil {
+		log.Println("Invalid msg id")
 		return nil, err
 	}
 
@@ -643,6 +669,8 @@ func (s *BackServer) ReactDeleteDeadline(ctx context.Context, req *comms.Contrac
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -754,6 +782,8 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err
@@ -790,9 +820,7 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 	}
 
 	if !contract.RoomId.IsZero() {
-		log.Println("Deadline Items Updated in DB, attempting to send message")
 		err = s.ChatAgent.SendDeadlineItemMessage(contract, user, deadline, db.SUGGEST, database)
-		log.Println("Finished attempting to send message")
 		if err != nil {
 			return nil, err
 		}
@@ -804,18 +832,22 @@ func (s *BackServer) SuggestDeadlineItems(ctx context.Context, req *comms.Contra
 func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.ContractReactDeadlineItems) (*comms.ContractEditResponse, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
+		log.Println("CONTRACT INVALID ID")
 		return nil, err
 	}
 	user_id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
+		log.Println("USER INVALID ID")
 		return nil, err
 	}
 	deadline_id, err := primitive.ObjectIDFromHex(req.DeadlineId)
 	if err != nil {
+		log.Println("DEADLINE INVALID ID")
 		return nil, err
 	}
 	message_id, err := primitive.ObjectIDFromHex(req.MessageId)
 	if err != nil {
+		log.Println("MESSAGE INVALID ID")
 		return nil, err
 	}
 
@@ -824,6 +856,8 @@ func (s *BackServer) ReactDeadlineItems(ctx context.Context, req *comms.Contract
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err

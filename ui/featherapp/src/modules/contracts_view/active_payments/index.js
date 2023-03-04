@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { CheckCircleIcon } from "@heroicons/react/outline";
 
 import { getInternalCharges } from '../../../reducers/stripe/dispatchers/stripe.setup.dispatcher';
+import {displayPrice} from "../../helpers"
 
 const ActivePayments = (props) => {
   useEffect(() => {
@@ -60,15 +61,15 @@ const ActivePayments = (props) => {
                         
                           {charge.amount == 0 ? (
                             <td className="align-top whitespace-nowrap px-2 py-2 text-xs font-medium text-gray-500">
-                              {(charge.amount / 100.0).toFixed(2)}
+                              {displayPrice(charge.amount).toFixed(2)}
                             </td>
                           ) : charge.worker.id === props.user?.id ? (
                             <td className="align-top whitespace-nowrap px-2 py-2 text-xs font-medium text-primary5">
-                              {"+"+(charge.amount / 100.0).toFixed(2)}
+                              {"+"+displayPrice(charge.amount).toFixed(2)}
                             </td>
                           ) : (
                             <td className="align-top whitespace-nowrap px-2 py-2 text-xs font-medium text-red2">
-                              {"-"+(charge.amount / 100.0).toFixed(2)}
+                              {"-"+displayPrice(charge.amount).toFixed(2)}
                             </td>
                           )}
                           

@@ -21,7 +21,8 @@ message ChatMessage {
     bool admin_override = 22;
     uint32 admin_status = 23;
     bool expired = 29;
-
+    bool silent = 41;
+    
     repeated ReadReceiptEntity read_receipts = 40;
 
     oneof body {
@@ -118,8 +119,8 @@ message DateMsgBody {
 }
 message PayoutMsgBody {
     string deadline_id = 8;
-    float new_version = 1;
-    float old_version = 2;
+    int64 new_version = 1;
+    int64 old_version = 2;
     uint32 type = 3;
     bool resolved = 4;
     uint32 resol_status = 7;
@@ -128,8 +129,8 @@ message PayoutMsgBody {
 }
 
 message PriceMsgBody {
-    float new_version = 1;
-    float old_version = 2;
+    int64 new_version = 1;
+    int64 old_version = 2;
     uint32 type = 3;
     bool resolved = 4;
     uint32 resol_status = 7;

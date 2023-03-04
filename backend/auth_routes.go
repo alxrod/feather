@@ -60,10 +60,18 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 
 func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*comms.UserSigninResponse, error) {
 	database := s.dbClient.Database(s.dbName)
-	user, err := db.UserQueryUsername(req.Username, req.Password, database)
+	user, err := db.UserQueryUsername(req.UsernameOrEmail, req.Password, database)
 	if err != nil {
-		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Returning error: %s", err.Error())))
-		return nil, err
+		switch err.(type) {
+		default:
+			return nil, err
+		case *db.ErrorUserNotFound:
+			user, err = db.UserQueryEmail(req.UsernameOrEmail, req.Password, database)
+			if err != nil {
+				log.Println(color.Ize(color.Yellow, fmt.Sprintf("Returning error: %s", err.Error())))
+				return nil, err
+			}
+		}
 	}
 	tkn, tkn_timeout, err := s.JwtManager.Generate(user)
 	if err != nil {
@@ -93,6 +101,16 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 	if err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
+	}
+
+	if !user.WorkerModeEnabled && user.WorkerModeRequested {
+		enabled, err := s.StripeAgent.VerifyConnectedAccountCapabilities(user.StripeConnectedAccountId)
+		if err == nil {
+			user.WorkerModeEnabled = enabled
+			filter := bson.D{{"_id", id}}
+			update := bson.D{{"$set", bson.D{{"worker_mode_enabled", user.WorkerModeEnabled}}}}
+			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+		}
 	}
 	proto := user.Proto()
 	if err != nil {

@@ -11,7 +11,7 @@ import { BUYER_TYPE, WORKER_TYPE, BOTH_TYPE } from "../../../services/user.servi
 
 import { Link, Redirect } from "react-router-dom"
 import BackButton from "../../general_components/back_button"
-
+import { displayPrice } from "../../helpers"
 const ContractInvite = (props) => {
   const { params: { contractId } } = props.match;
 
@@ -163,7 +163,7 @@ const ContractInvite = (props) => {
                         </div>
                       </div>
                       <div className="flex justify-center">
-                        <p className="text-red mt-1">{errorMessage}</p>
+                        <p className="text-red-500 mt-1">{errorMessage}</p>
                       </div>
                     </div>
                   </>
@@ -200,7 +200,7 @@ const ContractInvite = (props) => {
                       </div>
                       <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Price</p>
                     </dt>
-                    <dd className="mt-2 ml-16 text-base text-gray-500">{inviteBody.price}</dd>
+                    <dd className="mt-2 ml-16 text-base text-gray-500">{displayPrice(inviteBody.price)}</dd>
                   </div>
 
                   <div key="deadline" className="relative">

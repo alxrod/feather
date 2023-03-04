@@ -13,7 +13,7 @@ import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer" 
 import { displayDecide, fontSize } from "./components/msg_helpers"
-
+import { displayPrice} from "../../../../helpers"
 const DeadlineCreateMsg = (props) => {
 
   let editString = "Created"
@@ -38,6 +38,9 @@ const DeadlineCreateMsg = (props) => {
   const [version, setVersion] = useState(1)
 
   const [deadlineName, setDeadlineName] = useState("Deleted Deadline")
+
+  const [deadlinePayout, setDeadlinePayout] = useState(0)
+  const [deadlienDate, setDeadlineDate] = useState(new Date())
 
   useEffect( () => {
     if (props.reloaded === true) {
@@ -66,9 +69,11 @@ const DeadlineCreateMsg = (props) => {
     for (let i = 0; i < props.deadlines.length; i++) {
       if (props.deadlines[i].id === props.msg.body.deadline.id) {
         setDeadlineName(props.deadlines[i].name)
+        setDeadlinePayout(props.deadlines[i].currentPayout)
+        setDeadlineDate(props.deadlines[i].currentDate)
       }
     }
-  }, [props.deadlines.length])
+  }, [props.deadlines.length, props.deadlinesChanged])
 
   useEffect( () => {
     if (props.msg) {
@@ -114,9 +119,9 @@ const DeadlineCreateMsg = (props) => {
         </div>
         <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
           <div className="flex">
-            <p className={"text-primary4 mr-2 " + fontSize(2, props.embedded)}>{"Payout"}</p><p className={"mr-1 text-primary4 " + fontSize(2, props.embedded)}>${props.msg.body.deadline.currentPayout}</p>
+            <p className={"text-primary4 mr-2 " + fontSize(2, props.embedded)}>{"Payout"}</p><p className={"mr-1 text-primary4 " + fontSize(2, props.embedded)}>${displayPrice(deadlinePayout)}</p>
           </div>
-          <p className="text-primary4" >on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
+          <p className="text-primary4" >on {genTimeStringDate(deadlienDate)}</p>
         </div>
         <MsgDecisionFooter 
           msg={props.msg} 
@@ -135,6 +140,7 @@ const DeadlineCreateMsg = (props) => {
 const mapStateToProps = ({ user, contract, deadlines }) => ({
   curContract: contract.curContract,
   deadlines: deadlines.deadlines,
+  deadlinesChanged: deadlines.deadlinesChanged,
   user: user.user,
 })
   

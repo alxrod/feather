@@ -1006,6 +1006,7 @@ proto.main.ChatMessage.toObject = function(includeInstance, msg) {
     adminOverride: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
     adminStatus: jspb.Message.getFieldWithDefault(msg, 23, 0),
     expired: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
+    silent: jspb.Message.getBooleanFieldWithDefault(msg, 41, false),
     readReceiptsList: jspb.Message.toObjectList(msg.getReadReceiptsList(),
     proto.main.ReadReceiptEntity.toObject, includeInstance),
     commentBody: (f = msg.getCommentBody()) && proto.main.CommentMsgBody.toObject(includeInstance, f),
@@ -1106,6 +1107,10 @@ proto.main.ChatMessage.deserializeBinaryFromReader = function(msg, reader) {
     case 29:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setExpired(value);
+      break;
+    case 41:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setSilent(value);
       break;
     case 40:
       var value = new proto.main.ReadReceiptEntity;
@@ -1311,6 +1316,13 @@ proto.main.ChatMessage.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       29,
+      f
+    );
+  }
+  f = message.getSilent();
+  if (f) {
+    writer.writeBool(
+      41,
       f
     );
   }
@@ -1719,6 +1731,24 @@ proto.main.ChatMessage.prototype.getExpired = function() {
  */
 proto.main.ChatMessage.prototype.setExpired = function(value) {
   return jspb.Message.setProto3BooleanField(this, 29, value);
+};
+
+
+/**
+ * optional bool silent = 41;
+ * @return {boolean}
+ */
+proto.main.ChatMessage.prototype.getSilent = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 41, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.main.ChatMessage} returns this
+ */
+proto.main.ChatMessage.prototype.setSilent = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 41, value);
 };
 
 
@@ -4939,8 +4969,8 @@ proto.main.PayoutMsgBody.prototype.toObject = function(opt_includeInstance) {
 proto.main.PayoutMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
     deadlineId: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    newVersion: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    oldVersion: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    newVersion: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    oldVersion: jspb.Message.getFieldWithDefault(msg, 2, 0),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -4987,11 +5017,11 @@ proto.main.PayoutMsgBody.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDeadlineId(value);
       break;
     case 1:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setNewVersion(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setOldVersion(value);
       break;
     case 3:
@@ -5051,15 +5081,15 @@ proto.main.PayoutMsgBody.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getNewVersion();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       1,
       f
     );
   }
   f = message.getOldVersion();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       2,
       f
     );
@@ -5121,11 +5151,11 @@ proto.main.PayoutMsgBody.prototype.setDeadlineId = function(value) {
 
 
 /**
- * optional float new_version = 1;
+ * optional int64 new_version = 1;
  * @return {number}
  */
 proto.main.PayoutMsgBody.prototype.getNewVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -5134,16 +5164,16 @@ proto.main.PayoutMsgBody.prototype.getNewVersion = function() {
  * @return {!proto.main.PayoutMsgBody} returns this
  */
 proto.main.PayoutMsgBody.prototype.setNewVersion = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional float old_version = 2;
+ * optional int64 old_version = 2;
  * @return {number}
  */
 proto.main.PayoutMsgBody.prototype.getOldVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -5152,7 +5182,7 @@ proto.main.PayoutMsgBody.prototype.getOldVersion = function() {
  * @return {!proto.main.PayoutMsgBody} returns this
  */
 proto.main.PayoutMsgBody.prototype.setOldVersion = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
@@ -5278,8 +5308,8 @@ proto.main.PriceMsgBody.prototype.toObject = function(opt_includeInstance) {
  */
 proto.main.PriceMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    newVersion: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    oldVersion: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    newVersion: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    oldVersion: jspb.Message.getFieldWithDefault(msg, 2, 0),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -5322,11 +5352,11 @@ proto.main.PriceMsgBody.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setNewVersion(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setOldVersion(value);
       break;
     case 3:
@@ -5379,15 +5409,15 @@ proto.main.PriceMsgBody.prototype.serializeBinary = function() {
 proto.main.PriceMsgBody.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getNewVersion();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       1,
       f
     );
   }
   f = message.getOldVersion();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       2,
       f
     );
@@ -5431,11 +5461,11 @@ proto.main.PriceMsgBody.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional float new_version = 1;
+ * optional int64 new_version = 1;
  * @return {number}
  */
 proto.main.PriceMsgBody.prototype.getNewVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -5444,16 +5474,16 @@ proto.main.PriceMsgBody.prototype.getNewVersion = function() {
  * @return {!proto.main.PriceMsgBody} returns this
  */
 proto.main.PriceMsgBody.prototype.setNewVersion = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional float old_version = 2;
+ * optional int64 old_version = 2;
  * @return {number}
  */
 proto.main.PriceMsgBody.prototype.getOldVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -5462,7 +5492,7 @@ proto.main.PriceMsgBody.prototype.getOldVersion = function() {
  * @return {!proto.main.PriceMsgBody} returns this
  */
 proto.main.PriceMsgBody.prototype.setOldVersion = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 

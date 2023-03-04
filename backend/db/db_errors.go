@@ -22,12 +22,15 @@ const (
 // Errors:
 type ErrorUserNotFound struct {
 	username string
+	email    string
 	id       primitive.ObjectID
 }
 
 func (e *ErrorUserNotFound) Error() string {
 	if e.username != "" {
-		return fmt.Sprintf("There is no registered user with username '%s'", e.username)
+		return fmt.Sprintf("There is no registered user with email or username '%s'", e.username)
+	} else if e.email != "" {
+		return fmt.Sprintf("There is no registered user with username or email '%s'", e.email)
 	} else {
 		return fmt.Sprintf("User not found with id %s in DB", e.id)
 	}

@@ -23,15 +23,15 @@ const required = (value) => {
 
 const Login = (props) => {
 
-    const [username, setUsername] = useState("")
+    const [usernameOrEmail, setUsernameOrEmail] = useState("")
     const [password, setPassword] = useState("")
     const [genError, setGenError] = useState("")
     const [remember, toggleRemember] = useState(true)
 
     const form = useRef(null)
     
-    const onChangeUsername = (e) => {
-        setUsername(e.target.value)
+    const onChangeUsernameOrEmail = (e) => {
+      setUsernameOrEmail(e.target.value)
     }
     const onChangePassword = (e) => {
         setPassword(e.target.value)
@@ -40,8 +40,8 @@ const Login = (props) => {
     const handleLogin = (e) => {
         e.preventDefault()
         form.current.validateAll();
-        if (username !== "" && password !== "") {
-            props.login(username, password, remember)
+        if (usernameOrEmail !== "" && password !== "") {
+            props.login(usernameOrEmail, password, remember)
             .then(() => {
               props.push(props.redirectLink)
             })
@@ -90,7 +90,7 @@ const Login = (props) => {
                   )}
                   <div>
                     <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                      Username
+                      Username / Email
                     </label>
                     <div className="mt-1">
                       <Input
@@ -98,8 +98,8 @@ const Login = (props) => {
                         name="username"
                         type="text"
                         autoComplete="username"
-                        value={username}
-                        onChange={onChangeUsername}
+                        value={usernameOrEmail}
+                        onChange={onChangeUsernameOrEmail}
                         required
                         className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary4 focus:border-primary4 sm:text-sm"
                       />

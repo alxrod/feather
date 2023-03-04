@@ -10,7 +10,10 @@ export const deleteDeadline = (contract_id, deadline) => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.deleteDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
-                    (data) => {
+                    () => {
+                        dispatch({
+                            type: deadlineActions.CONTRACT_DEADLINE_UPDATE
+                        })
                         return Promise.resolve();
                     },
                     (error) => {
@@ -19,19 +22,16 @@ export const deleteDeadline = (contract_id, deadline) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
 };
-
-export const deleteLocalDeadline = (del_deadline) => {
+export const deleteLocalDeadline = (deadline) => {
     return dispatch => {
         dispatch({
             type: deadlineActions.CONTRACT_DEADLINE_REMOVE,
-            payload: del_deadline,
-        })
-        return Promise.resolve(del_deadline)
+            payload: deadline, 
+        });
     }
 }
 
@@ -49,7 +49,6 @@ export const reactDeleteDeadline = (contract_id, message_id, deadline_id, status
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

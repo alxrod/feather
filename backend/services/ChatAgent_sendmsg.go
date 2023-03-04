@@ -15,8 +15,8 @@ import (
 func (agent *ChatAgent) SendPriceMessage(
 	contract *db.Contract,
 	user *db.User,
-	newPrice float32,
-	oldPrice float32,
+	newPrice int64,
+	oldPrice int64,
 	editType uint32,
 	database *mongo.Database) error {
 
@@ -59,11 +59,12 @@ func (agent *ChatAgent) SendPayoutMessage(
 	contract *db.Contract,
 	user *db.User,
 	deadline *db.Deadline,
-	newPayout float32,
-	oldPayout float32,
+	newPayout int64,
+	oldPayout int64,
 	editType uint32,
 	database *mongo.Database) error {
 
+	silent := false
 	body := &db.MessageBody{
 		Type:         editType,
 		PayoutNew:    newPayout,
@@ -74,10 +75,20 @@ func (agent *ChatAgent) SendPayoutMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
+
 	err := agent.AdjustMsgBody(user, contract, body)
 	if err != nil {
 		return err
 	}
+
+	if deadline.AwaitingCreation && user.Id == deadline.DeadlineProposerId {
+		silent = true
+		body.ResolStatus = db.RESOL_APPROVED
+		body.Resolved = true
+		body.WorkerStatus = db.DECISION_UNDECIDED
+		body.BuyerStatus = db.DECISION_UNDECIDED
+	}
+
 	label_name := deadline.Name
 	if label_name == "" {
 		label_name = "Deadline"
@@ -88,8 +99,8 @@ func (agent *ChatAgent) SendPayoutMessage(
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
 		Method:    db.PAYOUT,
-
-		Body: body,
+		Silent:    silent,
+		Body:      body,
 
 		Label: &db.LabelNub{
 			Type: db.LABEL_DEADLINE,
@@ -113,6 +124,7 @@ func (agent *ChatAgent) SendDateMessage(
 	editType uint32,
 	database *mongo.Database) error {
 
+	silent := false
 	body := &db.MessageBody{
 		Type:         editType,
 		DateNew:      newDate,
@@ -127,6 +139,14 @@ func (agent *ChatAgent) SendDateMessage(
 	if err != nil {
 		return err
 	}
+	if deadline.AwaitingCreation && deadline.DateProposerId == user.Id {
+		body.ResolStatus = db.RESOL_APPROVED
+		body.Resolved = true
+		body.WorkerStatus = db.DECISION_UNDECIDED
+		body.BuyerStatus = db.DECISION_UNDECIDED
+		silent = true
+	}
+
 	label_name := deadline.Name
 	if label_name == "" {
 		label_name = "Deadline"
@@ -137,6 +157,7 @@ func (agent *ChatAgent) SendDateMessage(
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
 		Method:    db.DATE,
+		Silent:    silent,
 
 		Body: body,
 
@@ -316,7 +337,7 @@ func (agent *ChatAgent) SendDeadlineCreateMessage(
 	}
 	label_name := deadline.Name
 	if label_name == "" {
-		label_name = "Item"
+		label_name = "New Deadline"
 	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
@@ -395,6 +416,7 @@ func (agent *ChatAgent) SendDeadlineItemMessage(
 	for i, item := range deadline.Items {
 		new_item_ids[i] = item.Id
 	}
+	silent := false
 	body := &db.MessageBody{
 		Type:          editType,
 		DeadlineId:    deadline.Id,
@@ -411,6 +433,14 @@ func (agent *ChatAgent) SendDeadlineItemMessage(
 	if err != nil {
 		return err
 	}
+	if deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id {
+		silent = true
+		body.Resolved = true
+		body.ResolStatus = db.RESOL_APPROVED
+		body.WorkerStatus = db.DECISION_UNDECIDED
+		body.BuyerStatus = db.DECISION_UNDECIDED
+	}
+
 	label_name := deadline.Name
 	if label_name == "" {
 		label_name = "Deadline"
@@ -421,8 +451,8 @@ func (agent *ChatAgent) SendDeadlineItemMessage(
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
 		Method:    db.DEADLINE_ITEMS,
-
-		Body: body,
+		Silent:    silent,
+		Body:      body,
 
 		Label: &db.LabelNub{
 			Type: db.LABEL_ITEM,

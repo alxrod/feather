@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
 import { displayDecide, assignStatus, fontSize } from "./components/msg_helpers"
+import { displayPrice} from "../../../../helpers"
 
 const PriceMsg = (props) => {
   const genTimeString = (timestamp) => {
@@ -82,15 +83,15 @@ const PriceMsg = (props) => {
               <>
                 {(yourStatus === decisionTypes.NO) ? (
                   <>
-                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
+                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${displayPrice(props.msg.body.oldVersion)}</p>
                     <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{props.msg.body.newVersion}</s></p>
+                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{displayPrice(props.msg.body.newVersion)}</s></p>
                   </>
                 ) : (
                   <>
-                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
+                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${displayPrice(props.msg.body.oldVersion)}</p>
                     <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{props.msg.body.newVersion}</s></p>
+                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{displayPrice(props.msg.body.newVersion)}</s></p>
                   </>
                 )}
               </>
@@ -98,15 +99,15 @@ const PriceMsg = (props) => {
               <>
                 {(yourStatus === decisionTypes.NO) ? (
                   <>
-                    <p className={"mr-1  " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
+                    <p className={"mr-1  " + fontSize(3, props.embedded)}>${displayPrice(props.msg.body.oldVersion)}</p>
                     <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{props.msg.body.newVersion}</s></p>
+                    <p className={"ml-1 text-gray-400 font-medium " + fontSize(3, props.embedded)}>$<s>{displayPrice(props.msg.body.newVersion)}</s></p>
                   </>
                 ) : (
                   <>
-                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${props.msg.body.oldVersion}</p>
+                    <p className={"mr-1 " + fontSize(3, props.embedded)}>${displayPrice(props.msg.body.oldVersion)}</p>
                     <ArrowRightIcon className="w-4 h-4 text-gray-500"/>
-                    <p className={"ml-1 text-primary4 font-medium " + fontSize(3, props.embedded)}>${props.msg.body.newVersion}</p>
+                    <p className={"ml-1 text-primary4 font-medium " + fontSize(3, props.embedded)}>${displayPrice(props.msg.body.newVersion)}</p>
                   </>
                 )}
               </>

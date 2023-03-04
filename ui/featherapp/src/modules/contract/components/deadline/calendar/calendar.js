@@ -1,5 +1,5 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import {Tooltip} from "flowbite-react"
 
@@ -7,15 +7,20 @@ import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
 
 import * as dayjs from 'dayjs'
+
+import { DeadlineFieldContext } from '../deadline_field';
+
 var isoWeek = require('dayjs/plugin/isoWeek')
 var isToday = require('dayjs/plugin/isToday')
-
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 const Calendar = (props) => {
+
+  const {sortedDeadlines, curDeadline} = useContext(DeadlineFieldContext);
+
   dayjs.extend(isoWeek)
   dayjs.extend(isToday)
   
@@ -44,33 +49,33 @@ const Calendar = (props) => {
   const [newDate, setNewDate] = useState(datePlaceholder)
 
   useEffect( () => {
-    if (props.deadline !== undefined) {
-      let yD = props.deadline.currentDate
-      let pD = props.deadline.currentDate
+    if (curDeadline !== undefined) {
+      let yD = curDeadline.currentDate
+      let pD = curDeadline.currentDate
 
       if (props.role === BUYER_TYPE) {
-        yD = props.deadline.buyerDate
-        pD = props.deadline.workerDate
+        yD = curDeadline.buyerDate
+        pD = curDeadline.workerDate
       } else {
-        yD = props.deadline.workerDate
-        pD = props.deadline.buyerDate
+        yD = curDeadline.workerDate
+        pD = curDeadline.buyerDate
       }
       setPartnerDate(pD)
       setYourDate(yD)
 
-      setOrigMonth(props.deadline.currentDate.getMonth())
-      setOrigYear(props.deadline.currentDate.getFullYear())
-      setOrigDay(props.deadline.currentDate.getDate())
+      setOrigMonth(curDeadline.currentDate.getMonth())
+      setOrigYear(curDeadline.currentDate.getFullYear())
+      setOrigDay(curDeadline.currentDate.getDate())
 
       let takeNext = false
-      for (let i = 0; i < props.deadlines.length; i++) {
+      for (let i = 0; i < sortedDeadlines.length; i++) {
         if (takeNext === true) {
-          setNextMonth(props.deadlines[i].currentDate.getMonth())
-          setNextYear(props.deadlines[i].currentDate.getFullYear())
-          setNextDay(props.deadlines[i].currentDate.getDate())
+          setNextMonth(sortedDeadlines[i].currentDate.getMonth())
+          setNextYear(sortedDeadlines[i].currentDate.getFullYear())
+          setNextDay(sortedDeadlines[i].currentDate.getDate())
           toggleNextExists(true)
         }
-        if (props.deadlines[i].id == props.deadline.id && i !== (props.deadlines.length-1)) {
+        if (sortedDeadlines[i].id == curDeadline.id && i !== (sortedDeadlines.length-1)) {
           takeNext = true
         }
       }
@@ -80,15 +85,15 @@ const Calendar = (props) => {
   
     }
   }, [
-    props.deadline?.currentDate.getSeconds(), 
-    props.deadline?.workerDate.getSeconds(),
-    props.deadline?.buyerDate.getSeconds(),
+    curDeadline.currentDate.getSeconds(), 
+    curDeadline.workerDate.getSeconds(),
+    curDeadline.buyerDate.getSeconds(),
     props.reloadFlag, 
     props.calRefresh,
 ])
 
   useEffect( () => {
-    if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
+    if (yourDate.getTime() === curDeadline.currentDate.getTime() && props.dateLock) {
       setYourDate(partnerDate)
     } 
   }, [props.dateLock])
@@ -114,7 +119,7 @@ const Calendar = (props) => {
         
         
         const newDate = new Date(selYear, selMonth, selDay, oldDate.getHours(), oldDate.getMinutes())
-        const newDeadline = structuredClone(props.deadline)
+        const newDeadline = structuredClone(curDeadline)
         if (props.createMode === true) {
           newDeadline.workerDate = newDate
           newDeadline.currentDate = newDate
@@ -124,7 +129,6 @@ const Calendar = (props) => {
         } else if (props.role === BUYER_TYPE) {
           newDeadline.buyerDate = newDate
         }
-        console.log("Calling date change on ", newDeadline)
         props.changeDate(newDeadline)
       } 
     }
@@ -141,8 +145,8 @@ const Calendar = (props) => {
       props.setErrorMsg("You can't set a deadline in the past")
       return
     }
-    if (props.deadline.idx > 0) {
-      let prev = props.deadlines[props.deadline.idx - 1]
+    if (curDeadline.idx > 0) {
+      let prev = sortedDeadlines[curDeadline.idx - 1]
       if (props.role === WORKER_TYPE) {
         if (prev.workerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + (prev.idx+1)))
@@ -156,8 +160,8 @@ const Calendar = (props) => {
       }
     }
 
-    if (props.deadline.idx < props.deadlines.length-1) {
-      let next = props.deadlines[props.deadline.idx + 1]
+    if (curDeadline.idx < sortedDeadlines.length-1) {
+      let next = sortedDeadlines[curDeadline.idx + 1]
       if (props.role === WORKER_TYPE) {
         if (next.workerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + (next.idx+1)))
@@ -248,17 +252,17 @@ const Calendar = (props) => {
 
   const genTooltip = (day) => {
     if (isSel(day) && props.decisionMode === false && props.dateLock === false) {
-      return ("Deadline " + (props.deadline.idx+1))
+      return ("Deadline " + (curDeadline.idx+1))
     } else if (isSel(day) && props.dateLock) {
-      return ("Proposed Deadline " + (props.deadline.idx+1))
+      return ("Proposed Deadline " + (curDeadline.idx+1))
     } else if (isSel(day) && props.decisionMode) {
-      return ("New Deadline " + (props.deadline.idx+1))
+      return ("New Deadline " + (curDeadline.idx+1))
     }
     if (isOrig(day) && !isSel(day)) {
-      return ("Old Deadline " + (props.deadline.idx+1))
+      return ("Old Deadline " + (curDeadline.idx+1))
     }
     if (isNext(day)) {
-      return ("Deadline " + (props.deadline.idx+2))
+      return ("Deadline " + (curDeadline.idx+2))
     }
   }
 

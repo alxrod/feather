@@ -29,7 +29,6 @@ export const suggestItem = (contract_id, item_id, new_body) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -49,7 +48,6 @@ export const reactItem = (contract_id, message_id, item_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

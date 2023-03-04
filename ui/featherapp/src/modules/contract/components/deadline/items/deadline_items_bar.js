@@ -1,7 +1,8 @@
-import {useEffect, useState, useMemo, Fragment } from 'react'
+import {useEffect, useState, useContext, Fragment } from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import {deadlineItemTypes, msgMethods, decisionTypes} from '../../../../../services/chat.service'
 import {changeDeadlineItems, reactDeadlineItems} from "../../../../../reducers/deadlines/dispatchers/deadlines.items.dispatcher"
+import {editDeadline} from "../../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
 
 import {Tooltip, Button} from "flowbite-react"
 import DeadlineItemBadge from  "./deadline_item_badge"
@@ -13,11 +14,13 @@ import DecideButton from '../../decide_button'
 
 import { LockOpenIcon, PlusIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
-import { update } from 'autosize'
+
+import { DeadlineFieldContext } from '../deadline_field';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
+
 
 const DeadlineItemsBar = (props) => {
   
@@ -43,13 +46,14 @@ const DeadlineItemsBar = (props) => {
 
   const [itemsMsgId, setItemsMsgId] = useState("")
 
+  const {curDeadline} = useContext(DeadlineFieldContext);
+
   const saveNubs = (new_nubs, edit=true) => {
     setDeadlineItemNubs(new_nubs)
     if (props.editDeadline && edit) {
-      const newDeadline = props.deadline
+      const newDeadline = curDeadline
       newDeadline.itemsList = new_nubs
       props.editDeadline(newDeadline)
-      props.saveDeadlines()
     }
   }
 
@@ -57,18 +61,17 @@ const DeadlineItemsBar = (props) => {
     let final_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.DEADLINE_ITEMS) {
-        if (props.messages[i].body.deadline.id === props.deadline.id) {
+        if (props.messages[i].body.deadline.id === curDeadline.id) {
           final_id = props.messages[i].id
         }
       }
     }
     setItemsMsgId(final_id)
-  }, [props.messages.length, props.deadline])
+  }, [props.messages.length, curDeadline])
 
   useEffect( () => {
     if (props.contractItems && Object.keys(props.contractItems).length > 0) {
       const contractItemIds = []
-      const deadlineItemIds = []
 
       let contained = 0 
       for (const [_, item] of Object.entries(props.contractItems)) {
@@ -90,9 +93,7 @@ const DeadlineItemsBar = (props) => {
   }, [props.contractItems.length, props.contractItemsChanged, deadlineItemNubs.length])
 
   useEffect(() => {
-    if (props.deadline) {
-      console.log("DEADLINE IS:")
-      console.log(props.deadline)
+    if (editDeadline) {
 
       const normalNubs = []
       const normalIds = []
@@ -103,16 +104,16 @@ const DeadlineItemsBar = (props) => {
       const deletedNubs = []
       const deletedIds = []
 
-      for (let i = 0; i < props.deadline.itemsList.length; i++) {
-        if (!props.createMode && props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_ADDED) {
-          addedNubs.push(props.deadline.itemsList[i])
-          addedIds.push(props.deadline.itemsList[i].id)
-        } else if (!props.createMode &&  props.deadline.itemStatesList[i] === deadlineItemTypes.ITEM_REMOVED) {
-          deletedNubs.push(props.deadline.itemsList[i])
-          deletedIds.push(props.deadline.itemsList[i].id)
+      for (let i = 0; i < curDeadline.itemsList.length; i++) {
+        if (!props.createMode && curDeadline.itemStatesList[i] === deadlineItemTypes.ITEM_ADDED) {
+          addedNubs.push(curDeadline.itemsList[i])
+          addedIds.push(curDeadline.itemsList[i].id)
+        } else if (!props.createMode &&  curDeadline.itemStatesList[i] === deadlineItemTypes.ITEM_REMOVED) {
+          deletedNubs.push(curDeadline.itemsList[i])
+          deletedIds.push(curDeadline.itemsList[i].id)
         } else {
-          normalNubs.push(props.deadline.itemsList[i])
-          normalIds.push(props.deadline.itemsList[i].id)
+          normalNubs.push(curDeadline.itemsList[i])
+          normalIds.push(curDeadline.itemsList[i].id)
         }
       }
 
@@ -130,11 +131,9 @@ const DeadlineItemsBar = (props) => {
       }
       setOriginalNubs(originals)
 
-      if (props.deadline.itemsAwaitingApproval) {
+      if (curDeadline.itemsAwaitingApproval) {
         setItemLock(true)
-        if (props.deadline.itemsProposerId !== props.user.id) {
-          console.log(props.deadline.itemsProposerId)
-          console.log(props.user.id)
+        if (curDeadline.itemsProposerId !== props.user.id) {
           setProposedByPartner(true)
         } else {
           setProposedByPartner(false)
@@ -145,11 +144,11 @@ const DeadlineItemsBar = (props) => {
         setItemLock(false)
       }
       setSuggestionMode(false)
-      if (props.deadline.itemsList.length === 0) {
+      if (curDeadline.itemsList.length === 0) {
         props.setSelectedId("")
       }
     }
-  }, [props.deadline, props.reloadDeadlines, props.universalLock])
+  }, [curDeadline, props.reloadDeadlines, props.universalLock])
 
   useEffect( () => {
     if (deadlineItemSuggestedIds.length === 0 && deadlineItemDeletedIds.length === 0) {
@@ -225,7 +224,6 @@ const DeadlineItemsBar = (props) => {
     setDeadlineItemNubs(new_existing_nubs)
     setDeadlineItemDeletedIds(new_deleted_ids)
     setDeadlineItemDeletedNubs(new_deleted_nubs)
-    console.log("Setting selected to empty")
     props.setSelectedId("")
   }
 
@@ -375,7 +373,7 @@ const DeadlineItemsBar = (props) => {
         newItemsIds.push(normalIds[i])
       }
     }
-    props.changeDeadlineItems(props.curContract.id, props.deadline.id, newItemsIds)
+    props.changeDeadlineItems(props.curContract.id, curDeadline.id, newItemsIds)
   
   }
   
@@ -405,14 +403,13 @@ const DeadlineItemsBar = (props) => {
   }
 
   const acceptNewItemsChange = () => {
-    props.reactDeadlineItems(props.curContract.id, props.deadline.id, itemsMsgId, decisionTypes.YES)
+    props.reactDeadlineItems(props.curContract.id, curDeadline.id, itemsMsgId, decisionTypes.YES)
   }
   const rejectNewItemsChange = () => {
-    props.reactDeadlineItems(props.curContract.id, props.deadline.id, itemsMsgId, decisionTypes.NO)
+    props.reactDeadlineItems(props.curContract.id, curDeadline.id, itemsMsgId, decisionTypes.NO)
   }
 
   const selectItem = (id) => {
-    console.log("props.selecting item")
     props.setSelectedId(id)
   }
   return (
@@ -549,6 +546,7 @@ const mapStateToProps = ({ contract, items, deadlines, user, chat}) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   changeDeadlineItems,
   reactDeadlineItems,
+  editDeadline
 }, dispatch)
 
 export default connect(

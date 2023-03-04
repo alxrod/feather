@@ -18,8 +18,8 @@ export const joinChat = (room_id, role) => {
                     }
                 );
             },
-            () => {
-                helpers.bailAuth(dispatch)
+            (error) => {
+                return Promise.reject(error.message);
             }
         );
     }
@@ -38,8 +38,8 @@ export const clearChat = (room_id) => {
                     }
                 );
             },
-            () => {
-                helpers.bailAuth(dispatch)
+            (error) => {
+                return Promise.reject(error.message);
             }
         );
 
@@ -71,8 +71,8 @@ export const sendMessage = (room_id, message, label) => {
                     }
                 );
             },
-            () => {
-                helpers.bailAuth(dispatch)
+            (error) => {
+                return Promise.reject(error.message);
             }
         );
     }
@@ -95,8 +95,8 @@ export const pullRecord = (room_id) => {
                     }
                 );
             },
-            () => {
-                helpers.bailAuth(dispatch)
+            (error) => {
+                return Promise.reject(error.message);
             }
         )
     }
@@ -119,8 +119,8 @@ export const pullNewMessages = () => {
                     }
                 );
             },
-            () => {
-                helpers.bailAuth(dispatch)
+            (error) => {
+                return Promise.reject(error.message);
             }
         )
     }

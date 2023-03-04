@@ -41,9 +41,9 @@ export const register = (username, first_name, last_name, email, password, phone
     }
 };
 
-export const login = (username, password, remember) => {
+export const login = (usernameOrEmail, password, remember) => {
     return dispatch => {
-        return UserService.login(username, password, remember).then(
+        return UserService.login(usernameOrEmail, password, remember).then(
             (data) => {
                 dispatch({
                     type: userActions.LOGIN_SUCCESS,
@@ -79,12 +79,17 @@ export const logout = () => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
                 UserService.logout(creds.access_token);
+                localStorage.removeItem("user");
+                localStorage.removeItem("creds");
+                localStorage.removeItem("contractNubs");
+                sessionStorage.removeItem("user");
+                sessionStorage.removeItem("creds");
+                sessionStorage.removeItem("contractNubs");
                 dispatch({
                     type: userActions.LOGOUT,
                 });
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         )
     }
@@ -144,7 +149,6 @@ export const pullUser = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         )
     }
@@ -216,3 +220,12 @@ export const changePassword = (reset_id, new_password) => {
         );
     }
 };
+
+export const enableBuyer = (buyer_status) => {
+    return dispatch => {
+        dispatch({
+            type: userActions.USER_ENABLE_BUYER,
+            payload: buyer_status,
+        })
+    }
+}

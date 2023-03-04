@@ -22,3 +22,5 @@ export const SET_MESSAGE = "user/SET_MESSAGE"
 export const CLEAR_MESSAGE = "user/CLEAR_MESSAGE"
 
 export const USER_SET_PROFILE = "user/SET_PROFILE"
+
+export const USER_ENABLE_BUYER = "user/ENABLE_BUYER"

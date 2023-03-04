@@ -12,18 +12,16 @@ export const authCheck = (dispatch) => {
             return Promise.resolve(creds)
         },
         (err) => {
-            return Promise.reject({})
+            console.log(err.message)
+            bailAuth(dispatch)
+            return Promise.reject(err.message)
         },
     )
 }
 
-export const bailAuth = (dispatch) => {
-    localStorage.removeItem("user");
+const bailAuth = (dispatch) => {
     localStorage.removeItem("creds");
-    localStorage.removeItem("contractNubs");
-    sessionStorage.removeItem("user");
     sessionStorage.removeItem("creds");
-    sessionStorage.removeItem("contractNubs");
 
     dispatch({
         type: LOGOUT,
@@ -32,6 +30,7 @@ export const bailAuth = (dispatch) => {
 }
 
 export const parseError = (error, dispatch) => {
+    console.log("Parsing error")
     const message = 
         (error.response &&
         error.response.data &&

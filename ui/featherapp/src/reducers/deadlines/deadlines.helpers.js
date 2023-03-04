@@ -1,4 +1,3 @@
-
 export const purgeItem = (deadlines, item_id) => {
     for (let i = 0; i < deadlines.length; i++) {
         const newItems = []
@@ -29,7 +28,7 @@ export const applyRenameDeadlines = (mainDeadlines, newDeadlines) => {
 export const addOrReplaceDeadline = (deadlines, newDeadline) => {
     let found = false
     for (let i = 0; i < deadlines.length; i++) {
-        if (deadlines[i].id === "TEMPORARY") {
+        if (deadlines[i].id === newDeadline.id) {
             deadlines[i] = newDeadline
             found = true
         }

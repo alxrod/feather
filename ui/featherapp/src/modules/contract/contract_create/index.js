@@ -31,7 +31,6 @@ const ContractCreate = (props) => {
     } else {
       if (isFirstLoad) {
         props.queryContract(contractId).then((contract) => {
-          console.log("Pulled contract draft", contract)
           setIsFirstLoad(false)
           setConTitle(contract.title)
           setConDescript(contract.summary)
@@ -78,18 +77,6 @@ const ContractCreate = (props) => {
 
   const [error, setError] = useState("")
   const [openBanner, setOpenBanner] = useState(false)
-  
-  const now = new Date()
-  useEffect( () => {
-    if (props.deadlines.length === 0) {
-      let d1 = genEmptyDeadline(new Date(now.getTime() + 1*86400000))
-      let d2 = genEmptyDeadline(new Date(now.getTime() + 8*86400000))
-      d1.id = "1"
-      d2.id = "2"
-      let new_deadlines = [d1, d2]
-      props.loadLocalDeadlines(new_deadlines)
-    }
-  })
   
 
   const changePrice = (new_price) => {
@@ -171,32 +158,18 @@ const ContractCreate = (props) => {
       const updateID = setTimeout(
       () => {
         console.log("Syncing with server")
-        if (newContractMode) {
-          props.createContract(conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
-            () => {
-              setNewContractMode(false)
-              setUpdateTimeoutId(-1)
-              setShowSavingNotif(false)
-            }, (error) => {
-              setOpenBanner(true)
-              console.log(error)
-              setError(error)
-            }
-          )
-        } else {
-          props.updateContract(props.curContract.id, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
-            () => {
-              setNewContractMode(false)
-              setUpdateTimeoutId(-1)
-              setShowSavingNotif(false)
-            }, (error) => {
-              setOpenBanner(true)
-              console.log(error)
-              setError(error)
-            }
-          )
-        }
-      }, 1000)
+        props.updateContract(props.curContract.id, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+          () => {
+            setNewContractMode(false)
+            setUpdateTimeoutId(-1)
+            setShowSavingNotif(false)
+          }, (error) => {
+            setOpenBanner(true)
+            console.log(error)
+            setError(error)
+          }
+        )
+      }, 500)
       setUpdateTimeoutId(updateID)
     } else {
       if (isFirstLoad) {
@@ -247,9 +220,9 @@ const ContractCreate = (props) => {
       {(showSavingNotif && updateTimeoutId !== -1) && (
         <SavingNotification/>
       )}
-      <div className="min-w-[50vw] p-4 sm:p-6 lg:p-8 m-auto">
-        <div className="flex flex-row justify-between items-stretch">
-          <div className="flex flex-col grow min-w-[45vw] mr-10">
+      <div className="w-full p-4 sm:p-6 lg:p-8">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="w-full">
             <CreateSummary
               title={conTitle}
               setTitle={setConTitle}
@@ -258,7 +231,7 @@ const ContractCreate = (props) => {
             />
           </div>
 
-          <div className="flex flex-col min-w-[45vw]">
+          <div className="w-full]">
             <div className="mb-5"> 
               <CombinedCriteria 
                 price={price}
@@ -289,7 +262,6 @@ const ContractCreate = (props) => {
                 createMode={true} 
                 id={item_id} 
                 disabled={false} 
-                createMode={true}
               />
             </div>
           ))}
@@ -329,7 +301,6 @@ const mapStateToProps = ({ user, items, deadlines, contract }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  createContract,
   updateContract,
   queryContract,
   clearSelected,

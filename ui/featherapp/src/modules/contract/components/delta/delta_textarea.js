@@ -3,11 +3,11 @@ import { Fragment, useState, useEffect, useRef } from 'react'
 import { generateContractText } from './delta_text_component'
 import ContentEditable from 'react-contenteditable'
 import {UNEDITED, ADDED, REMOVED} from '../../../../custom_encodings'
-import patienceDiffPlus from './PatienceDiff'
 import { renderToString } from 'react-dom/server'
 
 import DecideButton from '../decide_button'
 import Loading from "../../../general_components/loading"
+import { ht } from 'date-fns/locale'
 
 export default (props) => {
    
@@ -25,27 +25,91 @@ export default (props) => {
     }, [reloadFlag])
 
 
-    const mergeTextArea = (chars) => {
+    const mergeTextArea = (words) => {
         var contract_text = [];
         var cur_chunk = {type: -1, text: "", author: ""};
-        for (var i = 0; i < chars.length; i++) {
+        for (var i = 0; i < words.length; i++) {
           if (cur_chunk.type === -1) {
-            cur_chunk.type = chars[i].type
-            cur_chunk.author = chars[i].author
-            cur_chunk.text += chars[i].text
-          } else if (chars[i].type === cur_chunk.type && chars[i].author === cur_chunk.author) {
-            cur_chunk.text += chars[i].text
+            cur_chunk.type = words[i].type
+            cur_chunk.author = words[i].author
+            cur_chunk.text += words[i].text
+          } else if (words[i].type === cur_chunk.type && words[i].author === cur_chunk.author) {
+            cur_chunk.text += " "+words[i].text
           } else {
             contract_text.push(cur_chunk)
-            cur_chunk = {type: chars[i].type, text: chars[i].text, author: chars[i].author}
+            cur_chunk = {type: words[i].type, text: " "+words[i].text, author: words[i].author}
           }
         }
         if (cur_chunk.type !== -1) {
           contract_text.push(cur_chunk)
         }
+
         return contract_text
     }
     
+    const calcDifferences = (oldVal, newVal) => {
+      let old_words = oldVal.split(" ")
+      let new_words = newVal.split(" ")
+      let output = []
+      let j = 0
+      let i = 0
+
+
+      while (i < old_words.length || j < new_words.length) {
+        if (j >= new_words.length) {
+          output.push({text: old_words[i], type: REMOVED, author: props.cur_id})
+          i++
+        } else if (i >= old_words.length) {
+          output.push({text: new_words[j], type: ADDED, author: props.cur_id})
+          j++
+        } else if (old_words[i] === new_words[j]) {
+          output.push({text: old_words[i], type: UNEDITED, author: props.cur_id})
+          i++
+          j++
+        } else {
+          let k = j
+          let insert = false
+          let in_between = []
+          while (k < new_words.length) {
+            if (new_words[k] === old_words[i]) {
+              insert = true
+              break
+            } else {
+              in_between.push({text: new_words[k], type: ADDED, author: props.cur_id})
+            }
+            k++
+          }
+          
+          if (insert) {
+            output = [...output, ...in_between]
+            j=k
+            continue
+          } 
+          
+          let not_missing = false
+          let n = j;
+          let m = i;
+          while (!not_missing && n < new_words.length) {
+            m = i;
+            in_between = []
+            while (m < old_words.length) {
+              if (new_words[n] === old_words[m]) {
+                not_missing = true
+                break
+              } else {
+                in_between.push({text: old_words[m], type: REMOVED, author: props.cur_id})
+              }
+              m++
+            }
+            n++;
+          }
+          output = [...output, ...in_between]
+          i=m
+        }
+
+      }
+      return output
+    }
 
     const changeText = (oldValue, newValue) => {
         var total_string = []
@@ -69,21 +133,8 @@ export default (props) => {
             }   
         }
         
-        let diffs = patienceDiffPlus(oldValue, newValue).lines
-        let insert_index = 0;
-
-        for (var i = 0; i < diffs.length; i++) { 
-            if (diffs[i].aIndex !== -1) {
-                insert_index = diffs[i].aIndex
-            } else if (diffs[i].aIndex === -1) {
-                total_string.splice(insert_index+1, 0, {text: diffs[i].line, type: ADDED, author: props.cur_id})
-                insert_index += 1
-            }
-            if (diffs[i].bIndex === -1) {
-                total_string[diffs[i].aIndex] = {text: diffs[i].line, type: REMOVED, author: props.cur_id}
-            }
-        }
-        const new_text = mergeTextArea(total_string)
+        let diffs = calcDifferences(oldValue, newValue)
+        const new_text = mergeTextArea(diffs)
         set_body(new_text)
         setReloadFlag(!reloadFlag)
         return
@@ -96,9 +147,14 @@ export default (props) => {
         }
         
         // console.log(text_body)
+        let i = 0
         for (const [key, chunk] of Object.entries(text_body)) {
           let text = chunk.text
+          if (i != 0) {
+            text += " "
+          }
           html_string += generateContractText(key, text, chunk.type)
+          i++
         }
         // console.log("HTML STRING:")
         // console.log(html_string)

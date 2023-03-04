@@ -21,7 +21,6 @@ export const settleItem = (contract_id, deadline_id, item_id, new_state) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

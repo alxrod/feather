@@ -5,7 +5,7 @@ import * as helpers from "./contract.helpers";
 const initialState = {
     contractNubs: [],
 
-    curContract: {id: null},
+    curContract: {id: ""},
     contractChanged: false,
     contractClaimed: false,   
     contractForceReload: false,
@@ -13,6 +13,15 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case actions.CONTRACT_PURGE_SIGNING:
+            return {
+                ...state,
+                curContract: {
+                    ...state.curContract,
+                    workerApproved: false,
+                    buyerApproved: false,
+                }
+            }
         case actions.CONTRACT_CREATE:
             return {
                 ...state,

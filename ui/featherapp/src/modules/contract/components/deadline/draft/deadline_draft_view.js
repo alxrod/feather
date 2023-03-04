@@ -1,16 +1,20 @@
-import React, {useState, useEffect, Fragment} from "react";
+import React, {useState, useEffect, useContext, Fragment} from "react";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 import DeadlineHistory from "./deadline_history"
 
+import { DeadlineFieldContext } from '../deadline_field';
+import { displayPrice } from "../../../../helpers"
+
 const DeadlineDraftView = (props) => {
-  const [selectedIdx, setSelectedIdx] = useState(0)
   const [curItems, setCurItems] = useState([])
+
   const [deadlineName, setDeadlineName] = useState("Deadline")
+  const {sortedDeadlines, curDeadline, setSelectedID} = useContext(DeadlineFieldContext);
 
   const changeSelection = (idx) => {
-    setSelectedIdx(idx)
+    setSelectedID(sortedDeadlines[idx].id)
   }
   const genTimeString = (date) => {
     if (date) {
@@ -23,26 +27,18 @@ const DeadlineDraftView = (props) => {
   useEffect( () => {
     const newCurItems = []
     for (let i = 0; i < props.contractItems.length; i++) {
-      for (let j = 0; j < props.deadlines[selectedIdx]?.itemsList.length; j++) {
-        if (props.contractItems[i].id === props.deadlines[selectedIdx]?.itemsList[j].id) {
+      for (let j = 0; j < curDeadline?.itemsList.length; j++) {
+        if (props.contractItems[i].id === curDeadline.itemsList[j].id) {
           newCurItems.push(props.contractItems[i])
         }
       }
     }
     setCurItems(newCurItems)
-  }, [selectedIdx, props.contractItems, props.deadlines[selectedIdx]])
+  }, [props.contractItems, curDeadline, curDeadline.idx])
 
   useEffect( () => {
-    setDeadlineName(props.deadlines[selectedIdx]?.name)
-  }, [selectedIdx, props.deadlines[selectedIdx]])
-
-  useEffect( () => {
-    for (let i = 0; i < props.deadlines.length; i++) {
-      if (props.curContract?.currentDeadlineId === props.deadlines[i]?.id) {
-        setSelectedIdx(i)
-      }
-    }
-  }, [props.curContract?.currentDeadlineId, props.deadlines])
+    setDeadlineName(curDeadline.name)
+  }, [curDeadline.id, curDeadline])
 
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg w-full flex flex-row h-full">
@@ -50,22 +46,22 @@ const DeadlineDraftView = (props) => {
         <div className="pb-5 hidden md:flex">
           <h3 className="text-lg leading-6 font-medium text-primary3">Deadlines</h3>
         </div>
-        <DeadlineHistory deadlines={props.deadlines} selectedIdx={selectedIdx} changeSelection={changeSelection} openModal={props.openModal}/>
+        <DeadlineHistory deadlines={sortedDeadlines} selectedIdx={curDeadline.id} changeSelection={changeSelection} openModal={props.openModal}/>
       </div>
       <div className="px-4 py-5 sm:p-6 grow">
         <div className="flex flex-col h-full">
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">
               {deadlineName}
-              {props.deadlines[selectedIdx]?.complete ? (
+              {curDeadline?.complete ? (
                 <i className="ml-2 font-medium text-primary3">(complete)</i>
-              ) : (props.deadlines[selectedIdx]?.id === props.curContract.currentDeadlineId) ? (
+              ) : (curDeadline?.id === props.curContract.currentDeadlineId) ? (
                 <i className="ml-2 font-medium text-primary3">(current)</i>
               ): null}
             </h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              <b className="text-primary4">${props.deadlines[selectedIdx]?.currentPayout}</b> will be payed out on{" "}
-              <b className="text-primary4">{genTimeString(props.deadlines[selectedIdx]?.currentDate)}</b> 
+              <b className="text-primary4">${displayPrice(curDeadline?.currentPayout)}</b> will be payed out on{" "}
+              <b className="text-primary4">{genTimeString(curDeadline?.currentDate)}</b> 
               {curItems.map((item, idx) => (
                 <Fragment key={idx}>
                   {(idx === (curItems.length-1)) ? (

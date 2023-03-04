@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-  
+import CreateContract from "./create_contract_button"
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -9,7 +9,6 @@ const ContractTableHeader = (props) => {
     string = string.replace(/([a-z])([A-Z])/g, '$1 $2');
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
-
   
   return (
     <div className="relative pb-5 border-b border-gray-200 sm:pb-0">
@@ -17,14 +16,7 @@ const ContractTableHeader = (props) => {
         <h3 className="text-lg leading-6 font-medium text-gray-900">Contracts</h3>
         <div className="mt-3 flex mt-0 absolute top-3 right-0">
           {(props.user?.workerModeEnabled || props.user?.buyerModeEnabled) && (
-            <Link to="/create/new">
-              <button
-                type="button"
-                className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary4 hover:bg-primary3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
-              >
-                  Create
-              </button>
-            </Link>
+            <CreateContract/>
           )}
         </div>
       </div>

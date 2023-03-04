@@ -20,7 +20,7 @@ message UserRegisterRequest {
 }
 
 message UserLoginRequest {
-    string username = 1;
+    string usernameOrEmail = 1;
     string password = 2;
 }
 

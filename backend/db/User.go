@@ -177,6 +177,29 @@ func UserQueryUsername(username, password string, database *mongo.Database) (*Us
 	return user, nil
 }
 
+func UserQueryEmail(email, password string, database *mongo.Database) (*User, error) {
+	var user *User
+	filter := bson.D{{"email", email}}
+	var err error
+	if err = database.Collection(USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
+		log.Println(color.Ize(color.Red, err.Error()))
+		return nil, &ErrorUserNotFound{email: email}
+	}
+
+	if password != "" {
+		if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+			return nil, &ErrorPasswordIncorrect{username: user.Username, password: password}
+		}
+	}
+
+	user, err = PullProfilePhotoFromDb(user, database)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func UserChangePassword(id primitive.ObjectID, password string, database *mongo.Database) (*User, error) {
 	user, err := UserQueryId(id, database)
 	if err != nil {

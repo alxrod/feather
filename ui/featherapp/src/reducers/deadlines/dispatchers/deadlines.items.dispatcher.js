@@ -21,7 +21,6 @@ export const changeDeadlineItems = (contract_id, deadline_id, item_ids) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -41,7 +40,6 @@ export const reactDeadlineItems = (contract_id, deadline_id, message_id, status)
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

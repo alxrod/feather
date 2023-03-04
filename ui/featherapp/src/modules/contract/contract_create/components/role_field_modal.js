@@ -58,7 +58,7 @@ const RoleModal = (props) => {
                           <div className="flex items-center text-sm text-gray-500"><XIcon className="w-4 h-4 text-red-500 mr-2"/> 
                             <p>You haven't set up payouts to be a worker yet, set it up<a className="font-semibold text-primary6 cursor-pointer ml-1" onClick={() => {
                               props.setRedirectRoute((props.curContract.id !== "" && props.curContract.id !== null && props.curContract.id !== undefined) ? ("/create/"+props.curContract.id) : "/create/new")
-                              props.push("/setup-payment")
+                              props.push("/setup-payout")
                             }}>here</a></p>
                           </div>
                         )}

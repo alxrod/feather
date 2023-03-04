@@ -21,7 +21,6 @@ export const toggleLock = (contract_id, lockState) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -41,7 +40,6 @@ export const reactLock = (contract_id, message_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -49,6 +47,9 @@ export const reactLock = (contract_id, message_id, status) => {
 
 export const updateLocalLock = (newLockState) => {
     return dispatch => {
+        dispatch({
+            type: contractActions.CONTRACT_PURGE_SIGNING,
+        });
         dispatch({
             type: contractActions.CONTRACT_TOGGLE_LOCK,
             payload: {

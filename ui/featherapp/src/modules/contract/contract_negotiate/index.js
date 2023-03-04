@@ -77,9 +77,9 @@ const ContractNegotiate = (props) => {
 	return (
     <>
       <RejoinMonitor/>
-      <div className="p-4 sm:p-6 lg:p-8 m-auto">
-        <div className="flex flex-row justify-between">
-          <div className="flex flex-col min-w-[45vw] grow mr-10">
+      <div className="p-4 sm:p-6 lg:p-12 m-auto">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-col grow order-2 md:order-1">
             <div className="mb-5">
               <PartnerCard title={contract.title} summary={contract.summary}/>
             </div>
@@ -91,7 +91,7 @@ const ContractNegotiate = (props) => {
               />
             </div>
           </div>
-          <div className="flex flex-row min-w-[45vw]">
+          <div className="flex flex-row order-1 md:order-2">
             <MainChat roomId={contract.roomId}/>
           </div>
         </div>

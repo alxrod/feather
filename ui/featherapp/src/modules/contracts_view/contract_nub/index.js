@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { MailIcon } from "@heroicons/react/outline";
 import DeadlineDisplay from "../../contract/components/deadline/header/deadline_display"
 import {contractStages} from "../../../services/contract.service.js"
+import { displayPrice} from "../../helpers"
+import DeadlineDisplayProvider from "./deadline_display_provider"
+import { ADMIN_TYPE, WORKER_TYPE, BUYER_TYPE } from '../../../services/user.service';
 
 const ContractNub = (props) => {
   const [stageBg, setStageBg] = useState("green")
@@ -12,22 +15,23 @@ const ContractNub = (props) => {
   const [profPics, setProfPics] = useState([])
 
   useEffect(() => {
-    console.log("lookign at cache: ", props.cachedProfileUrls)
-    const newPics = []
-    if (props.user.profilePhotoUploaded !== false) {
-      newPics.push(props.user.profilePhoto?.cacheUrl)
-    }
-    for (let i = 0; i < props.cachedProfileUrls.length; i++) {
-      if (props.cachedProfileUrls[i][0] === props.contract.workerId && props.cachedProfileUrls[i][1] !== "") {
-        newPics.push(props.cachedProfileUrls[i][1])
+    if (props.user) {
+      const newPics = []
+      if (props.user.profilePhotoUploaded !== false) {
+        newPics.push(props.user.profilePhoto?.cacheUrl)
       }
-      if (props.cachedProfileUrls[i][0] === props.contract.buyerId && props.cachedProfileUrls[i][1] !== "") {
-        newPics.push(props.cachedProfileUrls[i][1])
+      for (let i = 0; i < props.cachedProfileUrls.length; i++) {
+        if (props.cachedProfileUrls[i][0] === props.contract.workerId && props.cachedProfileUrls[i][1] !== "") {
+          newPics.push(props.cachedProfileUrls[i][1])
+        }
+        if (props.cachedProfileUrls[i][0] === props.contract.buyerId && props.cachedProfileUrls[i][1] !== "") {
+          newPics.push(props.cachedProfileUrls[i][1])
+        }
       }
+      
+      setProfPics(newPics)
     }
-    setProfPics(newPics)
-
-  }, [props.cachedProfileUrls])
+  }, [props.cachedProfileUrls, props.user])
   useEffect(() =>  {
     if (props.contract && props.newMessages.length > 0) {
       let msgCount = 0
@@ -77,7 +81,7 @@ const ContractNub = (props) => {
             <h1 href={link} className="text-lg font-medium leading-6 text-gray-900">{props.contract.title}</h1>
             
             <div className="flex gap-x-2">
-              <h3 href={link} className="text-lg font-normal leading-6 text-gray-400">${props.contract.price}</h3>
+              <h3 href={link} className="text-lg font-normal leading-6 text-gray-400">${displayPrice(props.contract.price)}</h3>
 
               <span className={"inline-flex items-center rounded-full bg-"+stageBg+"-100 px-3 py-0.5 text-sm font-medium text-"+stageBg+"-800"}>
                 {props.contract.stage === contractStages.CREATE ? (
@@ -121,15 +125,17 @@ const ContractNub = (props) => {
 
           </div>
           <div className="mt-3">
-            <DeadlineDisplay
-              // role={props.role} 
-              deadlines={props.contract.deadlinesList} 
-              preview={true}
-              iconSize={4}
-              selected={0}
-              // setSelected={setSelected}
-              showDates={true}
-            />
+            <DeadlineDisplayProvider 
+              deadlines={props.contract.deadlinesList}
+            >
+              <DeadlineDisplay
+                preview={true}
+                iconSize={"0.875rem"}
+                selected={0}
+                // setSelected={setSelected}
+                showDates={true}
+              />
+            </DeadlineDisplayProvider>
           </div>
           <p className="mt-2 max-w-4xl text-sm text-gray-500">
             {props.contract.summary}

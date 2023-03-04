@@ -656,7 +656,7 @@ proto.main.UserLoginRequest.prototype.toObject = function(opt_includeInstance) {
  */
 proto.main.UserLoginRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    username: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    usernameoremail: jspb.Message.getFieldWithDefault(msg, 1, ""),
     password: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
@@ -696,7 +696,7 @@ proto.main.UserLoginRequest.deserializeBinaryFromReader = function(msg, reader) 
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setUsername(value);
+      msg.setUsernameoremail(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -731,7 +731,7 @@ proto.main.UserLoginRequest.prototype.serializeBinary = function() {
  */
 proto.main.UserLoginRequest.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getUsername();
+  f = message.getUsernameoremail();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -749,10 +749,10 @@ proto.main.UserLoginRequest.serializeBinaryToWriter = function(message, writer) 
 
 
 /**
- * optional string username = 1;
+ * optional string usernameOrEmail = 1;
  * @return {string}
  */
-proto.main.UserLoginRequest.prototype.getUsername = function() {
+proto.main.UserLoginRequest.prototype.getUsernameoremail = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -761,7 +761,7 @@ proto.main.UserLoginRequest.prototype.getUsername = function() {
  * @param {string} value
  * @return {!proto.main.UserLoginRequest} returns this
  */
-proto.main.UserLoginRequest.prototype.setUsername = function(value) {
+proto.main.UserLoginRequest.prototype.setUsernameoremail = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 

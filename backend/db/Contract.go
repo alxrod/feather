@@ -110,6 +110,13 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 	return proto
 }
 
+func (contract *Contract) String() string {
+	if contract == nil {
+		fmt.Sprintf("<nil contract>")
+	}
+	return fmt.Sprintf("<Contract id: %s>", contract.Id.Hex())
+}
+
 func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	proto := &comms.ContractNub{}
 	if contract == nil {
@@ -239,9 +246,9 @@ func (un *UserNub) Proto() *comms.UserNubEntity {
 }
 
 type PriceNub struct {
-	Current          float32            `bson:"current"`
-	Worker           float32            `bson:"worker"`
-	Buyer            float32            `bson:"buyer"`
+	Current          int64              `bson:"current"`
+	Worker           int64              `bson:"worker"`
+	Buyer            int64              `bson:"buyer"`
 	AwaitingApproval bool               `bson:"awaiting_approval"`
 	Proposer         primitive.ObjectID `bson:"proposer_id"`
 }
@@ -691,7 +698,7 @@ func ContractById(contract_id primitive.ObjectID, database *mongo.Database) (*Co
 	return contract, nil
 }
 
-func ContractSuggestPrice(contract *Contract, user *User, newPrice float32, database *mongo.Database) error {
+func ContractSuggestPrice(contract *Contract, user *User, newPrice int64, database *mongo.Database) error {
 	if contract.Price.AwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The contract %s is already awaiting approval of a different price change", contract.Id.Hex()))
 	}
@@ -798,6 +805,30 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 	}
 	return nil
 }
+
+func ContractUnsign(contract *Contract, database *mongo.Database) (*Contract, error) {
+	if contract.Worker == nil || contract.Buyer == nil || contract.Stage < NEGOTIATE {
+		return contract, nil
+	}
+	if contract.WorkerApproved && !contract.BuyerApproved {
+		contract.WorkerApproved = false
+	} else if contract.BuyerApproved && !contract.WorkerApproved {
+		contract.BuyerApproved = false
+	}
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{
+		{"$set", bson.D{{"worker_approved", contract.WorkerApproved}}},
+		{"$set", bson.D{{"buyer_approved", contract.BuyerApproved}}},
+		{"$set", bson.D{{"stage", contract.Stage}}},
+		{"$set", bson.D{{"current_deadline_id", contract.CurrentDeadlineId}}},
+	}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return contract, nil
+}
+
 func ContractSettle(user *User, contract *Contract, database *mongo.Database) error {
 	if contract.Worker.Id == user.Id {
 		contract.WorkerApproved = true

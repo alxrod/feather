@@ -10,7 +10,6 @@ import { LockOpenIcon } from "@heroicons/react/outline"
 import { LockClosedIcon } from '@heroicons/react/solid'
 
 import PriceField from "../price/price_field";
-import DeadlineField from "../deadline/deadline_field";
 
 
 const UniversalLockCard = (props) => {

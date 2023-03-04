@@ -38,7 +38,6 @@ export const addItem = (contract_id, item_name, item_body, existing_item_names=[
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -58,7 +57,6 @@ export const reactAddItem = (contract_id, message_id, item_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

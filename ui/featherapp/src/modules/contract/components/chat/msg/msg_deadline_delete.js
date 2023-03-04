@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
 import MsgDecisionFooter from "./components/msg_decision_footer"
 import { displayDecide, fontSize } from "./components/msg_helpers"
+import { displayPrice} from "../../../../helpers"
 
 const DeadlineCreateMsg = (props) => {
 
@@ -111,7 +112,7 @@ const DeadlineCreateMsg = (props) => {
         </div>
         <div className="flex items-center mb-2 border-l-2 border-gray-400 pl-2 ml-2 m-1">
           <div className="flex">
-            <p className={"text-red-400 mr-2 " + fontSize(3, props.embedded)}>{"Payout"}</p><p className={"mr-1 text-red " + fontSize(3, props.embedded)}>{props.msg.body.deadline.currentPayout}%</p>
+            <p className={"text-red-400 mr-2 " + fontSize(3, props.embedded)}>{"Payout"}</p><p className={"mr-1 text-red " + fontSize(3, props.embedded)}>{displayPrice(props.msg.body.deadline.currentPayout)}%</p>
           </div>
           <p className="text-red-400">on {genTimeStringDate(props.msg.body.deadline.currentDate)}</p>
         </div>

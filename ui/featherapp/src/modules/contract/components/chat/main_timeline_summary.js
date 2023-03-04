@@ -67,10 +67,13 @@ const MainTimeline = (props) => {
     }
   }, [props.messages, isVisible])
 
+  useEffect(() => {
+
+  })
   return (
     <div ref={chat} className="flow-root overflow-y-scroll grow h-[45vh]">
       <ul role="list" className="-mb-8">
-        {props.messages.map((msg, msgIdx) => (
+        {props.messages.filter(msg => msg.silent === false).map((msg, msgIdx) => (
           <Fragment key={msgIdx}>
           <li key={msgIdx}>
             <div className="relative pb-8">
@@ -79,43 +82,43 @@ const MainTimeline = (props) => {
               ) : null}
               <div className="relative flex items-start space-x-3">
                 {(msg.method === msgMethods.COMMENT) ? (
-                  <CommentMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg}/>
+                  <CommentMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg}/>
                 ) : (msg.method === msgMethods.PRICE) ? (
-                  <PriceMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <PriceMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.PAYOUT) ? (
-                  <PayoutMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <PayoutMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DATE) ? (
-                  <DateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DateMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.ITEM) ? (
-                  <ItemBodyMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ItemBodyMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.ITEM_CREATE) ? (
-                  <ItemCreateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
+                  <ItemCreateMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/> 
                 ) : (msg.method === msgMethods.ITEM_DELETE) ? (
-                  <ItemDeleteMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/> 
+                  <ItemDeleteMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/> 
                 ) : (msg.method === msgMethods.DEADLINE_CREATE) ? (
-                  <DeadlineCreateMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DeadlineCreateMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DEADLINE_DELETE) ? (
-                  <DeadlineDeleteMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DeadlineDeleteMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DEADLINE_ITEMS) ? (
-                  <DeadlineItemsMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DeadlineItemsMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.CONTRACT_SIGN) ? (
-                  <ContractSignMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ContractSignMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.CONTRACT_LOCK) ? (
-                  <ContractLockMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ContractLockMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.CONTRACT_SETTLE) ? (
-                  <ContractSettleMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ContractSettleMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) ? (
-                  <ItemSettleMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ItemSettleMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.REQUEST_ADMIN) ? (
-                  <RequestAdminMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <RequestAdminMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.RESOLVE_ADMIN) ? (
-                  <ResolveAdminMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ResolveAdminMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.FINALIZE_SETTLE) ? (
-                  <ContractFinalizeMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <ContractFinalizeMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DEADLINE_EXPIRED) ? (
-                  <DeadlineExpiredMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DeadlineExpiredMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DEADLINE_SETTLED) ? (
-                  <DeadlineSettledMsg reloaded={props.reloadMsg && (props.reloadIdx == msgIdx)} msg={msg} yourRole={props.yourRole}/>
+                  <DeadlineSettledMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>
@@ -142,7 +145,7 @@ const MainTimeline = (props) => {
 const mapStateToProps = ({ chat, user}) => ({
   messages: chat.messages,
   reloadMsg: chat.reloadMsg,
-  reloadIdx: chat.reloadIdx,
+  reloadId: chat.reloadId,
   user: user.user
 })
 

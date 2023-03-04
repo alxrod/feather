@@ -50,7 +50,7 @@ const MsgWrapper = (props) => {
           justifyContent: 'center',
         }}
       >
-        <Icon />
+        <Icon/>
       </div>
     );
   }

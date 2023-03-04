@@ -143,7 +143,7 @@ const ContractsList = (props) => {
 
 const mapStateToProps = ({ user, contract, chat }) => ({
     user: user.user,
-    contractNubs: contract.contractNubs,
+    contractNubs: contract.contractNubs ? contract.contractNubs : [],
     newMessages: chat.newMessages,
 })
 

@@ -19,7 +19,6 @@ export const suggestDate = (contract_id, deadline_id, new_date) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -62,22 +61,5 @@ export const updateLocalDate = (msg) => {
             type: deadlineActions.CONTRACT_UPDATE_DATE,
             payload: newDate,
         });
-    }
-}
-
-export const updateLocalDeadline = (msg) => {
-    return dispatch => {
-        if (msg.body.resolStatus == resolTypes.APPROVED) {
-            msg.body.deadline.awaitingCreation = false
-            dispatch({
-                type: deadlineActions.CONTRACT_DEADLINE_REPLACE,
-                payload: msg.body.deadline,
-            });
-        } else {
-            dispatch({
-                type: deadlineActions.CONTRACT_DEADLINE_REMOVE,
-                payload: msg.body.deadline, 
-            });
-        }
     }
 }

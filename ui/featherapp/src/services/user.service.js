@@ -23,9 +23,10 @@ export const BOTH_TYPE = 3
 class UserService {
 
     // Auth Requests
-    login(username, password, remember) {
+    login(usernameOrEmail, password, remember) {
         var loginRequest = new UserLoginRequest();   
-        loginRequest.setUsername(username);
+        console.log("LGIN REQ", loginRequest);
+        loginRequest.setUsernameoremail(usernameOrEmail);
         loginRequest.setPassword(password);
 
         return new Promise( (resolve, reject) => { 
@@ -114,6 +115,9 @@ class UserService {
         localStorage.removeItem("user");
         localStorage.removeItem("creds");
         localStorage.removeItem("contractNubs");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("creds");
+        sessionStorage.removeItem("contractNubs");
         
         authClient.logout(logoutRequest, null, function(err, response) {
             if (err) {
@@ -139,7 +143,18 @@ class UserService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                localStorage.setItem("user", JSON.stringify(resp));
+
+                // just using to check where to save
+                let creds = JSON.parse(localStorage.getItem("creds"))
+                if (creds === null) {
+                    console.log("ENMPTY OBJ: ", creds)
+                }
+                if (creds === null) {
+                    localStorage.setItem("user", JSON.stringify(resp));
+                } else {
+                    sessionStorage.setItem("user", JSON.stringify(resp));
+                }
+                
                 resolve(resp)
             });
         });
@@ -204,10 +219,10 @@ class UserService {
         });
     }
 
-    authChecker(needAuth) {
+    authChecker(needAuth) { 
         let remember = true
         let creds = JSON.parse(localStorage.getItem("creds"))
-        if (!creds) {
+        if (creds === null) {
             remember = false
             creds = JSON.parse(sessionStorage.getItem("creds"))
         }
@@ -218,15 +233,20 @@ class UserService {
             if (d <= Date.now()) {
                 return new Promise((resolve, reject) => {
                     var loginRequest = new UserLoginRequest();   
-                    loginRequest.setUsername(creds.username);
+                    loginRequest.setUsernameoremail(creds.username);
                     loginRequest.setPassword(creds.password);
-            
+
                     authClient.login(loginRequest, null, function(error, response) {
+                        console.log("HUHHHHH")
                         if (error) {
-                            reject(error)
+                            console.log("Error Logging in: ", error)
+                            resolve(creds)
+                            return
                         }
+                        
                         var resp = response.toObject();
-            
+                        console.log("Got back the request and its: ", resp)
+
                         var new_creds = {
                             username: resp.user.username,
                             password: creds.password,

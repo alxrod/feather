@@ -17,8 +17,7 @@ import { StarIcon, } from '@heroicons/react/outline'
         </div>
           <div className="bg-gray-50 px-4 py-4 sm:px-6 flex justify-end">
             <div className="flex items-center">  
-              <StarIcon className="flex-shrink-0 mr-1.5 h-3 w-3 text-gray-900" aria-hidden="true" />
-              <p className="text-sm m-0, p-0">Trustworthy: <b className="font-semibold text-gray-900">4.8</b>/5.0</p>
+
             </div>
           </div>
       </div>

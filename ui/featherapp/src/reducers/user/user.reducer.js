@@ -1,8 +1,12 @@
 import UserService, {WORKER_TYPE, BUYER_TYPE} from "../../services/user.service";
 import FileService from "../../services/file.service";
 import * as userActions from "./user.actions";
-const user = JSON.parse(localStorage.getItem("user"));
-const creds = JSON.parse(localStorage.getItem("creds"));
+
+
+let user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+    user = JSON.parse(sessionStorage.getItem("user"));
+}
 const initialState = {
     redirectLink: "/contracts",
     defaultRegisterRole: WORKER_TYPE,
@@ -18,6 +22,15 @@ if (user) {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case userActions.USER_ENABLE_BUYER:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    buyerModeRequested: true,
+                    buyerModeEnabled: action.payload
+                }
+            }
         case userActions.SET_REDIRECT_LINK:
             return {
                 ...state,
@@ -48,89 +61,6 @@ export default (state = initialState, action) => {
                 user: {
                     ...state.user,
                     paymentSetup: false,
-                }
-            }
-
-        case userActions.SOCIAL_LINK_SUCCESS:
-            if (action.payload.platform === "Instagram") {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        instaVerified: true,
-                    }
-                }
-            } else {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        tiktokVerified: true,
-                    }
-                }
-            }
-        case userActions.SOCIAL_LINK_FAIL:
-            if (action.payload.platform === "Tiktok") {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        instaVerified: false,
-                    }
-                }
-            } else {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        tiktokVerified: false,
-                    }
-                }
-            }
-
-        case userActions.SOCIAL_CREATE_SUCCESS:
-            if (action.payload.platform === "Instagram") {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        instaVerified: action.payload.verified,
-                        instaAccount: action.payload.account,
-                        instaFollowers: action.payload.followers
-                    }
-                }
-            } else {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        tiktokVerified: action.payload.verified,
-                        tiktokAccount: action.payload.account,
-                        tiktokFollowers: action.payload.followers
-                    }
-                }
-            }
-
-        case userActions.SOCIAL_CREATE_FAIL:
-            if (action.payload.platform === "Tiktok") {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        tiktokAccount: "",
-                        tiktokFollowers: 0,
-                        tiktokVerified: false,
-                    }
-                }
-            } else {
-                return {
-                    ...state,
-                    user: {
-                        ...state.user,
-                        instaAccount: "",
-                        instaFollowers: 0,
-                        instaVerified: false,
-                    }
                 }
             }
 

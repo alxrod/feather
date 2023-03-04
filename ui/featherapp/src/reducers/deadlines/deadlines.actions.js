@@ -6,11 +6,9 @@ export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
 export const CONTRACT_DEADLINE_LOAD = "contract/deadline/LOAD"
 export const CONTRACT_DEADLINE_ADD = "contract/deadline/ADD"
 
-export const CONTRACT_ADD_DEADLINE_FROM_DB = "contract/deadline/ADD_FROM_DB"
-
 export const CONTRACT_DEADLINE_REPLACE = "contract/deadline/REPLACE"
 export const CONTRACT_DEADLINE_REMOVE = "contract/deadline/REMOVE"
-
+export const CONTRACT_DEADLINE_UPDATE = "contract/deadline/UPDATE"
 
 export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
 

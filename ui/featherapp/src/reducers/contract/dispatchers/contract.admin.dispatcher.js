@@ -21,7 +21,6 @@ export const requestAdmin = (contract_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -41,7 +40,6 @@ export const resolveAdmin = (contract_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

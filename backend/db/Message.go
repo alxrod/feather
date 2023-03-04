@@ -91,6 +91,7 @@ type Message struct {
 
 	Timestamp    time.Time      `bson:"timestamp"`
 	ReadReceipts []*ReadReceipt `bson:"read_receipts"`
+	Silent       bool           `bson:"silent"`
 }
 
 type ReadReceipt struct {
@@ -133,14 +134,14 @@ type MessageBody struct {
 	NewItemIds    []primitive.ObjectID `bson:"new_item_ids"`
 	NewItems      []*ContractItem      `bson:"-"`
 
-	PayoutNew float32   `bson:"payout_new,omitempty"`
-	PayoutOld float32   `bson:"payout_old,omitempty"`
+	PayoutNew int64     `bson:"payout_new,omitempty"`
+	PayoutOld int64     `bson:"payout_old,omitempty"`
 	DateNew   time.Time `bson:"date_new,omitempty"`
 	DateOld   time.Time `bson:"date_old,omitempty"`
 
 	// Price messages
-	PriceNew float32 `bson:"price_new,omitempty"`
-	PriceOld float32 `bson:"price_old,omitempty"`
+	PriceNew int64 `bson:"price_new,omitempty"`
+	PriceOld int64 `bson:"price_old,omitempty"`
 
 	// Revision messages
 	MsgId primitive.ObjectID `bson:"msg_id,omitempty"`
@@ -465,6 +466,7 @@ func (m *Message) Proto() *comms.ChatMessage {
 	proto.IsAdmin = m.IsAdmin
 	proto.AdminOverride = m.AdminOverride
 	proto.AdminStatus = m.AdminStatus
+	proto.Silent = m.Silent
 
 	if m.Method == COMMENT {
 		proto.Body = m.Body.CommentProto()

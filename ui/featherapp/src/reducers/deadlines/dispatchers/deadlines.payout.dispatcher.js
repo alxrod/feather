@@ -20,7 +20,6 @@ export const suggestPayout = (contract_id, deadline_id, new_payout) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -40,7 +39,6 @@ export const reactPayout = (contract_id, message_id, deadline_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

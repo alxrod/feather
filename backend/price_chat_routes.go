@@ -29,6 +29,8 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	oldPrice := contract.Price.Current
 	user, err := db.UserQueryId(user_id, database)
 
@@ -77,6 +79,8 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	if err != nil {
 		return nil, err
 	}
+	contract, _ = db.ContractUnsign(contract, database)
+
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err

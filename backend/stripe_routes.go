@@ -143,7 +143,6 @@ func (s *BackServer) ListExBAs(ctx context.Context, req *comms.ListRequest) (*co
 		Accounts: entities,
 	}, nil
 }
-
 func (s *BackServer) DisconnectFca(ctx context.Context, req *comms.FcaQuery) (*comms.NullResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 	user, err := stringToUser(req.UserId, database)

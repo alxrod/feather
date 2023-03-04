@@ -12,17 +12,13 @@ import EditLock from "../../../general_components/edit_lock"
 
 import { useLocation } from 'react-router-dom'
 import { ArrowRightIcon } from '@heroicons/react/solid'
-
-function isFloat(n) {
-  return (n === "") || parseFloat(n.match(/^-?\d*(\.\d+)?$/))>0 || parseFloat((n+"0").match(/^-?\d*(\.\d+)?$/))>0;
-}
+import { displayPrice, internalizePrice, isFloat} from "../../../helpers"
 
 
 const PriceField = (props) => {
 
   let cur_contract = {id: ""}
   const [origPrice, setOrigPrice] = useState("")
-  const [field_classes, setClasses] = useState("hidden")
   const [fieldValue, setFieldValue] = useState("")
 
   const [textColor, setTextColor] = useState("text-gray-500")
@@ -32,6 +28,8 @@ const PriceField = (props) => {
   const [oldPrice, setOldPrice] = useState("")
 
   const [priceMsgId, setPriceMsgId] = useState("")
+
+  const [errorMsg, setErrorMsg] = useState("")
 
   useEffect(() => {
     let final_price_id = ""
@@ -61,9 +59,8 @@ const PriceField = (props) => {
   
       if (price.awaitingApproval == true) {
         toggleLock(true)
-        setClasses("hidden")
         setTextColor("text-green-400")
-        setOldPrice(price.current)
+        setOldPrice(displayPrice(price.current))
         if (price.proposerId === props.user.id) {
           setProposedByPartner(false)
 
@@ -93,10 +90,14 @@ const PriceField = (props) => {
         toggleLock(false)
       }
       setOrigPrice(newPrice)
-      setFieldValue(newPrice)
+      if (parseFloat(fieldValue) != displayPrice(newPrice)) {
+        setFieldValue(displayPrice(newPrice))
+      }
     } else if (props.createMode && (props.price !== 0 && props.price !== undefined)) {
       setOrigPrice(props.price)
-      setFieldValue(props.price)
+      if (parseFloat(fieldValue) != displayPrice(props.price)) {
+        setFieldValue(displayPrice(props.price))
+      }
     }
   }, [props.curContract, props.contractChanged, props.universalLock, props.price])
 
@@ -109,38 +110,59 @@ const PriceField = (props) => {
   }, [props.curContract, props.contractChanged])
 
 
-  
-
   const handlePriceChange = (e) => {
-    if (isFloat(e.target.value)) {
-      if (e.target.value !== origPrice && props.createMode !== true) {
-        toggleProposing(true)
-      } else {
-        toggleProposing(false)
-      }
-      setFieldValue(e.target.value)
-      if (props.changePrice) {
-        props.changePrice(e.target.value)
-      }
-      setClasses("hidden")
+    const new_val = e.target.value
+    if (!isFloat(new_val)) {
+      console.log("New val: ", new_val)
+      setErrorMsg("the price must be a number")
+      setTimeout(() => {
+        setErrorMsg("")
+      }, 1000)
+      return
+    } else if (new_val.split(".").length > 2 || (new_val.split(".").length === 2 && new_val.split(".")[1].length > 2)) {
+      console.log(parseFloat(new_val).toFixed(2).toString(), " vs ", e.target.value)
+      setErrorMsg("You can only set the price in full cents (0.01)")
+      setTimeout(() => {
+        setErrorMsg("")
+      }, 1000)
+      return 
     } else {
-      setClasses("display")
+      setErrorMsg("")
+    }
+    let internal_val = internalizePrice(new_val)
+    if (internal_val !== origPrice && props.createMode !== true) {
+      toggleProposing(true)
+    } else {
+      toggleProposing(false)
+    }
+
+    console.log("Setting field to ", new_val)
+    setFieldValue(new_val)
+    if (isNaN(internal_val)) {
+      internal_val = 0
+    }
+    if (props.changePrice) {
+        console.log("CHANGIGN PRICE TO ", internal_val)
+        props.changePrice(internal_val)      
     }
   }
 
   const submitChange = () => {
     console.log("Approving change")
-    props.suggestPrice(props.curContract.id, parseFloat(fieldValue)).then(() => {
+    let newVal = internalizePrice(fieldValue)
+    if (isNaN(newVal)) {
+      newVal = 0
+    }
+    props.suggestPrice(props.curContract.id, newVal).then(() => {
       toggleProposing(false)
       setTextColor("text-green-400")
     })
-
   }
 
   const rejectChange = () => {
     console.log("Rejecting change")
     toggleProposing(false)
-    setFieldValue(origPrice)
+    setFieldValue(displayPrice(origPrice))
   }
 
   const approveChange = () => {
@@ -206,10 +228,12 @@ const PriceField = (props) => {
               </span>
             </div>
           </div>
-          <div className={"flex items-center " + field_classes}>
-            <ExclamationCircleIcon className="h-4 w-4 text-red-400" aria-hidden="true" />
-            <p className="text-red-400 text-sm">You can only enter a dollar amount</p>
-          </div>
+          {errorMsg !== "" && (
+            <div className="flex items-center ">
+              <ExclamationCircleIcon className="h-4 w-4 text-red-400" aria-hidden="true" />
+              <p className="text-red-400 text-sm">{errorMsg}</p>
+            </div>
+          )}
         </div>
         {(proposing && !lock) && (
           <div className="ml-1 pt-1 my-auto">

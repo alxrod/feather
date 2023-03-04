@@ -10,3 +10,5 @@ export const CONTRACT_PULL_CURRENT = "contract/contract/PULL_CURRENT"
 
 export const CONTRACT_UPDATE_PRICE = "contract/price/UPDATE_PRICE"
 export const CONTRACT_ADMIN_REQUEST_CHANGED = "contract/admin/REQUEST_CHANGED"
+
+export const CONTRACT_PURGE_SIGNING = "contract/sign/PURGE"

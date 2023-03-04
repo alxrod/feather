@@ -53,7 +53,7 @@ func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) erro
 	agent.SenderEmail = os.Getenv("EMAIL")
 	agent.Password = os.Getenv("EMAIL_PWORD")
 	agent.RootURL = os.Getenv("ROOT_URL")
-
+	log.Printf("Email agent username %s password %s", agent.SenderEmail, agent.Password)
 	// Intervals
 	agent.INTERVAL_TIME = 1
 

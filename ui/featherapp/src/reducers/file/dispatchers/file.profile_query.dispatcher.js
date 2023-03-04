@@ -21,7 +21,6 @@ export const getProfilePicUrls = (user_ids) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

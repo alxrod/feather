@@ -4,9 +4,9 @@ option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 
 message PriceEntity {
-    float current = 1;
-    float buyer = 2;
-    float worker = 3;
+    int64 current = 1;
+    int64 buyer = 2;
+    int64 worker = 3;
     bool awaiting_approval = 4;
     string proposer_id = 5;
 }
@@ -29,9 +29,9 @@ message DeadlineEntity {
     bool awaiting_deletion = 21;
     string deadline_proposer_id = 22;
 
-    float current_payout = 4;
-    float worker_payout = 7;
-    float buyer_payout = 10;
+    int64 current_payout = 4;
+    int64 worker_payout = 7;
+    int64 buyer_payout = 10;
     bool payout_awaiting_approval = 12;
     string payout_proposer_id = 13;
 
@@ -56,7 +56,7 @@ message DeadlineNub {
     bool complete = 25;
     bool expired = 31;
 
-    float current_payout = 4;
+    int64 current_payout = 4;
     google.protobuf.Timestamp current_date = 5;
 }
 
@@ -88,7 +88,7 @@ message ContractNub {
     string summary = 12;
     
     google.protobuf.Timestamp deadline = 3;
-    float price = 4;
+    int64 price = 4;
     uint32 stage = 5;
     uint32 user_type = 6;
 
@@ -109,7 +109,7 @@ message InviteNub {
     string title = 2;
     string password = 8;
     string summary = 3;
-    float price = 4;
+    int64 price = 4;
     google.protobuf.Timestamp deadline = 5;
     UserNubEntity worker = 6;
     UserNubEntity buyer = 7;
@@ -190,7 +190,7 @@ message QueryByIdRequest {
 message ContractSuggestPrice {
     string user_id = 1;
     string contract_id = 2;
-    float new_price = 3;
+    int64 new_price = 3;
 }
 message ContractReactPrice {
     string user_id = 1;
@@ -208,7 +208,7 @@ message ContractSuggestPayout {
     string user_id = 1;
     string contract_id = 2;
     string deadline_id = 4;
-    float new_payout = 3;
+    int64 new_payout = 3;
 }
 message ContractSuggestDeadlineItems {
     string user_id = 1;
@@ -414,7 +414,7 @@ service Contract {
     rpc SuggestDeleteItem(ContractSuggestDelItem) returns (ContractEditResponse) {};
     rpc ReactDeleteItem(ContractReactDelItem) returns (ContractEditResponse) {};
 
-    rpc SuggestAddDeadline(ContractSuggestAddDeadline) returns (ContractEditResponse) {};
+    rpc SuggestAddDeadline(ContractSuggestAddDeadline) returns (DeadlineEntity) {};
     rpc ReactAddDeadline(ContractReactAddDeadline) returns (ContractEditResponse) {};
 
     rpc SuggestDeleteDeadline(ContractSuggestDelDeadline) returns (ContractEditResponse) {};

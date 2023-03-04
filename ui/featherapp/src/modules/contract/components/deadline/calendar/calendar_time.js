@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import {ExclamationCircleIcon} from "@heroicons/react/outline"
@@ -6,6 +6,8 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
 
 import { LockOpenIcon, ArrowRightIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
+
+import { DeadlineFieldContext } from '../deadline_field';
 
 function isNumeric(num){
   return !isNaN(num)
@@ -18,20 +20,16 @@ const CalendarTime = (props) => {
   const [minute, setMinute] = useState("00")
   const [period, setPeriod] = useState("AM")
 
-  const [timeoutId, setTimeoutId] = useState(-1)
+  const {sortedDeadlines, curDeadline} = useContext(DeadlineFieldContext);
 
   useEffect( () => {
-    if (props.deadline !== undefined || (props.newDeadline !== undefined && !props.createMode)) {
-      let deadline = props.deadline
-      if (props.newDeadline.currentDate !== undefined && !props.createMode) {
-        deadline = props.newDeadline
-      }
-      let datetime = deadline.currentDate
+    if (curDeadline) {
+      let datetime = curDeadline.currentDate
       if (props.role === WORKER_TYPE) {
-        datetime = deadline.workerDate
+        datetime = curDeadline.workerDate
       }
       if (props.role == BUYER_TYPE) {
-        datetime = deadline.buyerDate
+        datetime = curDeadline.buyerDate
       }
       setYourDate(datetime)
 
@@ -51,16 +49,16 @@ const CalendarTime = (props) => {
       setMinute(datetime.getMinutes())
       setPeriod(period)
     }
-  }, [props.deadline, props.newDeadline, props.reloadFlag, props.calRefresh ])
+  }, [curDeadline, props.reloadFlag, props.calRefresh ])
 
   useEffect( () => {
-    if (yourDate.getTime() === props.deadline.currentDate.getTime() && props.dateLock) {
-      let datetime = props.deadline.currentDate
+    if (yourDate.getTime() === curDeadline.currentDate.getTime() && props.dateLock) {
+      let datetime = curDeadline.currentDate
       if (props.role === WORKER_TYPE) {
-        datetime = props.deadline.buyerDate
+        datetime = curDeadline.buyerDate
       }
       if (props.role == BUYER_TYPE) {
-        datetime = props.deadline.workerDate
+        datetime = curDeadline.workerDate
       }
       setYourDate(datetime)
       const hour_24 = datetime.getHours()
@@ -98,7 +96,7 @@ const CalendarTime = (props) => {
       if (!timeCheck(newDate)) {
         return
       }
-      const newDeadline = props.deadline
+      const newDeadline = curDeadline
       if (props.createMode === true) {
         newDeadline.workerDate = newDate
         newDeadline.currentDate = newDate
@@ -127,7 +125,7 @@ const CalendarTime = (props) => {
     if (!timeCheck(newDate)) {
       return
     }
-    const newDeadline = props.deadline
+    const newDeadline = curDeadline
     if (props.createMode === true) {
       newDeadline.workerDate = newDate
       newDeadline.currentDate = newDate
@@ -158,7 +156,7 @@ const CalendarTime = (props) => {
     }
 
 
-    const newDeadline = props.deadline
+    const newDeadline = curDeadline
     if (props.createMode === true) {
       newDeadline.workerDate = newDate
       newDeadline.currentDate = newDate
@@ -179,8 +177,8 @@ const CalendarTime = (props) => {
       props.setErrorMsg("You can't set a deadline in the past")
       return false
     }
-    if (props.deadline.idx > 0) {
-      let prev = props.deadlines[props.deadline.idx - 1]
+    if (curDeadline.idx > 0) {
+      let prev = sortedDeadlines[curDeadline.idx - 1]
       if (props.role === WORKER_TYPE) {
         if (prev.workerDate > newDate) {
           props.setErrorMsg(("You can't make this deadline due before Deadline " + prev.id))
@@ -194,8 +192,8 @@ const CalendarTime = (props) => {
       }
     }
 
-    if (props.deadline.idx < props.deadlines.length-1) {
-      let next = props.deadlines[props.deadline.idx + 1]
+    if (curDeadline.idx < sortedDeadlines.length-1) {
+      let next = sortedDeadlines[curDeadline.idx + 1]
       if (props.role === WORKER_TYPE) {
         if (next.workerDate < newDate) {
           props.setErrorMsg(("You can't make this deadline due after Deadline " + next.id))

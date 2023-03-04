@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { Redirect, Route, Link } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
@@ -96,6 +96,13 @@ const no_nav_routes = [
   "/invite", 
   "/forgot-password",
 ]
+const contract_routes = [
+  "/contract",
+  "/create",
+  "/negotiate",
+  "/view",
+  "/settle",
+]
 
 const App = (props) => {
   const loc = useLocation();
@@ -103,11 +110,7 @@ const App = (props) => {
   const [reloadStripeEnables, setReloadStripeEnables] = useState(true)
   let firstLoad = true
 
-  useEffect( () => {
-    console.log("Started up ")
-  }, [])
-  useEffect( () => {
-    console.log("Calling a link change to path: " + loc.pathname)
+  useLayoutEffect( () => {
     const route_base = "/"+loc.pathname.split("/")[1]
     if (no_nav_routes.includes(route_base)) {
       props.setNavbar(false)
@@ -120,7 +123,7 @@ const App = (props) => {
     if (props.fromRegister && !(route_base === "/register" || route_base === "/setup-payment")) {
       props.toggleFromRegister(false)
     }
-    if (props.isLoggedIn && props.chatRoomId !== "") {
+    if (props.isLoggedIn && props.chatRoomId !== "" && props.chatRoomId !== undefined) {
       props.clearChat(props.chatRoomId)
     }
     
@@ -128,14 +131,33 @@ const App = (props) => {
     
   }, [loc, props.isLoggedIn]) 
 
+  useEffect( () => {
+    if (Object.keys(props.curContract).length !== 0 && props.curContract.id !== "" && props.curContract.id !== undefined && props.isLoggedIn) {
+      const route_base = "/"+loc.pathname.split("/")[1]
+      if (contract_routes.includes(route_base)) {
+        console.log(props.curContract, props.user)
+        if (props.curContract?.id !== "" && props.curContract.worker?.id !== props.user.id && props.curContract?.buyer.id !== props.user.id) {
+          props.push("/login")
+        }
+      }
+    }
+  }, [props.curContract, props.isLoggedIn, loc])
+
   const authRedirect = (pathname, wholepath) => {
     if (!routes.hasOwnProperty(pathname)) {
       props.push("/unknown")
     } else if (props.user === null && routes[pathname] === STD_ROLE) {
-      console.log("Redrecting?")
-      props.setRedirect(wholepath)
-      props.push("/login")
-      return false
+      console.log("RUNNING THIS")
+      props.pullUser().then(
+        () => {
+          return true
+        },
+        () => {
+          props.setRedirect(wholepath)
+          props.push("/login")
+          return false
+        }
+      )
     } else if (props.user !== null && routes[pathname] === UNAUTH_ROLE) {
       props.push("/contracts")
       return false
@@ -144,10 +166,10 @@ const App = (props) => {
     return true
   }
 
-  useEffect( () => {
+  useLayoutEffect( () => {
     if (pullReq == true && props.user !== null) {
       setPullReq(false);
-      props.pullUser(props.user.id).then(() => {
+      props.pullUser().then(() => {
         // console.log("Finished pull")
         setTimeout(() => {
           setPullReq(true)
@@ -218,12 +240,13 @@ const App = (props) => {
 }
 
 
-const mapStateToProps = ({ user, site, stripe, chat }) => ({
+const mapStateToProps = ({ user, site, stripe, chat, contract }) => ({
     chatRoomId: chat.roomId,
     user: user.user,
     isLoggedIn: user.isLoggedIn,
     fromRegister: site.fromRegister,
-    clientSecret: stripe.clientSecret
+    clientSecret: stripe.clientSecret,
+    curContract: contract.curContract,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

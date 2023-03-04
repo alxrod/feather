@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StarIcon, CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/outline'
 import PriceField from "../price/price_field";
-import DeadlineField from "../deadline/deadline_field";
 
  const CompactSummary = (props) => {
     return (

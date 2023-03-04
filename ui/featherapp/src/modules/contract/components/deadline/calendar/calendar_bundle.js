@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import { genEmptyDeadline } from "../helpers"
 import Calendar from "./calendar"
@@ -9,15 +9,17 @@ import CalendarTime from "./calendar_time"
 import DecideButton from '../../decide_button'
 
 import { reactDate, suggestDate } from '../../../../../reducers/deadlines/dispatchers/deadlines.date.dispatcher'
+import { editDeadline } from '../../../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher'
 import { msgMethods, decisionTypes } from "../../../../../services/chat.service"
 
-
+import { DeadlineFieldContext } from '../deadline_field';
 
 const CalendarBundle = (props) => {
+  const {sortedDeadlines, curDeadline} = useContext(DeadlineFieldContext);
+
   const [dateMsg, setDateMsg] = useState("Commit your date change")
   const [dateMsgColor, setDateMsgColor] = useState("text-gray-500") 
   const [newDate, setNewDate] = useState(new Date())
-  const [newDeadline, setNewDeadline] = useState(genEmptyDeadline())
 
   const [decisionMode, setDecisionMode] = useState(false)
   const [timeoutId, setTimeoutId] = useState(false)
@@ -31,38 +33,26 @@ const CalendarBundle = (props) => {
   const [dateMsgId, setDateMsgId] = useState("")
 
   useEffect(() => {
-    if ((props.newDeadlineMode && !props.newDeadlineLocalMode) || props.deleteDeadlineMode) {
+    if (props.deleteDeadlineMode) {
       setDateLock(true)
     }
-  }, [props.newDeadlineMode, props.deleteDeadlineMode])
+  }, [props.deleteDeadlineMode])
 
 
   useEffect(() => {
     let final_date_id = ""
     for (let i = 0; i < props.messages.length; i++) {
       if (props.messages[i].method === msgMethods.DATE) {
-        if (props.messages[i].dateBody.deadlineId === props.deadline.id) {
+        if (props.messages[i].dateBody.deadlineId === curDeadline.id) {
           final_date_id = props.messages[i].id
         }
       }
     }
     setDateMsgId(final_date_id)
-  }, [props.messages.length, props.deadline])
+  }, [props.messages.length, curDeadline])
 
   const changeDate = (new_deadline) => {
-
-    // props.editDeadline(newDeadline)
-    if (props.createMode || props.newDeadlineMode) {
-      props.editDeadline(new_deadline)
-      if (props.createMode) {
-        // const id = setTimeout(function(){
-        props.saveDeadlines()
-          // setTimeoutId(-1)
-        // },1000)
-        // setTimeoutId(id)
-      }
-      
-    } else {
+    if (!props.createMode) {
       let your_date = new_deadline.currentDate
       let main_date = new_deadline.currentDate
       if (props.role === WORKER_TYPE) {
@@ -74,7 +64,6 @@ const CalendarBundle = (props) => {
 
       your_date.setSeconds(0)
       main_date.setSeconds(0)
-      setNewDeadline(new_deadline)
       setNewDate(your_date)
 
       if (Math.floor(your_date.getTime()/100.0) !== Math.floor(main_date.getTime()/100.0)) {
@@ -82,9 +71,9 @@ const CalendarBundle = (props) => {
       } else {
         setDecisionMode(false)
       }
-      
+    } else {
+      props.editDeadline(new_deadline)
     }
-    
   }
 
   const submitDate = () => {
@@ -93,7 +82,7 @@ const CalendarBundle = (props) => {
       setDecisionMode(false)
       // props.editDeadline(newDeadline)
       // props.saveDeadlines()
-      props.suggestDate(props.curContract.id, newDeadline.id, newDate)
+      props.suggestDate(props.curContract.id, curDeadline.id, newDate)
     }
   }
 
@@ -107,9 +96,9 @@ const CalendarBundle = (props) => {
   }
 
   useEffect( () => {
-    if (props.deadline) {
-      if (props.deadline.dateAwaitingApproval) {
-        if (props.deadline.dateProposerId === props.user.id) {
+    if (curDeadline) {
+      if (curDeadline.dateAwaitingApproval) {
+        if (curDeadline.dateProposerId === props.user.id) {
           setProposedByPartner(false)
         } else {
           setProposedByPartner(true)
@@ -122,18 +111,18 @@ const CalendarBundle = (props) => {
         setDateLock(false)
       }
       if (origDeadline === undefined) {
-        const orig = structuredClone(props.deadline)
+        const orig = structuredClone(curDeadline)
         setOrigDeadline(orig)
       }
       setDecisionMode(false)
     }
-  }, [props.deadline, props.deadlinesChanged, props.universalLock])
+  }, [curDeadline, props.deadlinesChanged, props.universalLock])
 
   const approveChange = () => {
-    props.reactDate(props.curContract.id, dateMsgId, props.deadline.id, decisionTypes.YES)
+    props.reactDate(props.curContract.id, dateMsgId, curDeadline.id, decisionTypes.YES)
   }
   const denyChange = () => {
-    props.reactDate(props.curContract.id, dateMsgId, props.deadline.id, decisionTypes.NO)
+    props.reactDate(props.curContract.id, dateMsgId, curDeadline.id, decisionTypes.NO)
   }
 
   return (
@@ -157,9 +146,6 @@ const CalendarBundle = (props) => {
         universalLock={props.universalLock}
         role={props.role} 
         changeDate={changeDate}
-        deadlines = {props.deadlines}
-        deadline={props.deadline}
-        newDeadline={newDeadline}
         setErrorMsg={props.setErrorMsg}
         reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
@@ -170,9 +156,6 @@ const CalendarBundle = (props) => {
       <CalendarTime
         role={props.role} 
         changeDate={changeDate}
-        deadlines = {props.deadlines}
-        deadline={props.deadline}
-        newDeadline={newDeadline}
         setErrorMsg={props.setErrorMsg}
         reloadFlag={props.deadlinesChanged}
         createMode={props.createMode}
@@ -193,6 +176,7 @@ const mapStateToProps = ({ user, contract, chat, deadlines }) => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   suggestDate,
   reactDate,
+  editDeadline
 }, dispatch)
 
 export default connect(

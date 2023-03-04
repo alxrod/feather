@@ -32,7 +32,6 @@ export const deleteItem = (contract_id, item_id, item_name, item_body, createMod
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -52,7 +51,6 @@ export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

@@ -1,4 +1,4 @@
-import {useEffect, useState, useRef, } from 'react'
+import {useEffect, useState, useRef, useContext} from 'react'
 import {WORKER_TYPE, BUYER_TYPE} from '../../../../../services/user.service'
 import {deadlineItemTypes, msgMethods, decisionTypes} from '../../../../../services/chat.service'
 import {changeDeadlineItems, reactDeadlineItems} from "../../../../../reducers/deadlines/dispatchers/deadlines.items.dispatcher"
@@ -16,9 +16,8 @@ import { LockOpenIcon } from '@heroicons/react/outline'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import DeadlineItemsBar from "./deadline_items_bar"
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
-}
+import { DeadlineFieldContext } from '../deadline_field';
+
 
 const DeadlineItems = (props) => {
 
@@ -37,7 +36,6 @@ const DeadlineItems = (props) => {
   const addNewItem = () => {
     props.addItem(props.curContract?.id, newItemName, newItemBody).then(
       (item) => {
-        console.log("Updating w item: ", item)
         setCreatedItem(item)
         setConfirmItem(true)
       }
@@ -55,7 +53,6 @@ const DeadlineItems = (props) => {
       <DeadlineItemsBar
         selectedId={selectedId}
         setSelectedId={setSelectedId}
-        deadline={props.deadline}
         addItemMode={addItemMode}
         setNewItemName={setNewItemName}
         setNewItemBody={setNewItemBody}
@@ -69,8 +66,7 @@ const DeadlineItems = (props) => {
         deleteSuggestedItem={deleteSuggestedItem}
         setDeleteSuggestedItem={setDeleteSuggestedItem}
         addButton={addButton}
-        editDeadline={props.editDeadline}
-        saveDeadlines={props.saveDeadlines}
+        universalLock={props.universalLock}
       />
       <div className="flex grow w-full">
         {addItemMode ? (
@@ -95,7 +91,14 @@ const DeadlineItems = (props) => {
             embedded={true}
             createMode={props.createMode}
             id={selectedId}
+            disabled={props.universalLock}
           />
+        ) : (props.universalLock) ? ( 
+          <div 
+            className="flex w-full justify-center items-center cursor-pointer p-8 border border-2 border-gray-400 border-dashed rounded-md text-gray-400"
+          >
+            <h1 className="grow text-center text-xl  font-medium">You need to approve creating this deadline to add items</h1>
+          </div>
         ) : (
           <div 
             className="flex w-full justify-center items-center cursor-pointer p-8 border border-2 border-gray-400 hover:border-gray-500 border-dashed rounded-md text-gray-400 hover:text-gray-500"

@@ -18,13 +18,14 @@ import {
     CONTRACT_UPDATE_PRICE,
     CONTRACT_STAGE_UPDATE, 
     CONTRACT_TOGGLE_LOCK,
-    CONTRACT_ADMIN_REQUEST_CHANGED
+    CONTRACT_ADMIN_REQUEST_CHANGED,
+    CONTRACT_PURGE_SIGNING,
 } from "../reducers/contract/contract.actions"
 
 import { 
     CONTRACT_UPDATE_PAYOUT,
     CONTRACT_UPDATE_DATE,
-    CONTRACT_ADD_DEADLINE_FROM_DB,
+    CONTRACT_DEADLINE_ADD,
     CONTRACT_DEADLINE_SUGGEST_DELETE,
     CONTRACT_DEADLINE_REPLACE,
     CONTRACT_DEADLINE_REMOVE,
@@ -287,6 +288,9 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_UPDATE_PRICE,
             payload: newPrice,
         })
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
+        })
     } else if (msg.method === msgMethods.PAYOUT) {
         let newPayout = {
             proposerId: msg.user.id,
@@ -301,6 +305,9 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         dispatch({
             type: CONTRACT_UPDATE_PAYOUT,
             payload: newPayout,
+        })
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
         })
 
     } else if (msg.method === msgMethods.DATE) {
@@ -322,6 +329,9 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             type: CONTRACT_UPDATE_DATE,
             payload: newDate,
         })
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
+        })
     } else if (msg.method === msgMethods.ITEM) {
         let newBody = {
             proposerId: msg.user.id,
@@ -335,6 +345,9 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         dispatch({
             type: CONTRACT_ITEM_UPDATE_BODY,
             payload: newBody,
+        })
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
         })
     } else if (msg.method === msgMethods.ITEM_CREATE) {
         dispatch({
@@ -353,10 +366,13 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 payload: msg.body.item.id,
             });
         }
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
+        })
         
     } else if (msg.method === msgMethods.DEADLINE_CREATE) {
         dispatch({
-            type: CONTRACT_ADD_DEADLINE_FROM_DB,
+            type: CONTRACT_DEADLINE_ADD,
             payload: msg.body.deadline,
         });
     } else if (msg.method === msgMethods.DEADLINE_DELETE) {
@@ -371,10 +387,16 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
             });
         }
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
+        })
     } else if (msg.method === msgMethods.DEADLINE_ITEMS) {
         dispatch({
             type: CONTRACT_DEADLINE_REPLACE,
             payload: msg.body.deadline,
+        })
+        dispatch({
+            type: CONTRACT_PURGE_SIGNING
         })
     } else if (msg.method === msgMethods.REVISION) {
         dispatch({

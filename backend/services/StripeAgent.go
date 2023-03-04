@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"time"
 
@@ -253,6 +252,19 @@ func (agent *StripeAgent) GetConnectedAccount(ac_id string) (*stripe.Account, er
 	return ac, err
 }
 
+func (agent *StripeAgent) VerifyConnectedAccountCapabilities(ac_id string) (bool, error) {
+	account, err := agent.GetConnectedAccount(ac_id)
+	if err != nil {
+		return false, err
+	}
+	if account.Capabilities.Transfers == "active" && account.Capabilities.USBankAccountACHPayments == "active" {
+		return true, nil
+	} else {
+		return false, nil
+	}
+
+}
+
 func (agent *StripeAgent) GetExternalBankAccounts(ac_id string) ([]*stripe.BankAccount, error) {
 	ac, err := account.GetByID(
 		ac_id,
@@ -364,7 +376,7 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	} else if deadline.Expired {
 		return errors.New("Contract current deadline is expired")
 	}
-	amount := int64(math.Round(float64(deadline.CurrentPayout * 100)))
+	amount := deadline.CurrentPayout
 	if amount == 0 {
 		return nil
 	}

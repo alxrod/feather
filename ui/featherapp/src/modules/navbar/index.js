@@ -39,8 +39,6 @@ const NavBar = (props) => {
     }
     if (loc.pathname === "/") {
       setShowShadow(false)
-    } else  {
-      console.log("Path: ", loc.pathname)
     }
 
   }, [props.curContract, loc])
@@ -53,7 +51,7 @@ const NavBar = (props) => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between h-16">
                 <div className="flex">
-                  <div className="flex-shrink-0 flex items-center">
+                  <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => props.push("/")}>
                     <img
                       className="block lg:hidden h-8 w-auto"
                       src={f_logo}

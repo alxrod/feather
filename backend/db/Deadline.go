@@ -40,9 +40,9 @@ type Deadline struct {
 	AwaitingCreation   bool               `bson:"awaiting_creation"`
 	AwaitingDeletion   bool               `bson:"awaiting_deletion"`
 
-	CurrentPayout          float32            `bson:"current_payout"`
-	WorkerPayout           float32            `bson:"worker_payout"`
-	BuyerPayout            float32            `bson:"buyer_payout"`
+	CurrentPayout          int64              `bson:"current_payout"`
+	WorkerPayout           int64              `bson:"worker_payout"`
+	BuyerPayout            int64              `bson:"buyer_payout"`
 	PayoutProposerId       primitive.ObjectID `bson:"payout_proposer_id"`
 	PayoutAwaitingApproval bool               `bson:"payout_awaiting_approval"`
 	DraftRequired          bool               `bson:"draft_required"`
@@ -313,7 +313,7 @@ func DeadlineReplace(deadline *Deadline, database *mongo.Database) error {
 	return nil
 }
 
-func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, userRole uint32, newPayout float32, database *mongo.Database) error {
+func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, userRole uint32, newPayout int64, database *mongo.Database) error {
 	if deadline.PayoutAwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The deadline %s is already awaiting approval of a different payout change", deadline.Id.Hex()))
 	}
@@ -324,7 +324,12 @@ func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, u
 	} else if userRole == BUYER {
 		deadline.BuyerPayout = newPayout
 	}
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+		deadline.PayoutAwaitingApproval = false
+		deadline.BuyerPayout = newPayout
+		deadline.WorkerPayout = newPayout
+		deadline.CurrentPayout = newPayout
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer == nil {
 			deadline.BuyerPayout = newPayout
 			deadline.WorkerPayout = newPayout
@@ -342,10 +347,6 @@ func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, u
 			deadline.BuyerPayout = newPayout
 			deadline.PayoutAwaitingApproval = true
 		}
-	} else if user.AdminStatus {
-		deadline.BuyerPayout = newPayout
-		deadline.WorkerPayout = newPayout
-		deadline.CurrentPayout = newPayout
 	} else {
 		return errors.New("Invalid proposing user")
 	}
@@ -363,7 +364,12 @@ func DeadlineSuggestDate(contract *Contract, deadline *Deadline, user *User, use
 	}
 
 	deadline.DateProposerId = user.Id
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
+	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+		deadline.DateAwaitingApproval = false
+		deadline.BuyerDate = newDate
+		deadline.WorkerDate = newDate
+		deadline.CurrentDate = newDate
+	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
 		if contract.Buyer == nil {
 			deadline.BuyerDate = newDate
 			deadline.WorkerDate = newDate
@@ -381,10 +387,6 @@ func DeadlineSuggestDate(contract *Contract, deadline *Deadline, user *User, use
 			deadline.BuyerDate = newDate
 			deadline.DateAwaitingApproval = true
 		}
-	} else if user.AdminStatus {
-		deadline.BuyerDate = newDate
-		deadline.WorkerDate = newDate
-		deadline.CurrentDate = newDate
 	} else {
 		return errors.New("Invalid proposing user")
 	}
@@ -402,10 +404,13 @@ func DeadlineSuggestItems(deadline *Deadline, contract *Contract, user *User, ne
 	}
 
 	overwrite := false
-	if user.AdminStatus {
+	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
 		overwrite = true
 	}
 	if contract.Buyer == nil || contract.Worker == nil {
+		overwrite = true
+	}
+	if deadline.AwaitingCreation == true && deadline.DeadlineProposerId == user.Id {
 		overwrite = true
 	}
 	newItems := make([]*ContractItem, 0)

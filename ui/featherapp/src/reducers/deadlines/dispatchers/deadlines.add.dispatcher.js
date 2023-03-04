@@ -16,15 +16,6 @@ export const renameDeadlines = (new_deadlines) => {
     }
 }
 
-export const addLocalDeadline = (new_deadline) => {
-    return dispatch => {
-        dispatch({
-            type: deadlineActions.CONTRACT_DEADLINE_ADD,
-            payload: new_deadline,
-        })
-        return Promise.resolve(new_deadline)
-    }
-}
 
 export const loadLocalDeadlines = (new_deadlines) => {
     return dispatch => {
@@ -35,14 +26,27 @@ export const loadLocalDeadlines = (new_deadlines) => {
     }
 }
 
+export const editDeadline = (deadline) => {
+    return dispatch => {
+        dispatch({
+            type: deadlineActions.CONTRACT_DEADLINE_REPLACE,
+            payload: deadline,
+        });
+    }
+}
+
 
 export const addDeadline = (contract_id, deadline) => {
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
                 return ContractService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
-                    () => {
-                        return Promise.resolve();
+                    (deadline) => {
+                        dispatch({
+                            type: deadlineActions.CONTRACT_DEADLINE_ADD,
+                            payload: deadline,
+                        })
+                        return Promise.resolve(deadline);
                     },
                     (error) => {
                         return helpers.parseError(error, dispatch);
@@ -50,7 +54,6 @@ export const addDeadline = (contract_id, deadline) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -70,7 +73,6 @@ export const reactAddDeadline = (contract_id, message_id, deadline_id, status) =
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

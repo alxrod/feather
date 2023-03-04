@@ -4,6 +4,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { push } from 'connected-react-router'
+import CreateContract from "./create_contract_button"
 
 const NoContracts = (props) => {
   return (
@@ -28,14 +29,7 @@ const NoContracts = (props) => {
         <>
         <p className="mt-1 text-lg text-gray-500 max-w-xs">Get started by creating a new contract.</p>
         <div className="mt-6">
-          <button
-            type="button"
-            className="inline-flex items-center px-4 py-3 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"
-            onClick={() => props.push("/create/new")}
-          >
-            <PlusIcon className="-ml-1 mr-2 h-5 w-5" aria-hidden="true" />
-            New Contract
-          </button>  
+          <CreateContract/>
         </div>
         </>
       ) : (

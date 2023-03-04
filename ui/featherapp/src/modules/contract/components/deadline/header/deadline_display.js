@@ -1,59 +1,67 @@
 /* This example requires Tailwind CSS v2.0+ */
-import { CheckIcon } from '@heroicons/react/solid'
+import { CheckIcon, XIcon, PlusIcon, TrashIcon } from '@heroicons/react/solid'
 import {Fragment} from "react"
-import {useState, useEffect, useCallback} from "react"
-import {WORKER_TYPE, BUYER_TYPE} from "../../../../../services/user.service"
+import {useState, useEffect, useContext, useRef } from "react"
 import {Tooltip} from "flowbite-react"
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import {unpackShort, unpackLong} from "./helpers";
+import { sortDeadlines } from '../helpers'
 
+import { DeadlineFieldContext } from '../deadline_field';
 
 const DeadlineDisplay = (props) => {
 
   const [fDeadlines, setFormatedDeadlines] = useState([])
+  const [selectedIdx, setSelectedIdx] = useState(-1)
   const [updateFlag, toggleUpdateFlag] = useState(false)
+  const {sortedDeadlines, curDeadline, setSelectedID} = useContext(DeadlineFieldContext);
 
-  const [, updateState] = useState();
-  const forceUpdate = useCallback(() => updateState({}), []);
+  const timelineRef = useRef(null)
+  const absoluteRef = useRef(null)
+  const [absoluteHeight, setAbsoluteHeight] = useState(25)
+  const [bubbleWidth, setBubbleWidth] = useState(0)
 
-  const unpackLong = (deadline) => {
-    let date = deadline.relDate
-    if (date === undefined) {
-      if (deadline.currentDate === undefined) {
-        return ""
-      } else {
-        date = deadline.currentDate
-      }
+  const [dimensions, setDimensions] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const handleResize = () => {
+      setDimensions({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      });
     }
-    return (date.toLocaleTimeString([], {timeStyle: 'short'}) + 
-    ", " + date.toLocaleDateString())
-  }
+  useEffect(() => {
+    window.addEventListener("resize", handleResize, false);
+  }, []);
 
-  const unpackShort = (deadline) => {
-    let date = deadline.relDate
-    if (date === undefined) {
-      if (deadline.currentDate === undefined) {
-        return ""
-      } else {
-        date = deadline.currentDate
-      }
-    }
-    return date.toLocaleDateString('en-us', { day:"numeric", month:"numeric"})
+  const convertRemToPixels = (rem) => {    
+    const px = parseFloat(rem) * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return px
   }
 
   useEffect(() => {
-    if (props.deadlines !== undefined) {
-      const sortedDeadlines = props.deadlines
-      // console.log("Sorting dates ")
+    const proportional = timelineRef.current?.offsetWidth / sortedDeadlines.length
+    const desired = convertRemToPixels(props.iconSize)
+    if (proportional < desired) {
+      setBubbleWidth(proportional)
+    } else {
+      setBubbleWidth(desired)
+    }
+    if (absoluteRef.current?.clientHeight) {
+      setAbsoluteHeight(absoluteRef.current?.clientHeight)
+    }
+  }, [dimensions.width, dimensions.height, sortedDeadlines.length, absoluteRef.current])
+
+  useEffect(() => {
+    if (sortDeadlines.length !== 0) {
       const now = new Date()
       for (let i = 0; i < sortedDeadlines.length; i++) {
-        // sortedDeadlines[i].relDate = sortedDeadlines[i].current.date
-        // if (props.role === WORKER_TYPE) {
-        //   sortedDeadlines[i].relDate = sortedDeadlines[i].worker.date
-        // } else if (props.role === BUYER_TYPE) {
-        //   sortedDeadlines[i].relDate = sortedDeadlines[i].buyer.date
-        // }
+        if (sortedDeadlines[i].id === curDeadline.id && !props.preview) {
+          setSelectedIdx(i)
+        }
         let relDate = sortedDeadlines[i].relDate
         if (relDate === undefined) {
           relDate = sortedDeadlines[i].currentDate
@@ -68,24 +76,26 @@ const DeadlineDisplay = (props) => {
       setFormatedDeadlines(sortedDeadlines)
       toggleUpdateFlag(!updateFlag)
     }
-  }, [props.deadlines, props.deadlinesChanged])
+  }, [sortedDeadlines, props.deadlinesChanged])
 
   const handleDeadlineClick = (idx) => {
-    if (props.setSelected) {
-      props.setSelected(idx)
+    if (curDeadline.id && !props.preview) {
+      setSelectedIdx(idx)
+      setSelectedID(fDeadlines[idx].id)
     }
   }
+
   return (
-    <div className="flex flex-col">
-      {!props.preview && (
-        <div className="flex justify-between">
-          <p className="text-xs text-gray-400">Start</p>
-          <div className="grow"></div>
-          <p className="text-xs text-gray-400">End</p>
-        </div>
-      )}
-      <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
-        <ol role="list" className="flex grow w-full items-center">
+    <div className="flex flex-col relative items-center" ref={timelineRef} style={{height: absoluteHeight}}>
+      <div className="absolute w-full my-auto" ref={absoluteRef}>
+        {!props.preview && (
+          <div className="flex justify-between">
+            <p className="text-xs text-gray-400">Start</p>
+            <div className="grow"></div>
+            <p className="text-xs text-gray-400">End</p>
+          </div>
+        )}
+        <ol role="list" className="flex grow w-full items-center justify-between top-[50%]">
           {fDeadlines.map((deadline, idx) => (
             <Fragment key={idx}>
               <li>
@@ -99,21 +109,32 @@ const DeadlineDisplay = (props) => {
                         href="#"
                         data-tooltip-target="tooltip-light" 
                         data-tooltip-style="light"
-                        className={"cursor-pointer relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center rounded-full "+
-                                  ((idx === props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-primary4 bg-primary4 hover:border-primary6 hover:bg-primary6" : 
-                                   (deadline.awaitingCreation) ? "border-2 bg-green-400 border-green-400" : 
-                                   (deadline.awaitingDeletion) ? "border-2 bg-red-400 border-red-400" : 
-                                   "bg-primary5 hover:bg-primary6")
-                        }
+                        style={{width: bubbleWidth, height: bubbleWidth}}
+                        className={"cursor-pointer flex items-center justify-center rounded-full "+
+                                  ((idx === selectedIdx) ? "bg-gray-200 hover:bg-gray-300" : 
+                                  "border-2 border-gray-200 hover:border-gray-300")}
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
-                        {deadline.complete && (
-                          <CheckIcon className={"w-"+(props.iconSize-2)+" h-"+(props.iconSize-2)+" text-white"} aria-hidden="true" />
+                        {deadline.complete ? (
+                          <CheckIcon className={
+                            (idx === selectedIdx) ? "text-white" : "text-gray-600"} 
+                            style={{width: bubbleWidth*0.5, height: bubbleWidth*0.5}}
+                            aria-hidden="true" 
+                          />
+                        ) : (
+                          <XIcon className={
+                            (idx === selectedIdx) ? "text-white" : "text-gray-600"} 
+                            style={{width: bubbleWidth*0.5, height: bubbleWidth*0.5}}
+                            aria-hidden="true" 
+                          />
                         )}
                         <span className="sr-only">{deadline.id}</span>
                         <span className="hidden">{updateFlag}</span>
                       </p>
-                    </Tooltip>
+                    </Tooltip><span
+                          className={"h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300 " + (idx == selectedIdx ? "bg-primary5" : "")}
+                          aria-hidden="true"
+                        />
                   </>
                 ) : (
                   <>
@@ -123,30 +144,52 @@ const DeadlineDisplay = (props) => {
                     >
                       <p
                         href="#"
-                        className={"cursor-pointer group relative w-"+props.iconSize+" h-"+props.iconSize+" flex items-center justify-center bg-white rounded-full " +
-                                  ((idx == props.selected && !deadline.awaitingCreation && !deadline.awaitingDeletion) ? "border-2 border-primary4" : 
-                                  (deadline.awaitingCreation) ? "border-2 border-green" : 
-                                  (deadline.awaitingDeletion) ? "border-2 border-red-400" :
-                                  "border-2 border-gray-300 hover:border-primary3")}
+                        data-tooltip-target="tooltip-light" 
+                        data-tooltip-style="light"
+                        style={{width: bubbleWidth, height: bubbleWidth}}
+                        className={"group cursor-pointer flex items-center justify-center rounded-full "+
+                                  ((idx === selectedIdx && deadline.awaitingDeletion) ? "bg-red-600 hover:bg-red-700" :
+                                  (idx === selectedIdx && deadline.awaitingCreation) ? "bg-gray-400 hover:bg-gray-500" :
+                                  (idx === selectedIdx) ? "bg-primary5 hover:bg-primary5" : 
+                                  (deadline.awaitingCreation) ? "border-2 border-gray-200 hover:border-gray-300" :
+                                  (deadline.awaitingDeletion) ? "border-2 border-red-300 hover:border-red-400" : 
+                                  "border-2 border-primary4 hover:primary5")}
                         onClick={() => {handleDeadlineClick(deadline.idx)}}
                       >
+                        {deadline.awaitingCreation ? (
+                          <PlusIcon className={
+                              ((idx === selectedIdx) ? "text-white" : "text-gray-300")} 
+                              style={{width: bubbleWidth*0.5, height: bubbleWidth*0.5}}
+                              aria-hidden="true" 
+                          />
+                        ) : deadline.awaitingDeletion ? (
+                          <TrashIcon className={
+                            ((idx === selectedIdx) ? "text-white" : "text-red-300")} 
+                            style={{width: bubbleWidth*0.5, height: bubbleWidth*0.5}}
+                            aria-hidden="true" 
+                          />
+                        ) : (
                         <span
-                          className="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"
+                          className={"h-3.5 w-3.5 rounded-full " + (
+                            !(idx === selectedIdx) ? "hidden group-hover:flex group-hover:bg-primary5" : 
+                            " bg-white")}
                           aria-hidden="true"
                         />
+                        )}
                         <span className="sr-only">{deadline.id}</span>
+                        <span className="hidden">{updateFlag}</span>
                       </p>
                     </Tooltip>
 
                   </>
                 )}
               </li>
-              {((idx !== props.deadlines.length - 1) && deadline.status === "past" ) && (
+              {((idx !== fDeadlines.length - 1) && deadline.status === "past" ) && (
                 <div key={idx*3-1} className="grow" aria-hidden="true">
                   <div className="h-0.5 w-full border-b-2 border-primary5" />
                 </div>
               )}
-              {((idx !== props.deadlines.length - 1) && deadline.status !== "past") && (
+              {((idx !== fDeadlines.length - 1) && deadline.status !== "past") && (
                 <div key={idx*3} className="grow" aria-hidden="true">
                   <div className="h-0.5 w-full border-b-2 border-grey-300" />
                 </div>
@@ -155,9 +198,8 @@ const DeadlineDisplay = (props) => {
 
           ))}
         </ol>
-      </nav>
-      {(props.showDates && (
-        <nav className="w-full flex flex-row items-center relative" aria-label="Deadlines">
+        {(props.showDates && (
+        <nav className="w-full flex flex-row items-center" aria-label="Deadlines">
           <ol role="list" className="flex grow w-full justify-between items-center">
             {fDeadlines.map((deadline, idx) => (
               <p key={deadline.id} className="text-xs text-gray-400">{unpackShort(deadline)}</p>
@@ -166,12 +208,15 @@ const DeadlineDisplay = (props) => {
           </ol>
         </nav>
       ))}
+      </div>
+     
     </div>
   )
 }
 
 const mapStateToProps = ({ deadlines }) => ({
   deadlinesChanged: deadlines.deadlinesChanged,
+  deadlines: deadlines.deadlines,
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

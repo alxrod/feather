@@ -21,7 +21,6 @@ export const suggestPrice = (contract_id, new_price) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -41,7 +40,6 @@ export const reactPrice = (contract_id, message_id, status) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }

@@ -1111,9 +1111,9 @@ proto.main.PriceEntity.prototype.toObject = function(opt_includeInstance) {
  */
 proto.main.PriceEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
-    current: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    buyer: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    worker: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    current: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    buyer: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    worker: jspb.Message.getFieldWithDefault(msg, 3, 0),
     awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     proposerId: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
@@ -1153,15 +1153,15 @@ proto.main.PriceEntity.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setCurrent(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setBuyer(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setWorker(value);
       break;
     case 4:
@@ -1202,22 +1202,22 @@ proto.main.PriceEntity.prototype.serializeBinary = function() {
 proto.main.PriceEntity.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getCurrent();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       1,
       f
     );
   }
   f = message.getBuyer();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       2,
       f
     );
   }
   f = message.getWorker();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       3,
       f
     );
@@ -1240,11 +1240,11 @@ proto.main.PriceEntity.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional float current = 1;
+ * optional int64 current = 1;
  * @return {number}
  */
 proto.main.PriceEntity.prototype.getCurrent = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
@@ -1253,16 +1253,16 @@ proto.main.PriceEntity.prototype.getCurrent = function() {
  * @return {!proto.main.PriceEntity} returns this
  */
 proto.main.PriceEntity.prototype.setCurrent = function(value) {
-  return jspb.Message.setProto3FloatField(this, 1, value);
+  return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional float buyer = 2;
+ * optional int64 buyer = 2;
  * @return {number}
  */
 proto.main.PriceEntity.prototype.getBuyer = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
@@ -1271,16 +1271,16 @@ proto.main.PriceEntity.prototype.getBuyer = function() {
  * @return {!proto.main.PriceEntity} returns this
  */
 proto.main.PriceEntity.prototype.setBuyer = function(value) {
-  return jspb.Message.setProto3FloatField(this, 2, value);
+  return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional float worker = 3;
+ * optional int64 worker = 3;
  * @return {number}
  */
 proto.main.PriceEntity.prototype.getWorker = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -1289,7 +1289,7 @@ proto.main.PriceEntity.prototype.getWorker = function() {
  * @return {!proto.main.PriceEntity} returns this
  */
 proto.main.PriceEntity.prototype.setWorker = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -1381,9 +1381,9 @@ proto.main.DeadlineEntity.toObject = function(includeInstance, msg) {
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     deadlineProposerId: jspb.Message.getFieldWithDefault(msg, 22, ""),
-    currentPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    workerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
-    buyerPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
+    currentPayout: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    workerPayout: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    buyerPayout: jspb.Message.getFieldWithDefault(msg, 10, 0),
     payoutAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     payoutProposerId: jspb.Message.getFieldWithDefault(msg, 13, ""),
     currentDate: (f = msg.getCurrentDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
@@ -1486,15 +1486,15 @@ proto.main.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDeadlineProposerId(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setCurrentPayout(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setWorkerPayout(value);
       break;
     case 10:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setBuyerPayout(value);
       break;
     case 12:
@@ -1672,22 +1672,22 @@ proto.main.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getCurrentPayout();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       4,
       f
     );
   }
   f = message.getWorkerPayout();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       7,
       f
     );
   }
   f = message.getBuyerPayout();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       10,
       f
     );
@@ -2018,11 +2018,11 @@ proto.main.DeadlineEntity.prototype.setDeadlineProposerId = function(value) {
 
 
 /**
- * optional float current_payout = 4;
+ * optional int64 current_payout = 4;
  * @return {number}
  */
 proto.main.DeadlineEntity.prototype.getCurrentPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -2031,16 +2031,16 @@ proto.main.DeadlineEntity.prototype.getCurrentPayout = function() {
  * @return {!proto.main.DeadlineEntity} returns this
  */
 proto.main.DeadlineEntity.prototype.setCurrentPayout = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
 /**
- * optional float worker_payout = 7;
+ * optional int64 worker_payout = 7;
  * @return {number}
  */
 proto.main.DeadlineEntity.prototype.getWorkerPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
@@ -2049,16 +2049,16 @@ proto.main.DeadlineEntity.prototype.getWorkerPayout = function() {
  * @return {!proto.main.DeadlineEntity} returns this
  */
 proto.main.DeadlineEntity.prototype.setWorkerPayout = function(value) {
-  return jspb.Message.setProto3FloatField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 7, value);
 };
 
 
 /**
- * optional float buyer_payout = 10;
+ * optional int64 buyer_payout = 10;
  * @return {number}
  */
 proto.main.DeadlineEntity.prototype.getBuyerPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 10, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
 
@@ -2067,7 +2067,7 @@ proto.main.DeadlineEntity.prototype.getBuyerPayout = function() {
  * @return {!proto.main.DeadlineEntity} returns this
  */
 proto.main.DeadlineEntity.prototype.setBuyerPayout = function(value) {
-  return jspb.Message.setProto3FloatField(this, 10, value);
+  return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
@@ -2419,7 +2419,7 @@ proto.main.DeadlineNub.toObject = function(includeInstance, msg) {
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
     expired: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    currentPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    currentPayout: jspb.Message.getFieldWithDefault(msg, 4, 0),
     currentDate: (f = msg.getCurrentDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
@@ -2474,7 +2474,7 @@ proto.main.DeadlineNub.deserializeBinaryFromReader = function(msg, reader) {
       msg.setExpired(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setCurrentPayout(value);
       break;
     case 5:
@@ -2540,8 +2540,8 @@ proto.main.DeadlineNub.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getCurrentPayout();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       4,
       f
     );
@@ -2630,11 +2630,11 @@ proto.main.DeadlineNub.prototype.setExpired = function(value) {
 
 
 /**
- * optional float current_payout = 4;
+ * optional int64 current_payout = 4;
  * @return {number}
  */
 proto.main.DeadlineNub.prototype.getCurrentPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -2643,7 +2643,7 @@ proto.main.DeadlineNub.prototype.getCurrentPayout = function() {
  * @return {!proto.main.DeadlineNub} returns this
  */
 proto.main.DeadlineNub.prototype.setCurrentPayout = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -3453,7 +3453,7 @@ proto.main.ContractNub.toObject = function(includeInstance, msg) {
     title: jspb.Message.getFieldWithDefault(msg, 2, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 12, ""),
     deadline: (f = msg.getDeadline()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    price: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    price: jspb.Message.getFieldWithDefault(msg, 4, 0),
     stage: jspb.Message.getFieldWithDefault(msg, 5, 0),
     userType: jspb.Message.getFieldWithDefault(msg, 6, 0),
     disputed: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
@@ -3516,7 +3516,7 @@ proto.main.ContractNub.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDeadline(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setPrice(value);
       break;
     case 5:
@@ -3607,8 +3607,8 @@ proto.main.ContractNub.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getPrice();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       4,
       f
     );
@@ -3758,11 +3758,11 @@ proto.main.ContractNub.prototype.hasDeadline = function() {
 
 
 /**
- * optional float price = 4;
+ * optional int64 price = 4;
  * @return {number}
  */
 proto.main.ContractNub.prototype.getPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -3771,7 +3771,7 @@ proto.main.ContractNub.prototype.getPrice = function() {
  * @return {!proto.main.ContractNub} returns this
  */
 proto.main.ContractNub.prototype.setPrice = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -4087,7 +4087,7 @@ proto.main.InviteNub.toObject = function(includeInstance, msg) {
     title: jspb.Message.getFieldWithDefault(msg, 2, ""),
     password: jspb.Message.getFieldWithDefault(msg, 8, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    price: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    price: jspb.Message.getFieldWithDefault(msg, 4, 0),
     deadline: (f = msg.getDeadline()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     worker: (f = msg.getWorker()) && proto.main.UserNubEntity.toObject(includeInstance, f),
     buyer: (f = msg.getBuyer()) && proto.main.UserNubEntity.toObject(includeInstance, f)
@@ -4144,7 +4144,7 @@ proto.main.InviteNub.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSummary(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setPrice(value);
       break;
     case 5:
@@ -4220,8 +4220,8 @@ proto.main.InviteNub.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getPrice();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       4,
       f
     );
@@ -4326,11 +4326,11 @@ proto.main.InviteNub.prototype.setSummary = function(value) {
 
 
 /**
- * optional float price = 4;
+ * optional int64 price = 4;
  * @return {number}
  */
 proto.main.InviteNub.prototype.getPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
@@ -4339,7 +4339,7 @@ proto.main.InviteNub.prototype.getPrice = function() {
  * @return {!proto.main.InviteNub} returns this
  */
 proto.main.InviteNub.prototype.setPrice = function(value) {
-  return jspb.Message.setProto3FloatField(this, 4, value);
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 
@@ -6786,7 +6786,7 @@ proto.main.ContractSuggestPrice.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    newPrice: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+    newPrice: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -6832,7 +6832,7 @@ proto.main.ContractSuggestPrice.deserializeBinaryFromReader = function(msg, read
       msg.setContractId(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setNewPrice(value);
       break;
     default:
@@ -6879,8 +6879,8 @@ proto.main.ContractSuggestPrice.serializeBinaryToWriter = function(message, writ
     );
   }
   f = message.getNewPrice();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       3,
       f
     );
@@ -6925,11 +6925,11 @@ proto.main.ContractSuggestPrice.prototype.setContractId = function(value) {
 
 
 /**
- * optional float new_price = 3;
+ * optional int64 new_price = 3;
  * @return {number}
  */
 proto.main.ContractSuggestPrice.prototype.getNewPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -6938,7 +6938,7 @@ proto.main.ContractSuggestPrice.prototype.getNewPrice = function() {
  * @return {!proto.main.ContractSuggestPrice} returns this
  */
 proto.main.ContractSuggestPrice.prototype.setNewPrice = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -7438,7 +7438,7 @@ proto.main.ContractSuggestPayout.toObject = function(includeInstance, msg) {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     deadlineId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    newPayout: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+    newPayout: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -7488,7 +7488,7 @@ proto.main.ContractSuggestPayout.deserializeBinaryFromReader = function(msg, rea
       msg.setDeadlineId(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readFloat());
+      var value = /** @type {number} */ (reader.readInt64());
       msg.setNewPayout(value);
       break;
     default:
@@ -7542,8 +7542,8 @@ proto.main.ContractSuggestPayout.serializeBinaryToWriter = function(message, wri
     );
   }
   f = message.getNewPayout();
-  if (f !== 0.0) {
-    writer.writeFloat(
+  if (f !== 0) {
+    writer.writeInt64(
       3,
       f
     );
@@ -7606,11 +7606,11 @@ proto.main.ContractSuggestPayout.prototype.setDeadlineId = function(value) {
 
 
 /**
- * optional float new_payout = 3;
+ * optional int64 new_payout = 3;
  * @return {number}
  */
 proto.main.ContractSuggestPayout.prototype.getNewPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
@@ -7619,7 +7619,7 @@ proto.main.ContractSuggestPayout.prototype.getNewPayout = function() {
  * @return {!proto.main.ContractSuggestPayout} returns this
  */
 proto.main.ContractSuggestPayout.prototype.setNewPayout = function(value) {
-  return jspb.Message.setProto3FloatField(this, 3, value);
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

@@ -4,7 +4,7 @@ import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 import {resolTypes} from "../../../services/chat.service";
 import * as helpers from "../../helpers"
 import * as stripeActions from "../stripe.actions";
-
+import * as userActions from "../../user/user.actions";
 
 export const getCustomerFCSecret = () => {
     return dispatch => {
@@ -20,7 +20,6 @@ export const getCustomerFCSecret = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -42,7 +41,6 @@ export const getAccountOnboardLink = (return_route) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -62,7 +60,6 @@ export const getInitialSetupSecret = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -82,7 +79,6 @@ export const listExBAs = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -102,7 +98,6 @@ export const listFcas = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -122,7 +117,6 @@ export const disconnectFca = (fca_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -142,7 +136,6 @@ export const disconnectExBa = (ba_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -162,7 +155,6 @@ export const setDefaultFca = (fca_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -174,6 +166,10 @@ export const confirmPaymentConnected = (pm_id) => {
             (creds) => {
                 return StripeService.confirmPaymentConnected(creds.access_token, creds.user_id, pm_id).then(
                     (methods) => {
+                        dispatch({
+                            type: userActions.USER_ENABLE_BUYER,
+                            payload: true,
+                        })
                         return Promise.resolve(methods);
                     },
                     (error) => {
@@ -182,7 +178,6 @@ export const confirmPaymentConnected = (pm_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -202,7 +197,6 @@ export const testCharge = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -222,7 +216,6 @@ export const createContractIntentSecret = (worker_id, buyer_id) => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
@@ -246,7 +239,6 @@ export const getInternalCharges = () => {
                 );
             },
             () => {
-                helpers.bailAuth(dispatch)
             }
         );
     }
