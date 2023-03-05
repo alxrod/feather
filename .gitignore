@@ -6,8 +6,8 @@ api
 
 communication/*.go
 
-api
-
+ui/featherapp/src/proto/communication/*
+ui/featherapp/src/tailwind.generated.css
 
 
 
