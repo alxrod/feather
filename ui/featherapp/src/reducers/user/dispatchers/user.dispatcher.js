@@ -229,3 +229,12 @@ export const enableBuyer = (buyer_status) => {
         })
     }
 }
+
+export const changeWorkerStatus = (worker_status) => {
+    return dispatch => {
+        dispatch({
+            type: userActions.USER_CHANGE_WORKER_STATUS,
+            payload: worker_status,
+        })
+    }
+}

@@ -9,19 +9,23 @@ import { push } from 'connected-react-router'
 import {useStripe, elements} from '@stripe/react-stripe-js';
 import ConnectPayout, {CreatePayoutMethodContext} from "../stripe_components/connect_payout";
 import ConnectPayment, { CreatePaymentMethodContext } from "../stripe_components/connect_payment";
-import TestSetupIntent from "../stripe_components/test_setup_intent";
 import { 
-  testCharge,
   disconnectFca,
   disconnectExBa,
   setDefaultFca,
   listFcas,
   listExBAs,
+  deleteConnectedAccount,
 } from "../../reducers/stripe/dispatchers/stripe.setup.dispatcher";
+import {
+  changeWorkerStatus
+} from "../../reducers/user/dispatchers/user.dispatcher";
 
 import { CheckCircleIcon, ClockIcon, PlusIcon } from '@heroicons/react/outline'
 import {Oval} from 'react-loading-icons'
 
+import ErrorModal from "./error_modal";
+import DisconnectBaWarning from "./ba_warning";
 
 import AccountsList from "./accounts_list";
 
@@ -36,6 +40,12 @@ const PaymentInfo = (props) => {
 
   const [paymentMethods, setPaymentMethods] = useState([])
   const [exBankAcounts, setExBankAcounts] = useState([])
+
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const [baWarningOpen, setBaWarningOpen] = useState(false)
+
+  const [errorTitle, setErrorTitle] = useState("")
+  const [errorBody, setErrorBody] = useState("")
 
   const paymentContext = useContext(CreatePaymentMethodContext)
   const payoutContext = useContext(CreatePayoutMethodContext)
@@ -73,14 +83,29 @@ const PaymentInfo = (props) => {
     )
   }
   const deleteFca = (id) => {
-    props.disconnectFca(id).then(() => {
-      refreshPaymentMethods()
-    })
+    props.disconnectFca(id).then(
+      () => {
+        refreshPaymentMethods()
+      },
+      (error) => {
+        setErrorTitle("Delete Not Allowed")
+        setErrorBody(error)
+        setErrorModalOpen(true)
+      },
+    )
   }
-  const deleteExBa = (id) => {
-    props.disconnectExBa(id).then(() => {
-      refreshPaymentMethods()
-    })
+  const deleteStripeBa = () => {
+    props.deleteConnectedAccount().then(
+      () => {
+        setExBankAcounts([])
+        props.changeWorkerStatus(false)
+        setBaWarningOpen(false)
+      },
+      (error) => {
+        console.log("ERROR was: ", error)
+        setErrorBody(error)
+      }
+    )
   }
   
   useEffect(() => {
@@ -89,6 +114,18 @@ const PaymentInfo = (props) => {
 
   return (
     <div className="max-w-2xl w-full">
+      <ErrorModal 
+        open={errorModalOpen}
+        setOpen={setErrorModalOpen}
+        title={errorTitle}
+        body={errorBody}
+      />
+      <DisconnectBaWarning
+        open={baWarningOpen}
+        setOpen={setBaWarningOpen}
+        onDelete={deleteStripeBa}
+        body={errorBody}
+      />
       <div className="overflow-hidden bg-white shadow sm:rounded-lg w-full" >
         <div>
           <div className="pr-4 py-2 sm:pr-6 flex items-center justify-between">
@@ -133,6 +170,15 @@ const PaymentInfo = (props) => {
           {connectingToStripePayout && (
             <Oval className="w-9 h-9" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
           )}
+          {props.user.workerModeEnabled && (
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-2 text-base rounded-md shadow-sm font-medium leading-4 bg-red-100 text-red-800"
+              onClick={() => setBaWarningOpen(true)}
+            >
+              Delete Account
+            </button>
+          )}
         </div>
         {exBankAcounts.length > 0 ? (
           <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-between items-center">
@@ -144,10 +190,13 @@ const PaymentInfo = (props) => {
             <div>
               <ConnectPayout className="w-full" secondaryHandle={refreshPaymentMethods}>
                 <CreatePayoutMethodContext.Consumer>
-                  {value => <button onClick={() => {
+                  {value => 
+                  <button onClick={() => {
                     setConnectingToStripePayout(true)
                     value()
-                  }} className="px-2 py-1 text-white bg-primary4 rounded-md shadow-sm">Edit Settings</button>}
+                  }} className="px-2 py-1 text-white bg-primary4 rounded-md shadow-sm">
+                      Edit Settings
+                  </button>}
                 </CreatePayoutMethodContext.Consumer>
               </ConnectPayout>
             </div>
@@ -190,16 +239,18 @@ const PaymentInfo = (props) => {
 const mapStateToProps = ({ user, stripe}) => ({
   user: user.user,
   clientSecret: stripe.clientSecret,
+  
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   push,
-  testCharge,
   disconnectFca,
   disconnectExBa,
   listFcas,
   listExBAs,
   setDefaultFca,
+  deleteConnectedAccount,
+  changeWorkerStatus,
 }, dispatch)
 
 export default connect(

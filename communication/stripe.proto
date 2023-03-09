@@ -123,6 +123,9 @@ message InternalChargeUpdateStateRequest {
     uint32 new_state = 2;
 }
 
+message DeleteConAccRequest {
+    string user_id = 1;
+}
 
 service StripeService {
     rpc GetAccountOnboardLink(PaymentRegisterRequest) returns (AccountLinkResp) {};
@@ -136,6 +139,7 @@ service StripeService {
     rpc ListExBAs(ListRequest) returns (BASet) {};
 
     rpc DisconnectExBa(ExBaQuery) returns (NullResponse) {};
+    rpc DeleteConnectedAccount(DeleteConAccRequest) returns (NullResponse) {};
     
     rpc DisconnectFca(FcaQuery) returns (NullResponse) {};
     rpc SetDefaultFca(FcaQuery) returns (NullResponse) {};

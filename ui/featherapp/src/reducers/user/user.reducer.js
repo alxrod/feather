@@ -31,6 +31,15 @@ export default (state = initialState, action) => {
                     buyerModeEnabled: action.payload
                 }
             }
+        case userActions.USER_CHANGE_WORKER_STATUS:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    workerModeRequested: action.payload,
+                    workerModeEnabled: action.payload
+                }
+            }
         case userActions.SET_REDIRECT_LINK:
             return {
                 ...state,

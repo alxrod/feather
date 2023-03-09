@@ -112,7 +112,26 @@ export const disconnectFca = (fca_id) => {
                         return Promise.resolve(methods);
                     },
                     (error) => {
-                        return helpers.parseError(error, dispatch);
+                        return Promise.reject(error);
+                    }
+                );
+            },
+            () => {
+            }
+        );
+    }
+}
+
+export const deleteConnectedAccount = () => {
+    return dispatch => {
+        return helpers.authCheck().then(
+            (creds) => {
+                return StripeService.deleteConnectedAccount(creds.access_token, creds.user_id).then(
+                    (methods) => {
+                        return Promise.resolve(methods);
+                    },
+                    (error) => {
+                        return Promise.reject(error);
                     }
                 );
             },
@@ -183,25 +202,6 @@ export const confirmPaymentConnected = (pm_id) => {
     }
 }
     
-export const testCharge = () => {
-    return dispatch => {
-        return helpers.authCheck().then(
-            (creds) => {
-                return StripeService.testCharge(creds.access_token, creds.user_id).then(
-                    (secret) => {
-                        return Promise.resolve(secret);
-                    },
-                    (error) => {
-                        return helpers.parseError(error, dispatch);
-                    }
-                );
-            },
-            () => {
-            }
-        );
-    }
-}
-
 export const createContractIntentSecret = (worker_id, buyer_id) => {
     return dispatch => {
         return helpers.authCheck().then(

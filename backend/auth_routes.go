@@ -121,11 +121,16 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 				if err != nil {
 					return nil, err
 				}
+				user.OutstandingBalance -= icharge.Amount
 			}
 
 			user.WorkerModeEnabled = enabled
 			filter := bson.D{{"_id", id}}
-			update := bson.D{{"$set", bson.D{{"worker_mode_enabled", user.WorkerModeEnabled}}}}
+			update := bson.D{{"$set", bson.D{
+				{"worker_mode_enabled", user.WorkerModeEnabled},
+				{"outstanding_balance", user.OutstandingBalance},
+			}}}
+
 			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 
 		}

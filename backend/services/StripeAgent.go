@@ -212,7 +212,7 @@ func (agent *StripeAgent) DisconnectFca(fca_id string) error {
 	return err
 }
 
-func (agetn *StripeAgent) DisconnectExBa(acct_id, ba_id string) error {
+func (agent *StripeAgent) DisconnectExBa(acct_id, ba_id string) error {
 	params := &stripe.BankAccountParams{
 		Account: stripe.String(acct_id),
 	}
@@ -220,6 +220,11 @@ func (agetn *StripeAgent) DisconnectExBa(acct_id, ba_id string) error {
 		ba_id,
 		params,
 	)
+	return err
+}
+
+func (agent *StripeAgent) DeleteConnectedAccount(acct_id string) error {
+	_, err := account.Del(acct_id, nil)
 	return err
 }
 

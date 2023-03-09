@@ -142,6 +142,23 @@ func (s *BackServer) DisconnectFca(ctx context.Context, req *comms.FcaQuery) (*c
 	if err != nil {
 		return nil, err
 	}
+	if len(user.StripeFCAlist) == 1 {
+		contracts, err := db.ContractsByUser(user.Id, database)
+		if err != nil {
+			return nil, err
+		}
+		active_contract := false
+		for _, contract := range contracts {
+			if contract.Stage > db.CREATE && contract.Stage < db.COMPLETE {
+				active_contract = true
+				break
+			}
+		}
+		if active_contract {
+			return nil, errors.New("You cannot delete your only payment method while there is an active contract")
+		}
+	}
+
 	err = s.StripeAgent.DisconnectFca(req.FcaId)
 	if err != nil {
 		return nil, err
@@ -183,6 +200,7 @@ func (s *BackServer) DisconnectExBa(ctx context.Context, req *comms.ExBaQuery) (
 	if err != nil {
 		return nil, err
 	}
+
 	if req.BaId == "" {
 		return nil, errors.New("No BA Id provided")
 	}
@@ -197,6 +215,50 @@ func (s *BackServer) DisconnectExBa(ctx context.Context, req *comms.ExBaQuery) (
 		{"stripe_account_id", ""},
 		{"worker_mode_enabled", false},
 	}}}
+	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	return &comms.NullResponse{}, nil
+}
+
+func (s *BackServer) DeleteConnectedAccount(ctx context.Context, req *comms.DeleteConAccRequest) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, err := stringToUser(req.UserId, database)
+	if err != nil {
+		return nil, err
+	}
+	if !user.WorkerModeEnabled || user.StripeConnectedAccountId == "" {
+		return nil, errors.New("User does not have a connected account")
+	}
+	contracts, err := db.ContractsByUser(user.Id, database)
+	if err != nil {
+		return nil, err
+	}
+	active_contract := false
+	for _, contract := range contracts {
+		if contract.Stage > db.CREATE && contract.Stage < db.COMPLETE {
+			active_contract = true
+			break
+		}
+	}
+	if active_contract {
+		return nil, errors.New("You cannot delete your stripe account while there is an active contract")
+	}
+
+	err = s.StripeAgent.DeleteConnectedAccount(user.StripeConnectedAccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", user.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"stripe_account_id", ""},
+		{"worker_mode_requested", false},
+		{"worker_mode_enabled", false},
+	}}}
+
 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err

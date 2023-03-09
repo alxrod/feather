@@ -8,6 +8,7 @@ import {
     ExBaQuery,
     ContractIntentRequest,
     InternalChargeRequest,
+    DeleteConAccRequest,
 
  } from "../proto/communication/stripe_pb";
 
@@ -15,20 +16,6 @@ import {
 export const stripeServiceClient = new StripeServiceClient(process.env.REACT_APP_SITE_BASE);
 
 class StripeService {
-    testCharge(token, user_id) {
-        let req = new IntentCreateReq();
-        req.setUserId(user_id);
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            stripeServiceClient.testCharge(req, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                var resp = response.toObject();
-                resolve(resp.clientSecret)
-            });
-        });
-    }
 
     confirmPaymentConnected(token, user_id, pm_id) {
         let req = new SetupConfirm();
@@ -86,7 +73,8 @@ class StripeService {
             var metadata = {"authorization": token}
             stripeServiceClient.disconnectFca(req, metadata, function(error, response) {
                 if (error) {
-                    reject(error)
+                    reject(error.message)
+                    return
                 }
                 resolve()
             });
@@ -102,6 +90,21 @@ class StripeService {
             stripeServiceClient.disconnectExBa(req, metadata, function(error, response) {
                 if (error) {
                     reject(error)
+                }
+                resolve()
+            });
+        });
+    }
+    
+    deleteConnectedAccount(token, user_id) {
+        let req = new DeleteConAccRequest();
+        req.setUserId(user_id);
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            stripeServiceClient.deleteConnectedAccount(req, metadata, function(error, response) {
+                if (error) {
+                    reject(error.message)
+                    return
                 }
                 resolve()
             });
