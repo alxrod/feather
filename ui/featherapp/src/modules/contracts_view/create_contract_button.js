@@ -8,13 +8,15 @@ import { push } from 'connected-react-router'
 
 const CreateContract = (props) => {
   const setupNewContract = () => {
-    let role = 0;
+    let role = -1;
     if (props.user.workerModeEnabled) {
       role = WORKER_TYPE
-    } else if (props.user.buyerModeEnabled) {
+    } 
+    if (props.user.buyerModeEnabled) {
       role = BUYER_TYPE
-    } else {
-      return;
+    } 
+    if (role === -1) {
+      return
     }
     // (title, summary, price_set, deadlines, items, password, role)
     props.createContract("", "", {current:0, worker:0, buyer:0}, genEmptyDeadlineSet(), [], "", role).then(

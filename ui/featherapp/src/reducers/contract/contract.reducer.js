@@ -14,6 +14,7 @@ const initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
         case actions.CONTRACT_PURGE_SIGNING:
+            console.log("Purging signing")
             return {
                 ...state,
                 curContract: {

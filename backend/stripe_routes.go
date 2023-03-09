@@ -83,13 +83,6 @@ func (s *BackServer) GetInitialSetupSecret(ctx context.Context, req *comms.Payme
 	}, nil
 }
 
-// func (s *BackServer) TestCharge(ctx context.Context, req *comms.IntentCreateReq) (*comms.IntentSecret, error) {
-// 	secret, _ := s.StripeAgent.CreateContractSetupIntent()
-// 	return &comms.IntentSecret{
-// 		ClientSecret: secret,
-// 	}, nil
-// }
-
 func (s *BackServer) ListFcas(ctx context.Context, req *comms.ListRequest) (*comms.BASet, error) {
 	database := s.dbClient.Database(s.dbName)
 	user, err := stringToUser(req.UserId, database)
@@ -286,7 +279,11 @@ func (s *BackServer) GetInternalCharges(ctx context.Context, req *comms.Internal
 	if err != nil {
 		return nil, err
 	}
-	charges, err := db.GetInternalChargesByUser(user_id, database)
+	user, err := db.UserQueryId(user_id, database)
+	if err != nil {
+		return nil, err
+	}
+	charges, err := db.GetInternalChargesByUser(user, database)
 	if err != nil {
 		return &comms.InternalChargeSet{
 			Charges: make([]*comms.InternalChargeEntity, 0),
@@ -302,64 +299,3 @@ func (s *BackServer) GetInternalCharges(ctx context.Context, req *comms.Internal
 	}, nil
 
 }
-
-// func (s *BackServer) CreateContractIntentSecret(ctx context.Context, req *comms.ContractIntentRequest) (*comms.NullResponse, error) {
-// 	database := s.dbClient.Database(s.dbName)
-// 	worker, err := stringToUser(req.WorkerId, database)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	buyer, err := stringToUser(req.BuyerId, database)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	_, err = s.StripeAgent.CreateContractSetupIntent(worker, buyer)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &comms.NullResponse{}, nil
-// }
-
-// func (s *BackServer) GetIntentSecret(ctx context.Context, req *comms.IntentCreateReq) (*comms.IntentSecret, error) {
-// 	database := s.dbClient.Database(s.dbName)
-// 	user, err := stringToUser(req.UserId, database)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	secret, err := s.StripeAgent.CreateContractSetupIntentSecret(user)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &comms.IntentSecret{
-// 		ClientSecret: secret,
-// 	}, nil
-// }
-
-// func (s *BackServer) AddFCAccounts(ctx context.Context, req *comms.FCAccountSet) (*comms.NullResponse, error) {
-// 	database := s.dbClient.Database(s.dbName)
-// 	user, err := stringToUser(req.UserId, database)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	new_ids := make([]string, 0)
-// 	for _, new_ac_id := range req.AccountIds {
-// 		already_exists := false
-// 		for _, existing_ac_id := range user.StripeFCIds {
-// 			if existing_ac_id == new_ac_id {
-// 				already_exists = true
-// 			}
-// 		}
-// 		if !already_exists {
-// 			new_ids = append(new_ids, new_ac_id)
-// 		}
-// 	}
-// 	for _, id := range new_ids {
-// 		user.StripeFCIds = append(user.StripeFCIds, id)
-// 	}
-
-// 	filter := bson.D{{"_id", user.Id}}
-// 	update := bson.D{{"$set", bson.D{{"stripe_fca_ids", user.StripeFCIds}}}}
-// 	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-
-// 	return &comms.NullResponse{}, nil
-// }

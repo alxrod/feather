@@ -45,7 +45,12 @@ const AccountAlert = (props) => {
           <svg viewBox="0 0 2 2" className="mx-2 inline h-0.5 w-0.5 fill-current" aria-hidden="true">
             <circle cx={1} cy={1} r={1} />
           </svg>
-          <a className={"font-semibold cursor-pointer px-3 py-1 border rounded-lg " + borderColor} onClick={() => {props.push("/profile")}}>FIX</a>
+          <a 
+            className={"font-semibold cursor-pointer px-3 py-1 border rounded-lg " + borderColor} 
+            onClick={() => {props.push( (props.customLink ? props.customLink : "/profile") )}}
+          >
+            FIX
+          </a>
         </p>
       </div>
     </div>

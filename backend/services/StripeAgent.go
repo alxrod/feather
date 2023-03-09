@@ -17,6 +17,7 @@ import (
 	"github.com/stripe/stripe-go/v74/paymentintent"
 	"github.com/stripe/stripe-go/v74/paymentmethod"
 	"github.com/stripe/stripe-go/v74/setupintent"
+	"github.com/stripe/stripe-go/v74/transfer"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/accountlink"
@@ -42,13 +43,7 @@ func (agent *StripeAgent) CreateConnectedAccount(user *db.User, database *mongo.
 		BusinessType: stripe.String("individual"),
 
 		Individual: &stripe.PersonParams{
-			Email: stripe.String(user.Email),
-			Phone: stripe.String(user.PhoneNumber),
-			DOB: &stripe.PersonDOBParams{
-				Day:   stripe.Int64(int64(user.DOB.Day)),
-				Month: stripe.Int64(int64(user.DOB.Month)),
-				Year:  stripe.Int64(int64(user.DOB.Year)),
-			},
+			Email:     stripe.String(user.Email),
 			FirstName: stripe.String(user.FirstName),
 			LastName:  stripe.String(user.LastName),
 		},
@@ -58,9 +53,7 @@ func (agent *StripeAgent) CreateConnectedAccount(user *db.User, database *mongo.
 			URL: stripe.String(fmt.Sprintf("www.feathercontracts.com/%s", user.Username)),
 		},
 
-		Company: &stripe.AccountCompanyParams{
-			Phone: stripe.String(user.PhoneNumber),
-		},
+		Company: &stripe.AccountCompanyParams{},
 
 		Capabilities: &stripe.AccountCapabilitiesParams{
 			CardPayments: &stripe.AccountCapabilitiesCardPaymentsParams{
@@ -95,7 +88,6 @@ func (agent *StripeAgent) CreateCustomer(user *db.User, database *mongo.Database
 	params := &stripe.CustomerParams{
 		Email: stripe.String(user.Email),
 		Name:  stripe.String(fmt.Sprintf("%s %s", user.FirstName, user.LastName)),
-		Phone: stripe.String(user.PhoneNumber),
 	}
 
 	cus, err := customer.New(params)
@@ -290,14 +282,40 @@ func (agent *StripeAgent) GetExternalBankAccounts(ac_id string) ([]*stripe.BankA
 	return bank_accounts, nil
 }
 
-func (agent *StripeAgent) CreateContractPaymentIntent(customer_id, account_id string, amount int64, seti *stripe.SetupIntent) (*stripe.PaymentIntent, error) {
+func (agent *StripeAgent) CreateContractTransfer(
+	worker *db.User,
+	amount int64,
+	charge_id string,
+	transfer_group string,
+) (*stripe.Transfer, error) {
+
+	log.Printf("Making a transfer of %d to wokrer %s", amount, worker.Username)
+	params := &stripe.TransferParams{
+		Amount:            stripe.Int64(1000),
+		Currency:          stripe.String(string(stripe.CurrencyUSD)),
+		SourceTransaction: stripe.String(charge_id),
+		Destination:       stripe.String(worker.StripeConnectedAccountId),
+		TransferGroup:     stripe.String(transfer_group),
+	}
+	tr, err := transfer.New(params)
+	return tr, err
+}
+
+func (agent *StripeAgent) CreateContractPaymentIntent(
+	buyer *db.User,
+	amount int64,
+	seti *stripe.SetupIntent,
+	transfer_group string,
+) (*stripe.PaymentIntent, error) {
+
 	params := &stripe.PaymentIntentParams{
 		Amount:   stripe.Int64(amount),
 		Currency: stripe.String(string(stripe.CurrencyUSD)),
-		TransferData: &stripe.PaymentIntentTransferDataParams{
-			Destination: stripe.String(account_id),
-		},
-		Customer:      stripe.String(customer_id),
+		// TransferData: &stripe.PaymentIntentTransferDataParams{
+		// 	Destination: stripe.String(worker.StripeConnectedAccountId),
+		// },
+		Customer:      stripe.String(buyer.StripeCustomerId),
+		TransferGroup: stripe.String(transfer_group),
 		PaymentMethod: &seti.PaymentMethod.ID,
 		PaymentMethodTypes: []*string{
 			stripe.String("us_bank_account"),
@@ -333,7 +351,6 @@ func (agent *StripeAgent) CreateContractSetupIntent(worker, buyer *db.User, cont
 			BillingDetails: &stripe.SetupIntentPaymentMethodDataBillingDetailsParams{
 				Email: stripe.String(buyer.Email),
 				Name:  stripe.String(fmt.Sprint("%s %s", buyer.FirstName, buyer.LastName)),
-				Phone: stripe.String(buyer.PhoneNumber),
 			},
 		},
 		MandateData: &stripe.SetupIntentMandateDataParams{
@@ -380,17 +397,35 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	if amount == 0 {
 		return nil
 	}
+
+	// What to do:
+	// 1.Create payment intent to charge buyer for the correct contract amount +fee
+	// 2.Transfer charge - fee to worker when funds become available
+	transfer_group := deadline.Id.Hex()
 	pi, err := agent.CreateContractPaymentIntent(
-		buyer.StripeCustomerId,
-		worker.StripeConnectedAccountId,
+		buyer,
 		amount,
 		seti,
+		transfer_group,
 	)
+	charge_id := pi.LatestCharge.ID
+
+	// tr, err := agent.CreateContractTransfer(
+	// 	worker,
+	// 	amount,
+	// 	charge_id,
+	// 	transfer_group,
+	// )
+
 	_, err = db.InitializeInternalCharge(
 		contract,
-		contract.Worker,
-		contract.Buyer,
+		worker,
+		buyer,
 		pi.ID,
+		charge_id,
+		"",
+		transfer_group,
+		amount,
 		database)
 
 	return err

@@ -20,14 +20,6 @@ const AccountInfo = (props) => {
             <dt className="text-sm font-medium text-gray-500">Email Address</dt>
             <dd className="mt-1 text-sm text-gray-900">{props.user.email}</dd>
           </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Phone Number</dt>
-            <dd className="mt-1 text-sm text-gray-900">{props.user.phoneNumber}</dd>
-          </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Date of Birth</dt>
-            <dd className="mt-1 text-sm text-gray-900">{props.user.dob.month + " / " + props.user.dob.day + " / " + props.user.dob.year}</dd>
-          </div>
         </dl>
       </div>
     </div>

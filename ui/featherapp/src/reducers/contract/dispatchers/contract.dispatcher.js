@@ -64,9 +64,9 @@ export const queryContract = (contract_id) => {
     }
 };
 
-export const queryInvite = (contract_id) => {
+export const queryInvite = (contract_id, contract_secret) => {
     return dispatch => {
-        return ContractService.queryInvite(contract_id).then(
+        return ContractService.queryInvite(contract_id, contract_secret).then(
             (data) => {
                 return Promise.resolve(data);
             },
@@ -101,11 +101,11 @@ export const queryContractNubs = () => {
     }
 };
 
-export const createContract = (title, summary, price_set, deadlines, items, password, role) => {
+export const createContract = (title, summary, price_set, deadlines, items, invited_email, role) => {
     return dispatch => {
         return  helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.createContract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, password, role).then(
+                return ContractService.createContract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, invited_email, role).then(
                     (data) => {
                         // if (data.contract.worker.id == creds.user_id) {
                         //     data.contract.user_type = WORKER_TYPE
@@ -201,6 +201,44 @@ export const finishCreation = (contract_id) => {
                         });
                         // console.log("Finished Contract Creation")
                         // console.log(data)
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error.message);
+                    }
+                );
+            },
+            () => {
+            }
+        );
+    }
+};
+
+export const changeInviteEmail = (contract_id, new_email) => {
+    return dispatch => {
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.changeInviteEmail(creds.access_token, creds.user_id, contract_id, new_email).then(
+                    () => {
+                        return Promise.resolve();
+                    },
+                    (error) => {
+                        return Promise.reject(error.message);
+                    }
+                );
+            },
+            () => {
+            }
+        );
+    }
+};
+
+export const resendInviteEmail = (contract_id) => {
+    return dispatch => {
+        return  helpers.authCheck(dispatch).then(
+            (creds) => {
+                return ContractService.resendInviteEmail(creds.access_token, creds.user_id, contract_id).then(
+                    () => {
                         return Promise.resolve();
                     },
                     (error) => {

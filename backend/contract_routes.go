@@ -10,7 +10,9 @@ import (
 	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // type ReqError struct {
@@ -117,6 +119,7 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 	if err != nil {
 		return nil, err
 	}
+
 	contract, err = contract.FinishCreation(user, database)
 	if err != nil {
 		return nil, err
@@ -133,12 +136,97 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 	if err != nil {
 		return nil, err
 	}
+
+	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
+		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+		if err != nil {
+			return
+		}
+		contract.InvitePassword = secret
+		filter := bson.D{{"_id", contract.Id}}
+		update := bson.D{{"$set", bson.D{
+			{"invite_password", secret},
+		}}}
+		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	}(database, contract, user)
+
 	contractProto := contract.Proto()
 	return &comms.ContractResponse{
 		Contract: contractProto,
 		Role:     role,
 	}, nil
 
+}
+
+func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChangeRequest) (*comms.NullResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := db.ContractById(contractId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract.ChangeInviteEmail(req.NewEmail, database)
+	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
+		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+		if err != nil {
+			return
+		}
+		contract.InvitePassword = secret
+		filter := bson.D{{"_id", contract.Id}}
+		update := bson.D{{"$set", bson.D{
+			{"invite_password", secret},
+		}}}
+		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	}(database, contract, user)
+	return &comms.NullResponse{}, nil
+}
+
+// rpc ChangeInviteEmail(EmailChangeRequest) returns (NullResponse) {};
+//     rpc ResendInviteEmail(EmailResendRequest) returns (NullResponse) {};
+func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailResendRequest) (*comms.NullResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
+	if err != nil {
+		return nil, errors.New("You must provide a valid User Id")
+	}
+
+	database := s.dbClient.Database(s.dbName)
+	user, err := db.UserQueryId(userId, database)
+	if err != nil {
+		return nil, err
+	}
+	contract, err := db.ContractById(contractId, database)
+	if err != nil {
+		return nil, err
+	}
+	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
+		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+		if err != nil {
+			return
+		}
+		contract.InvitePassword = secret
+		filter := bson.D{{"_id", contract.Id}}
+		update := bson.D{{"$set", bson.D{
+			{"invite_password", secret},
+		}}}
+		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	}(database, contract, user)
+	return &comms.NullResponse{}, nil
 }
 
 func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest) (*comms.ContractResponse, error) {
@@ -182,20 +270,24 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 	}, nil
 }
 
-func (s *BackServer) InviteQuery(ctx context.Context, req *comms.InviteDataRequest) (*comms.InviteNub, error) {
+func (s *BackServer) InviteQuery(ctx context.Context, req *comms.InviteDataRequest) (*comms.ContractInviteNub, error) {
 	contract_id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
 		return nil, errors.New("Invalid contract id")
 	}
+
 	database := s.dbClient.Database(s.dbName)
 	contract, err := db.ContractById(contract_id, database)
 	if err != nil {
 		return nil, err
 	}
-	proto, err := contract.InviteProto()
-	if err != nil {
-		return nil, err
+	if contract.InvitePassword != req.Secret {
+		return nil, errors.New("Invalid secret for contract invite")
 	}
+
+	proto := contract.InviteProto()
+	exists := db.UserWEmailExists(contract.InvitedEmail, database)
+	proto.InvitedUserInSystem = exists
 	return proto, nil
 }
 
@@ -205,7 +297,7 @@ func (s *BackServer) Claim(ctx context.Context, req *comms.ClaimContractRequest)
 	if err != nil {
 		return nil, err
 	}
-	if req.Password != contract.Password {
+	if req.Password != contract.InvitePassword {
 		return nil, errors.New("Incorrect password to claim contract")
 	}
 	err = db.ContractClaim(user, contract, database)

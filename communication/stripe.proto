@@ -94,10 +94,17 @@ message InternalChargeEntity {
     UserNubEntity worker = 3;
     UserNubEntity buyer = 4;
 
-    string state = 5;
+    uint32 state = 5;
+    string state_message = 14;
     int64 amount = 6;
-}
 
+    string PaymentIntentId = 8;
+    string ChargeId = 9;
+    string TransferId = 10;
+    string PaymentId = 11;
+    string PayoutId = 13;
+    string TransferGroup = 12;
+}
 message InternalChargeRequest {
     string user_id = 1;
 }
@@ -106,6 +113,15 @@ message InternalChargeSet {
     repeated InternalChargeEntity charges = 1;
 }
 
+message InternalChargeCustomQuery {
+    string filter_key = 1;
+    string filter_value = 2;
+}
+
+message InternalChargeUpdateStateRequest {
+    InternalChargeEntity charge = 1;
+    uint32 new_state = 2;
+}
 
 
 service StripeService {
@@ -128,5 +144,8 @@ service StripeService {
 
     rpc GetInternalCharges(InternalChargeRequest) returns (InternalChargeSet) {};
 
+    rpc TransferDeadlineFunds(InternalChargeEntity) returns (NullResponse) {};
+    rpc QueryICharge(InternalChargeCustomQuery) returns (InternalChargeEntity) {};
+    rpc UpdateState(InternalChargeUpdateStateRequest) returns (InternalChargeEntity) {};
     // rpc CreateContractIntentSecret(ContractIntentRequest) returns (NullResponse) {};
 }

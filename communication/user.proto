@@ -15,12 +15,10 @@ message UserRegisterRequest {
     string first_name = 4;
     string last_name = 6;
     string phone_number = 7;
-
-    DOBEntity dob = 8; 
 }
 
 message UserLoginRequest {
-    string usernameOrEmail = 1;
+    string username_or_email = 1;
     string password = 2;
 }
 
@@ -50,7 +48,6 @@ message UserEntity {
     string first_name = 20;
     string last_name = 21;
     string phone_number = 22;
-    DOBEntity dob = 23;
 
     repeated uint32 contract_ids = 6 [packed=true];
 
@@ -77,13 +74,10 @@ message UserEntity {
 
     string default_fca = 29;
 
+    int64 outstanding_balance = 30;
+
 }
 
-message DOBEntity {
-    uint32 day = 1;
-    uint32 month = 2;
-    uint32 year = 3;
-}
 message ForgotRequest {
     string email = 1;
 }

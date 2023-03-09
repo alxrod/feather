@@ -25,14 +25,13 @@ class UserService {
     // Auth Requests
     login(usernameOrEmail, password, remember) {
         var loginRequest = new UserLoginRequest();   
-        console.log("LGIN REQ", loginRequest);
-        loginRequest.setUsernameoremail(usernameOrEmail);
+        loginRequest.setUsernameOrEmail(usernameOrEmail);
         loginRequest.setPassword(password);
 
         return new Promise( (resolve, reject) => { 
             authClient.login(loginRequest, null, function(error, response) {
                 if (error) {
-                    reject(error)
+                    reject(error.message)
                     return 
                 }
                 var resp = response.toObject();
@@ -57,7 +56,7 @@ class UserService {
     }   
 
 
-    register(username, first_name, last_name, email, password, phone, date) {
+    register(username, first_name, last_name, email, password) {
         var registerRequest = new UserRegisterRequest();   
         registerRequest.setUsername(username);
 
@@ -66,14 +65,7 @@ class UserService {
 
         registerRequest.setFirstName(first_name)
         registerRequest.setLastName(last_name)
-
-        registerRequest.setPhoneNumber(phone);
-        
-        const dob = new DOBEntity()
-        dob.setDay(date.day)
-        dob.setMonth(date.month)
-        dob.setYear(date.year)
-        registerRequest.setDob(dob);
+    
 
         return new Promise (function (resolve, reject) {
             authClient.register(registerRequest, null, function(err, response) {
@@ -233,19 +225,16 @@ class UserService {
             if (d <= Date.now()) {
                 return new Promise((resolve, reject) => {
                     var loginRequest = new UserLoginRequest();   
-                    loginRequest.setUsernameoremail(creds.username);
+                    loginRequest.setUsernameOrEmail(creds.username);
                     loginRequest.setPassword(creds.password);
 
                     authClient.login(loginRequest, null, function(error, response) {
-                        console.log("HUHHHHH")
                         if (error) {
-                            console.log("Error Logging in: ", error)
                             resolve(creds)
                             return
                         }
                         
                         var resp = response.toObject();
-                        console.log("Got back the request and its: ", resp)
 
                         var new_creds = {
                             username: resp.user.username,

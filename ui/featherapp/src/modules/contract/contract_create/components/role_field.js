@@ -19,7 +19,16 @@ const RoleField = (props) => {
   const [roles, setRoles]= useState({
     buyer: {name: "Buyer", available: false, code: BUYER_TYPE},
     worker: {name: "Worker", available: true, code: WORKER_TYPE},
-  })
+  }) 
+  
+  useEffect(() => {
+    if (props.role === WORKER_TYPE) {
+      setRole(roles.worker)
+    } else if (props.role === BUYER_TYPE) {
+      setRole(roles.buyer)
+    }
+  }, [props.role])
+
   const [selectedRole, setSelectedRole] = useState(roles.worker)
 
   const [modalOpen, setModalOpen] = useState(false)
@@ -45,6 +54,7 @@ const RoleField = (props) => {
     }
     
     if (props.user.buyerModeEnabled === true) {
+      console.log("Setting buyer role")
       const updatedBuyer = newRoles.buyer
       updatedBuyer.available = true
       setSelectedRole(newRoles.buyer)

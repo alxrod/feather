@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"crypto/tls"
@@ -17,6 +19,8 @@ import (
 
 	gomail "gopkg.in/mail.v2"
 )
+
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 type Email struct {
 	Recipient string
@@ -57,7 +61,17 @@ func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) erro
 	// Intervals
 	agent.INTERVAL_TIME = 1
 
+	rand.Seed(time.Now().UnixNano())
+
 	return nil
+}
+
+func (agent *EmailAgent) GenerateInviteSecret() string {
+	b := make([]rune, 30)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }
 
 func (agent *EmailAgent) StartExpirationChecker() {
@@ -157,4 +171,27 @@ func (agent *EmailAgent) SendResetEmail(link *TempLink) error {
 		return err
 	}
 	return nil
+}
+
+func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User) (error, string) {
+	if contract == nil || user == nil {
+		return errors.New("Invalid contract or user"), ""
+	}
+	secret := agent.GenerateInviteSecret()
+
+	email := &Email{
+		Recipient: contract.InvitedEmail,
+		Subject:   fmt.Sprintf("%s invited you to a contract on Feather", strings.Title(user.FirstName)),
+		BodyType:  "text/plain",
+		Body: fmt.Sprintf(
+			"Click this link to view the invitation \n %s%s",
+			agent.RootURL,
+			fmt.Sprintf("/invite/%s/%s", contract.Id.Hex(), secret),
+		),
+	}
+	if err := agent.SendEmail(email); err != nil {
+		return err, ""
+	}
+
+	return nil, secret
 }

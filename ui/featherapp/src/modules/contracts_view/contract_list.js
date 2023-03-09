@@ -78,7 +78,6 @@ const ContractList = (props) => {
             user_ids.push(props.contracts[i].buyerId)
           }
         }
-        console.log("Droppign this: ", user_ids)
         props.getProfilePicUrls(user_ids)
       }
       setNoContracts(false)

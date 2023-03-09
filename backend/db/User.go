@@ -33,10 +33,9 @@ type User struct {
 	Password string             `bson:"password"`
 	Email    string             `bson:"email"`
 
-	FirstName   string  `bson:"first_name"`
-	LastName    string  `bson:"last_name"`
-	PhoneNumber string  `bson:"phone"`
-	DOB         *DOBNub `bson:"DOB"`
+	FirstName   string `bson:"first_name"`
+	LastName    string `bson:"last_name"`
+	PhoneNumber string `bson:"phone"`
 
 	Active_token string `bson:"-"`
 	AdminStatus  bool   `bson:"admin_status"`
@@ -49,6 +48,8 @@ type User struct {
 	WorkerModeRequested bool `bson:"worker_mode_requested"`
 	BuyerModeEnabled    bool `bson:"buyer_mode_enabled"`
 	WorkerModeEnabled   bool `bson:"worker_mode_enabled"`
+
+	OutstandingBalance int64 `bson:"outstanding_balance"`
 
 	// ================================= STRIPE INFO =================================
 	StripeCustomerId         string `bson:"stripe_customer_id,omitempty"`
@@ -72,7 +73,6 @@ func (user *User) Proto() *comms.UserEntity {
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
 		PhoneNumber: user.PhoneNumber,
-		Dob:         user.DOB.Proto(),
 
 		AdminStatus:          user.AdminStatus,
 		ProfilePhotoUploaded: user.ProfilePhotoUploaded,
@@ -81,6 +81,8 @@ func (user *User) Proto() *comms.UserEntity {
 		BuyerModeRequested:  user.BuyerModeRequested,
 		WorkerModeEnabled:   user.WorkerModeEnabled,
 		BuyerModeEnabled:    user.BuyerModeEnabled,
+
+		OutstandingBalance: user.OutstandingBalance,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
@@ -94,6 +96,13 @@ func (user *User) Proto() *comms.UserEntity {
 
 	resp.PaymentSetup = false
 	return resp
+}
+
+func (user *User) String() string {
+	if user == nil {
+		fmt.Sprintf("<no user>")
+	}
+	return fmt.Sprintf("<User id: %s name: %s>", user.Id.Hex(), user.Username)
 }
 
 func (user *User) Handle() *UserHandle {
@@ -120,23 +129,6 @@ func (user *User) Nub(author_status bool) *UserNub {
 	}
 
 	return userNub
-}
-
-type DOBNub struct {
-	Day   uint32 `bson: "day"`
-	Month uint32 `bson:"month"`
-	Year  uint32 `bson:"year"`
-}
-
-func (nub *DOBNub) Proto() *comms.DOBEntity {
-	if nub == nil {
-		return &comms.DOBEntity{}
-	}
-	return &comms.DOBEntity{
-		Day:   nub.Day,
-		Month: nub.Month,
-		Year:  nub.Year,
-	}
 }
 
 // DB Functions, general style is operation params, collection -> error
@@ -200,6 +192,16 @@ func UserQueryEmail(email, password string, database *mongo.Database) (*User, er
 	return user, nil
 }
 
+func UserWEmailExists(email string, database *mongo.Database) bool {
+	var user *User
+	filter := bson.D{{"email", email}}
+	var err error
+	if err = database.Collection(USERS_COL).FindOne(context.TODO(), filter).Decode(&user); err != nil {
+		return false
+	}
+	return true
+}
+
 func UserChangePassword(id primitive.ObjectID, password string, database *mongo.Database) (*User, error) {
 	user, err := UserQueryId(id, database)
 	if err != nil {
@@ -258,18 +260,11 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 	}
 
 	userD := &User{
-		Username:    req.Username,
-		Password:    string(hashedPassword),
-		Email:       req.Email,
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		PhoneNumber: req.PhoneNumber,
-
-		DOB: &DOBNub{
-			Day:   req.Dob.Day,
-			Month: req.Dob.Month,
-			Year:  req.Dob.Year,
-		},
+		Username:  req.Username,
+		Password:  string(hashedPassword),
+		Email:     req.Email,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)

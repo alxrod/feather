@@ -106,10 +106,28 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 	if !user.WorkerModeEnabled && user.WorkerModeRequested {
 		enabled, err := s.StripeAgent.VerifyConnectedAccountCapabilities(user.StripeConnectedAccountId)
 		if err == nil {
+			// Note this currently only gets the worker, saves queries by not pulling buyer
+			outstanding_charges, err := db.GetUserHoldCharges(user, database)
+			if err != nil {
+				return nil, err
+			}
+			for _, icharge := range outstanding_charges {
+				_, err := s.StripeAgent.CreateContractTransfer(
+					icharge.Worker,
+					icharge.Amount,
+					icharge.ChargeId,
+					icharge.TransferGroup,
+				)
+				if err != nil {
+					return nil, err
+				}
+			}
+
 			user.WorkerModeEnabled = enabled
 			filter := bson.D{{"_id", id}}
 			update := bson.D{{"$set", bson.D{{"worker_mode_enabled", user.WorkerModeEnabled}}}}
 			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+
 		}
 	}
 	proto := user.Proto()

@@ -52,6 +52,9 @@ import {
     ConfirmDeadlineRequest,
     UndoDeadlineRequest,
 
+    EmailChangeRequest,
+    EmailResendRequest,
+
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -109,6 +112,39 @@ export const genEmptyDeadline = (date) => {
 class ContractService {
 
     // Calls
+    changeInviteEmail(token, user_id, contract_id, new_email) {
+        let changeRequest = new EmailChangeRequest();
+        changeRequest.setUserId(user_id);
+        changeRequest.setContractId(contract_id);
+        changeRequest.setNewEmail(new_email);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.changeInviteEmail(changeRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
+    }
+
+    resendInviteEmail(token, user_id, contract_id, new_email) {
+        let resendRequest = new EmailResendRequest();
+        resendRequest.setUserId(user_id);
+        resendRequest.setContractId(contract_id);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.resendInviteEmail(resendRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
+            });
+        });
+    }
+
     query_contract(token, user_id, contract_id) {
         let queryRequest = new QueryByIdRequest();
         queryRequest.setUserId(user_id);
@@ -158,7 +194,9 @@ class ContractService {
                 contractClient.queryByUser(queryRequest, metadata, function(error, response) {
                     if (error) {
                         reject(error)
+                        console.log("Error: ", error)
                     }
+                    
                     var resp = response.toObject();
                     // Convert proto times to js times
                     const protoNubs = response.getContractNubsList()
@@ -176,7 +214,7 @@ class ContractService {
         });
     }
     
-    createContract(token, user_id, title, summary, price_set, deadlines, items, password, role) {
+    createContract(token, user_id, title, summary, price_set, deadlines, items, invited_email, role) {
 
         let createRequest = new ContractCreateRequest();   
 
@@ -184,7 +222,7 @@ class ContractService {
         createRequest.setTitle(title);
         createRequest.setSummary(summary);
         createRequest.setPrice(this.generatePriceEntity(price_set));
-        createRequest.setPassword(password)
+        createRequest.setInvitedEmail(invited_email)
         createRequest.setRole(role)
 
         let i = 0
@@ -218,7 +256,7 @@ class ContractService {
         });
     }
 
-    updateContract(token, user_id, contract_id, title, summary, price_set, deadlines, items, password, role) {
+    updateContract(token, user_id, contract_id, title, summary, price_set, deadlines, items, invited_email, role) {
 
         let updateRequest = new ContractUpdateRequest();   
 
@@ -227,7 +265,7 @@ class ContractService {
         updateRequest.setTitle(title);
         updateRequest.setSummary(summary);
         updateRequest.setPrice(this.generatePriceEntity(price_set));
-        updateRequest.setPassword(password)
+        updateRequest.setInvitedEmail(invited_email)
         updateRequest.setRole(role)
         console.log("UPDATING W ITEMS: ", items)
 
@@ -860,9 +898,11 @@ class ContractService {
         });
     }
 
-    queryInvite(contract_id) {
+    queryInvite(contract_id, contract_secret) {
         let queryRequest = new InviteDataRequest();
         queryRequest.setId(contract_id);
+        console.log("Trying to set to ", contract_secret)
+        queryRequest.setSecret(contract_secret);
         return new Promise( (resolve, reject) => { 
             contractClient.inviteQuery(queryRequest, null, function(error, response) {
                 if (error) {
@@ -870,9 +910,8 @@ class ContractService {
                     reject(error)
                 }
                 const resp = response.toObject()
-                resp.deadline = response.getDeadline().toDate()
-                console.log("Success: ", resp)
-                resolve(resp)
+                let contractObj = cleanDeadlines(response)
+                resolve(contractObj)
             });
         });
 

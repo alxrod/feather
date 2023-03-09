@@ -62,7 +62,8 @@ message DeadlineNub {
 
 message ContractEntity {
     string id = 1;
-    string password = 11;
+    string invited_email = 11;
+    string invite_password = 18;
     UserNubEntity worker = 2;
     UserNubEntity buyer = 3;
     PriceEntity price = 4;
@@ -103,17 +104,20 @@ message ContractNub {
 
 message InviteDataRequest {
     string id = 1;
+    string secret = 2;
 }
-message InviteNub {
+
+message ContractInviteNub {
     string id = 1;
-    string title = 2;
-    string password = 8;
-    string summary = 3;
-    int64 price = 4;
-    google.protobuf.Timestamp deadline = 5;
-    UserNubEntity worker = 6;
-    UserNubEntity buyer = 7;
-    
+    string invited_email = 11;
+    bool invited_user_in_system = 12;
+    UserNubEntity worker = 2;
+    UserNubEntity buyer = 3;
+    PriceEntity price = 4;
+    repeated DeadlineEntity deadlines = 5;
+    string title = 8;
+    string summary = 6;
+    repeated ItemEntity items = 7;
 }
 
 message ContractNubSet {
@@ -157,7 +161,7 @@ message ContractCreateRequest {
     string user_id = 1;
     string title = 2;
     string summary = 3;
-    string password = 8;
+    string invited_email = 8;
     uint32 role = 9;
     PriceEntity price = 5;
     repeated DeadlineEntity deadlines = 6;
@@ -174,7 +178,7 @@ message ContractUpdateRequest {
     string user_id = 2;
     string title = 3;
     string summary = 4;
-    string password = 5;
+    string invited_email = 5;
     uint32 role = 6;
     PriceEntity price = 7;
     repeated DeadlineEntity deadlines = 8;
@@ -379,6 +383,17 @@ message NullResponse {}
 
 message ContractEditResponse {}
 
+message EmailChangeRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string new_email = 3;
+}
+
+message EmailResendRequest {
+    string user_id = 1;
+    string contract_id = 2;
+}
+
 service Contract {
 
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
@@ -387,7 +402,10 @@ service Contract {
     rpc UpdateDraft(ContractUpdateRequest) returns (ContractResponse) {};
     rpc FinishCreation(ContractFinishCreationRequest) returns (ContractResponse) {}
 
-    rpc InviteQuery(InviteDataRequest) returns (InviteNub) {};
+    rpc ChangeInviteEmail(EmailChangeRequest) returns (NullResponse) {};
+    rpc ResendInviteEmail(EmailResendRequest) returns (NullResponse) {};
+
+    rpc InviteQuery(InviteDataRequest) returns (ContractInviteNub) {};
 
     rpc Claim(ClaimContractRequest) returns (ContractResponse) {};
     rpc Sign(SignContractRequest) returns (ContractResponse) {};

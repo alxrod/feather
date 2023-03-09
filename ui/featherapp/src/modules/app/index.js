@@ -57,45 +57,39 @@ const UNAUTH_ROLE = 1
 const STD_UNAUTH_ROLE = 4
 
 const routes = {
-  "/": UNAUTH_ROLE,
-  "/messages": STD_ROLE,
-  "/contracts": STD_ROLE,
+  "^/$": UNAUTH_ROLE,
+  "^/messages$": STD_ROLE,
+  "^/contracts$": STD_ROLE,
 
-  "/contract": STD_ROLE,
-  "/create": STD_ROLE,
-  "/negotiate": STD_ROLE,
-  "/view": STD_ROLE,
-  "/settle": STD_ROLE,
-  "/unknown": STD_UNAUTH_ROLE,
-  "/unauth-contract": UNAUTH_ROLE,
+  "^/contract/[^/]*$": STD_ROLE,
+  "^/create/[^/]*$": STD_ROLE,
+  "^/negotiate/[^/]*$": STD_ROLE,
+  "^/view/[^/]*$": STD_ROLE,
+  "^/settle/[^/]*$": STD_ROLE,
+  "^/invite/[^/]*/[^/]*$": STD_UNAUTH_ROLE,
+  
+  "^/unknown$": STD_UNAUTH_ROLE,
+  "^/unauth-contract$": UNAUTH_ROLE,
 
-  "/invite": STD_UNAUTH_ROLE,
+  "^/login$": UNAUTH_ROLE,
+  "^/register$": UNAUTH_ROLE,
 
-  "/login": UNAUTH_ROLE,
-  "/register": UNAUTH_ROLE,
+  "^/setup-payment$": STD_ROLE,
+  "^/setup-payout$": STD_ROLE,
+  "^/setup-profile-pic$": STD_ROLE,
+  "^/setup-choice$": STD_ROLE,
 
-  "/setup-payment": STD_ROLE,
-  "/setup-payout": STD_ROLE,
-  "/setup-profile-pic": STD_ROLE,
-  "/setup-choice": STD_ROLE,
+  "^/profile$": STD_ROLE,
+  "^/profile/onboarding-refresh$": STD_ROLE,
 
-  "/profile": STD_ROLE,
-  "/profile/onboarding-refresh": STD_ROLE,
+  "^/file-upload-test$": STD_ROLE,
+  "^/asset-cache$": STD_ROLE,
 
-  "/file-upload-test": STD_ROLE,
-  "/asset-cache": STD_ROLE,
-
-  "/forgot-password": UNAUTH_ROLE,
-  "/reset-password": UNAUTH_ROLE,
+  "^/forgot-password$": UNAUTH_ROLE,
+  "^/reset-password$": UNAUTH_ROLE,
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
-const no_nav_routes = [
-  "/login", 
-  "/register", 
-  "/invite", 
-  "/forgot-password",
-]
 const contract_routes = [
   "/contract",
   "/create",
@@ -108,15 +102,10 @@ const App = (props) => {
   const loc = useLocation();
   const [pullReq, setPullReq] = useState(true);
   const [reloadStripeEnables, setReloadStripeEnables] = useState(true)
-  let firstLoad = true
 
   useLayoutEffect( () => {
     const route_base = "/"+loc.pathname.split("/")[1]
-    if (no_nav_routes.includes(route_base)) {
-      props.setNavbar(false)
-    } else {
-      props.setNavbar(true)
-    }
+    
     if (!select_routes.includes(route_base)) {
       props.clearSelected()
     }
@@ -144,10 +133,18 @@ const App = (props) => {
   }, [props.curContract, props.isLoggedIn, loc])
 
   const authRedirect = (pathname, wholepath) => {
-    if (!routes.hasOwnProperty(pathname)) {
+    let match_found = false;
+    let used_key = ""
+    for (let i = 0; i < Object.keys(routes).length; i++) {
+      if (wholepath.match(Object.keys(routes)[i])) {
+        match_found = true;
+        used_key = Object.keys(routes)[i]
+        break;
+      }
+    }
+    if (!match_found) {
       props.push("/unknown")
-    } else if (props.user === null && routes[pathname] === STD_ROLE) {
-      console.log("RUNNING THIS")
+    } else if (props.user === null && routes[used_key] === STD_ROLE) {
       props.pullUser().then(
         () => {
           return true
@@ -158,7 +155,7 @@ const App = (props) => {
           return false
         }
       )
-    } else if (props.user !== null && routes[pathname] === UNAUTH_ROLE) {
+    } else if (props.user !== null && routes[used_key] === UNAUTH_ROLE) {
       props.push("/contracts")
       return false
     }
@@ -211,7 +208,7 @@ const App = (props) => {
 
         <Route path="/create/:contractId" element={<ContractCreate/>} component={ContractCreate} />
 
-        <Route path="/invite/:contractId" element={<ContractInvite/>} component={ContractInvite} />
+        <Route path="/invite/:contractId/:contractSecret" element={<ContractInvite/>} component={ContractInvite} />
 
         <Route path="/contract/:contractId" element={<ContractRedirect/>} component={ContractRedirect} />
         <Route path="/negotiate/:contractId" element={<ContractNegotiate/>} component={ContractNegotiate} />

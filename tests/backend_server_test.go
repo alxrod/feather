@@ -57,7 +57,6 @@ func TestBackend(t *testing.T) {
 
 			ctx := context.Background()
 			creds := credentials.NewTLS(loadTLSCfg())
-
 			conn, err := grpc.DialContext(
 				ctx,
 				"localhost:9990",

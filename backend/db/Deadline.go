@@ -185,7 +185,6 @@ func (deadline *Deadline) ReplaceFromReq(req *comms.DeadlineEntity, database *mo
 	new_deadline.Items = make([]*ContractItem, len(req.Items))
 	new_deadline.ItemsProposerId = deadline.ItemsProposerId
 	new_deadline.ItemStates = make([]uint32, len(req.Items))
-	log.Println("Set of incoming id's is ", req.Items)
 	for idx, nub := range req.Items {
 		item_id, err := primitive.ObjectIDFromHex(nub.Id)
 		var item *ContractItem

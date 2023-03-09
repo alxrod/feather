@@ -4,9 +4,9 @@ import FileService from "../../../services/file.service";
 import * as userActions from "../user.actions";
 import * as helpers from "../../helpers"
 
-export const register = (username, first_name, last_name, email, password, phone, date, user_type) => {
+export const register = (username, first_name, last_name, email, password, user_type) => {
     return dispatch => {
-        return UserService.register(username, first_name, last_name, email, password, phone, date, user_type).then(
+        return UserService.register(username, first_name, last_name, email, password, user_type).then(
             (response) => {
                 dispatch({
                     type: userActions.REGISTER_SUCCESS,

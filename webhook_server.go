@@ -2,67 +2,47 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/TwiN/go-color"
 	db "github.com/alxrod/feather/backend/db"
+	comms "github.com/alxrod/feather/communication"
 	"github.com/gorilla/mux"
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/webhook"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 type WebhookServer struct {
 	router *mux.Router
 
-	dbClient            *mongo.Client
-	dbName              string
-	dbCtx               context.Context
 	stripeWebhookSecret string
+	backendStripeClient comms.StripeServiceClient
+}
+
+func loadTLSCfg() *tls.Config {
+	b, _ := ioutil.ReadFile("./cert/server.crt")
+	cp := x509.NewCertPool()
+	if !cp.AppendCertsFromPEM(b) {
+		log.Fatal("credentials: failed to append certificates")
+	}
+
+	config := &tls.Config{
+		InsecureSkipVerify: false,
+		RootCAs:            cp,
+	}
+	return config
 }
 
 func NewWebHookServer(dbName ...string) *WebhookServer {
-
-	dbIP := os.Getenv("DB_IP")
-	dbUsername := os.Getenv("DB_USERNAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
-
-	credential := options.Credential{
-		Username: dbUsername,
-		Password: dbPassword,
-	}
-
-	opts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:27017", dbIP))
-
-	if os.Getenv("DB_DEBUG") == "false" {
-		opts.SetAuth(credential)
-	}
-	client, err := mongo.NewClient(opts)
-
-	if err != nil {
-		log.Fatalf("Cannot setup web hook server because: %s", err)
-	}
-
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatalf("Cannot setup web hook server because: %s", err)
-	}
-	s_dbName := ""
-	if len(dbName) == 1 {
-		s_dbName = dbName[0]
-	} else {
-		s_dbName = "testing"
-	}
 
 	key_name := "STRIPE_WEBHOOK_SECRET"
 	_, found := os.LookupEnv(key_name)
@@ -71,44 +51,47 @@ func NewWebHookServer(dbName ...string) *WebhookServer {
 	}
 	secret := os.Getenv(key_name)
 
+	creds := credentials.NewTLS(loadTLSCfg())
+	conn, err := grpc.DialContext(
+		context.Background(),
+		os.Getenv("BACKEND_ROUTE"),
+		grpc.WithTransportCredentials(creds),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	stripeClient := comms.NewStripeServiceClient(conn)
 	r := &WebhookServer{
 		router:              mux.NewRouter(),
-		dbClient:            client,
-		dbName:              s_dbName,
-		dbCtx:               ctx,
 		stripeWebhookSecret: secret,
+		backendStripeClient: stripeClient,
 	}
 
 	r.router.HandleFunc("/web-hook/stripe-event", r.handleStripeEvents).Methods("POST")
-
-	// // Testing, remove for prod
-	// r.router.HandleFunc("/web-hook/test", r.handleTest)
-	// r.router.HandleFunc("/web-hook/account-test/{id}", r.handleAccountTest).Methods("GET")
-	// r.router.HandleFunc("/web-hook/pms-test/{id}", r.handleGetPMs).Methods("GET")
-	// r.router.HandleFunc("/web-hook/cus-test/{id}", r.handleGetCus).Methods("GET")
-	// // r.router.HandleFunc("/web-hook/account-list/{ac_id}", r.handleAccountListFCs).Methods("GET")
-	// // r.router.HandleFunc("/web-hook/ba-test/{ac_id}/{ba_id}", r.handleBankAccountTest).Methods("GET")
-	// r.router.HandleFunc("/web-hook/fca-test/{fc_id}", r.handleFCAccountTest).Methods("GET")
-	// r.router.HandleFunc("/web-hook/pm-test/{pm_id}", r.handleGetPM).Methods("GET")
 	return r
 }
 
 func (srv *WebhookServer) updateInternalChargeState(
 	newState uint32,
-	queryFilter bson.D,
-	database *mongo.Database) (*db.InternalCharge, error) {
+	filter_key string,
+	filter_value string) (*comms.InternalChargeEntity, error) {
 
-	var icharge *db.InternalCharge
-	if err := database.Collection(db.CHARGE_COL).FindOne(context.TODO(), queryFilter).Decode(&icharge); err != nil {
-		log.Println(color.Ize(color.Red, err.Error()))
-		return nil, errors.New(fmt.Sprintf("Error couldn't find PI in internal charges: %v\n", err))
+	loopback_password := os.Getenv("LOOPBACK_PASSWORD")
+	ctx := metadata.AppendToOutgoingContext(context.TODO(), "loopback_password", loopback_password)
+	icharge, err := srv.backendStripeClient.QueryICharge(ctx, &comms.InternalChargeCustomQuery{
+		FilterKey:   filter_key,
+		FilterValue: filter_value,
+	})
+	if err != nil {
+		log.Printf("Issue and reason is %s", err)
+		return nil, err
 	}
-	icharge.State = newState
-
-	filter := bson.D{{"_id", icharge.Id}}
-	update := bson.D{{"$set", bson.D{{"state", icharge.State}}}}
-	_, err := database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
-
+	icharge, err = srv.backendStripeClient.UpdateState(ctx, &comms.InternalChargeUpdateStateRequest{
+		Charge:   icharge,
+		NewState: newState,
+	})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		return nil, err
@@ -155,14 +138,15 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		filter := bson.D{{"payment_intent_id", pi.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_PROCESSING, filter, database)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_INTENT_PROCESSING,
+			"payment_intent_id",
+			pi.ID,
+		)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 		// database := srv.dbClient.Database(srv.dbName)
 
 	case "payment_intent.created":
@@ -173,23 +157,16 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-
-		filter := bson.D{{"payment_intent_id", pi.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_CREATED, filter, database)
-
-		filter = bson.D{{"_id", icharge.Id}}
-		update := bson.D{{"$set", bson.D{{"amount", pi.Amount}}}}
-		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_INTENT_CREATED,
+			"payment_intent_id",
+			pi.ID,
+		)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
 	case "charge.pending":
 		var charge stripe.Charge
 		err := json.Unmarshal(event.Data.Raw, &charge)
@@ -198,26 +175,24 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_INTENT_PROCESSING, filter, database)
-
-		filter = bson.D{{"_id", icharge.Id}}
-		update := bson.D{{"$set", bson.D{{"charge_id", charge.ID}}}}
-		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_INTENT_PROCESSING,
+			"payment_intent_id",
+			charge.PaymentIntent.ID,
+		)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 	case "balance.available":
-		log.Printf("Not sure what to do w balance rn")
-		// var balance stripe.Balance
-		// err := json.Unmarshal(event.Data.Raw, &balance)
-		// if err != nil {
-		// 	fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	return
-		// }
+		log.Printf("Funds have hit the main account")
+		var balance stripe.Balance
+		err := json.Unmarshal(event.Data.Raw, &balance)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
 	case "transfer.created":
 		var transfer stripe.Transfer
@@ -228,16 +203,11 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		charge_id := transfer.SourceTransaction.ID
-		filter := bson.D{{"charge_id", charge_id}}
-		database := srv.dbClient.Database(srv.dbName)
-		icharge, err := srv.updateInternalChargeState(db.CHARGE_STATE_TRANSFER_CREATED, filter, database)
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
-		filter = bson.D{{"_id", icharge.Id}}
-		update := bson.D{{"$set", bson.D{{"transfer_id", transfer.ID}}}}
-		_, err = database.Collection(db.CHARGE_COL).UpdateOne(context.TODO(), filter, update)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_TRANSFER_CREATED,
+			"charge_id",
+			charge_id,
+		)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
@@ -252,9 +222,11 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_CHARGE_UPDATED, filter, database)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_CHARGE_UPDATED,
+			"payment_intent_id",
+			charge.PaymentIntent.ID,
+		)
 
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
@@ -270,9 +242,11 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		filter := bson.D{{"payment_intent_id", pi.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_PAYMENT_INTENT_SUCCEEDED, filter, database)
+		_, err = srv.updateInternalChargeState(
+			db.CHARGE_STATE_PAYMENT_INTENT_SUCCEEDED,
+			"payment_intent_id",
+			pi.ID,
+		)
 
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
@@ -287,37 +261,24 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		filter := bson.D{{"payment_intent_id", charge.PaymentIntent.ID}}
-		database := srv.dbClient.Database(srv.dbName)
-		_, err = srv.updateInternalChargeState(db.CHARGE_STATE_CHARGE_SUCCEEDED, filter, database)
-
+		loopback_password := os.Getenv("LOOPBACK_PASSWORD")
+		ctx := metadata.AppendToOutgoingContext(context.TODO(), "loopback_password", loopback_password)
+		icharge, err := srv.backendStripeClient.QueryICharge(ctx, &comms.InternalChargeCustomQuery{
+			FilterKey:   "payment_intent_id",
+			FilterValue: charge.PaymentIntent.ID,
+		})
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
 
-	case "capability.updated":
-		var capability stripe.Capability
-		err := json.Unmarshal(event.Data.Raw, &capability)
+		_, err = srv.backendStripeClient.TransferDeadlineFunds(ctx, icharge)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
-			w.WriteHeader(http.StatusBadRequest)
+			log.Printf("Charge complete error occured: %s", err)
+			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
-		if capability.ID == "card_payments" && capability.Status == "active" {
 
-			log.Printf("Enabling worker mode for stripe account")
-			filter := bson.D{{"stripe_account_id", capability.Account.ID}}
-			update := bson.D{{"$set", bson.D{{"worker_mode_enabled", true}}}}
-
-			database := srv.dbClient.Database(srv.dbName)
-			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-			if err != nil {
-				w.WriteHeader(http.StatusServiceUnavailable)
-				return
-			}
-
-		}
 	default:
 		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
 	}

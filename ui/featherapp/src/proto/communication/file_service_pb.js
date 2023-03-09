@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 var communication_contract_pb = require('../communication/contract_pb.js');
 goog.object.extend(proto, communication_contract_pb);
@@ -915,7 +921,8 @@ proto.main.ProfileGetResponse.prototype.getCacheUrlsMap = function(opt_noLazyCre
  */
 proto.main.ProfileGetResponse.prototype.clearCacheUrlsMap = function() {
   this.getCacheUrlsMap().clear();
-  return this;};
+  return this;
+};
 
 
 

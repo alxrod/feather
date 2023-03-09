@@ -13,6 +13,7 @@ import ActivePayments from "./active_payments"
 import ContractList from './contract_list'
 import ContractTableHeader from './contracts_header'
 import { contractStages } from "../../services/contract.service";
+import { displayPrice } from '../helpers';
 
 const ContractsList = (props) => {
     const [alreadyPulled, setAlreadyPulled] = useState(false)
@@ -92,7 +93,14 @@ const ContractsList = (props) => {
     
     return (
       <div>
-        {(!props.user?.workerModeEnabled && !props.user?.buyerModeEnabled) && (
+        {(!props.user.workerModeEnabled && props.user.outstandingBalance > 0) ? (
+            <AccountAlert
+                messageType="WARNING"
+                message={"You have $" + displayPrice(props.user.outstandingBalance) + " on feather but need to connect a payout method to get the money"}
+                level={2}
+                customLink="/setup-payout"
+            />
+        ) : (!props.user?.workerModeEnabled && !props.user?.buyerModeEnabled) && (
             (props.user?.workerModeRequested || props.user?.buyerModeRequested) ? (
                 <AccountAlert
                     messageType="WARNING"
@@ -102,11 +110,12 @@ const ContractsList = (props) => {
             ) : (
                 <AccountAlert
                     messageType="WARNING"
-                    message="you have not set up payout or payment yet so you cannot create a problem"
+                    message="you have not set up payout or payment yet so you cannot create a contract"
                     level={3}
                 />
             )
         )}
+
 
         <br/>
         <div className="px-4 md:px-20 lg:px-24">

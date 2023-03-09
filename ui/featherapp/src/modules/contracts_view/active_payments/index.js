@@ -81,7 +81,7 @@ const ActivePayments = (props) => {
                             charge.worker.username
                           )}
                         </td>
-                        <td className="whitespace-normal px-2 py-2 text-xs text-gray-500">{charge.state}</td>
+                        <td className="whitespace-normal px-2 py-2 text-xs text-gray-500">{charge.stateMessage}</td>
                       </tr>
                     ))}
                   </tbody>

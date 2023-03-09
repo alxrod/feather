@@ -12,7 +12,7 @@ import CombinedCriteria from "../components/criteria/combined_criteria";
 import NewContractItem from "../components/contract_item/new_contract_item";
 
 import CreateSummary from "./components/create_summary.js"
-import PasswordField from "./components/password_field"
+import InviteField from "./components/invite_field"
 import RoleField from "./components/role_field"
 import ErrorBanner from "./components/error_banner.js"
 
@@ -34,7 +34,7 @@ const ContractCreate = (props) => {
           setIsFirstLoad(false)
           setConTitle(contract.title)
           setConDescript(contract.summary)
-          changePassword(contract.password)
+          changeInvitedEmail(contract.invitedEmail)
           changeRole(contract.role)
           changePrice(contract.price.current)
         })
@@ -89,8 +89,8 @@ const ContractCreate = (props) => {
     setPrice(new_price)
   }
 
-  const changePassword = (new_password) => {
-    setConPassword(new_password)
+  const changeInvitedEmail = (new_email) => {
+    setInvitedEmail(new_email)
   }
 
   const changeRole = (role) => {
@@ -100,8 +100,8 @@ const ContractCreate = (props) => {
         
   const [conTitle, setConTitle] = useState("")
   const [conDescript, setConDescript] = useState("")
-  const [conPassword, setConPassword] = useState("")
-  const [conRole, setConRole] = useState(WORKER_TYPE)
+  const [invitedEmail, setInvitedEmail] = useState("")
+  const [conRole, setConRole] = useState(-1)
 
   const [nextId, setNextId] = useState(1)
 
@@ -136,10 +136,10 @@ const ContractCreate = (props) => {
     )
   }
 
-  const emptyContract = (conTitle, conDescript, conPassword, conRole, price, deadlines, items) => {
+  const emptyContract = (conTitle, conDescript, invitedEmail, conRole, price, deadlines, items) => {
     if (conTitle === "" &&
         conDescript === "" &&
-        conPassword === "" &&
+        invitedEmail === "" &&
         price === 0.0 &&
         deadlines.length === 2 &&
         items.length === 0) {
@@ -150,15 +150,14 @@ const ContractCreate = (props) => {
 
   }
   useEffect(() => {
-    if (!isFirstLoad && !emptyContract(conTitle, conDescript, conPassword, conRole, price, props.deadlines, props.contractItems)) {
+    if (!isFirstLoad && !emptyContract(conTitle, conDescript, invitedEmail, conRole, price, props.deadlines, props.contractItems)) {
       if (updateTimeoutId !== -1) {
         clearTimeout(updateTimeoutId)
       }
       setShowSavingNotif(true)
       const updateID = setTimeout(
       () => {
-        console.log("Syncing with server")
-        props.updateContract(props.curContract.id, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, conPassword, conRole).then(
+        props.updateContract(props.curContract.id, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, invitedEmail, conRole).then(
           () => {
             setNewContractMode(false)
             setUpdateTimeoutId(-1)
@@ -177,7 +176,15 @@ const ContractCreate = (props) => {
       }
     }
 
-  }, [conTitle, conDescript, conRole, conPassword, price, props.deadlinesChanged, props.itemsChanged])
+  }, [conTitle, conDescript, conRole, invitedEmail, price, props.deadlinesChanged, props.itemsChanged])
+
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
   const checkErrors = () => {
     let errors = ""
@@ -197,8 +204,9 @@ const ContractCreate = (props) => {
     if (conDescript === "") {
       errors += "You need a description. "
     }
-    if (conPassword.length < 5) {
-      errors += "You need at least a 5 character password for your contract"
+    
+    if (!validateEmail(invitedEmail)) {
+      errors += "You need to invite with your partner's real email"
     }
     return errors
   } 
@@ -245,13 +253,14 @@ const ContractCreate = (props) => {
                 active={true}
               />
             </div>
-            <PasswordField
-              password={conPassword}
-              setPassword={setConPassword}
-            />
             <RoleField
               role={conRole}
               changeRole={changeRole}
+            />
+            <div className="h-5"></div>
+            <InviteField
+              invitedEmail={invitedEmail}
+              setInvitedEmail={setInvitedEmail}
             />
           </div>
         </div>

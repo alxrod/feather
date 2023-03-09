@@ -1,6 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import feather_logo from "../../../style/logo/feather_logo.svg";
-import { DocumentIcon, CurrencyDollarIcon, CalendarIcon } from '@heroicons/react/outline'
+import { ArrowRightIcon } from '@heroicons/react/outline'
 import {useState, useEffect} from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -12,87 +11,78 @@ import { BUYER_TYPE, WORKER_TYPE, BOTH_TYPE } from "../../../services/user.servi
 import { Link, Redirect } from "react-router-dom"
 import BackButton from "../../general_components/back_button"
 import { displayPrice } from "../../helpers"
-const ContractInvite = (props) => {
-  const { params: { contractId } } = props.match;
 
-  const [inviteBody, setBody] = useState({
-    id: "",
-    title: "",
-    buyer: {id: "", username: ""},
-    worker: {id: "", username: ""},
-    password: "",
-    summary: "",
-    deadline: new Date()
-  })
-  const [dateStr, setDateStr] = useState("")
-  useEffect( () => {
-    setDateStr(inviteBody.deadline.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}))
-  }, [inviteBody])
+import SetupModal from "./setup_modal"
+
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ')
+}
+
+const ContractInvite = (props) => {
+  const { params: { contractId, contractSecret } } = props.match;
+  useEffect(() => {
+    console.log("Contract Secret: ", contractSecret)
+}, [contractSecret])
+
+  const [contract, setContract] = useState(null)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const [isOwner, setOwner] = useState(false)
   const [incompatWContract, setIncompatWContract] = useState(false)
   const [incompatMsg, setIncompatMsg] = useState(false)
 
-  const [existingUser, setExistingUser] = useState({
-    username: "",
-  })
+  const [existingUser, setExistingUser] = useState(null)
+  const [isWrongUser, setWrongUser] = useState(false)
 
-  const [contractPassword, setContractPassword] = useState("")
 
-  const [errorMessage, setErrorMessage] = useState("")
-  const [copyMessage, setCopyMessage] = useState("")
-  const changePassword = (e) => {
-    setContractPassword(e.target.value)
-  }
-  const handleClick = (e) => {
-    if (contractPassword === "") {
-      setErrorMessage("Please enter a contract password first")
+  const [setupModalOpen, openSetupModal] = useState(false)
+
+  useEffect(() => {
+    if (props.isLoggedIn && props.user.email !== contract?.invitedEmail) {
+      setWrongUser(true)
     } else {
-      props.claimContract(contractId, contractPassword).then(() => {
-        console.log("Contract claimed")
-      }).catch((error) => {
-        setErrorMessage(error)
-      })
+      setWrongUser(false)
     }
+  }, [props.isLoggedIn, props.user, contract?.invitedEmail])
 
-  }
-  
-  const copyLinkToClipboard = () => {
-    console.log("Coppying link")
-    navigator.clipboard.writeText(process.env.REACT_APP_FRONTEND_SITE_BASE+"/invite/"+contractId);
-    setCopyMessage("Copied link to your clipboard")
+  const handleClaim = (e) => {
+    if (!props.isLoggedIn) {
+      openSetupModal(true)
+      return
+    }
+    props.claimContract(contractId, contractSecret).then(() => {
+      console.log("Contract claimed")
+    }).catch((error) => {
+      console.log("Error is: ", error)
+      setErrorMessage(error)
+    })
   }
 
-  const copyPwordToClipboard = () => {
-    console.log("Coppying link")
-    navigator.clipboard.writeText(inviteBody.password);
-    setCopyMessage("Copied password to your clipboard")
-  }
   useEffect( () => {
-    if (inviteBody.id === "") {
-      props.setRedirect("/invite/"+contractId)
-      props.queryInvite(contractId).then((body) => {
-        console.log("GOT A RESPONSEs")
-        setBody(body)
-        console.log(body)
+    if (contract === null) {
+      props.queryInvite(contractId, contractSecret).then((body) => {
+        for (let i = 0; i < body.deadlinesList.length; i++) {
+          let items = []
+          for (let j = 0; j < body.deadlinesList[i].itemsList.length; j++) {
+            for (let k = 0; k < body.itemsList.length; k++) {
+              if (body.deadlinesList[i].itemsList[j].id ===  body.itemsList[k].id) {
+                console.log("FOUND it ")
+                items.push(body.itemsList[k])
+              }
+            }
+          }
+          body.deadlinesList[i].items = items
+        }
+        setContract(body)
+        console.log("BODY: ", body)
         if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
-        } else if (body.buyer.id === "" && (props.user === null || props.user.buyerModeEnabled)) {
-          setExistingUser(body.worker)
-          props.setRegisterRole(BUYER_TYPE)
-        } else if (body.worker.id === "" && (props.user === null || props.user.workerModeEnabled)) {
+          setExistingUser(props.user)
+        } else if (body.buyer.id !== "") {
           setExistingUser(body.buyer)
-          props.setRegisterRole(WORKER_TYPE)
-        } else {
-          console.log("User is: ", props.user.workerModeEnabled)
-          console.log(body)
-          setIncompatWContract(true)
-          if (body.worker.id !== "") {
-            setIncompatMsg("This contract needs a buyer, but you are a worker")
-          } else {
-            setIncompatMsg("This contract needs a worker, but you are a buyer")
-          }
-
+        } else if (body.worker.id !== "") {
+          setExistingUser(body.worker)
         }
       })
     }
@@ -101,122 +91,148 @@ const ContractInvite = (props) => {
   if (props.contractClaimed) {
     return ( <Redirect to={"/negotiate/"+contractId}/>)
   }
+
+  const genTimeString = (date) => {
+    if (date) {
+      return date.toLocaleTimeString([], {timeStyle: 'short'}) + " " + date.toLocaleDateString() 
+    } else {
+      return ""
+    }
+    
+  }
+
   return (
-    <div className="p-4">
-      {!props.isLoggedIn && (
-        <img
-          className="block h-8 w-auto"
-          src={feather_logo}
-          alt="Workflow"
-        />
-      )}
+    <div>
+      {contract && (
       
-      <div className="py-24 px-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex flex-col items-center lg:justify-center">
-            {isOwner && (
-              <div className="max-w-2xl w-full">
-                <BackButton link={"/negotiate/"+contractId}/>
-              </div>
-            )}
-            
-            <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 w-full md:text-center">
-              {inviteBody.title}
-            </p>
-            {isOwner && (
-              <>
-                <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
-                  We are still waiting for your partner to accept the invite to the contract. Send them 
-                  {" "}<button className="font-medium text-primary4 focus:text-primary5 mr-1"  onClick={copyLinkToClipboard}>this link</button> 
-                  and give then the contract password 
-                  <button className="font-medium text-primary4 focus:text-primary5 mr-1" onClick={copyPwordToClipboard}>{" ("}{inviteBody.password}{") "}</button>to accept.
-                </p>
-                <p className="mt-1 text-primary5">{copyMessage}</p>
-              </>
-            )}
-            
-            {(!isOwner && props.isLoggedIn) && (
-              <div>
-                {incompatWContract ? (
-                   <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">
-                     {incompatMsg}
-                   </p>
-                ) : (
-                  <>
-                    <p className="mt-4 max-w-2xl text-xl text-gray-500 w-full lg:text-center">Enter the contract password to claim it</p>
-                    <div className="mt-1">
-                      <div className="mt-1 relative flex items-center">
-                        <input
-                          type="text"
-                          name="email"
-                          id="email"
-                          className="text-gray-600 shadow-sm focus:ring-primary4 focus:border-primary4 block w-full pr-12 sm:text-sm border-gray-300 rounded-md"
-                          placeholder="contract password"
-                          value={contractPassword}
-                          onChange={changePassword}
-                        />
-                        <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
-                          <button className="inline-flex items-center bg-primary4 rounded px-2 text-sm font-sans font-medium text-white" onClick={handleClick}>
-                            Claim
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex justify-center">
-                        <p className="text-red-500 mt-1">{errorMessage}</p>
+      <div className="p-4">
+        <SetupModal 
+          open={setupModalOpen} 
+          setOpen={openSetupModal} 
+          loginModeDefault={contract.invitedUserInSystem}
+          defaultEmail={contract.invitedEmail}
+          existingUsername={existingUser ? existingUser?.username : ""}
+          needPaymentMethod={contract.buyer.id === ""}
+          handleClaim={handleClaim}
+        />
+        <div className="pt-4 pb-16 px-12">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center lg:justify-center">
+              <div className="overflow-hidden rounded-lg bg-white shadow w-full">
+                <div className="bg-white p-6">
+                  <div className="sm:flex sm:items-center sm:justify-between">
+                    <div className="sm:flex sm:space-x-5">
+                      <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
+                        <p className="text-sm font-medium text-gray-600">Contract Title:</p>
+                        <p className="text-xl font-bold text-gray-900 sm:text-2xl">{contract.title}</p>
+                        {(contract.worker.id === "") ?
+                          <p className="text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a contractor</p>
+                        : (
+                          <p className="text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a sponsor</p>
+                        )}
                       </div>
                     </div>
-                  </>
+                    <div className="mt-5 flex justify-center sm:mt-0">
+                      <h1 className="text-primary5 text-2xl font-semibold">
+                        ${displayPrice(contract.price.current)} Pay
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+                {!isWrongUser && (
+                  <div className="w-full border-t border-gray-200 bg-gray-100 text-gray-600">
+                    
+                    <button
+                      type="button"
+                      className="w-full flex justify-center items-center hover:bg-primary5 hover:text-white text-2xl font-semibold py-3"
+                      onClick={handleClaim}
+                    >
+                      Join Contract
+                      <ArrowRightIcon className="ml-0.5 h-6 w-6" aria-hidden="true" />
+                    </button>
+                  </div>
                 )}
-              </div>    
-            )}
-            {(!isOwner && !props.isLoggedIn) && (
-              <p className="mt-4 max-w-2xl text-md sm:text-xl text-gray-500 w-full lg:text-center">
-                <b className="font-medium text-primary5">@{existingUser.username}</b>{" "}
-                has invited you to a contract. To claim this contract and begin negotiating, you have to 
-                {" "}<Link className="font-medium text-primary5" to="/login"><b>{"log in"}</b></Link>{" "}
-                or 
-                {" "}<Link className="font-medium text-primary5" to="/register"><b>{"register"}</b></Link>.{" "}
-              </p>
-              
-            )}
-            <div className="mt-10 max-w-2xl xl:max-w-xl md:max-w-lg">
-              <dl className="space-y-10">
-                  <div key="summary" className="relative">
-                    <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
-                        <DocumentIcon className="h-6 w-6" aria-hidden="true" />
-                      </div>
-                      <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Summary</p>
-                    </dt>
-                    <dd className="hidden sm:block mt-2 ml-16 text-base text-gray-500">{inviteBody.summary}</dd>
-                    <dd className="sm:hidden relative mt-2 ml-16 text-base text-gray-500">{inviteBody.summary.substring(0,100)+"..."}</dd>
-                  </div>
-                  
-                  <div key="price" className="relative">
-                    <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
-                        <CurrencyDollarIcon className="h-6 w-6" aria-hidden="true" />
-                      </div>
-                      <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Price</p>
-                    </dt>
-                    <dd className="mt-2 ml-16 text-base text-gray-500">{displayPrice(inviteBody.price)}</dd>
-                  </div>
+                {props.isLoggedIn && isWrongUser && (
+                  <div className="w-full border-t border-gray-200 bg-gray-100 text-gray-600">
+                    
+                  <button
+                    type="button"
+                    className="w-full flex justify-center items-center font-medium py-3"
+                  >
+                    You are not logged in as the invited email
+                  </button>
+                </div>
+                )}
+              </div>
 
-                  <div key="deadline" className="relative">
-                    <dt>
-                      <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-primary4 text-white">
-                        <CalendarIcon className="h-6 w-6" aria-hidden="true" />
+              <div className="flow-root w-full px-16 py-10">
+                <ul role="list" className="-mb-8">
+                  {contract.deadlinesList.map((deadline, deadlineIdx) => (
+                    <li key={deadline.id} className="group">
+                      <div className="relative">
+                        {deadlineIdx !== contract.deadlinesList.length - 1 ? (
+                          <span className="absolute top-2 left-3 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                        ) : null}
+                        <div className="relative flex space-x-3">
+                          <div>
+                            <span
+                              className={classNames(
+    
+                                'h-6 w-6 mt-1 rounded-full flex items-center justify-center ring-8 bg-primary6 ring-transparent group-hover:ring-primary4'
+                              )}
+                            >
+                            </span>
+                          </div>
+                          <div className="flex min-w-0 flex-1 justify-between space-x-4">
+                            <div>
+                              <p className="text-2xl text-gray-800 font-semibold">
+                                {deadline.name}{' '}
+                              </p>
+                            </div>
+                            <div className="whitespace-nowrap text-right text-base text-gray-500">
+                              <strong className={"text-primary5 text-xl font-medium"}>${displayPrice(deadline.currentPayout)}</strong> on {" "}
+                              <time dateTime={deadline.currentDate}>{genTimeString(deadline.currentDate)}</time>
+                            </div>
+                          </div>
+                          
+                        </div>
+                        <div className="ml-8 mt-4">
+                          <div className="grid grid-cols-1 gap-4">
+                            {deadline.items.map((item) => (
+                            <div
+                              key={item.id}
+                              className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-5 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
+                            >
+                              <div className="min-w-0 flex-1">
+                                <div>
+                                  <span className="absolute inset-0" aria-hidden="true" />
+                                  <div className="relative inline-flex items-center rounded-full border border-gray-300 px-3 py-0.5 text-sm">
+                                      <span className="absolute flex-shrink-0 flex items-center justify-center">
+                                          <span
+                                              className='bg-primary4 h-1.5 w-1.5 rounded-full'
+                                              aria-hidden="true"
+                                          />
+                                      </span>
+                                      <span className="ml-3.5 font-medium text-gray-900">{item.name}</span>
+                                  </div>
+                                  <p className="truncate text-sm text-gray-500 mt-1 ml-1">{item.currentBody}</p>
+                                </div>
+                              </div>
+                            </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="h-10"></div>
                       </div>
-                      <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Deadline</p>
-                    </dt>
-                    <dd className="mt-2 ml-16 text-base text-gray-500">{dateStr}</dd>
-                  </div>
-              </dl>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }

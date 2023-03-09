@@ -27,14 +27,14 @@ const (
 )
 
 type Contract struct {
-	Id           primitive.ObjectID `bson:"_id,omitempty"`
-	Password     string             `bson:"password"`
-	Worker       *UserNub           `bson:"worker"`
-	Buyer        *UserNub           `bson:"buyer"`
-	Price        *PriceNub          `bson:"price"`
-	Title        string             `bson: title`
-	Summary      string             `bson:"summary"`
-	CreationTime time.Time          `bson:"creation_time"`
+	Id primitive.ObjectID `bson:"_id,omitempty"`
+
+	Worker       *UserNub  `bson:"worker"`
+	Buyer        *UserNub  `bson:"buyer"`
+	Price        *PriceNub `bson:"price"`
+	Title        string    `bson: title`
+	Summary      string    `bson:"summary"`
+	CreationTime time.Time `bson:"creation_time"`
 
 	Deadlines   []*Deadline          `bson:"-"`
 	DeadlineIds []primitive.ObjectID `bson:"deadline_ids"`
@@ -58,6 +58,9 @@ type Contract struct {
 	AdminRequested bool `bson:"admin_requested"`
 
 	SetupIntentId string `bson:"setup_intent_id"`
+
+	InvitedEmail   string `bson:"invited_email"`
+	InvitePassword string `bson:"invite_password"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -79,7 +82,8 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		AdminRequested: contract.AdminRequested,
 		Summary:        contract.Summary,
 		Title:          contract.Title,
-		Password:       contract.Password,
+		InvitedEmail:   contract.InvitedEmail,
+		InvitePassword: contract.InvitePassword,
 		Items:          items,
 		Stage:          contract.Stage,
 		WorkerApproved: contract.WorkerApproved,
@@ -115,6 +119,21 @@ func (contract *Contract) String() string {
 		fmt.Sprintf("<nil contract>")
 	}
 	return fmt.Sprintf("<Contract id: %s>", contract.Id.Hex())
+}
+
+func (contract *Contract) ChangeInviteEmail(new_email string, database *mongo.Database) error {
+	if contract == nil {
+		return errors.New("called change invite email on nil contract")
+	}
+	contract.InvitedEmail = new_email
+
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"invited_email", new_email},
+		{"invite_password", ""},
+	}}}
+	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	return err
 }
 
 func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
@@ -170,37 +189,42 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	return proto, nil
 }
 
-func (contract *Contract) InviteProto() (*comms.InviteNub, error) {
-	proto := &comms.InviteNub{}
+func (contract *Contract) InviteProto() *comms.ContractInviteNub {
 	if contract == nil {
-		return proto, nil
+		return &comms.ContractInviteNub{}
 	}
-	if contract.Id.IsZero() {
-		return nil, errors.New("Invalid contract id")
-	}
-	if contract.Stage != INVITE {
-		return nil, errors.New("This contract is not in the invite stage")
-	}
-	proto.Id = contract.Id.Hex()
-	proto.Title = contract.Title
-	proto.Password = contract.Password
-	nextDeadline, err := contract.NextDeadline()
-	if err != nil {
-		return nil, err
-	}
-	if nextDeadline == nil {
-		nextDeadline = contract.Deadlines[len(contract.Deadlines)-1]
-	}
-	nextDate := nextDeadline.CurrentDate
 
-	proto.Deadline = timestamppb.New(nextDate)
-	proto.Price = contract.Price.Current
-	proto.Summary = contract.Summary
-	proto.Worker = contract.Worker.Proto()
-	proto.Buyer = contract.Buyer.Proto()
+	items := make([]*comms.ItemEntity, len(contract.Items))
 
-	return proto, nil
+	for idx, item := range contract.Items {
+		items[idx] = item.Proto()
+	}
+	proto := &comms.ContractInviteNub{
+		Worker:       contract.Worker.Proto(),
+		Buyer:        contract.Buyer.Proto(),
+		Price:        contract.Price.Proto(),
+		Summary:      contract.Summary,
+		Title:        contract.Title,
+		InvitedEmail: contract.InvitedEmail,
+		Items:        items,
+	}
+	if !contract.Id.IsZero() {
+		proto.Id = contract.Id.Hex()
+	}
 
+	itemProtos := make([]*comms.ItemEntity, len(contract.Items))
+	for i, item := range contract.Items {
+		itemProtos[i] = item.Proto()
+	}
+
+	deadlineProtos := make([]*comms.DeadlineEntity, len(contract.Deadlines))
+	for i, deadline := range contract.Deadlines {
+		deadlineProtos[i] = deadline.Proto()
+	}
+
+	proto.Items = itemProtos
+	proto.Deadlines = deadlineProtos
+	return proto
 }
 
 func (contract *Contract) NextDeadline() (*Deadline, error) {
@@ -295,7 +319,7 @@ func ContractInsert(req *comms.ContractCreateRequest, user *User, database *mong
 		Price:          price,
 		Title:          req.Title,
 		Summary:        req.Summary,
-		Password:       req.Password,
+		InvitedEmail:   req.InvitedEmail,
 		CreationTime:   time.Now(),
 		Stage:          stage,
 		WorkerApproved: false,
@@ -347,7 +371,9 @@ func (contract *Contract) DeleteDraft(user *User, database *mongo.Database) erro
 
 func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *User, database *mongo.Database) (*Contract, error) {
 	var price *PriceNub
+
 	if req.Role == WORKER {
+		log.Printf("Request wants to be worker")
 		price = &PriceNub{
 			Current:          req.Price.Worker,
 			Worker:           req.Price.Worker,
@@ -355,7 +381,8 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 			AwaitingApproval: false,
 			Proposer:         user.Id,
 		}
-	} else {
+	} else if req.Role == BUYER {
+		log.Printf("Request wants to be buyer")
 		price = &PriceNub{
 			Current:          req.Price.Buyer,
 			Worker:           req.Price.Buyer,
@@ -370,7 +397,7 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 	contract.Price = price
 	contract.Title = req.Title
 	contract.Summary = req.Summary
-	contract.Password = req.Password
+	contract.InvitedEmail = req.InvitedEmail
 	contract.CreationTime = time.Now()
 	contract.Stage = stage
 	contract.WorkerApproved = false
@@ -409,8 +436,8 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 }
 
 func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (*Contract, error) {
-	if len(contract.Password) < 5 {
-		return nil, errors.New("Contract password must be more than 5 characters")
+	if contract.InvitedEmail == "" {
+		return nil, errors.New("Contract must invite a partner's real email")
 	} else if contract.Price.Current < 1 {
 		return nil, errors.New("Contract price must be greater than $1")
 	} else if contract.Summary == "" {
@@ -741,22 +768,17 @@ func ContractSuggestPrice(contract *Contract, user *User, newPrice int64, databa
 }
 
 func ContractClaim(user *User, contract *Contract, database *mongo.Database) error {
-	nub := &UserNub{
-		Id:       user.Id,
-		Username: user.Username,
-		Author:   false,
-	}
-	if contract.Worker == nil && user.WorkerModeEnabled {
-		contract.Worker = nub
-	} else if contract.Buyer == nil {
-		contract.Buyer = nub
+	if contract.Worker == nil {
+		contract.Worker = user.Nub(false)
+	} else if contract.Buyer == nil && user.BuyerModeEnabled {
+		contract.Buyer = user.Nub(false)
 	} else {
-		return errors.New("This contract has already been claimed")
+		return errors.New("You do not have the right permissions to claim this contract")
 	}
 
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{{"worker", contract.Worker}}}, {"$set", bson.D{{"stage", NEGOTIATE}}}}
-	if nub.Id == contract.Buyer.Id {
+	if user.Id == contract.Buyer.Id {
 		update = bson.D{{"$set", bson.D{{"buyer", contract.Buyer}}}, {"$set", bson.D{{"stage", NEGOTIATE}}}}
 	}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)

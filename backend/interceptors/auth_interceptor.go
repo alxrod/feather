@@ -2,6 +2,7 @@ package interceptors
 
 import (
 	"context"
+	"os"
 
 	services "github.com/alxrod/feather/backend/services"
 
@@ -78,8 +79,12 @@ func (interceptor *AuthInterceptor) authorize(ctx context.Context, method string
 		return status.Errorf(codes.Unauthenticated, "metadata is not provided")
 	}
 
+	loopback_password := os.Getenv("LOOPBACK_PASSWORD")
 	values := md["authorization"]
 	if len(values) == 0 {
+		if len(md["loopback_password"]) > 0 && md["loopback_password"][0] == loopback_password {
+			return nil
+		}
 		return status.Errorf(codes.Unauthenticated, "authorization token is not provided")
 	}
 
