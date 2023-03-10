@@ -93,12 +93,13 @@ const ContractsList = (props) => {
     
     return (
       <div>
-        {(!props.user.workerModeEnabled && props.user.outstandingBalance > 0) ? (
+        {(!props.user?.workerModeEnabled && props.user?.outstandingBalance > 0) ? (
             <AccountAlert
                 messageType="WARNING"
-                message={"You have $" + displayPrice(props.user.outstandingBalance) + " on feather but need to connect a payout method to get the money"}
+                message={"You have $" + displayPrice(props.user.outstandingBalance) + " on feather but " + 
+                (props.user?.workerModeRequested ? " Stripe is still enabling your account. Hold tight" : " need to connect a payout method to get the money")}
                 level={2}
-                customLink="/setup-payout"
+                customLink={(props.user?.workerModeRequested ? "/profile" : "/setup-payout")}
             />
         ) : (!props.user?.workerModeEnabled && !props.user?.buyerModeEnabled) && (
             (props.user?.workerModeRequested || props.user?.buyerModeRequested) ? (

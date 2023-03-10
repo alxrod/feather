@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -29,15 +28,8 @@ type WebhookServer struct {
 }
 
 func loadTLSCfg() *tls.Config {
-	b, _ := ioutil.ReadFile("./cert/server.crt")
-	cp := x509.NewCertPool()
-	if !cp.AppendCertsFromPEM(b) {
-		log.Fatal("credentials: failed to append certificates")
-	}
-
 	config := &tls.Config{
-		InsecureSkipVerify: false,
-		RootCAs:            cp,
+		InsecureSkipVerify: true,
 	}
 	return config
 }
@@ -54,7 +46,7 @@ func NewWebHookServer(dbName ...string) *WebhookServer {
 	creds := credentials.NewTLS(loadTLSCfg())
 	conn, err := grpc.DialContext(
 		context.Background(),
-		os.Getenv("BACKEND_ROUTE"),
+		fmt.Sprintf("%s:%s", os.Getenv("BACKEND_IP"), os.Getenv("BACKEND_PORT")),
 		grpc.WithTransportCredentials(creds),
 	)
 
@@ -175,15 +167,15 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		_, err = srv.updateInternalChargeState(
-			db.CHARGE_STATE_INTENT_PROCESSING,
-			"payment_intent_id",
-			charge.PaymentIntent.ID,
-		)
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
+		// _, err = srv.updateInternalChargeState(
+		// 	db.CHARGE_STATE_INTENT_PROCESSING,
+		// 	"payment_intent_id",
+		// 	charge.PaymentIntent.ID,
+		// )
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusServiceUnavailable)
+		// 	return
+		// }
 	case "balance.available":
 		log.Printf("Funds have hit the main account")
 		var balance stripe.Balance
@@ -202,16 +194,16 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		charge_id := transfer.SourceTransaction.ID
-		_, err = srv.updateInternalChargeState(
-			db.CHARGE_STATE_TRANSFER_CREATED,
-			"charge_id",
-			charge_id,
-		)
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
+		// charge_id := transfer.SourceTransaction.ID
+		// _, err = srv.updateInternalChargeState(
+		// 	db.CHARGE_STATE_TRANSFER_CREATED,
+		// 	"charge_id",
+		// 	charge_id,
+		// )
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusServiceUnavailable)
+		// 	return
+		// }
 
 	case "charge.updated":
 		var charge stripe.Charge
@@ -222,16 +214,16 @@ func (srv *WebhookServer) handleStripeEvents(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		_, err = srv.updateInternalChargeState(
-			db.CHARGE_STATE_CHARGE_UPDATED,
-			"payment_intent_id",
-			charge.PaymentIntent.ID,
-		)
+		// _, err = srv.updateInternalChargeState(
+		// 	db.CHARGE_STATE_CHARGE_UPDATED,
+		// 	"payment_intent_id",
+		// 	charge.PaymentIntent.ID,
+		// )
 
-		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			return
-		}
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusServiceUnavailable)
+		// 	return
+		// }
 
 	case "payment_intent.succeeded":
 		var pi stripe.PaymentIntent

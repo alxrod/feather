@@ -296,7 +296,7 @@ func (agent *StripeAgent) CreateContractTransfer(
 
 	log.Printf("Making a transfer of %d to wokrer %s", amount, worker.Username)
 	params := &stripe.TransferParams{
-		Amount:            stripe.Int64(1000),
+		Amount:            stripe.Int64(amount),
 		Currency:          stripe.String(string(stripe.CurrencyUSD)),
 		SourceTransaction: stripe.String(charge_id),
 		Destination:       stripe.String(worker.StripeConnectedAccountId),
@@ -421,6 +421,17 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	// 	charge_id,
 	// 	transfer_group,
 	// )
+	if !contract.Worker.WorkerModeEnabled {
+		worker, err := db.UserQueryId(contract.Worker.Id, database)
+		log.Printf("Adding to outstanding balance because worker does not have payout configured")
+		worker.OutstandingBalance += amount
+		filter := bson.D{{"_id", worker.Id}}
+		update := bson.D{{"$set", bson.D{{"outstanding_balance", worker.OutstandingBalance}}}}
+		_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+		if err != nil {
+			return err
+		}
+	} 
 
 	_, err = db.InitializeInternalCharge(
 		contract,

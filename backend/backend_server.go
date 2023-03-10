@@ -177,7 +177,7 @@ func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*g
 func (s *BackServer) Serve() {
 	s.DeadlineAgent.StartDeadlineLoop(s.ChatAgent.SendDeadlineExpireMessage)
 
-	addr := os.Getenv("SITE_IP")
+	addr := os.Getenv("BACKEND_IP")
 	log.Println(color.Ize(color.Green, fmt.Sprintf("Serving Backend on %s:9990", addr)))
 	log.Fatal(s.GrpcSrv.Serve(s.lis))
 }

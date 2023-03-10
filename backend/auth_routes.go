@@ -105,7 +105,8 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 
 	if !user.WorkerModeEnabled && user.WorkerModeRequested {
 		enabled, err := s.StripeAgent.VerifyConnectedAccountCapabilities(user.StripeConnectedAccountId)
-		if err == nil {
+		if err == nil && enabled{
+			log.Printf("Stripe Account %s has been approved %b", user.StripeConnectedAccountId, enabled)
 			// Note this currently only gets the worker, saves queries by not pulling buyer
 			outstanding_charges, err := db.GetUserHoldCharges(user, database)
 			if err != nil {
@@ -121,6 +122,7 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 				if err != nil {
 					return nil, err
 				}
+				icharge.UpdateState(database, db.CHARGE_STATE_TRANSFER_CREATED)
 				user.OutstandingBalance -= icharge.Amount
 			}
 

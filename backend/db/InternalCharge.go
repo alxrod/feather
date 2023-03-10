@@ -146,16 +146,6 @@ func (icharge *InternalCharge) ActivateRegistrationHold(database *mongo.Database
 	filter := bson.D{{"_id", icharge.Id}}
 	update := bson.D{{"$set", bson.D{{"state", icharge.State}}}}
 	_, err := database.Collection(CHARGE_COL).UpdateOne(context.TODO(), filter, update)
-
-	if icharge.Worker != nil {
-		icharge.Worker.OutstandingBalance += icharge.Amount
-		filter := bson.D{{"_id", icharge.Worker.Id}}
-		update := bson.D{{"$set", bson.D{{"outstanding_balance", icharge.Worker.OutstandingBalance}}}}
-		_, err := database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
-		if err != nil {
-			return err
-		}
-	}
 	return err
 }
 
@@ -288,23 +278,19 @@ func (charge *InternalCharge) GenerateStateMessage() string {
 	}
 	if charge.State == CHARGE_STATE_CREATED_INTERNAL {
 		return "The payment has been submitted to stripe"
-	} else if charge.State == CHARGE_STATE_INTENT_PROCESSING {
+	} else if charge.State <= CHARGE_STATE_INTENT_PROCESSING {
 		return fmt.Sprintf("Stripe is creating the charge for %s", charge.Buyer.Username)
-	} else if charge.State == CHARGE_STATE_INTENT_CREATED {
+	} else if charge.State <= CHARGE_STATE_INTENT_CREATED {
 		return fmt.Sprintf("Stripe is about to charge %s", charge.Buyer.Username)
-	} else if charge.State == CHARGE_STATE_BALANCE_AVAILABLE {
+	} else if charge.State <= CHARGE_STATE_BALANCE_AVAILABLE {
 		return fmt.Sprintf("We have received the payment from %s", charge.Buyer.Username)
-	} else if charge.State == CHARGE_STATE_PAYMENT_CREATED {
-		return fmt.Sprintf("We have received the payment, Stripe is begining to send it to %s now", charge.Worker.Username)
-	} else if charge.State == CHARGE_STATE_TRANSFER_CREATED {
+	} else if charge.State <= CHARGE_STATE_TRANSFER_CREATED {
 		return fmt.Sprintf("The payment has been transfered to %s", charge.Worker.Username)
-	} else if charge.State == CHARGE_STATE_CHARGE_UPDATED {
+	} else if charge.State <= CHARGE_STATE_PAYMENT_INTENT_SUCCEEDED {
 		return fmt.Sprintf("The payment has been transfered to %s", charge.Worker.Username)
-	} else if charge.State == CHARGE_STATE_PAYMENT_INTENT_SUCCEEDED {
+	} else if charge.State <= CHARGE_STATE_CHARGE_SUCCEEDED {
 		return fmt.Sprintf("The payment has been transfered to %s", charge.Worker.Username)
-	} else if charge.State == CHARGE_STATE_CHARGE_SUCCEEDED {
-		return fmt.Sprintf("The payment has been transfered to %s", charge.Worker.Username)
-	} else if charge.State == CHARGE_STATE_ON_REGISTRATION_HOLD {
+	} else if charge.State <= CHARGE_STATE_ON_REGISTRATION_HOLD {
 		return fmt.Sprintf("We have received the payment but %s needs to connect their payout message to receive funds", charge.Worker.Username)
 	} else {
 		return "invalid state"

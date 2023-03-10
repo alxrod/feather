@@ -35,7 +35,7 @@ func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contrac
 			}
 		}
 		if all_approved {
-			log.Printf("Attempting charge")
+			log.Printf("Attempting charge account")
 			err := s.StripeAgent.ChargeContract(contract, deadline, database)
 			if err != nil {
 				return err

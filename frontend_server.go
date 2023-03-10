@@ -38,11 +38,12 @@ var routes []string = []string{
 	"^/unknown$",
 
 	"^/create/[^/]*$",
-	"^/invite/([a-zA-Z0-9_-])/[^/]*$",
+	"^/invite/[a-zA-Z0-9-]*/[a-zA-Z0-9_]*$",
 	"^/contract/[^/]*$",
 	"^/negotiate/[^/]*$",
 	"^/view/[^/]*$",
 	"^/settle/[^/]*$",
+
 }
 
 type FrontServer struct {
