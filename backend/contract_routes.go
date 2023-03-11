@@ -214,18 +214,12 @@ func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailRese
 	if err != nil {
 		return nil, err
 	}
-	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+	go func(contract *db.Contract, user *db.User) {
+		err, _ := s.EmailAgent.SendInviteEmail(contract, user, false)
 		if err != nil {
 			return
 		}
-		contract.InvitePassword = secret
-		filter := bson.D{{"_id", contract.Id}}
-		update := bson.D{{"$set", bson.D{
-			{"invite_password", secret},
-		}}}
-		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
-	}(database, contract, user)
+	}(contract, user)
 	return &comms.NullResponse{}, nil
 }
 
