@@ -1,10 +1,23 @@
 import React, { useEffect } from 'react'
 import './App.css'
+import { RpcError } from "@protobuf-ts/runtime-rpc"
+import ApiService from "./api.service"
+import { 
+  UserSigninResponse
+} from "./proto/communication/user";
+
 
 function App() {
   useEffect(() => {
     if (typeof parent !== undefined) {
-      parent?.postMessage?.({ pluginMessage: 'hello' }, '*')
+      ApiService.login("alex", "andrew2005").then(
+        (response: UserSigninResponse) => {
+          console.log("User WORKED: ", response.user?.username);
+          parent?.postMessage?.({ pluginMessage: 'hello '+response.user?.username }, '*')
+        },
+        (err: RpcError) => {
+          console.log("Error: ", err)
+        })
     }
   }, [])
 

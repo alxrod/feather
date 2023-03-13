@@ -35,12 +35,12 @@ const (
 func accessibleRoles() []string {
 
 	return []string{
-		"/main.Auth/Register",
-		"/main.Auth/Login",
-		"/main.Contract/InviteQuery",
-		"/main.Auth/ForgotPassword",
-		"/main.Auth/ConfirmResetId",
-		"/main.Auth/ChangePassword",
+		"/communication.Auth/Register",
+		"/communication.Auth/Login",
+		"/communication.Contract/InviteQuery",
+		"/communication.Auth/ForgotPassword",
+		"/communication.Auth/ConfirmResetId",
+		"/communication.Auth/ChangePassword",
 	}
 }
 

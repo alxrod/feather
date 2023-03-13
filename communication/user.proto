@@ -1,11 +1,10 @@
 syntax = "proto3";
-package main;
+package communication;
 option go_package=".;communication";
 
 import "google/protobuf/timestamp.proto";
 import "communication/file_service.proto";
 import "communication/contract.proto";
-import "communication/stripe.proto";
 
 message UserRegisterRequest {
     string username = 1;

@@ -1,4 +1,3 @@
-import { update } from "autosize";
 import { ContractClient } from "../proto/communication/contract_grpc_web_pb";
 import { 
     DeadlineEntity,

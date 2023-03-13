@@ -1,5 +1,5 @@
 syntax = "proto3";
-package main;
+package communication;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 import "communication/contract.proto";

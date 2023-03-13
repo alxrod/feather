@@ -43,7 +43,6 @@ var routes []string = []string{
 	"^/negotiate/[^/]*$",
 	"^/view/[^/]*$",
 	"^/settle/[^/]*$",
-
 }
 
 type FrontServer struct {
@@ -133,20 +132,25 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 
 func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.ResponseWriter, r *http.Request), webhook *WebhookServer) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
+		// w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		log.Println("The request is getting through")
+		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" || r.Header.Get("content-type") == "application/protobuf" {
 
 			// log.Println("Request is GRPC")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			w.Header().Set("Access-Control-Allow-Headers", "grpc-timeout, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
+			w.Header().Set("Access-Control-Allow-Headers", "grpc-timeout, Accept, Content-Type, content-type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
 			// w.Header().Set("grpc-status", "")
 			// w.Header().Set("grpc-message", "")
-
 			if m.IsGrpcWebRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
 				fmt.Printf(color.Ize(color.Cyan, fmt.Sprintf("Backend Request for : %s\n", r.URL)))
 			}
+
 			m.ServeHTTP(w, r)
 			return
+
+			// Means will be a preflight
 		}
 		path := fmt.Sprintf("%v", r.URL)
 
