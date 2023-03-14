@@ -3,7 +3,10 @@ import { RpcOptions, RpcError } from "@protobuf-ts/runtime-rpc"
 import { 
     QueryByIdRequest,
     ContractResponse,
+    InviteDataRequest,
+    ContractInviteNub,
 } from "./proto/communication/contract";
+
 
 import {
     ContractClient
@@ -50,16 +53,13 @@ export const ServerResult = Object.freeze({
 
 class ApiService {
 
-    queryContract(token: string, user_id: string, contract_id: string): Promise<ContractResponse> {
-        let queryRequest: QueryByIdRequest = {
-            userId: user_id,
-            contractId: contract_id
-        };
 
-        let options: RpcOptions = {
-            meta: {"authorization": token}
-        }
-        return contractClient.queryById(queryRequest, options).response
+    queryContract(contract_id: string, contract_secret: string): Promise<ContractInviteNub> {
+        let queryRequest: InviteDataRequest = {
+            id: contract_id,
+            secret: contract_secret,
+        };
+        return contractClient.inviteQuery(queryRequest).response
     }
 
     login(usernameOrEmail: string, password: string): Promise<UserSigninResponse> {
