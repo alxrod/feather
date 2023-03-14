@@ -36,7 +36,7 @@ func main() {
 	}()
 
 	// Set up a multiplexer to also serve the frontend
-	grpcWebServer := grpcweb.WrapServer(backend.GrpcSrv)
+	grpcWebServer := grpcweb.WrapServer(backend.GrpcSrv, grpcweb.WithAllowedRequestHeaders([]string{"*"}))
 	multiplex := &grpcMultiplexer{
 		grpcWebServer,
 	}

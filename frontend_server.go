@@ -14,7 +14,7 @@ import (
 
 	"errors"
 	"regexp"
-
+	"net/url"
 	"github.com/TwiN/go-color"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 )
@@ -43,6 +43,8 @@ var routes []string = []string{
 	"^/negotiate/[^/]*$",
 	"^/view/[^/]*$",
 	"^/settle/[^/]*$",
+
+	"^/figma/oauth-callback??(?:&?[^=&]*=[^=&]*)*",
 }
 
 type FrontServer struct {
@@ -71,10 +73,20 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 	fileServer := http.FileServer(srv.fs)
 
 	srv.webapp = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := srv.fs.Open(path.Clean(r.URL.Path))
+		log.Printf("Serving for %s", r.URL.Path)
+		serve_path := r.URL.Path
+		if serve_path == "" {
+			log.Printf("RENDERING INDEX")
+			serve_path = "/index.html"
+		} else {
+			log.Println("RENDERING other:", serve_path)
+			serve_path = path.Clean(r.URL.Path)
+		}
+
+		_, err := srv.fs.Open(serve_path)
 		if os.IsNotExist(err) {
 			log.Println(color.Ize(color.Red, fmt.Sprintf("Unknown path requested %s", r.URL.Path)))
-			r_url := fmt.Sprintf("%s/unknown", os.Getenv("BAR"))
+			r_url := "/unknown"
 			http.RedirectHandler(r_url, 301).ServeHTTP(w, r)
 
 			return
@@ -134,10 +146,9 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		log.Println("The request is getting through")
 		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" || r.Header.Get("content-type") == "application/protobuf" {
 
-			// log.Println("Request is GRPC")
+			log.Println("Request is GRPC")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "grpc-timeout, Accept, Content-Type, content-type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")
@@ -146,7 +157,6 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 			if m.IsGrpcWebRequest(r) || r.Header.Get("Content-Type") == "application/grpc" {
 				fmt.Printf(color.Ize(color.Cyan, fmt.Sprintf("Backend Request for : %s\n", r.URL)))
 			}
-
 			m.ServeHTTP(w, r)
 			return
 
@@ -172,8 +182,9 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 			r_exp := regexp.MustCompile(route)
 			if r_exp.MatchString(path) || path == "/" {
 				log.Printf(path)
-				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", r.URL)))
-				http.StripPrefix(path, next).ServeHTTP(w, r)
+				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", path)))
+				r.URL = &url.URL{Host: r.URL.Host, Path: ""}
+				next.ServeHTTP(w, r)
 				return
 			}
 		}

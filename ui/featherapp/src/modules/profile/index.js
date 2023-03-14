@@ -64,6 +64,13 @@ const Profile = (props) => {
               <br/>
               <AccountInfo user={props.user}/>
               <br/>
+              <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-between items-center">
+                <div>
+                  <button className="px-2 py-1 text-white bg-primary4 rounded-md shadow-sm">
+                      Connect to Figma
+                  </button>
+                </div>
+              </div>
               <PaymentInfo/>
             </>
           )}

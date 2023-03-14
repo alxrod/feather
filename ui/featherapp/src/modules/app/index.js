@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Redirect, Route, Link } from 'react-router-dom';
+import { Redirect, Route, Link, Router } from 'react-router-dom';
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 import NavBar from "../navbar"
@@ -31,6 +31,8 @@ import ContractView from '../contract/contract_view';
 import ContractNegotiate from '../contract/contract_negotiate';
 import ContractInvite from "../contract/contract_invite";
 import ContractSettle from '../contract/contract_settle';
+
+import FigmaOAuthCallback from "../figma_oauth_callback";
 
 import { push } from 'connected-react-router'
 import { useLocation } from 'react-router-dom'
@@ -68,6 +70,8 @@ const routes = {
   "^/settle/[^/]*$": STD_ROLE,
   "^/invite/[^/]*/[^/]*$": STD_UNAUTH_ROLE,
   
+  "^/figma/oauth-callback[^/]*$": STD_ROLE,
+
   "^/unknown$": STD_UNAUTH_ROLE,
   "^/unauth-contract$": UNAUTH_ROLE,
 
@@ -87,6 +91,7 @@ const routes = {
 
   "^/forgot-password$": UNAUTH_ROLE,
   "^/reset-password$": UNAUTH_ROLE,
+  
 }
 
 const select_routes = ["/negotiate", "/view", "/settle", "/create"]
@@ -230,6 +235,8 @@ const App = (props) => {
         
         <Route exact path="/unknown" element={<UnknownRoute/>} component={UnknownRoute} />
         <Route exact path="/unauth-contract" element={<UnauthContractRoute/>} component={UnauthContractRoute} />
+
+        <Route path="/figma/oauth-callback" element={<FigmaOAuthCallback/>} component={FigmaOAuthCallback} />
 
       </main>
     </div>

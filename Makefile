@@ -33,6 +33,14 @@ proto:
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ui/featherapp/src/proto \
 		--go-grpc_out=./communication \
 		--go_out=./communication
+
+.PHONY: proto-full
+proto-full:
+	protoc communication/*.proto \
+		--js_out=import_style=commonjs,binary:./ui/featherapp/src/proto\
+		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ui/featherapp/src/proto \
+		--go-grpc_out=./communication \
+		--go_out=./communication
 	
 	npx protoc \
 	--ts_out="${PWD}/feather_figma/ui-src/proto" \

@@ -265,6 +265,7 @@ func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest)
 }
 
 func (s *BackServer) InviteQuery(ctx context.Context, req *comms.InviteDataRequest) (*comms.ContractInviteNub, error) {
+	log.Println("Query: ", req)
 	contract_id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
 		return nil, errors.New("Invalid contract id")
