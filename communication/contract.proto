@@ -81,6 +81,8 @@ message ContractEntity {
 
     bool disputed = 16;
     bool admin_requested = 17;
+
+    string figma_link = 19;
 }
 
 message ContractNub {
@@ -149,6 +151,8 @@ message ItemEntity {
     uint32 worker_settled = 26;
     uint32 buyer_settled = 27;
     uint32 admin_settled = 28;
+
+    repeated string figma_node_ids = 29;
 }
 
 message ItemNub {
@@ -394,6 +398,18 @@ message EmailResendRequest {
     string contract_id = 2;
 }
 
+message FigmaLinkRequest {
+    string user_id = 1;
+    string contract_id = 2;
+    string figma_link = 3;
+}
+
+message FigmaItemRequest {
+    string contract_id = 1;
+    string contract_secret = 2;
+    string item_id = 3;
+    repeated string node_ids = 4;
+}
 service Contract {
 
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
@@ -452,4 +468,6 @@ service Contract {
     rpc ConfirmDeadline(ConfirmDeadlineRequest) returns (NullResponse) {};
     rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
 
-}
+    rpc SetFigmaLink(FigmaLinkRequest) returns (ContractEditResponse) {};
+    rpc SetItemFigmaNodes(FigmaItemRequest) returns (ContractEditResponse) {};
+}   

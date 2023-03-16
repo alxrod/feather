@@ -260,6 +260,10 @@ export interface ContractEntity {
      * @generated from protobuf field: bool admin_requested = 17;
      */
     adminRequested: boolean;
+    /**
+     * @generated from protobuf field: string figma_link = 19;
+     */
+    figmaLink: string;
 }
 /**
  * @generated from protobuf message communication.ContractNub
@@ -466,6 +470,10 @@ export interface ItemEntity {
      * @generated from protobuf field: uint32 admin_settled = 28;
      */
     adminSettled: number;
+    /**
+     * @generated from protobuf field: repeated string figma_node_ids = 29;
+     */
+    figmaNodeIds: string[];
 }
 /**
  * @generated from protobuf message communication.ItemNub
@@ -1223,6 +1231,44 @@ export interface EmailResendRequest {
      */
     contractId: string;
 }
+/**
+ * @generated from protobuf message communication.FigmaLinkRequest
+ */
+export interface FigmaLinkRequest {
+    /**
+     * @generated from protobuf field: string user_id = 1;
+     */
+    userId: string;
+    /**
+     * @generated from protobuf field: string contract_id = 2;
+     */
+    contractId: string;
+    /**
+     * @generated from protobuf field: string figma_link = 3;
+     */
+    figmaLink: string;
+}
+/**
+ * @generated from protobuf message communication.FigmaItemRequest
+ */
+export interface FigmaItemRequest {
+    /**
+     * @generated from protobuf field: string contract_id = 1;
+     */
+    contractId: string;
+    /**
+     * @generated from protobuf field: string contract_secret = 2;
+     */
+    contractSecret: string;
+    /**
+     * @generated from protobuf field: string item_id = 3;
+     */
+    itemId: string;
+    /**
+     * @generated from protobuf field: repeated string node_ids = 4;
+     */
+    nodeIds: string[];
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class PriceEntity$Type extends MessageType<PriceEntity> {
     constructor() {
@@ -1645,11 +1691,12 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
             { no: 7, name: "items", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => ItemEntity },
             { no: 10, name: "room_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 16, name: "disputed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 17, name: "admin_requested", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
+            { no: 17, name: "admin_requested", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 19, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ContractEntity>): ContractEntity {
-        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false };
+        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false, figmaLink: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ContractEntity>(this, message, value);
@@ -1713,6 +1760,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
                     break;
                 case /* bool admin_requested */ 17:
                     message.adminRequested = reader.bool();
+                    break;
+                case /* string figma_link */ 19:
+                    message.figmaLink = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1780,6 +1830,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
         /* bool admin_requested = 17; */
         if (message.adminRequested !== false)
             writer.tag(17, WireType.Varint).bool(message.adminRequested);
+        /* string figma_link = 19; */
+        if (message.figmaLink !== "")
+            writer.tag(19, WireType.LengthDelimited).string(message.figmaLink);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2229,11 +2282,12 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
             { no: 10, name: "awaiting_deletion", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 26, name: "worker_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 27, name: "buyer_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 28, name: "admin_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ }
+            { no: 28, name: "admin_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+            { no: 29, name: "figma_node_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ItemEntity>): ItemEntity {
-        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, workerSettled: 0, buyerSettled: 0, adminSettled: 0 };
+        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, workerSettled: 0, buyerSettled: 0, adminSettled: 0, figmaNodeIds: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ItemEntity>(this, message, value);
@@ -2279,6 +2333,9 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
                     break;
                 case /* uint32 admin_settled */ 28:
                     message.adminSettled = reader.uint32();
+                    break;
+                case /* repeated string figma_node_ids */ 29:
+                    message.figmaNodeIds.push(reader.string());
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2328,6 +2385,9 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
         /* uint32 admin_settled = 28; */
         if (message.adminSettled !== 0)
             writer.tag(28, WireType.Varint).uint32(message.adminSettled);
+        /* repeated string figma_node_ids = 29; */
+        for (let i = 0; i < message.figmaNodeIds.length; i++)
+            writer.tag(29, WireType.LengthDelimited).string(message.figmaNodeIds[i]);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -4883,6 +4943,135 @@ class EmailResendRequest$Type extends MessageType<EmailResendRequest> {
  * @generated MessageType for protobuf message communication.EmailResendRequest
  */
 export const EmailResendRequest = new EmailResendRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FigmaLinkRequest$Type extends MessageType<FigmaLinkRequest> {
+    constructor() {
+        super("communication.FigmaLinkRequest", [
+            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FigmaLinkRequest>): FigmaLinkRequest {
+        const message = { userId: "", contractId: "", figmaLink: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FigmaLinkRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FigmaLinkRequest): FigmaLinkRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string user_id */ 1:
+                    message.userId = reader.string();
+                    break;
+                case /* string contract_id */ 2:
+                    message.contractId = reader.string();
+                    break;
+                case /* string figma_link */ 3:
+                    message.figmaLink = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FigmaLinkRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string user_id = 1; */
+        if (message.userId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.userId);
+        /* string contract_id = 2; */
+        if (message.contractId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.contractId);
+        /* string figma_link = 3; */
+        if (message.figmaLink !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.figmaLink);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message communication.FigmaLinkRequest
+ */
+export const FigmaLinkRequest = new FigmaLinkRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
+    constructor() {
+        super("communication.FigmaItemRequest", [
+            { no: 1, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "contract_secret", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "item_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "node_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FigmaItemRequest>): FigmaItemRequest {
+        const message = { contractId: "", contractSecret: "", itemId: "", nodeIds: [] };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FigmaItemRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FigmaItemRequest): FigmaItemRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string contract_id */ 1:
+                    message.contractId = reader.string();
+                    break;
+                case /* string contract_secret */ 2:
+                    message.contractSecret = reader.string();
+                    break;
+                case /* string item_id */ 3:
+                    message.itemId = reader.string();
+                    break;
+                case /* repeated string node_ids */ 4:
+                    message.nodeIds.push(reader.string());
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FigmaItemRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string contract_id = 1; */
+        if (message.contractId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.contractId);
+        /* string contract_secret = 2; */
+        if (message.contractSecret !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.contractSecret);
+        /* string item_id = 3; */
+        if (message.itemId !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.itemId);
+        /* repeated string node_ids = 4; */
+        for (let i = 0; i < message.nodeIds.length; i++)
+            writer.tag(4, WireType.LengthDelimited).string(message.nodeIds[i]);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message communication.FigmaItemRequest
+ */
+export const FigmaItemRequest = new FigmaItemRequest$Type();
 /**
  * @generated ServiceType for protobuf service communication.Contract
  */
@@ -4925,5 +5114,7 @@ export const Contract = new ServiceType("communication.Contract", [
     { name: "ResolveAdmin", options: {}, I: ContractAdminSupport, O: NullResponse },
     { name: "FinishDeadline", options: {}, I: FinishDeadlineRequest, O: NullResponse },
     { name: "ConfirmDeadline", options: {}, I: ConfirmDeadlineRequest, O: NullResponse },
-    { name: "UndoDeadline", options: {}, I: UndoDeadlineRequest, O: NullResponse }
+    { name: "UndoDeadline", options: {}, I: UndoDeadlineRequest, O: NullResponse },
+    { name: "SetFigmaLink", options: {}, I: FigmaLinkRequest, O: ContractEditResponse },
+    { name: "SetItemFigmaNodes", options: {}, I: FigmaItemRequest, O: ContractEditResponse }
 ]);

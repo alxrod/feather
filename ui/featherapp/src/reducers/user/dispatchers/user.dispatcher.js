@@ -238,3 +238,36 @@ export const changeWorkerStatus = (worker_status) => {
         })
     }
 }
+
+export const connectFigma = (figma_code) => {
+    return dispatch => {
+        return helpers.authCheck(dispatch).then(
+            (creds) => {
+                return UserService.connectFigma(creds.access_token, creds.user_id, figma_code).then(
+                    (data) => {
+                        dispatch({
+                            type: userActions.USER_CONNECT_FIGMA,
+                            payload: {code: figma_code},
+                        });
+                        return Promise.resolve();
+                    },
+
+                    (error) => {
+                        const message = 
+                            (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                            error.messsage ||
+                            error.toString();
+                        dispatch({
+                            type: userActions.USER_PULL_FAIL,
+                        });
+                        return Promise.reject(message);
+                    }
+                );
+            },
+            () => {
+            }
+        )
+    }
+}

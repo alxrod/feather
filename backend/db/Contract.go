@@ -61,6 +61,8 @@ type Contract struct {
 
 	InvitedEmail   string `bson:"invited_email"`
 	InvitePassword string `bson:"invite_password"`
+
+	FigmaLink string `bson:"figma_link,omitempty"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -88,6 +90,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		Stage:          contract.Stage,
 		WorkerApproved: contract.WorkerApproved,
 		BuyerApproved:  contract.BuyerApproved,
+		FigmaLink:      contract.FigmaLink,
 	}
 	if !contract.Id.IsZero() {
 		proto.Id = contract.Id.Hex()

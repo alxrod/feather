@@ -11,6 +11,8 @@ import {
     ResetConfirmRequest,
     ChangePasswordRequest,
 
+    FigmaConnectRequest,
+
  } from "../proto/communication/user_pb";
 
 export const authClient = new AuthClient(process.env.REACT_APP_SITE_BASE);
@@ -120,10 +122,8 @@ class UserService {
 
         });
         return Error("Request failed")
-        
     }
 
-    
     pull_user(token, user_id) {
         var pullRequest = new UserPullRequest();   
         pullRequest.setUserId(user_id);
@@ -259,6 +259,24 @@ class UserService {
         } else {
             return Promise.reject({})
         }
+    }
+
+    // ConnectFigma
+    connectFigma(token, user_id, figma_code) {
+        var changeRequest = new FigmaConnectRequest();   
+        changeRequest.setUserId(user_id);
+        changeRequest.setFigmaCode(figma_code);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            authClient.connectFigma(changeRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                    return 
+                }
+                resolve()
+            });
+        });
     }
 }
 

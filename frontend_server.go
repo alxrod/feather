@@ -13,8 +13,9 @@ import (
 	"time"
 
 	"errors"
-	"regexp"
 	"net/url"
+	"regexp"
+
 	"github.com/TwiN/go-color"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 )
@@ -148,7 +149,6 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" || r.Header.Get("content-type") == "application/protobuf" {
 
-			log.Println("Request is GRPC")
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Headers", "grpc-timeout, Accept, Content-Type, content-type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, X-User-Agent, X-Grpc-Web")

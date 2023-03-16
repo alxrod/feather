@@ -105,7 +105,7 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 
 	if !user.WorkerModeEnabled && user.WorkerModeRequested {
 		enabled, err := s.StripeAgent.VerifyConnectedAccountCapabilities(user.StripeConnectedAccountId)
-		if err == nil && enabled{
+		if err == nil && enabled {
 			log.Printf("Stripe Account %s has been approved %b", user.StripeConnectedAccountId, enabled)
 			// Note this currently only gets the worker, saves queries by not pulling buyer
 			outstanding_charges, err := db.GetUserHoldCharges(user, database)
@@ -202,4 +202,19 @@ func (s *BackServer) ChangePassword(ctx context.Context, req *comms.ChangePasswo
 		User:         user.Proto(),
 	}, nil
 
+}
+
+func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRequest) (*comms.NullResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	id, err := primitive.ObjectIDFromHex(req.UserId)
+	if err != nil {
+		return nil, err
+	}
+	filter := bson.D{{"_id", id}}
+	update := bson.D{{"$set", bson.D{
+		{"figma_connected", true},
+		{"figma_code", req.FigmaCode},
+	}}}
+	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+	return &comms.NullResponse{}, nil
 }

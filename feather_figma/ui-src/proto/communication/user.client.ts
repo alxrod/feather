@@ -4,6 +4,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { Auth } from "./user";
+import type { FigmaConnectRequest } from "./user";
 import type { ChangePasswordRequest } from "./user";
 import type { ResetConfirmResponse } from "./user";
 import type { ResetConfirmRequest } from "./user";
@@ -51,6 +52,10 @@ export interface IAuthClient {
      * @generated from protobuf rpc: ChangePassword(communication.ChangePasswordRequest) returns (communication.UserSigninResponse);
      */
     changePassword(input: ChangePasswordRequest, options?: RpcOptions): UnaryCall<ChangePasswordRequest, UserSigninResponse>;
+    /**
+     * @generated from protobuf rpc: ConnectFigma(communication.FigmaConnectRequest) returns (communication.NullResponse);
+     */
+    connectFigma(input: FigmaConnectRequest, options?: RpcOptions): UnaryCall<FigmaConnectRequest, NullResponse>;
 }
 /**
  * @generated from protobuf service communication.Auth
@@ -109,5 +114,12 @@ export class AuthClient implements IAuthClient, ServiceInfo {
     changePassword(input: ChangePasswordRequest, options?: RpcOptions): UnaryCall<ChangePasswordRequest, UserSigninResponse> {
         const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<ChangePasswordRequest, UserSigninResponse>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ConnectFigma(communication.FigmaConnectRequest) returns (communication.NullResponse);
+     */
+    connectFigma(input: FigmaConnectRequest, options?: RpcOptions): UnaryCall<FigmaConnectRequest, NullResponse> {
+        const method = this.methods[7], opt = this._transport.mergeOptions(options);
+        return stackIntercept<FigmaConnectRequest, NullResponse>("unary", this._transport, method, opt, input);
     }
 }

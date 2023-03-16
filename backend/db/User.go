@@ -58,6 +58,10 @@ type User struct {
 	StripeDefaultFCA string   `bson:"default_fca,omitempty"`
 	StripeFCAlist    []string `bson:"fca_ids,omitempty"`
 	// ================================================================================
+
+	// ================================= FIGMA ========================================
+	FigmaConnected bool   `bson:"figma_connected"`
+	FigmaCode      string `bson:"figma_code,omitempty"`
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -83,6 +87,9 @@ func (user *User) Proto() *comms.UserEntity {
 		BuyerModeEnabled:    user.BuyerModeEnabled,
 
 		OutstandingBalance: user.OutstandingBalance,
+
+		FigmaConnected: user.FigmaConnected,
+		FigmaCode:      user.FigmaCode,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {

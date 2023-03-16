@@ -13,6 +13,14 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case actions.CONTRACT_FIGMA_LINK_CHANGE:
+            return {
+                ...state,
+                curContract: {
+                    ...state.curContract,
+                    figmaLink: action.payload.link,
+                }
+            }
         case actions.CONTRACT_PURGE_SIGNING:
             console.log("Purging signing")
             return {

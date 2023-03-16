@@ -1,8 +1,7 @@
 import { ContractNub, DeadlineNub, ItemNub } from "./types"
 import { sortDeadlines } from "./helpers"
-const parseContract = (payload: string): ContractNub => {
-  let raw_nub = JSON.parse(payload)
-  console.log("RAw: ", raw_nub)
+const parseContract = (payload: any): ContractNub => {
+  let raw_nub = payload
   let deadlines: DeadlineNub[] = []
   for (let i = 0; i < raw_nub.deadlines.length; i++) {
     let nubs: ItemNub[] = []
@@ -14,6 +13,7 @@ const parseContract = (payload: string): ContractNub => {
             name: raw_nub.items[k].name,
             body: raw_nub.items[k].currentBody
           })
+          
           break
         }
       }

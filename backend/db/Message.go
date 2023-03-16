@@ -37,6 +37,8 @@ const (
 	FINALIZE_SETTLE      = 17
 	DEADLINE_EXPIRED     = 18
 	DEADLINE_SETTLED     = 19
+	CONTRACT_FIGMA_SET   = 20
+	FIGMA_ITEM_NODES     = 21
 )
 
 // Editing Typs
@@ -167,6 +169,9 @@ type MessageBody struct {
 	BuyerSettled    bool `bson:"buyer_settled,omitempty"`
 	WorkerConfirmed bool `bson:"worker_confirmed,omitempty"`
 	BuyerConfirmed  bool `bson:"buyer_confirmed,omitempty"`
+
+	FigmaLink string   `bson:"figma_link,omitempty"`
+	NodeIds   []string `bson:"figma_node_ids,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -177,6 +182,22 @@ func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
 	}
 }
 
+func (b *MessageBody) FigmaLinkProto() *comms.ChatMessage_FigmaLinkBody {
+	return &comms.ChatMessage_FigmaLinkBody{
+		FigmaLinkBody: &comms.FigmaLinkMsgBody{
+			FigmaLink: b.FigmaLink,
+		},
+	}
+}
+
+func (b *MessageBody) FigmaItemNodesProto() *comms.ChatMessage_FigmaItemNodesBody {
+	return &comms.ChatMessage_FigmaItemNodesBody{
+		FigmaItemNodesBody: &comms.FigmaItemNodesMsgBody{
+			ItemId:  b.ItemId.Hex(),
+			NodeIds: b.NodeIds,
+		},
+	}
+}
 func (b *MessageBody) ContractSignProto() *comms.ChatMessage_ContractSignBody {
 	return &comms.ChatMessage_ContractSignBody{
 		ContractSignBody: &comms.ContractSignMsgBody{
@@ -508,6 +529,10 @@ func (m *Message) Proto() *comms.ChatMessage {
 		proto.Body = m.Body.ExpireProto()
 	} else if m.Method == DEADLINE_SETTLED {
 		proto.Body = m.Body.DeadlineSettledProto()
+	} else if m.Method == CONTRACT_FIGMA_SET {
+		proto.Body = m.Body.FigmaLinkProto()
+	} else if m.Method == FIGMA_ITEM_NODES {
+		proto.Body = m.Body.FigmaItemNodesProto()
 	}
 
 	receipts := make([]*comms.ReadReceiptEntity, len(m.ReadReceipts))

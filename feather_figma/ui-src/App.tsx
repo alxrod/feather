@@ -3,6 +3,7 @@ import './App.css'
 import { RpcError } from "@protobuf-ts/runtime-rpc"
 import ApiService from "./api.service"
 import { 
+  ContractEditResponse,
   ContractInviteNub,
 } from "./proto/communication/contract";
 import { 
@@ -20,10 +21,9 @@ function App() {
         event.data.pluginMessage.payload.secret,
       ).then(
         (nub: ContractInviteNub) => {
-          console.log("Queried Contract: ", nub.title);
           // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
           window.parent.postMessage(
-            {pluginMessage: JSON.stringify({type: "new_contract", payload: ContractInviteNub.toJsonString(nub)})},
+            {pluginMessage: {type: "new_contract", payload: ContractInviteNub.toJson(nub)}},
             '*'
           )
         },
@@ -31,7 +31,20 @@ function App() {
           console.log("Error: ", err)
         }
       )
-      // window.parent.postMessage({pluginMessage: "Hellow World"}, '*')
+    } else if (event.data.pluginMessage.type === 'set_item_nodes') {
+      ApiService.setItemFigmaNodes(
+        event.data.pluginMessage.payload.contract_id,
+        event.data.pluginMessage.payload.contract_secret,
+        event.data.pluginMessage.payload.item_id,
+        event.data.pluginMessage.payload.node_ids,
+      ).then(
+        (nub: ContractEditResponse) => {
+          window.parent.postMessage( {pluginMessage: {type: "item_nodes_success", payload: {}}}, '*')
+        },
+        (err: RpcError) => {
+          window.parent.postMessage( {pluginMessage: {type: "item_nodes_fail", payload: {}}}, '*')
+        }
+      )
     }
   }
 

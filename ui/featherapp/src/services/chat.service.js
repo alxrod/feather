@@ -20,6 +20,7 @@ import {
     CONTRACT_TOGGLE_LOCK,
     CONTRACT_ADMIN_REQUEST_CHANGED,
     CONTRACT_PURGE_SIGNING,
+    CONTRACT_FIGMA_LINK_CHANGE,
 } from "../reducers/contract/contract.actions"
 
 import { 
@@ -41,8 +42,6 @@ import {
     CONTRACT_ITEM_SUGGEST_DELETE,
     CONTRACT_ITEM_SETTLE_UPDATE,
 } from "../reducers/items/items.actions"
-
-import {queryContract } from "../reducers/contract/dispatchers/contract.dispatcher"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 import {contractStages } from "./contract.service"
@@ -79,6 +78,8 @@ export const msgMethods = {
     FINALIZE_SETTLE: 17,
     DEADLINE_EXPIRED: 18,
     DEADLINE_SETTLED: 19,
+    CONTRACT_FIGMA_SET: 20,
+    FIGMA_ITEM_NODES: 21,
 }
 
 export const deadlineItemTypes = {
@@ -483,6 +484,12 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
                 id: msg.body.contractId,
             }
         })
+    } else if (msg.method === msgMethods.CONTRACT_FIGMA_SET) {
+        dispatch({
+            type: CONTRACT_FIGMA_LINK_CHANGE,
+            payload: {link: msg.body.figmaLink}
+
+        })
     }
 }
 
@@ -532,6 +539,10 @@ const reformatBody = (msg) => {
         msg.body = msg.deadlineExpireBody
     } else if (msg.method === msgMethods.DEADLINE_SETTLED) {
         msg.body = msg.deadlineSettledBody
+    } else if (msg.method === msgMethods.CONTRACT_FIGMA_SET) {
+        msg.body = msg.figmaLinkBody
+    } else if (msg.method === msgMethods.FIGMA_ITEM_NODES) {
+        msg.body = msg.figmaItemNodesBody
     } else {
         msg.body = {}
     }

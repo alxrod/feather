@@ -3,16 +3,29 @@ export const TOGGLE_PAYMENT_FROM_REG = "site/room/TOGGLE_PAYMENT_FROM_REG"
 export const TOGGLE_REGISTER_BOTH_METHODS = "site/register/TOGGLE_BOTH_METHODS"
 export const SET_REDIRECT_ROUTE = "site/redirect/SET_ROUTE"
 
+
+export const SET_FIGMA_PARAMS = "site/figma/SET_PARAMS"
+
 const initialState = {
     showNavbar: true,
     fromRegister: false,
     internalTestMode: true,
     registerForBothMethods: false,
-    redirectRoute: ""
+    redirectRoute: "",
+
+    figmaState: sessionStorage.getItem("figmaState"),
+    figmaRedirect: "/profile",
+
 }
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case SET_FIGMA_PARAMS:
+            return {
+                ...state,
+                figmaState: action.payload.state,
+                figmaRedirect: action.payload.redirect,
+            }
         case SET_REDIRECT_ROUTE:
             return {
                 ...state,
@@ -80,3 +93,13 @@ export const setRedirectRoute = (redirectRoute) => {
         });
     }
 };
+
+export const setFigmaParams = (state, redirect) => {
+    return dispatch => {
+        sessionStorage.setItem("figmaState", state);
+        dispatch({
+            type: SET_FIGMA_PARAMS,
+            payload: { state,  redirect}
+        })
+    }
+}

@@ -25,3 +25,5 @@ export const USER_SET_PROFILE = "user/SET_PROFILE"
 
 export const USER_ENABLE_BUYER = "user/ENABLE_BUYER"
 export const USER_CHANGE_WORKER_STATUS = "user/CHANGE_WORKER/STATUS"
+
+export const USER_CONNECT_FIGMA = "user/CONNECT_FIGMA"

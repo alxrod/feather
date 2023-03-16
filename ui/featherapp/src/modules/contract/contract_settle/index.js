@@ -16,6 +16,7 @@ import CompactSummary from "../components/criteria/compact_summary"
 import SettleHub from "../components/settle/settle_hub"
 import CompleteDeadlineButton from "../components/advance_cards/complete_deadline"
 import RejoinMonitor from "../components/rejoin_monitor"
+import FigmaLinkField from '../components/figma_link';
 
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
@@ -68,8 +69,11 @@ const ContractDraft = (props) => {
         <div className="flex flex-row justify-between">
           <div className="flex flex-col min-w-[45vw] grow mr-10">
             <div> 
-				<SettleHub/>
-			</div>
+              <SettleHub/>
+            </div>
+            <div className="mt-5">
+              <FigmaLinkField lock={true}/>
+            </div>
             <DeadlineField
               createMode={false} 
               universalLock={true}

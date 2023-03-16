@@ -36,6 +36,8 @@ type ContractItem struct {
 	WorkerSettled uint32 `bson:"worker_settled"`
 	BuyerSettled  uint32 `bson:"buyer_settled"`
 	AdminSettled  uint32 `bson:"admin_settled"`
+
+	FigmaNodeIds []string `bson:"figma_node_ids"`
 }
 
 func (ci *ContractItem) Proto() *comms.ItemEntity {
@@ -52,9 +54,10 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		BuyerSettled:     ci.BuyerSettled,
 		AdminSettled:     ci.AdminSettled,
 
-		CurrentBody: ci.CurrentBody,
-		WorkerBody:  ci.WorkerBody,
-		BuyerBody:   ci.BuyerBody,
+		CurrentBody:  ci.CurrentBody,
+		WorkerBody:   ci.WorkerBody,
+		BuyerBody:    ci.BuyerBody,
+		FigmaNodeIds: ci.FigmaNodeIds,
 	}
 	if !ci.Id.IsZero() {
 		proto.Id = ci.Id.Hex()

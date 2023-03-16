@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import CheckButton from "react-validation/build/button";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
-import { forgotPassword } from "../../reducers/user/dispatchers/user.dispatcher";
+import { connectFigma } from "../../reducers/user/dispatchers/user.dispatcher";
 import { push } from 'connected-react-router'
 import { Link } from 'react-router-dom'
 import feather_logo from "../../style/logo/feather_logo.svg";
@@ -15,8 +15,25 @@ const FigmaOAuthCallback = (props) => {
   const loc = useLocation()
   useEffect( () => {
     const { code, state } = queryString.parse(loc.search)
-    console.log("Code: ", code, " State: ", state)
-  }, [loc])
+    if (props.figmaState !== "") {
+      if (state !== props.state) {
+        console.log("ERROR: returned state ", state, " does not match initial state ", props.figmaState)
+        props.push(props.figmaRedirect)
+        return
+      }
+      console.log("Code: ", code, " State: ", state)
+      props.connectFigma(code).then(
+        () => {
+          props.push(props.figmaRedirect)
+        },
+        (error) => {
+          console.log("ERROR WAS: ", error)
+          props.push(props.figmaRedirect)
+        }
+      )
+    }
+    
+  }, [loc, props.figmaState])
 
   return (
       <>
@@ -28,19 +45,21 @@ const FigmaOAuthCallback = (props) => {
               alt="Workflow"
             />
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Figma Oath Callback</h2>
-      
           </div>
         </div>
       </>
     )
 }
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, site }) => ({
     isLoggedIn: user.isLoggedIn,
+    figmaState: site.figmaState,
+    figmaRedirect: site.figmaRedirect
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  forgotPassword,
+  connectFigma,
+  push,
 }, dispatch)
 
 export default connect(

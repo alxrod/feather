@@ -46,6 +46,8 @@ message ChatMessage {
         FinalizeMsgBody finalize_body = 26;
         DeadlineExpireMsgBody deadline_expire_body = 27;
         DeadlineSettledMsgBody deadline_settled_body = 39;
+        FigmaLinkMsgBody figma_link_body = 43;
+        FigmaItemNodesMsgBody figma_item_nodes_body = 44;
     }   
 }
 
@@ -53,12 +55,22 @@ message ReadReceiptEntity {
     string user_id = 1;
     bool read = 2;
 }
+
 message ChatLabel {
     uint32 type = 1;
     string name = 2;
     string item_id = 3;
-
 }
+
+message FigmaItemNodesMsgBody {
+    string item_id = 1;
+    repeated string node_ids = 2;
+}
+
+message FigmaLinkMsgBody {
+    string figma_link = 1;
+}
+
 message CommentMsgBody {
     string message = 1;
 }

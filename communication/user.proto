@@ -75,6 +75,9 @@ message UserEntity {
 
     int64 outstanding_balance = 30;
 
+    bool FigmaConnected = 31;
+    string FigmaCode = 32;
+
 }
 
 message ForgotRequest {
@@ -94,6 +97,11 @@ message ChangePasswordRequest {
     string new_password = 2;
 }
 
+message FigmaConnectRequest {
+    string user_id = 1;
+    string figma_code = 2;
+}
+
 
 service Auth{
     rpc Register(UserRegisterRequest) returns (UserSigninResponse) {};
@@ -103,5 +111,8 @@ service Auth{
 
     rpc ForgotPassword(ForgotRequest) returns (NullResponse) {};
     rpc ConfirmResetId(ResetConfirmRequest) returns (ResetConfirmResponse) {};
-    rpc ChangePassword(ChangePasswordRequest) returns (UserSigninResponse) {}
+    rpc ChangePassword(ChangePasswordRequest) returns (UserSigninResponse) {};
+
+    rpc ConnectFigma(FigmaConnectRequest) returns (NullResponse) {};
+
 }

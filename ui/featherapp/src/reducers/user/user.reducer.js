@@ -22,6 +22,15 @@ if (user) {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case userActions.USER_CONNECT_FIGMA:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    figmaConnected: true,
+                    figmaCode: action.payload.code,
+                }
+            }
         case userActions.USER_ENABLE_BUYER:
             return {
                 ...state,

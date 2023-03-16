@@ -19,6 +19,7 @@ import DeadlineField from "../components/deadline/deadline_field";
 import { push } from 'connected-react-router';
 import UniversalLockCard from "../components/universal_lock/universal_lock_card";
 import RejoinMonitor from "../components/rejoin_monitor"
+import FigmaLinkField from '../components/figma_link';
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
   const [completeMode, setCompleteMode] = useState(false)
@@ -95,6 +96,9 @@ const ContractDraft = (props) => {
               </div>
             )}
             <OverviewCard title={props.curContract.title} summary={props.curContract.summary} universalLock={universalLock}/>
+            <div className="mt-5">
+              <FigmaLinkField lock={universalLock}/>
+            </div>
             <DeadlineField
               createMode={false} 
               universalLock={universalLock}

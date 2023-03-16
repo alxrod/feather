@@ -54,6 +54,8 @@ import {
     EmailChangeRequest,
     EmailResendRequest,
 
+    FigmaLinkRequest,
+
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -893,6 +895,25 @@ class ContractService {
                     reject(error)
                 }
                 resolve(response)
+            });
+        });
+    }
+
+    setFigmaLink(token, user_id, contract_id, figma_link) {
+        
+        let linkRequest = new FigmaLinkRequest();
+
+        linkRequest.setUserId(user_id);
+        linkRequest.setContractId(contract_id);
+        linkRequest.setFigmaLink(figma_link);
+
+        return new Promise( (resolve, reject) => { 
+            var metadata = {"authorization": token}
+            contractClient.setFigmaLink(linkRequest, metadata, function(error, response) {
+                if (error) {
+                    reject(error)
+                }
+                resolve()
             });
         });
     }

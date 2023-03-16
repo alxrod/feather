@@ -205,6 +205,14 @@ export interface UserEntity {
      * @generated from protobuf field: int64 outstanding_balance = 30;
      */
     outstandingBalance: bigint;
+    /**
+     * @generated from protobuf field: bool FigmaConnected = 31 [json_name = "FigmaConnected"];
+     */
+    figmaConnected: boolean;
+    /**
+     * @generated from protobuf field: string FigmaCode = 32 [json_name = "FigmaCode"];
+     */
+    figmaCode: string;
 }
 /**
  * @generated from protobuf message communication.ForgotRequest
@@ -245,6 +253,19 @@ export interface ChangePasswordRequest {
      * @generated from protobuf field: string new_password = 2;
      */
     newPassword: string;
+}
+/**
+ * @generated from protobuf message communication.FigmaConnectRequest
+ */
+export interface FigmaConnectRequest {
+    /**
+     * @generated from protobuf field: string user_id = 1;
+     */
+    userId: string;
+    /**
+     * @generated from protobuf field: string figma_code = 2;
+     */
+    figmaCode: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class UserRegisterRequest$Type extends MessageType<UserRegisterRequest> {
@@ -598,11 +619,13 @@ class UserEntity$Type extends MessageType<UserEntity> {
             { no: 27, name: "worker_mode_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 28, name: "buyer_mode_enabled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 29, name: "default_fca", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 30, name: "outstanding_balance", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ }
+            { no: 30, name: "outstanding_balance", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+            { no: 31, name: "FigmaConnected", kind: "scalar", jsonName: "FigmaConnected", T: 8 /*ScalarType.BOOL*/ },
+            { no: 32, name: "FigmaCode", kind: "scalar", jsonName: "FigmaCode", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<UserEntity>): UserEntity {
-        const message = { id: "", username: "", role: 0, email: "", firstName: "", lastName: "", phoneNumber: "", contractIds: [], instaAccount: "", instaFollowers: 0, instaVerified: false, tiktokAccount: "", tiktokFollowers: 0, tiktokVerified: false, paymentSetup: false, adminStatus: false, profilePhotoUploaded: false, profilePhotoId: "", workerModeRequested: false, buyerModeRequested: false, workerModeEnabled: false, buyerModeEnabled: false, defaultFca: "", outstandingBalance: 0n };
+        const message = { id: "", username: "", role: 0, email: "", firstName: "", lastName: "", phoneNumber: "", contractIds: [], instaAccount: "", instaFollowers: 0, instaVerified: false, tiktokAccount: "", tiktokFollowers: 0, tiktokVerified: false, paymentSetup: false, adminStatus: false, profilePhotoUploaded: false, profilePhotoId: "", workerModeRequested: false, buyerModeRequested: false, workerModeEnabled: false, buyerModeEnabled: false, defaultFca: "", outstandingBalance: 0n, figmaConnected: false, figmaCode: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<UserEntity>(this, message, value);
@@ -691,6 +714,12 @@ class UserEntity$Type extends MessageType<UserEntity> {
                     break;
                 case /* int64 outstanding_balance */ 30:
                     message.outstandingBalance = reader.int64().toBigInt();
+                    break;
+                case /* bool FigmaConnected = 31 [json_name = "FigmaConnected"];*/ 31:
+                    message.figmaConnected = reader.bool();
+                    break;
+                case /* string FigmaCode = 32 [json_name = "FigmaCode"];*/ 32:
+                    message.figmaCode = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -783,6 +812,12 @@ class UserEntity$Type extends MessageType<UserEntity> {
         /* int64 outstanding_balance = 30; */
         if (message.outstandingBalance !== 0n)
             writer.tag(30, WireType.Varint).int64(message.outstandingBalance);
+        /* bool FigmaConnected = 31 [json_name = "FigmaConnected"]; */
+        if (message.figmaConnected !== false)
+            writer.tag(31, WireType.Varint).bool(message.figmaConnected);
+        /* string FigmaCode = 32 [json_name = "FigmaCode"]; */
+        if (message.figmaCode !== "")
+            writer.tag(32, WireType.LengthDelimited).string(message.figmaCode);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -988,6 +1023,60 @@ class ChangePasswordRequest$Type extends MessageType<ChangePasswordRequest> {
  * @generated MessageType for protobuf message communication.ChangePasswordRequest
  */
 export const ChangePasswordRequest = new ChangePasswordRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FigmaConnectRequest$Type extends MessageType<FigmaConnectRequest> {
+    constructor() {
+        super("communication.FigmaConnectRequest", [
+            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "figma_code", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FigmaConnectRequest>): FigmaConnectRequest {
+        const message = { userId: "", figmaCode: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FigmaConnectRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FigmaConnectRequest): FigmaConnectRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string user_id */ 1:
+                    message.userId = reader.string();
+                    break;
+                case /* string figma_code */ 2:
+                    message.figmaCode = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FigmaConnectRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string user_id = 1; */
+        if (message.userId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.userId);
+        /* string figma_code = 2; */
+        if (message.figmaCode !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.figmaCode);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message communication.FigmaConnectRequest
+ */
+export const FigmaConnectRequest = new FigmaConnectRequest$Type();
 /**
  * @generated ServiceType for protobuf service communication.Auth
  */
@@ -998,5 +1087,6 @@ export const Auth = new ServiceType("communication.Auth", [
     { name: "Pull", options: {}, I: UserPullRequest, O: UserEntity },
     { name: "ForgotPassword", options: {}, I: ForgotRequest, O: NullResponse },
     { name: "ConfirmResetId", options: {}, I: ResetConfirmRequest, O: ResetConfirmResponse },
-    { name: "ChangePassword", options: {}, I: ChangePasswordRequest, O: UserSigninResponse }
+    { name: "ChangePassword", options: {}, I: ChangePasswordRequest, O: UserSigninResponse },
+    { name: "ConnectFigma", options: {}, I: FigmaConnectRequest, O: NullResponse }
 ]);

@@ -26,6 +26,9 @@ import ResolveAdminMsg from "./msg/msg_resolve_admin"
 import ContractFinalizeMsg from "./msg/msg_finalize"
 import DeadlineExpiredMsg from "./msg/msg_deadline_expired"
 import DeadlineSettledMsg from "./msg/msg_deadline_settled"
+import FigmaLinkMsg from "./msg/msg_figma_link"
+import FigmaItemNodesMsg from "./msg/msg_figma_item_nodes"
+
 function useOnScreen(ref) {
 
   const [isIntersecting, setIntersecting] = useState(false)
@@ -119,6 +122,10 @@ const MainTimeline = (props) => {
                   <DeadlineExpiredMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : (msg.method === msgMethods.DEADLINE_SETTLED) ? (
                   <DeadlineSettledMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.CONTRACT_FIGMA_SET) ? (
+                  <FigmaLinkMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
+                ) : (msg.method === msgMethods.FIGMA_ITEM_NODES) ? (
+                  <FigmaItemNodesMsg reloaded={props.reloadMsg && (props.reloadId == msg.id)} msg={msg} yourRole={props.yourRole}/>
                 ) : null}
               </div>
             </div>

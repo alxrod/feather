@@ -803,3 +803,65 @@ func (agent *ChatAgent) AdjustMsgBody(user *db.User, contract *db.Contract, body
 	}
 	return nil
 }
+
+func (agent *ChatAgent) SendFigmaLinkMessage(
+	contract *db.Contract,
+	user *db.User,
+	database *mongo.Database) error {
+
+	body := &db.MessageBody{
+		FigmaLink: contract.FigmaLink,
+	}
+
+	msg := &db.Message{
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.CONTRACT_FIGMA_SET,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_UNLABELED,
+			Name: "Figma Link",
+		},
+	}
+	err := agent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (agent *ChatAgent) SendFigmaItemNodesMessage(
+	contract *db.Contract,
+	item *db.ContractItem,
+	database *mongo.Database) error {
+
+	body := &db.MessageBody{
+		ItemId:  item.Id,
+		NodeIds: item.FigmaNodeIds,
+	}
+
+	msg := &db.Message{
+		RoomId:        contract.RoomId,
+		SystemMessage: true,
+		Timestamp:     time.Now().Local(),
+		Method:        db.FIGMA_ITEM_NODES,
+
+		Body: body,
+
+		Label: &db.LabelNub{
+			Type: db.LABEL_ITEM,
+			Name: item.Name,
+		},
+	}
+	err := agent.SendMessageInternal(msg, database)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

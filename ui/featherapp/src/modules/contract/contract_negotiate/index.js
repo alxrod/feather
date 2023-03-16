@@ -13,7 +13,9 @@ import NewContractItem from "../components/contract_item/new_contract_item";
 import CriticalCriteria from "../components/criteria/critical_criteria";
 import MainChat from "../components/chat/main_chat";
 import PartnerCard from "../components/summary/partner_profile_card";
-import SignContract from "../components/advance_cards/sign_contract"
+import SignContract from "../components/advance_cards/sign_contract";
+
+import FigmaLinkField from '../components/figma_link';
 import { push } from 'connected-react-router'
 import RejoinMonitor from "../components/rejoin_monitor"
 
@@ -82,6 +84,9 @@ const ContractNegotiate = (props) => {
           <div className="flex flex-col grow order-2 md:order-1">
             <div className="mb-5">
               <PartnerCard title={contract.title} summary={contract.summary}/>
+            </div>
+            <div className="mb-5">
+              <FigmaLinkField/>
             </div>
             <div> 
               <CriticalCriteria

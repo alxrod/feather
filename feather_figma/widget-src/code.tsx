@@ -31,21 +31,44 @@ function Widget() {
     items: [],
   } as ContractNub))
 
-  const setItemToSelected = () => {
-    const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
-    let x = Infinity;
-    let y = Infinity;
+  const setItemToSelected = async () => {
+      const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
+      let x = Infinity;
+      let y = Infinity;
 
-    for (const node of figma.currentPage.selection) {
-      if (node.x < x) {
-        x = node.x;
+      let nodeIds: string[] = []
+      for (const node of figma.currentPage.selection) {
+        nodeIds.push(node.id)
+        if (node.x < x) {
+          x = node.x;
+        }
+        if (node.y < y) {
+          y = node.y;
+        }
       }
-      if (node.y < y) {
-        y = node.y;
+      if (figma.currentPage.selection.length > 0) {
+        widgetNode.y = y - widgetNode.height-50 
+        widgetNode.x = x
       }
-    }
-    widgetNode.y = y - widgetNode.height-50 
-    widgetNode.x = x
+      const id = await figma.clientStorage.getAsync('contract_id')
+      const secret = await figma.clientStorage.getAsync('contract_secret')
+      figma.showUI(__html__, { visible: false })
+
+      if (selectedItem?.id) {
+        figma.ui.postMessage({ 
+          type: 'set_item_nodes', 
+          payload: {
+            contract_id: id,  
+            contract_secret: secret,
+            item_id: selectedItem.id,
+            node_ids: nodeIds,
+          }
+        })
+      }
+
+      figma.ui.onmessage = async (msg) => {
+        figma.closePlugin()
+      }
   }
 
   const connectToFeather = () => {
@@ -60,11 +83,12 @@ function Widget() {
       })
 
       figma.ui.onmessage = async (msg) => {
-        let parsed_msg = JSON.parse(msg)
-        if (parsed_msg.type === "new_contract") {
-          let newCon = parseContract(parsed_msg.payload)
-          console.log("Con: ", newCon)
+        if (msg.type === "new_contract") {
+          let newCon = parseContract(msg.payload)
           setContract(newCon)
+
+          await figma.clientStorage.setAsync('contract_id', contractId)
+          await figma.clientStorage.setAsync('contract_secret', contractSecret)
 
           for (let i = 0; i < newCon.items.length; i++) {
             let already_exists = false
@@ -92,9 +116,8 @@ function Widget() {
             clonedWidget.x = widgetNode.x + widgetNode.width +  50;
             clonedWidget.y = widgetNode.y + i*(300);
           }
-          
- 
         }
+        figma.closePlugin()
         resolve(msg)
       }
     }))

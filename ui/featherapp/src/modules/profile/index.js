@@ -8,14 +8,25 @@ import PaymentInfo from "./payment_info";
 import { CheckIcon } from '@heroicons/react/outline'
 import ProfilePhotoUpload from "../profile_photo_upload/profile_photo_upload.js"
 import ProfilePhoto from "../general_components/profile_photo.js"
-
+import { setFigmaParams } from "../../reducers/site/site.reducer"
 
 const Profile = (props) => {
   const [showProfPic, setShowProfPic] = useState(false)
   const [profNoExist, setProfNoExist] = useState(false)
   const [picUrl, setPicUrl] = useState("")
 
-  
+  const [state, setState] = useState((Math.random() + 1).toString(36).substring(2));
+  useEffect(() => {
+    setState((Math.random() + 1).toString(36).substring(2))
+  },[])
+
+  const figmaLink = "https://www.figma.com/oauth?"+
+    "client_id="+process.env.REACT_APP_FIGMA_ID+"&"+
+    "redirect_uri="+"http://localhost:3000"+"/figma/oauth-callback&"+
+    "scope=file_read&"+
+    "state="+state+"&"+
+    "response_type=code"
+
   useEffect( () => {
     if (props.user && props.user.profilePhoto?.cacheUrl) {
       setPicUrl(props.user.profilePhoto.cacheUrl)
@@ -24,6 +35,7 @@ const Profile = (props) => {
       setProfNoExist(true)
     }
   }, [props.user, props.user?.profilePhoto?.cacheUrl])
+
   return (
     <div>
       <br/>
@@ -64,14 +76,32 @@ const Profile = (props) => {
               <br/>
               <AccountInfo user={props.user}/>
               <br/>
-              <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-between items-center">
-                <div>
-                  <button className="px-2 py-1 text-white bg-primary4 rounded-md shadow-sm">
-                      Connect to Figma
-                  </button>
+              <PaymentInfo/>
+
+              <div className="overflow-hidden bg-white shadow sm:rounded-lg w-full max-w-2xl mt-10">
+                <div className="p-4 sm:p-6 flex items-center justify-between w-full">
+                  <h1 className="text-4xl font-bold leading-6 text-gray-700">Figma Settings</h1>
+                  {props.user.workerModeEnabled && (
+                    <button
+                      type="button"
+                      className="inline-flex items-center px-3 py-2 text-base rounded-md shadow-sm font-medium leading-4 bg-red-100 text-red-800"
+                    >
+                      Disconnect Account
+                    </button>
+                  )}
+                </div>
+                <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-center items-center ">
+                  <a href={figmaLink} onClick={() => {
+                    props.setFigmaParams(state, "/profile")
+                  }}>
+                    <button 
+                      className="px-4 py-1.5 text-white bg-primary4 rounded-md shadow-sm text-xl font-semibold"
+                    >
+                      Connect to Figma 
+                    </button>
+                  </a>
                 </div>
               </div>
-              <PaymentInfo/>
             </>
           )}
             
@@ -82,10 +112,12 @@ const Profile = (props) => {
 }
 
 const mapStateToProps = ({ user }) => ({
-    user: user.user
+    user: user.user,
+    
 })
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
+  setFigmaParams,
 }, dispatch)
 
 export default connect(
