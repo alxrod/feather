@@ -42,13 +42,6 @@ const DateMsg = (props) => {
     )
   }
 
-  const pullFigmaKey = (url) => {
-    const components = url.split("/file/")
-    if (components.length < 2) {
-      return "Invalid Link"
-    }
-    return components[1].split("/")[0]
-  }
   return (
     <MsgWrapper embedded={props.embedded} msg={props.msg} editString={"Changed"} icon={Icon}>
       <div className="mt-2 text-sm text-gray-700">

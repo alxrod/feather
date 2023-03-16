@@ -3,11 +3,17 @@ package backend
 import (
 	"context"
 	"errors"
+	// "log"
 
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	// "encoding/json"
+	// "fmt"
+	// "io/ioutil"
+	// "net/http"
 )
 
 func (s *BackServer) SetFigmaLink(ctx context.Context, req *comms.FigmaLinkRequest) (*comms.ContractEditResponse, error) {
@@ -36,6 +42,7 @@ func (s *BackServer) SetFigmaLink(ctx context.Context, req *comms.FigmaLinkReque
 }
 
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
+	
 	database := s.dbClient.Database(s.dbName)
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
@@ -68,6 +75,29 @@ func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItem
 	if err = cur_item.Replace(database); err != nil {
 		return nil, errors.New("Could not save item nodes")
 	}
+
+	// https://api.figma.com/v1/files/:file_key/nodes?ids=1,2,3,4
+
+	// client := &http.Client{}
+	// req, err := http.NewRequest("GET", fmt.Sprintf("https://api.figma.com/v1/files/%s/nodes", ), nil)
+	// if err != nil {
+	// 	fmt.Print(err.Error())
+	// }
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Content-Type", "application/json")
+	// resp, err := client.Do(req)
+	// if err != nil {
+	// 	fmt.Print(err.Error())
+	// }
+	// defer resp.Body.Close()
+	// bodyBytes, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	fmt.Print(err.Error())
+	// }
+	// var responseObject Response
+	// 	json.Unmarshal(bodyBytes, &responseObject)
+	// 	fmt.Printf("API Response as struct %+v\n", responseObject)
+	// }
 
 	if err = s.ChatAgent.SendFigmaItemNodesMessage(contract, cur_item, database); err != nil {
 		return nil, errors.New("Couldn't broadcast Items Message")
