@@ -32,6 +32,10 @@ function Widget() {
   } as ContractNub))
 
   const setItemToSelected = async () => {
+    const id = await figma.clientStorage.getAsync('contract_id')
+    const secret = await figma.clientStorage.getAsync('contract_secret')
+
+    waitForTask(new Promise(resolve => {
       const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
       let x = Infinity;
       let y = Infinity;
@@ -50,10 +54,8 @@ function Widget() {
         widgetNode.y = y - widgetNode.height-50 
         widgetNode.x = x
       }
-      const id = await figma.clientStorage.getAsync('contract_id')
-      const secret = await figma.clientStorage.getAsync('contract_secret')
-      figma.showUI(__html__, { visible: false })
 
+      figma.showUI(__html__, { visible: false })
       if (selectedItem?.id) {
         figma.ui.postMessage({ 
           type: 'set_item_nodes', 
@@ -68,7 +70,9 @@ function Widget() {
 
       figma.ui.onmessage = async (msg) => {
         figma.closePlugin()
+        resolve(msg)
       }
+    }))
   }
 
   const connectToFeather = () => {
