@@ -16,7 +16,7 @@ const ProfileImg = (props) => {
 
       let url =""
       for (let i = 0; i < props.cachedUrls.length; i++) {
-        if (props.cachedUrls[i][1] !== "" && props.cachedUrls[i][0] === props.msg.user.id) {
+        if (props.cachedUrls[i][1] !== "" && props.cachedUrls[i][0] === props.msg.user?.id) {
           setHaveProfImg(true)
           setCacheUrl(props.cachedUrls[i][1]+"?"+Date.now())
         }
@@ -79,7 +79,7 @@ const MsgWrapper = (props) => {
         <div>
           <div className="text-sm flex justify-start items-center">
             <p className={"font-medium " + (props.msg.isAdmin ? "text-primary5" : "text-gray-900")}>
-              {props.msg.user.username}
+              {props.msg?.user?.username}
             </p>
             {props.msg.isAdmin && (
               <p className={"text-xs text-gray-400 ml-2"}>

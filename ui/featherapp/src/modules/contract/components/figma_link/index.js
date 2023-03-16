@@ -86,7 +86,7 @@ const FigmaLinkField = (props) => {
               placeholder="No link provided yet"
               value={newLink}
               onChange={changeLink}
-              disabled={!props.lock}
+              disabled={props.lock}
               onBlur={() => {setEditing(false)}}
               onFocus={() => {setEditing(true)}}
             />
