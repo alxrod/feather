@@ -3,9 +3,12 @@
   "id": "FEATHER_FIGMA_INTERGRATION",
   "api": "1.0.0",
   "editorType": ["figma", "figjam"],
-  "permissions": [],
+  "permissions": ["currentuser", "activeusers"],
   "containsWidget": true,
   "main": "dist/code.js",
-  "ui": "dist/index.html",
+  "ui": {
+    "main": "dist/main.html",
+    "background": "dist/background.html"
+  },
   "widgetApi": "1.0.0"
 }

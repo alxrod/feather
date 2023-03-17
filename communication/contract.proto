@@ -101,6 +101,7 @@ message ContractNub {
     string worker_id = 9;
     string buyer_id = 10;
 
+    string figmaLink = 13;
     repeated DeadlineNub deadlines = 11;
 }
 

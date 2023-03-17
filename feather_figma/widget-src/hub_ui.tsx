@@ -73,7 +73,7 @@ export const HubUI = (
         </AutoLayout>
       </AutoLayout>
 
-      <AutoLayout
+      {/* <AutoLayout
         direction="horizontal"
         horizontalAlignItems="start"
         verticalAlignItems="center"
@@ -117,7 +117,7 @@ export const HubUI = (
           }}
           inputBehavior="wrap"
         />
-      </AutoLayout>
+      </AutoLayout> */}
 
       <AutoLayout
         direction="vertical"

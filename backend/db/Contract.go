@@ -172,6 +172,7 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	proto.Stage = contract.Stage
 	proto.Disputed = contract.Disputed
 	proto.AdminRequested = contract.AdminRequested
+	proto.FigmaLink = contract.FigmaLink
 
 	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		proto.UserType = WORKER

@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -3602,6 +3608,7 @@ proto.communication.ContractNub.toObject = function(includeInstance, msg) {
     adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     workerId: jspb.Message.getFieldWithDefault(msg, 9, ""),
     buyerId: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    figmalink: jspb.Message.getFieldWithDefault(msg, 13, ""),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
     proto.communication.DeadlineNub.toObject, includeInstance)
   };
@@ -3684,6 +3691,10 @@ proto.communication.ContractNub.deserializeBinaryFromReader = function(msg, read
     case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setBuyerId(value);
+      break;
+    case 13:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFigmalink(value);
       break;
     case 11:
       var value = new proto.communication.DeadlineNub;
@@ -3794,6 +3805,13 @@ proto.communication.ContractNub.serializeBinaryToWriter = function(message, writ
   if (f.length > 0) {
     writer.writeString(
       10,
+      f
+    );
+  }
+  f = message.getFigmalink();
+  if (f.length > 0) {
+    writer.writeString(
+      13,
       f
     );
   }
@@ -4022,6 +4040,24 @@ proto.communication.ContractNub.prototype.getBuyerId = function() {
  */
 proto.communication.ContractNub.prototype.setBuyerId = function(value) {
   return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string figmaLink = 13;
+ * @return {string}
+ */
+proto.communication.ContractNub.prototype.getFigmalink = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ContractNub} returns this
+ */
+proto.communication.ContractNub.prototype.setFigmalink = function(value) {
+  return jspb.Message.setProto3StringField(this, 13, value);
 };
 
 

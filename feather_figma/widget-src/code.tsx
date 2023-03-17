@@ -3,25 +3,26 @@ import {widgetTypes, UserNub, DeadlineNub, ItemNub, ContractNub} from "./types"
 import parseContract from "./parse_contract"
 import { dateToString } from "./helpers"
 
-import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, 
+import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, useSyncedMap,
   Input, Image, useEffect, waitForTask, useWidgetId } from "./widget"
 
 import { HubUI } from "./hub_ui"
 import { ItemUI } from "./item_ui"
 
+type Token = {
+  value: string,
+  timeout: Date,
+}
 function Widget() {
-  const widgetId = useWidgetId()
 
   const [widgetType, setWidgetType] = useSyncedState("widget_type", widgetTypes.HUB)
-  
+  const tokenMap = useSyncedMap<Token>("user_tokens")
+
+  const widgetId = useWidgetId()
+
+  // =========================Hub State:=========================
   const [contractId, setContractId] = useSyncedState("contract_id", "")
   const [contractSecret, setContractSecret] = useSyncedState("contract_secret", "")
-
-  const [selectedItem, setSelectedItem] = useSyncedState("selected_item", {
-    name: "Item",
-    body: "Body",
-    id: "",
-  })
 
   const [contract, setContract] = useSyncedState("contract", ({
     title: "Contract Title",
@@ -31,53 +32,54 @@ function Widget() {
     items: [],
   } as ContractNub))
 
-  const setItemToSelected = async () => {
-    const id = await figma.clientStorage.getAsync('contract_id')
-    const secret = await figma.clientStorage.getAsync('contract_secret')
 
-    waitForTask(new Promise(resolve => {
-      const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
-      let x = Infinity;
-      let y = Infinity;
+  const onConnect = async () => {
+     
+    const username = await figma.clientStorage.getAsync('username')
+    const password = await figma.clientStorage.getAsync('password')
+    const user_id = await figma.clientStorage.getAsync('user_id')
 
-      let nodeIds: string[] = []
-      for (const node of figma.currentPage.selection) {
-        nodeIds.push(node.id)
-        if (node.x < x) {
-          x = node.x;
-        }
-        if (node.y < y) {
-          y = node.y;
-        }
+    await new Promise((resolve) => {
+      figma.showUI(__uiFiles__.main, {width: 500, height: 500, title: "Connect to Your Contract"})
+      const sess_id = figma.currentUser?.sessionId ? figma.currentUser?.sessionId.toString() : ""
+      let existing_token = tokenMap.get(sess_id);
+      if (existing_token === undefined) {
+        existing_token = {value: "", timeout: new Date()}
       }
-      if (figma.currentPage.selection.length > 0) {
-        widgetNode.y = y - widgetNode.height-50 
-        widgetNode.x = x
-      }
+      figma.ui.postMessage({ 
+        type: 'pass_credentials', 
+        payload: {
+          username: username,  
+          password: password, 
+          token: existing_token.value,
+          timeout: existing_token.timeout,
+          user_id: user_id,
+        }
+      })
+      figma.ui.on('message', async (msg) => {
+        if (msg.type === "login_success") {
 
-      figma.showUI(__html__, { visible: false })
-      if (selectedItem?.id) {
-        figma.ui.postMessage({ 
-          type: 'set_item_nodes', 
-          payload: {
-            contract_id: id,  
-            contract_secret: secret,
-            item_id: selectedItem.id,
-            node_ids: nodeIds,
+          await figma.clientStorage.setAsync('username', msg.payload.username)
+          await figma.clientStorage.setAsync('password', msg.payload.password)
+          await figma.clientStorage.setAsync('user_id', msg.payload.user_id)
+
+          if (sess_id) {
+            tokenMap.set(sess_id.toString(), {
+              value: msg.payload.token,
+              timeout: msg.payload.timemout
+            })
           }
-        })
-      }
-
-      figma.ui.onmessage = async (msg) => {
-        figma.closePlugin()
-        resolve(msg)
-      }
-    }))
+        }
+        if (msg === 'close') {
+          figma.closePlugin()
+        }
+      })
+    })
   }
 
   const connectToFeather = () => {
     waitForTask(new Promise(resolve => {
-      figma.showUI(__html__, { visible: false })
+      figma.showUI(__uiFiles__.background, { visible: false })
       figma.ui.postMessage({ 
         type: 'query_contract', 
         payload: {
@@ -126,10 +128,64 @@ function Widget() {
       }
     }))
   }
+  // =============================================================
+
+
+  // =========================Item State:=========================
+  const [selectedItem, setSelectedItem] = useSyncedState("selected_item", {
+    name: "Item",
+    body: "Body",
+    id: "",
+  })
+
+  const setItemToSelected = async () => {
+    const id = await figma.clientStorage.getAsync('contract_id')
+    const secret = await figma.clientStorage.getAsync('contract_secret')
+
+    waitForTask(new Promise(resolve => {
+      const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
+      let x = Infinity;
+      let y = Infinity;
+
+      let nodeIds: string[] = []
+      for (const node of figma.currentPage.selection) {
+        nodeIds.push(node.id)
+        if (node.x < x) {
+          x = node.x;
+        }
+        if (node.y < y) {
+          y = node.y;
+        }
+      }
+      if (figma.currentPage.selection.length > 0) {
+        widgetNode.y = y - widgetNode.height-50 
+        widgetNode.x = x
+      }
+
+      figma.showUI(__uiFiles__.background, { visible: false })
+      if (selectedItem?.id) {
+        figma.ui.postMessage({ 
+          type: 'set_item_nodes', 
+          payload: {
+            contract_id: id,  
+            contract_secret: secret,
+            item_id: selectedItem.id,
+            node_ids: nodeIds,
+          }
+        })
+      }
+
+      figma.ui.onmessage = async (msg) => {
+        figma.closePlugin()
+        resolve(msg)
+      }
+    }))
+  }
+  // =============================================================
 
   if (widgetType === widgetTypes.HUB) {
     return HubUI(
-      connectToFeather,
+      onConnect,
       contractId,
       setContractId,
       contractSecret,

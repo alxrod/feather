@@ -1,12 +1,14 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport"
-import { RpcOptions, RpcError } from "@protobuf-ts/runtime-rpc"
+import { RpcOptions, RpcError, RpcMetadata} from "@protobuf-ts/runtime-rpc"
 import { 
   QueryByIdRequest,
   ContractResponse,
   InviteDataRequest,
   ContractInviteNub,
   FigmaItemRequest,
-  ContractEditResponse
+  ContractEditResponse,
+  QueryByUserRequest,
+  ContractNubSet
 } from "./proto/communication/contract";
 
 
@@ -55,13 +57,21 @@ export const ServerResult = Object.freeze({
 
 class ApiService {
 
-
   queryContract(contract_id: string, contract_secret: string): Promise<ContractInviteNub> {
     let queryRequest: InviteDataRequest = {
       id: contract_id,
       secret: contract_secret,
     };
     return contractClient.inviteQuery(queryRequest).response
+  }
+
+  queryContractList(user_id: string, user_token: string): Promise<ContractNubSet> {
+    let queryRequest: QueryByUserRequest = {
+      userId: user_id,
+    };
+    return contractClient.queryByUser(queryRequest,
+      {meta: {authorization: user_token}}
+    ).response
   }
 
   setItemFigmaNodes(

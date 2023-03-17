@@ -9,69 +9,100 @@ import {
 import { 
   UserSigninResponse
 } from "./proto/communication/user";
+import {
+  Timestamp
+} from "./proto/google/protobuf/timestamp"
 
-
+import LoginCard from "./components/Login"
+import ContractListCard from './components/ContractList';
+import {Oval} from 'react-loading-icons'
 
 function App() {
+  const [token, setToken] = useState("")
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [user_id, setUserId] = useState("")
+
+  const [needLogin, setNeedLogin] = useState(true)
+  const [finishedLoading, setFinishedLoading] = useState(false)
 
   window.onmessage = async (event) => {
-    if (event.data.pluginMessage.type === 'query_contract') {
-      ApiService.queryContract(
-        event.data.pluginMessage.payload.id,
-        event.data.pluginMessage.payload.secret,
-      ).then(
-        (nub: ContractInviteNub) => {
-          // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
-          window.parent.postMessage(
-            {pluginMessage: {type: "new_contract", payload: ContractInviteNub.toJson(nub)}},
-            '*'
-          )
-        },
-        (err: RpcError) => {
-          console.log("Error: ", err)
-        }
-      )
-    } else if (event.data.pluginMessage.type === 'set_item_nodes') {
-      ApiService.setItemFigmaNodes(
-        event.data.pluginMessage.payload.contract_id,
-        event.data.pluginMessage.payload.contract_secret,
-        event.data.pluginMessage.payload.item_id,
-        event.data.pluginMessage.payload.node_ids,
-      ).then(
-        (nub: ContractEditResponse) => {
-          window.parent.postMessage( {pluginMessage: {type: "item_nodes_success", payload: {}}}, '*')
-        },
-        (err: RpcError) => {
-          window.parent.postMessage( {pluginMessage: {type: "item_nodes_fail", payload: {}}}, '*')
-        }
-      )
+    if (event.data.pluginMessage.type === 'pass_credentials') {
+      console.log("Msg received: ", event.data.pluginMessage)
+      const t = event.data.pluginMessage.payload.token
+      const to = event.data.pluginMessage.payload.timeout
+      const un = event.data.pluginMessage.payload.username
+      const p = event.data.pluginMessage.payload.password
+      const id = event.data.pluginMessage.payload.user_id
+
+      setToken(t)
+      setUsername(un)
+      setPassword(p)
+      setUserId(id)
+
+      if (id && t !== "" && to < (new Date())) {
+        setNeedLogin(false)
+        setFinishedLoading(true)
+      } else if (un !== "" && p !== "") {
+        ApiService.login(un, p).then(
+          (resp: UserSigninResponse) => {
+            // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
+            const timeout = Timestamp.toDate(resp.tokenTimeout ? resp.tokenTimeout : Timestamp.now())
+            window.parent.postMessage(
+              {pluginMessage: {type: "login_success", payload: {
+                token: resp.token, 
+                timeout: timeout,
+                username: un,
+                password: p,
+              }}}, '*'
+            )
+            setToken(resp.token)
+            setUserId(resp.user?.id ? resp.user?.id : "")
+            setNeedLogin(false)
+            setFinishedLoading(true)
+          },
+          (err: RpcError) => {
+            setNeedLogin(true)
+            setFinishedLoading(true)
+          }
+        )
+      }
     }
   }
 
-
-  // useEffect(() => {
-  //   if (typeof parent !== undefined) {
-  //     ApiService.login("alex", "play101").then(
-  //       (response: UserSigninResponse) => {
-  //         console.log("User WORKED: ", response.user?.username);
-  //         parent?.postMessage?.({ pluginMessage: 'hello '+response.user?.username }, '*')
-  //       },
-  //       (err: RpcError) => {
-  //         console.log("Error: ", err)
-  //       })
-  //   }
-  // }, [])
-
+  const signinSuccess = (id: string, token: string, timeout: Date, username: string, password: string) => {
+    window.parent.postMessage(
+      {pluginMessage: {type: "login_success", payload: {
+        token: token, 
+        timeout: timeout,
+        username: username,
+        password: password,
+        user_id: id,
+      }}},
+      '*'
+      
+    )
+    setToken(token)
+    setUsername(username)
+    setPassword(password)
+    setUserId(id)
+    setNeedLogin(false)
+  }
   return (
-    <div className="App">
-      <h1>Hello</h1>
-      <button
-        onClick={() => {
-          parent?.postMessage?.({ pluginMessage: 'close' }, '*')
-        }}
-      >
-        Close
-      </button>
+    <div className="App w-full h-full">
+      {!finishedLoading ? (
+        <div className="w-full h-full flex justify-center items-center">
+          <Oval className="w-32 h-32" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
+        </div>
+      ) : needLogin ? (
+        <div className="px-12">
+          <LoginCard signinSuccess={signinSuccess}/>
+        </div>
+      ) : (
+        <div className="px-12">
+          <ContractListCard user_id={user_id} token={token}/>
+        </div>
+      )}
     </div>
   )
 }
