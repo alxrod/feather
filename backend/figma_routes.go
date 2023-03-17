@@ -63,17 +63,12 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 }
 
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
-
 	database := s.dbClient.Database(s.dbName)
 	item_id, err := primitive.ObjectIDFromHex(req.ItemId)
 	if err != nil {
 		return nil, errors.New("Invalid item id")
 	}
 	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
-
-	if contract.InvitePassword != req.ContractSecret {
-		return nil, errors.New("The provided contract secret is invalid")
-	}
 
 	var cur_item *db.ContractItem
 	for _, item := range contract.Items {

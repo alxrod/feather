@@ -97,18 +97,19 @@ class ApiService {
   }
 
   setItemFigmaNodes(
+    user_id: string,
+    user_token: string,
     contract_id: string, 
-    contract_secret: string,
     item_id: string,
     node_ids: string[]
   ): Promise<ContractEditResponse> {
     let request: FigmaItemRequest = {
+      userId: user_id,
       contractId: contract_id,
-      contractSecret: contract_secret,
       itemId: item_id,
       nodeIds: node_ids,
     };
-    return contractClient.setItemFigmaNodes(request).response
+    return contractClient.setItemFigmaNodes(request, {meta: {authorization: user_token}}).response
   }
 
   login(usernameOrEmail: string, password: string): Promise<UserSigninResponse> {

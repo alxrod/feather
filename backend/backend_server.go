@@ -41,7 +41,6 @@ func accessibleRoles() []string {
 		"/communication.Auth/ForgotPassword",
 		"/communication.Auth/ConfirmResetId",
 		"/communication.Auth/ChangePassword",
-		"/communication.Contract/SetItemFigmaNodes",
 	}
 }
 

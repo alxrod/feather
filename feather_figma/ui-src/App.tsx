@@ -17,8 +17,13 @@ import {
 
 import LoginCard from "./components/Login"
 import ContractListCard from './components/ContractList';
+import ItemNodeSet from "./components/ItemNodeSet";
 import {Oval} from 'react-loading-icons'
 
+const displayModes = {
+  "CONTRACTS": 0,
+  "ITEM_NODES": 1,
+}
 function App() {
   const [token, setToken] = useState("")
   const [username, setUsername] = useState("")
@@ -27,6 +32,12 @@ function App() {
 
   const [needLogin, setNeedLogin] = useState(true)
   const [finishedLoading, setFinishedLoading] = useState(false)
+
+  const [displayMode, setDisplayMode] = useState(displayModes["CONTRACTS"])
+
+  const [node_ids, setNodeIds] = useState([])
+  const [contract_id, setContractId] = useState("")
+  const [item_id, setItemId] = useState("")
 
   const selectedContract = (id: string) => {
     ApiService.queryContract(id, user_id, token).then(
@@ -45,7 +56,13 @@ function App() {
   }
 
   window.onmessage = async (event) => {
-    if (event.data.pluginMessage.type === 'pass_credentials') {
+    if (event.data.pluginMessage.type === 'set_display_mode') {
+      setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
+    } else if (event.data.pluginMessage.type === 'set_item_nodes') {
+      setItemId(event.data.pluginMessage.payload.item_id)
+      setNodeIds(event.data.pluginMessage.payload.node_ids)
+      setContractId(event.data.pluginMessage.payload.contract_id)
+    } else if (event.data.pluginMessage.type === 'pass_credentials') {
       console.log("Msg received: ", event.data.pluginMessage)
       const t = event.data.pluginMessage.payload.token
       const to = event.data.pluginMessage.payload.timeout
@@ -118,7 +135,19 @@ function App() {
         </div>
       ) : (
         <div className="px-12">
+        {displayMode === displayModes["CONTRACTS"] ? (
           <ContractListCard user_id={user_id} token={token} selectedContract={selectedContract}/>
+        ) : displayMode === displayModes["ITEM_NODES"] ? (
+          <h1>Connect your items!</h1>
+        ) : (
+          <ItemNodeSet 
+            user_id={user_id}
+            user_token={token}
+            contract_id={contract_id}
+            item_id={item_id}
+            node_ids={node_ids}
+          />
+        )}
         </div>
       )}
     </div>

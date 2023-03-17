@@ -34,28 +34,35 @@ function Widget() {
   } as ContractNub))
 
 
-  const onConnect = async () => {
-     
+  const sendCredentials = async (sess_id: string) => {
     const username = await figma.clientStorage.getAsync('username')
     const password = await figma.clientStorage.getAsync('password')
 
+    
+    let existing_token = tokenMap.get(sess_id);
+    if (existing_token === undefined) {
+      existing_token = {value: "", user_id: "", timeout: new Date()}
+    }
+
+    figma.ui.postMessage({ 
+      type: 'pass_credentials', 
+      payload: {
+        username: username,  
+        password: password, 
+        token: existing_token.value,
+        timeout: existing_token.timeout,
+        user_id: existing_token.user_id,
+      }
+    })
+  }
+  const onConnect = async () => {
     await new Promise((resolve) => {
       figma.showUI(__uiFiles__.main, {width: 500, height: 500, title: "Connect to Your Contract"})
+      figma.ui.postMessage({ type: 'set_display_mode', payload: "CONTRACTS" })
+      
       const sess_id = figma.currentUser?.sessionId ? figma.currentUser?.sessionId.toString() : ""
-      let existing_token = tokenMap.get(sess_id);
-      if (existing_token === undefined) {
-        existing_token = {value: "", user_id: "", timeout: new Date()}
-      }
-      figma.ui.postMessage({ 
-        type: 'pass_credentials', 
-        payload: {
-          username: username,  
-          password: password, 
-          token: existing_token.value,
-          timeout: existing_token.timeout,
-          user_id: existing_token.user_id,
-        }
-      })
+      sendCredentials(sess_id)
+      
       figma.ui.on('message', async (msg) => {
         if (msg.type === "login_success") {
 
@@ -123,9 +130,8 @@ function Widget() {
   const setItemToSelected = async () => {
     const id = await figma.clientStorage.getAsync('contract_id')
     const secret = await figma.clientStorage.getAsync('contract_secret')
-    const user_id = await figma.clientStorage.getAsync('user_id')
 
-    waitForTask(new Promise(resolve => {
+    await new Promise(resolve => {
       const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
       let x = Infinity;
       let y = Infinity;
@@ -144,18 +150,19 @@ function Widget() {
         widgetNode.y = y - widgetNode.height-50 
         widgetNode.x = x
       }
+
+      figma.showUI(__uiFiles__.main, {width: 500, height: 500, title: "Set Item Content"})
+      figma.ui.postMessage({ type: 'set_display_mode', payload: "ITEM_NODES" })
       
+      const sess_id = figma.currentUser?.sessionId ? figma.currentUser?.sessionId.toString() : ""
+      sendCredentials(sess_id)
 
-
-      figma.showUI(__uiFiles__.background, { visible: false })
       if (selectedItem?.id) {
         figma.ui.postMessage({ 
           type: 'set_item_nodes', 
           payload: {
-            contract_id: id,  
-            contract_secret: secret,
-            user_id: user_id,
             item_id: selectedItem.id,
+            contract_id: contractId,
             node_ids: nodeIds,
           }
         })
@@ -165,7 +172,7 @@ function Widget() {
         figma.closePlugin()
         resolve(msg)
       }
-    }))
+    })
   }
   // =============================================================
 

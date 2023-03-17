@@ -1273,10 +1273,6 @@ export interface FigmaItemRequest {
      */
     userId: string;
     /**
-     * @generated from protobuf field: string contract_secret = 2;
-     */
-    contractSecret: string;
-    /**
      * @generated from protobuf field: string item_id = 3;
      */
     itemId: string;
@@ -5060,13 +5056,12 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
         super("communication.FigmaItemRequest", [
             { no: 1, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "contract_secret", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "item_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 4, name: "node_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<FigmaItemRequest>): FigmaItemRequest {
-        const message = { contractId: "", userId: "", contractSecret: "", itemId: "", nodeIds: [] };
+        const message = { contractId: "", userId: "", itemId: "", nodeIds: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<FigmaItemRequest>(this, message, value);
@@ -5082,9 +5077,6 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
                     break;
                 case /* string user_id */ 5:
                     message.userId = reader.string();
-                    break;
-                case /* string contract_secret */ 2:
-                    message.contractSecret = reader.string();
                     break;
                 case /* string item_id */ 3:
                     message.itemId = reader.string();
@@ -5110,9 +5102,6 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
         /* string user_id = 5; */
         if (message.userId !== "")
             writer.tag(5, WireType.LengthDelimited).string(message.userId);
-        /* string contract_secret = 2; */
-        if (message.contractSecret !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.contractSecret);
         /* string item_id = 3; */
         if (message.itemId !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.itemId);
