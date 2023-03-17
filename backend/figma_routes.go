@@ -65,18 +65,12 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
 
 	database := s.dbClient.Database(s.dbName)
-	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
-	if err != nil {
-		return nil, errors.New("Invalid contract id")
-	}
 	item_id, err := primitive.ObjectIDFromHex(req.ItemId)
 	if err != nil {
-		return nil, errors.New("Invalid user id")
+		return nil, errors.New("Invalid item id")
 	}
-	contract, err := db.ContractById(contract_id, database)
-	if err != nil {
-		return nil, err
-	}
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+
 	if contract.InvitePassword != req.ContractSecret {
 		return nil, errors.New("The provided contract secret is invalid")
 	}
@@ -120,7 +114,7 @@ func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItem
 	// 	fmt.Printf("API Response as struct %+v\n", responseObject)
 	// }
 
-	if err = s.ChatAgent.SendFigmaItemNodesMessage(contract, cur_item, database); err != nil {
+	if err = s.ChatAgent.SendFigmaItemNodesMessage(user, contract, cur_item, database); err != nil {
 		return nil, errors.New("Couldn't broadcast Items Message")
 	}
 

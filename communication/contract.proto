@@ -409,6 +409,7 @@ message FigmaLinkRequest {
 
 message FigmaItemRequest {
     string contract_id = 1;
+    string user_id = 5;
     string contract_secret = 2;
     string item_id = 3;
     repeated string node_ids = 4;

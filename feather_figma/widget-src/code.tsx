@@ -11,6 +11,7 @@ import { ItemUI } from "./item_ui"
 
 type Token = {
   value: string,
+  user_id: string,
   timeout: Date,
 }
 function Widget() {
@@ -37,14 +38,13 @@ function Widget() {
      
     const username = await figma.clientStorage.getAsync('username')
     const password = await figma.clientStorage.getAsync('password')
-    const user_id = await figma.clientStorage.getAsync('user_id')
 
     await new Promise((resolve) => {
       figma.showUI(__uiFiles__.main, {width: 500, height: 500, title: "Connect to Your Contract"})
       const sess_id = figma.currentUser?.sessionId ? figma.currentUser?.sessionId.toString() : ""
       let existing_token = tokenMap.get(sess_id);
       if (existing_token === undefined) {
-        existing_token = {value: "", timeout: new Date()}
+        existing_token = {value: "", user_id: "", timeout: new Date()}
       }
       figma.ui.postMessage({ 
         type: 'pass_credentials', 
@@ -53,7 +53,7 @@ function Widget() {
           password: password, 
           token: existing_token.value,
           timeout: existing_token.timeout,
-          user_id: user_id,
+          user_id: existing_token.user_id,
         }
       })
       figma.ui.on('message', async (msg) => {
@@ -66,7 +66,8 @@ function Widget() {
           if (sess_id) {
             tokenMap.set(sess_id.toString(), {
               value: msg.payload.token,
-              timeout: msg.payload.timemout
+              timeout: msg.payload.timemout,
+              user_id: msg.payload.user_id
             })
           }
         } else if (msg.type === "new_contract") {
@@ -122,6 +123,7 @@ function Widget() {
   const setItemToSelected = async () => {
     const id = await figma.clientStorage.getAsync('contract_id')
     const secret = await figma.clientStorage.getAsync('contract_secret')
+    const user_id = await figma.clientStorage.getAsync('user_id')
 
     waitForTask(new Promise(resolve => {
       const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
@@ -142,6 +144,8 @@ function Widget() {
         widgetNode.y = y - widgetNode.height-50 
         widgetNode.x = x
       }
+      
+
 
       figma.showUI(__uiFiles__.background, { visible: false })
       if (selectedItem?.id) {
@@ -150,6 +154,7 @@ function Widget() {
           payload: {
             contract_id: id,  
             contract_secret: secret,
+            user_id: user_id,
             item_id: selectedItem.id,
             node_ids: nodeIds,
           }

@@ -71,6 +71,7 @@ const ContractItem = (props) => {
       toggleDecideMode(false)
     }
   }, [item_text, contract_info.currentBody, contract_info.workerBody, contract_info.buyerBody])
+  
 
   const [proposedByPartner, setProposedByPartner] = useState(false)
   const [itemMsgId, setItemMsgId] = useState("")

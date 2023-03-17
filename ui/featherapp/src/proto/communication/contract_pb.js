@@ -14545,6 +14545,7 @@ proto.communication.FigmaItemRequest.prototype.toObject = function(opt_includeIn
 proto.communication.FigmaItemRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     contractId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    userId: jspb.Message.getFieldWithDefault(msg, 5, ""),
     contractSecret: jspb.Message.getFieldWithDefault(msg, 2, ""),
     itemId: jspb.Message.getFieldWithDefault(msg, 3, ""),
     nodeIdsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
@@ -14587,6 +14588,10 @@ proto.communication.FigmaItemRequest.deserializeBinaryFromReader = function(msg,
     case 1:
       var value = /** @type {string} */ (reader.readString());
       msg.setContractId(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUserId(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -14636,6 +14641,13 @@ proto.communication.FigmaItemRequest.serializeBinaryToWriter = function(message,
       f
     );
   }
+  f = message.getUserId();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
   f = message.getContractSecret();
   if (f.length > 0) {
     writer.writeString(
@@ -14675,6 +14687,24 @@ proto.communication.FigmaItemRequest.prototype.getContractId = function() {
  */
 proto.communication.FigmaItemRequest.prototype.setContractId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string user_id = 5;
+ * @return {string}
+ */
+proto.communication.FigmaItemRequest.prototype.getUserId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.FigmaItemRequest} returns this
+ */
+proto.communication.FigmaItemRequest.prototype.setUserId = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

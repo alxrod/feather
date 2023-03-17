@@ -836,6 +836,7 @@ func (agent *ChatAgent) SendFigmaLinkMessage(
 }
 
 func (agent *ChatAgent) SendFigmaItemNodesMessage(
+	user *db.User,
 	contract *db.Contract,
 	item *db.ContractItem,
 	database *mongo.Database) error {
@@ -846,10 +847,11 @@ func (agent *ChatAgent) SendFigmaItemNodesMessage(
 	}
 
 	msg := &db.Message{
-		RoomId:        contract.RoomId,
-		SystemMessage: true,
-		Timestamp:     time.Now().Local(),
-		Method:        db.FIGMA_ITEM_NODES,
+		RoomId:    contract.RoomId,
+		User:      user,
+		UserId:    user.Id,
+		Timestamp: time.Now().Local(),
+		Method:    db.FIGMA_ITEM_NODES,
 
 		Body: body,
 
