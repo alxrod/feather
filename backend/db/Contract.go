@@ -62,7 +62,8 @@ type Contract struct {
 	InvitedEmail   string `bson:"invited_email"`
 	InvitePassword string `bson:"invite_password"`
 
-	FigmaLink string `bson:"figma_link,omitempty"`
+	FigmaLink      string `bson:"figma_link,omitempty"`
+	FigmaConnected bool   `bson:"figma_connected,omitempty"`
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {
@@ -91,6 +92,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		WorkerApproved: contract.WorkerApproved,
 		BuyerApproved:  contract.BuyerApproved,
 		FigmaLink:      contract.FigmaLink,
+		FigmaConnected: contract.FigmaConnected,
 	}
 	if !contract.Id.IsZero() {
 		proto.Id = contract.Id.Hex()
@@ -173,6 +175,7 @@ func (contract *Contract) NubProto(user *User) (*comms.ContractNub, error) {
 	proto.Disputed = contract.Disputed
 	proto.AdminRequested = contract.AdminRequested
 	proto.FigmaLink = contract.FigmaLink
+	proto.FigmaConnected = contract.FigmaConnected
 
 	if contract.Worker != nil && contract.Worker.Id == user.Id {
 		proto.UserType = WORKER

@@ -83,6 +83,7 @@ message ContractEntity {
     bool admin_requested = 17;
 
     string figma_link = 19;
+    bool figma_connected = 20;
 }
 
 message ContractNub {
@@ -101,7 +102,8 @@ message ContractNub {
     string worker_id = 9;
     string buyer_id = 10;
 
-    string figmaLink = 13;
+    string figma_link = 13;
+    bool figma_connected = 14;
     repeated DeadlineNub deadlines = 11;
 }
 
@@ -411,6 +413,12 @@ message FigmaItemRequest {
     string item_id = 3;
     repeated string node_ids = 4;
 }
+
+message FigmaFileConnectRequest {
+    string user_id = 1;
+    string contract_id = 2;
+}
+
 service Contract {
 
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
@@ -470,5 +478,6 @@ service Contract {
     rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
 
     rpc SetFigmaLink(FigmaLinkRequest) returns (ContractEditResponse) {};
+    rpc SetFigmaConnected(FigmaFileConnectRequest) returns (ContractEditResponse) {};
     rpc SetItemFigmaNodes(FigmaItemRequest) returns (ContractEditResponse) {};
 }   

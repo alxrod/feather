@@ -2519,6 +2519,67 @@ proto.communication.ContractPromiseClient.prototype.setFigmaLink =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.communication.FigmaFileConnectRequest,
+ *   !proto.communication.ContractEditResponse>}
+ */
+const methodDescriptor_Contract_SetFigmaConnected = new grpc.web.MethodDescriptor(
+  '/communication.Contract/SetFigmaConnected',
+  grpc.web.MethodType.UNARY,
+  proto.communication.FigmaFileConnectRequest,
+  proto.communication.ContractEditResponse,
+  /**
+   * @param {!proto.communication.FigmaFileConnectRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.communication.ContractEditResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.communication.FigmaFileConnectRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.communication.ContractClient.prototype.setFigmaConnected =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/communication.Contract/SetFigmaConnected',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SetFigmaConnected,
+      callback);
+};
+
+
+/**
+ * @param {!proto.communication.FigmaFileConnectRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.communication.ContractEditResponse>}
+ *     Promise that resolves to the response
+ */
+proto.communication.ContractPromiseClient.prototype.setFigmaConnected =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/communication.Contract/SetFigmaConnected',
+      request,
+      metadata || {},
+      methodDescriptor_Contract_SetFigmaConnected);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.communication.FigmaItemRequest,
  *   !proto.communication.ContractEditResponse>}
  */

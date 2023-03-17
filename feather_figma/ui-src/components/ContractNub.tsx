@@ -13,9 +13,11 @@ const ContractNub = (props:any) => {
     }
   }, [props.contract])
 
+  const selectable = (props.contract.figmaLink === "")
+
   return (
       
-      <div style={{opacity: 0.5}}className="overflow-hidden rounded-lg shadow border-2 border-white hover:border-primary5">
+      <div style={{opacity: 0.5}} className="overflow-hidden rounded-lg shadow border-2 border-white hover:border-primary5">
         <div className="px-4 py-5 sm:p-6">
         <div className="pb-5">
           <div className="flex flex-wrap justify-between">

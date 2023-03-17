@@ -3,13 +3,13 @@ package backend
 import (
 	"context"
 	"errors"
+
 	// "log"
 
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	// "encoding/json"
 	// "fmt"
 	// "io/ioutil"
@@ -41,8 +41,29 @@ func (s *BackServer) SetFigmaLink(ctx context.Context, req *comms.FigmaLinkReque
 	return &comms.ContractEditResponse{}, nil
 }
 
+func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFileConnectRequest) (*comms.ContractEditResponse, error) {
+	database := s.dbClient.Database(s.dbName)
+	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	if err != nil {
+		return nil, err
+	}
+	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
+		return nil, errors.New("User is not part of contract")
+	}
+	contract.FigmaConnected = true
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"figma_connected", true},
+	}}}
+	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return &comms.ContractEditResponse{}, nil
+}
+
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
-	
+
 	database := s.dbClient.Database(s.dbName)
 	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
