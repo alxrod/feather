@@ -10,7 +10,7 @@ import {
 const App = () => {
   window.onmessage = async (event) => {
     if (event.data.pluginMessage.type === 'query_contract') {
-      ApiService.queryContract(
+      ApiService.queryContractSummary(
         event.data.pluginMessage.payload.id,
         event.data.pluginMessage.payload.secret,
       ).then(

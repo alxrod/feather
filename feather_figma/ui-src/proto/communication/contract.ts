@@ -264,6 +264,10 @@ export interface ContractEntity {
      * @generated from protobuf field: string figma_link = 19;
      */
     figmaLink: string;
+    /**
+     * @generated from protobuf field: bool figma_connected = 20;
+     */
+    figmaConnected: boolean;
 }
 /**
  * @generated from protobuf message communication.ContractNub
@@ -313,6 +317,14 @@ export interface ContractNub {
      * @generated from protobuf field: string buyer_id = 10;
      */
     buyerId: string;
+    /**
+     * @generated from protobuf field: string figma_link = 13;
+     */
+    figmaLink: string;
+    /**
+     * @generated from protobuf field: bool figma_connected = 14;
+     */
+    figmaConnected: boolean;
     /**
      * @generated from protobuf field: repeated communication.DeadlineNub deadlines = 11;
      */
@@ -1269,6 +1281,19 @@ export interface FigmaItemRequest {
      */
     nodeIds: string[];
 }
+/**
+ * @generated from protobuf message communication.FigmaFileConnectRequest
+ */
+export interface FigmaFileConnectRequest {
+    /**
+     * @generated from protobuf field: string user_id = 1;
+     */
+    userId: string;
+    /**
+     * @generated from protobuf field: string contract_id = 2;
+     */
+    contractId: string;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class PriceEntity$Type extends MessageType<PriceEntity> {
     constructor() {
@@ -1692,11 +1717,12 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
             { no: 10, name: "room_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 16, name: "disputed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 17, name: "admin_requested", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 19, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 19, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "figma_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<ContractEntity>): ContractEntity {
-        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false, figmaLink: "" };
+        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false, figmaLink: "", figmaConnected: false };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ContractEntity>(this, message, value);
@@ -1763,6 +1789,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
                     break;
                 case /* string figma_link */ 19:
                     message.figmaLink = reader.string();
+                    break;
+                case /* bool figma_connected */ 20:
+                    message.figmaConnected = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1833,6 +1862,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
         /* string figma_link = 19; */
         if (message.figmaLink !== "")
             writer.tag(19, WireType.LengthDelimited).string(message.figmaLink);
+        /* bool figma_connected = 20; */
+        if (message.figmaConnected !== false)
+            writer.tag(20, WireType.Varint).bool(message.figmaConnected);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1858,11 +1890,13 @@ class ContractNub$Type extends MessageType<ContractNub> {
             { no: 8, name: "admin_requested", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 9, name: "worker_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 10, name: "buyer_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 13, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "figma_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 11, name: "deadlines", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => DeadlineNub }
         ]);
     }
     create(value?: PartialMessage<ContractNub>): ContractNub {
-        const message = { id: "", title: "", summary: "", price: 0n, stage: 0, userType: 0, disputed: false, adminRequested: false, workerId: "", buyerId: "", deadlines: [] };
+        const message = { id: "", title: "", summary: "", price: 0n, stage: 0, userType: 0, disputed: false, adminRequested: false, workerId: "", buyerId: "", figmaLink: "", figmaConnected: false, deadlines: [] };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ContractNub>(this, message, value);
@@ -1905,6 +1939,12 @@ class ContractNub$Type extends MessageType<ContractNub> {
                     break;
                 case /* string buyer_id */ 10:
                     message.buyerId = reader.string();
+                    break;
+                case /* string figma_link */ 13:
+                    message.figmaLink = reader.string();
+                    break;
+                case /* bool figma_connected */ 14:
+                    message.figmaConnected = reader.bool();
                     break;
                 case /* repeated communication.DeadlineNub deadlines */ 11:
                     message.deadlines.push(DeadlineNub.internalBinaryRead(reader, reader.uint32(), options));
@@ -1954,6 +1994,12 @@ class ContractNub$Type extends MessageType<ContractNub> {
         /* string buyer_id = 10; */
         if (message.buyerId !== "")
             writer.tag(10, WireType.LengthDelimited).string(message.buyerId);
+        /* string figma_link = 13; */
+        if (message.figmaLink !== "")
+            writer.tag(13, WireType.LengthDelimited).string(message.figmaLink);
+        /* bool figma_connected = 14; */
+        if (message.figmaConnected !== false)
+            writer.tag(14, WireType.Varint).bool(message.figmaConnected);
         /* repeated communication.DeadlineNub deadlines = 11; */
         for (let i = 0; i < message.deadlines.length; i++)
             DeadlineNub.internalBinaryWrite(message.deadlines[i], writer.tag(11, WireType.LengthDelimited).fork(), options).join();
@@ -5072,6 +5118,60 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
  * @generated MessageType for protobuf message communication.FigmaItemRequest
  */
 export const FigmaItemRequest = new FigmaItemRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class FigmaFileConnectRequest$Type extends MessageType<FigmaFileConnectRequest> {
+    constructor() {
+        super("communication.FigmaFileConnectRequest", [
+            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<FigmaFileConnectRequest>): FigmaFileConnectRequest {
+        const message = { userId: "", contractId: "" };
+        globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+        if (value !== undefined)
+            reflectionMergePartial<FigmaFileConnectRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: FigmaFileConnectRequest): FigmaFileConnectRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string user_id */ 1:
+                    message.userId = reader.string();
+                    break;
+                case /* string contract_id */ 2:
+                    message.contractId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: FigmaFileConnectRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string user_id = 1; */
+        if (message.userId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.userId);
+        /* string contract_id = 2; */
+        if (message.contractId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.contractId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message communication.FigmaFileConnectRequest
+ */
+export const FigmaFileConnectRequest = new FigmaFileConnectRequest$Type();
 /**
  * @generated ServiceType for protobuf service communication.Contract
  */
@@ -5116,5 +5216,6 @@ export const Contract = new ServiceType("communication.Contract", [
     { name: "ConfirmDeadline", options: {}, I: ConfirmDeadlineRequest, O: NullResponse },
     { name: "UndoDeadline", options: {}, I: UndoDeadlineRequest, O: NullResponse },
     { name: "SetFigmaLink", options: {}, I: FigmaLinkRequest, O: ContractEditResponse },
+    { name: "SetFigmaConnected", options: {}, I: FigmaFileConnectRequest, O: ContractEditResponse },
     { name: "SetItemFigmaNodes", options: {}, I: FigmaItemRequest, O: ContractEditResponse }
 ]);

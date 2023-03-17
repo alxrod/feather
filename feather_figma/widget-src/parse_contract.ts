@@ -1,23 +1,27 @@
 import { ContractNub, DeadlineNub, ItemNub } from "./types"
 import { sortDeadlines } from "./helpers"
 const parseContract = (payload: any): ContractNub => {
+  console.log("Working w ", payload)
   let raw_nub = payload
   let deadlines: DeadlineNub[] = []
   for (let i = 0; i < raw_nub.deadlines.length; i++) {
     let nubs: ItemNub[] = []
-    for (let j = 0; j < raw_nub.deadlines[i].items.length; j++) {
-      for (let k = 0; k < raw_nub.items.length; k++) {
-        if (raw_nub.items[k].id === raw_nub.deadlines[i].items[j].id) {
-          nubs.push({
-            id: raw_nub.items[k].id,
-            name: raw_nub.items[k].name,
-            body: raw_nub.items[k].currentBody
-          })
-          
-          break
+    if (raw_nub.deadlines[i]?.items) {
+      for (let j = 0; j < raw_nub.deadlines[i]?.items.length; j++) {
+        for (let k = 0; k < raw_nub?.items.length; k++) {
+          if (raw_nub.items[k].id === raw_nub.deadlines[i].items[j].id) {
+            nubs.push({
+              id: raw_nub.items[k].id,
+              name: raw_nub.items[k].name,
+              body: raw_nub.items[k].currentBody
+            })
+            
+            break
+          }
         }
       }
     }
+  
     let deadline: DeadlineNub = {
       id: raw_nub.deadlines[i].id,
       payout: parseInt(raw_nub.deadlines[i].currentPayout), 
@@ -29,13 +33,16 @@ const parseContract = (payload: any): ContractNub => {
   deadlines = sortDeadlines(deadlines);
 
   let items: ItemNub[] = []
-  for (let i = 0; i < raw_nub.items.length; i++) {
-    items.push({
-      id: raw_nub.items[i].id,
-      name: raw_nub.items[i].name,
-      body: raw_nub.items[i].currentBody
-    })
+  if (raw_nub?.items) {
+    for (let i = 0; i < raw_nub.items.length; i++) {
+      items.push({
+        id: raw_nub.items[i].id,
+        name: raw_nub.items[i].name,
+        body: raw_nub.items[i].currentBody
+      })
+    }
   }
+  
 
   let newCon = {
     title: raw_nub.title,

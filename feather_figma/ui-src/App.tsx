@@ -5,6 +5,8 @@ import ApiService from "./api.service"
 import { 
   ContractEditResponse,
   ContractInviteNub,
+  ContractResponse,
+  ContractEntity
 } from "./proto/communication/contract";
 import { 
   UserSigninResponse
@@ -25,6 +27,22 @@ function App() {
 
   const [needLogin, setNeedLogin] = useState(true)
   const [finishedLoading, setFinishedLoading] = useState(false)
+
+  const selectedContract = (id: string) => {
+    ApiService.queryContract(id, user_id, token).then(
+      (resp: ContractResponse) => {
+        // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
+        const jsonContract = resp.contract ? ContractEntity.toJson(resp.contract) : {}
+        console.log("RECEIVED NEW CONTRACT: ", jsonContract)
+        window.parent.postMessage(
+          {pluginMessage: {type: "new_contract", payload: jsonContract}}, '*'
+        )
+      },
+      (err: RpcError) => {
+        console.log("err: ", err.message)
+      }
+    )
+  }
 
   window.onmessage = async (event) => {
     if (event.data.pluginMessage.type === 'pass_credentials') {
@@ -100,7 +118,7 @@ function App() {
         </div>
       ) : (
         <div className="px-12">
-          <ContractListCard user_id={user_id} token={token}/>
+          <ContractListCard user_id={user_id} token={token} selectedContract={selectedContract}/>
         </div>
       )}
     </div>

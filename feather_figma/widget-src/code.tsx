@@ -69,32 +69,14 @@ function Widget() {
               timeout: msg.payload.timemout
             })
           }
-        }
-        if (msg === 'close') {
-          figma.closePlugin()
-        }
-      })
-    })
-  }
-
-  const connectToFeather = () => {
-    waitForTask(new Promise(resolve => {
-      figma.showUI(__uiFiles__.background, { visible: false })
-      figma.ui.postMessage({ 
-        type: 'query_contract', 
-        payload: {
-          id: contractId,  
-          secret: contractSecret, 
-        }
-      })
-
-      figma.ui.onmessage = async (msg) => {
-        if (msg.type === "new_contract") {
+        } else if (msg.type === "new_contract") {
           let newCon = parseContract(msg.payload)
           setContract(newCon)
-
-          await figma.clientStorage.setAsync('contract_id', contractId)
-          await figma.clientStorage.setAsync('contract_secret', contractSecret)
+          setContractId(msg.payload.id)
+          setContractSecret(msg.payload.invitePassword)
+          
+          await figma.clientStorage.setAsync('contract_id', msg.payload.id)
+          await figma.clientStorage.setAsync('contract_secret', msg.payload.invitePassword)
 
           for (let i = 0; i < newCon.items.length; i++) {
             let already_exists = false
@@ -122,11 +104,10 @@ function Widget() {
             clonedWidget.x = widgetNode.x + widgetNode.width +  50;
             clonedWidget.y = widgetNode.y + i*(300);
           }
+          figma.closePlugin()
         }
-        figma.closePlugin()
-        resolve(msg)
-      }
-    }))
+      })
+    })
   }
   // =============================================================
 
@@ -191,6 +172,7 @@ function Widget() {
       contractSecret,
       setContractSecret,
       contract,
+      (contractId !== "")
     )
   } else if (widgetType === widgetTypes.ITEM) {
     return ItemUI(selectedItem, setItemToSelected)

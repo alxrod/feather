@@ -13,11 +13,19 @@ const ContractNub = (props:any) => {
     }
   }, [props.contract])
 
-  const selectable = (props.contract.figmaLink === "")
+  const selectable = ((props.contract?.figmaLink ? props.contract.figmaLink : "") !== "" && !props.contract.figmaConnected && props.contract.stage < contractStages.SETTLE)
 
   return (
       
-      <div style={{opacity: 0.5}} className="overflow-hidden rounded-lg shadow border-2 border-white hover:border-primary5">
+      <div 
+        style={!selectable ? {opacity: 0.5, borderColor: "#FFFFFF"} : {}} 
+        className={"overflow-hidden rounded-lg shadow border-2 border-white hover:border-primary5"}
+        onClick={() => {
+          if (selectable) {
+            props.selectContract(props.contract.id)
+          }
+        }}
+      >
         <div className="px-4 py-5 sm:p-6">
         <div className="pb-5">
           <div className="flex flex-wrap justify-between">

@@ -8,7 +8,9 @@ import {
   FigmaItemRequest,
   ContractEditResponse,
   QueryByUserRequest,
-  ContractNubSet
+  ContractNubSet,
+  FigmaFileConnectRequest,
+
 } from "./proto/communication/contract";
 
 
@@ -57,12 +59,32 @@ export const ServerResult = Object.freeze({
 
 class ApiService {
 
-  queryContract(contract_id: string, contract_secret: string): Promise<ContractInviteNub> {
+  queryContractSummary(contract_id: string, contract_secret: string): Promise<ContractInviteNub> {
     let queryRequest: InviteDataRequest = {
       id: contract_id,
       secret: contract_secret,
     };
     return contractClient.inviteQuery(queryRequest).response
+  }
+
+  queryContract(contract_id: string, user_id: string, user_token: string): Promise<ContractResponse> {
+    let queryRequest: QueryByIdRequest = {
+      contractId: contract_id,
+      userId: user_id,
+    };
+    return contractClient.queryById(queryRequest,
+      {meta: {authorization: user_token}}
+    ).response
+  }
+
+  confirmContractConnected(contract_id: string, user_id: string, user_token: string): Promise<ContractEditResponse> {
+    let conRequest: FigmaFileConnectRequest = {
+      userId: user_id,
+      contractId: contract_id,
+    };
+    return contractClient.setFigmaConnected(conRequest,
+      {meta: {authorization: user_token}}
+    ).response
   }
 
   queryContractList(user_id: string, user_token: string): Promise<ContractNubSet> {
