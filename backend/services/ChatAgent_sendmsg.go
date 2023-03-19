@@ -842,7 +842,8 @@ func (agent *ChatAgent) SendFigmaItemNodesMessage(
 	database *mongo.Database) error {
 
 	body := &db.MessageBody{
-		ItemId:  item.Id,
+		ItemId:      item.Id,
+		ComponentId: item.FigmaComponentId,
 	}
 
 	msg := &db.Message{

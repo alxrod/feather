@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 	"sort"
-	"time"
 	"strings"
+	"time"
 
 	"github.com/TwiN/go-color"
 	comms "github.com/alxrod/feather/communication"
@@ -69,7 +69,7 @@ type Contract struct {
 
 func (contract *Contract) GetFigmaKey() string {
 	splits := strings.Split(contract.FigmaLink, "/file/")
-	if (len(splits) < 2) {
+	if len(splits) < 2 {
 		return ""
 	}
 	key_seg := splits[1]
@@ -103,6 +103,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		WorkerApproved: contract.WorkerApproved,
 		BuyerApproved:  contract.BuyerApproved,
 		FigmaLink:      contract.FigmaLink,
+		FigmaFileKey:   contract.GetFigmaKey(),
 		FigmaConnected: contract.FigmaConnected,
 	}
 	if !contract.Id.IsZero() {

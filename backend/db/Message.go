@@ -170,8 +170,8 @@ type MessageBody struct {
 	WorkerConfirmed bool `bson:"worker_confirmed,omitempty"`
 	BuyerConfirmed  bool `bson:"buyer_confirmed,omitempty"`
 
-	FigmaLink string   `bson:"figma_link,omitempty"`
-	NodeIds   []string `bson:"figma_node_ids,omitempty"`
+	FigmaLink   string `bson:"figma_link,omitempty"`
+	ComponentId string `bson:"figma_node_ids,omitempty"`
 }
 
 func (b *MessageBody) CommentProto() *comms.ChatMessage_CommentBody {
@@ -193,8 +193,8 @@ func (b *MessageBody) FigmaLinkProto() *comms.ChatMessage_FigmaLinkBody {
 func (b *MessageBody) FigmaItemNodesProto() *comms.ChatMessage_FigmaItemNodesBody {
 	return &comms.ChatMessage_FigmaItemNodesBody{
 		FigmaItemNodesBody: &comms.FigmaItemNodesMsgBody{
-			ItemId:  b.ItemId.Hex(),
-			NodeIds: b.NodeIds,
+			ItemId:      b.ItemId.Hex(),
+			ComponentId: b.ComponentId,
 		},
 	}
 }

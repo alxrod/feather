@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -151,7 +157,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.communication.FigmaItemNodesMsgBody = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.FigmaItemNodesMsgBody.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.communication.FigmaItemNodesMsgBody, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -3023,13 +3029,6 @@ proto.communication.ChatLabel.prototype.setItemId = function(value) {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.communication.FigmaItemNodesMsgBody.repeatedFields_ = [2];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -3062,7 +3061,7 @@ proto.communication.FigmaItemNodesMsgBody.prototype.toObject = function(opt_incl
 proto.communication.FigmaItemNodesMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
     itemId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    nodeIdsList: (f = jspb.Message.getRepeatedField(msg, 2)) == null ? undefined : f
+    componentId: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3105,7 +3104,7 @@ proto.communication.FigmaItemNodesMsgBody.deserializeBinaryFromReader = function
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.addNodeIds(value);
+      msg.setComponentId(value);
       break;
     default:
       reader.skipField();
@@ -3143,9 +3142,9 @@ proto.communication.FigmaItemNodesMsgBody.serializeBinaryToWriter = function(mes
       f
     );
   }
-  f = message.getNodeIdsList();
+  f = message.getComponentId();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       2,
       f
     );
@@ -3172,39 +3171,20 @@ proto.communication.FigmaItemNodesMsgBody.prototype.setItemId = function(value) 
 
 
 /**
- * repeated string node_ids = 2;
- * @return {!Array<string>}
+ * optional string component_id = 2;
+ * @return {string}
  */
-proto.communication.FigmaItemNodesMsgBody.prototype.getNodeIdsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 2));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.communication.FigmaItemNodesMsgBody} returns this
- */
-proto.communication.FigmaItemNodesMsgBody.prototype.setNodeIdsList = function(value) {
-  return jspb.Message.setField(this, 2, value || []);
+proto.communication.FigmaItemNodesMsgBody.prototype.getComponentId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.communication.FigmaItemNodesMsgBody} returns this
  */
-proto.communication.FigmaItemNodesMsgBody.prototype.addNodeIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 2, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.FigmaItemNodesMsgBody} returns this
- */
-proto.communication.FigmaItemNodesMsgBody.prototype.clearNodeIdsList = function() {
-  return this.setNodeIdsList([]);
+proto.communication.FigmaItemNodesMsgBody.prototype.setComponentId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 

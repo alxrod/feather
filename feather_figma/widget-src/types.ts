@@ -1,3 +1,7 @@
+export type ComponentSelection ={
+  id: string,
+  name: string
+}
 
 export const widgetTypes = {
   HUB: 0,

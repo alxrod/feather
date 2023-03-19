@@ -15,8 +15,10 @@ import { deleteItem, reactDeleteItem, deleteSuggestContractItem } from "../../..
 
 import { msgMethods, decisionTypes } from "../../../../services/chat.service"
 import { contractStages } from "../../../../services/contract.service"
+import Iframe from 'react-iframe'
 
 import ItemNameInput from "./item_name_input"
+import FigmaDraft from "./figma_draft"
 
 const SAVE_TIME = 350
 
@@ -30,6 +32,7 @@ const ContractItem = (props) => {
     workerBody: "",
     buyerBody: "",
     oldBody: "",
+    figmaComponentId: "",
     awaitingApproval: false,
     awaitingCreation: false,
     default: true,
@@ -45,6 +48,7 @@ const ContractItem = (props) => {
   const contractStage = useMemo(() => {
     return props.curContract?.stage
   })
+  
 
   const item_text = useMemo(() => {
     let i = 0
@@ -227,7 +231,6 @@ const ContractItem = (props) => {
   const inputSpan = useRef()
   const [content, setContent] = useState("Item 1")
   const [inputWidth, setInputWidth] = useState(100)
-
   if (props.embedded === true) {
     return (
       <div className="w-full h-full grow flex flex-col relative">
@@ -349,8 +352,16 @@ const ContractItem = (props) => {
           </div>
 
         <div className="mt-2 mr-2 text-sm text-gray-500">
+          <h1 className="text-gray-500 text-xl mb-2">Requirements: </h1>
           <ItemTextArea item_id={props.id} lock={lock} override={props.createMode} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
         </div>
+
+        {(!props.createMode && contract_info.figmaComponentId !== "") && (
+          <div className="mt-2">
+            <h1 className="text-gray-500 text-xl">Component Draft: </h1>
+            <FigmaDraft item_id={props.id} item_info={contract_info}/>
+          </div>
+        )}
       </div>
     </div>
   )

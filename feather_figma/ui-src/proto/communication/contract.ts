@@ -483,9 +483,9 @@ export interface ItemEntity {
      */
     adminSettled: number;
     /**
-     * @generated from protobuf field: repeated string figma_node_ids = 29;
+     * @generated from protobuf field: string figma_component_id = 29;
      */
-    figmaNodeIds: string[];
+    figmaComponentId: string;
 }
 /**
  * @generated from protobuf message communication.ItemNub
@@ -1277,9 +1277,9 @@ export interface FigmaItemRequest {
      */
     itemId: string;
     /**
-     * @generated from protobuf field: repeated string node_ids = 4;
+     * @generated from protobuf field: string component_id = 4;
      */
-    nodeIds: string[];
+    componentId: string;
 }
 /**
  * @generated from protobuf message communication.FigmaFileConnectRequest
@@ -2329,11 +2329,11 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
             { no: 26, name: "worker_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 27, name: "buyer_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 28, name: "admin_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 29, name: "figma_node_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+            { no: 29, name: "figma_component_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ItemEntity>): ItemEntity {
-        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, workerSettled: 0, buyerSettled: 0, adminSettled: 0, figmaNodeIds: [] };
+        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, workerSettled: 0, buyerSettled: 0, adminSettled: 0, figmaComponentId: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ItemEntity>(this, message, value);
@@ -2380,8 +2380,8 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
                 case /* uint32 admin_settled */ 28:
                     message.adminSettled = reader.uint32();
                     break;
-                case /* repeated string figma_node_ids */ 29:
-                    message.figmaNodeIds.push(reader.string());
+                case /* string figma_component_id */ 29:
+                    message.figmaComponentId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2431,9 +2431,9 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
         /* uint32 admin_settled = 28; */
         if (message.adminSettled !== 0)
             writer.tag(28, WireType.Varint).uint32(message.adminSettled);
-        /* repeated string figma_node_ids = 29; */
-        for (let i = 0; i < message.figmaNodeIds.length; i++)
-            writer.tag(29, WireType.LengthDelimited).string(message.figmaNodeIds[i]);
+        /* string figma_component_id = 29; */
+        if (message.figmaComponentId !== "")
+            writer.tag(29, WireType.LengthDelimited).string(message.figmaComponentId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -5057,11 +5057,11 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
             { no: 1, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "item_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "node_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+            { no: 4, name: "component_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<FigmaItemRequest>): FigmaItemRequest {
-        const message = { contractId: "", userId: "", itemId: "", nodeIds: [] };
+        const message = { contractId: "", userId: "", itemId: "", componentId: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<FigmaItemRequest>(this, message, value);
@@ -5081,8 +5081,8 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
                 case /* string item_id */ 3:
                     message.itemId = reader.string();
                     break;
-                case /* repeated string node_ids */ 4:
-                    message.nodeIds.push(reader.string());
+                case /* string component_id */ 4:
+                    message.componentId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -5105,9 +5105,9 @@ class FigmaItemRequest$Type extends MessageType<FigmaItemRequest> {
         /* string item_id = 3; */
         if (message.itemId !== "")
             writer.tag(3, WireType.LengthDelimited).string(message.itemId);
-        /* repeated string node_ids = 4; */
-        for (let i = 0; i < message.nodeIds.length; i++)
-            writer.tag(4, WireType.LengthDelimited).string(message.nodeIds[i]);
+        /* string component_id = 4; */
+        if (message.componentId !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.componentId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

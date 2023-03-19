@@ -83,6 +83,7 @@ message ContractEntity {
     bool admin_requested = 17;
 
     string figma_link = 19;
+    string figma_file_key = 21;
     bool figma_connected = 20;
 }
 

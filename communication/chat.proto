@@ -64,6 +64,7 @@ message ChatLabel {
 
 message FigmaItemNodesMsgBody {
     string item_id = 1;
+    string component_id = 2;
 }
 
 message FigmaLinkMsgBody {

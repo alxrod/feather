@@ -35,7 +35,7 @@ function App() {
 
   const [displayMode, setDisplayMode] = useState(displayModes["CONTRACTS"])
 
-  const [node_ids, setNodeIds] = useState([])
+  const [component_options, setComponentOptions] = useState([])
   const [contract_id, setContractId] = useState("")
   const [item_id, setItemId] = useState("")
 
@@ -58,10 +58,10 @@ function App() {
   window.onmessage = async (event) => {
     if (event.data.pluginMessage.type === 'set_display_mode') {
       setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
-    } else if (event.data.pluginMessage.type === 'set_item_nodes') {
+    } else if (event.data.pluginMessage.type === 'set_item_options') {
       setItemId(event.data.pluginMessage.payload.item_id)
-      setNodeIds(event.data.pluginMessage.payload.node_ids)
       setContractId(event.data.pluginMessage.payload.contract_id)
+      setComponentOptions(event.data.pluginMessage.payload.component_options)
     } else if (event.data.pluginMessage.type === 'pass_credentials') {
       console.log("Msg received: ", event.data.pluginMessage)
       const t = event.data.pluginMessage.payload.token
@@ -134,19 +134,23 @@ function App() {
           <LoginCard signinSuccess={signinSuccess}/>
         </div>
       ) : (
-        <div className="px-12">
+        <div>
         {displayMode === displayModes["CONTRACTS"] ? (
-          <ContractListCard user_id={user_id} token={token} selectedContract={selectedContract}/>
+          <div className="px-12">
+            <ContractListCard user_id={user_id} token={token} selectedContract={selectedContract}/>
+          </div>
         ) : displayMode === displayModes["ITEM_NODES"] ? (
-          <h1>Connect your items!</h1>
+          <div className="px-8">
+            <ItemNodeSet 
+              user_id={user_id}
+              user_token={token}
+              contract_id={contract_id}
+              item_id={item_id}
+              component_options={component_options}
+            />
+          </div>
         ) : (
-          <ItemNodeSet 
-            user_id={user_id}
-            user_token={token}
-            contract_id={contract_id}
-            item_id={item_id}
-            node_ids={node_ids}
-          />
+          <div></div>
         )}
         </div>
       )}

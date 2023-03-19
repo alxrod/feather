@@ -101,13 +101,13 @@ class ApiService {
     user_token: string,
     contract_id: string, 
     item_id: string,
-    node_ids: string[]
+    component_id: string
   ): Promise<ContractEditResponse> {
     let request: FigmaItemRequest = {
       userId: user_id,
       contractId: contract_id,
       itemId: item_id,
-      nodeIds: node_ids,
+      componentId: component_id,
     };
     return contractClient.setItemFigmaNodes(request, {meta: {authorization: user_token}}).response
   }

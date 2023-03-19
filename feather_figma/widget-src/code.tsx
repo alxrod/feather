@@ -1,5 +1,5 @@
 import { logo_image  } from "./images"
-import {widgetTypes, UserNub, DeadlineNub, ItemNub, ContractNub} from "./types"
+import {widgetTypes, UserNub, DeadlineNub, ItemNub, ContractNub, ComponentSelection} from "./types"
 import parseContract from "./parse_contract"
 import { dateToString } from "./helpers"
 
@@ -132,26 +132,35 @@ function Widget() {
     const secret = await figma.clientStorage.getAsync('contract_secret')
 
     await new Promise(resolve => {
-      const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
-      let x = Infinity;
-      let y = Infinity;
+      // const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
+      // let x = Infinity;
+      // let y = Infinity;
 
-      let nodeIds: string[] = []
-      for (const node of figma.currentPage.selection) {
-        nodeIds.push(node.id)
-        if (node.x < x) {
-          x = node.x;
-        }
-        if (node.y < y) {
-          y = node.y;
-        }
-      }
-      if (figma.currentPage.selection.length > 0) {
-        widgetNode.y = y - widgetNode.height-50 
-        widgetNode.x = x
-      }
+      let componentOptions: ComponentSelection[] = []
+      // for (const node of figma.currentPage.selection) {
+      //   nodeIds.push(node.id)
+      //   if (node.x < x) {
+      //     x = node.x;
+      //   }
+      //   if (node.y < y) {
+      //     y = node.y;
+      //   }
+      // }
+      // if (figma.currentPage.selection.length > 0) {
+      //   widgetNode.y = y - widgetNode.height-50 
+      //   widgetNode.x = x
+      // }
 
-      figma.showUI(__uiFiles__.main, {width: 500, height: 500, title: "Set Item Content"})
+      figma.currentPage.children.forEach(node => {
+        if (node.type === "COMPONENT") {
+          componentOptions.push({
+            id: node.id,
+            name: node.name,
+          })
+        }
+      })
+
+      figma.showUI(__uiFiles__.main, {width: 500, height: 350, title: "Set Item Content"})
       figma.ui.postMessage({ type: 'set_display_mode', payload: "ITEM_NODES" })
       
       const sess_id = figma.currentUser?.sessionId ? figma.currentUser?.sessionId.toString() : ""
@@ -159,18 +168,20 @@ function Widget() {
 
       if (selectedItem?.id) {
         figma.ui.postMessage({ 
-          type: 'set_item_nodes', 
+          type: 'set_item_options', 
           payload: {
             item_id: selectedItem.id,
-            contract_id: contractId,
-            node_ids: nodeIds,
+            contract_id: contract.id,
+            component_options: componentOptions,
           }
         })
       }
 
       figma.ui.onmessage = async (msg) => {
-        figma.closePlugin()
-        resolve(msg)
+        if (msg.type === "close") {
+          figma.closePlugin()
+          resolve(msg)
+        }
       }
     })
   }

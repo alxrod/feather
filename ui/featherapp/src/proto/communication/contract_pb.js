@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -2848,6 +2854,7 @@ proto.communication.ContractEntity.toObject = function(includeInstance, msg) {
     disputed: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 17, false),
     figmaLink: jspb.Message.getFieldWithDefault(msg, 19, ""),
+    figmaFileKey: jspb.Message.getFieldWithDefault(msg, 21, ""),
     figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 20, false)
   };
 
@@ -2965,6 +2972,10 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
     case 19:
       var value = /** @type {string} */ (reader.readString());
       msg.setFigmaLink(value);
+      break;
+    case 21:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFigmaFileKey(value);
       break;
     case 20:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -3134,6 +3145,13 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
   if (f.length > 0) {
     writer.writeString(
       19,
+      f
+    );
+  }
+  f = message.getFigmaFileKey();
+  if (f.length > 0) {
+    writer.writeString(
+      21,
       f
     );
   }
@@ -3583,6 +3601,24 @@ proto.communication.ContractEntity.prototype.getFigmaLink = function() {
  */
 proto.communication.ContractEntity.prototype.setFigmaLink = function(value) {
   return jspb.Message.setProto3StringField(this, 19, value);
+};
+
+
+/**
+ * optional string figma_file_key = 21;
+ * @return {string}
+ */
+proto.communication.ContractEntity.prototype.getFigmaFileKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 21, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ContractEntity} returns this
+ */
+proto.communication.ContractEntity.prototype.setFigmaFileKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 21, value);
 };
 
 
