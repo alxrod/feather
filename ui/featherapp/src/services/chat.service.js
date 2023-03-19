@@ -41,6 +41,7 @@ import {
     CONTRACT_ITEM_REPLACE_SUGGEST,
     CONTRACT_ITEM_SUGGEST_DELETE,
     CONTRACT_ITEM_SETTLE_UPDATE,
+    CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT,
 } from "../reducers/items/items.actions"
 
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
@@ -488,7 +489,14 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         dispatch({
             type: CONTRACT_FIGMA_LINK_CHANGE,
             payload: {link: msg.body.figmaLink}
-
+        })
+    } else if (msg.method === msgMethods.FIGMA_ITEM_NODES) {
+        dispatch({
+            type: CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT,
+            payload: {
+                item_id: msg.body.itemId,
+                component_id: msg.body.componentId,
+            }
         })
     }
 }

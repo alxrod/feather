@@ -23,7 +23,7 @@ func (s *BackServer) SetFigmaLink(ctx context.Context, req *comms.FigmaLinkReque
 	if err != nil {
 		return nil, err
 	}
-	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
+	if (contract.Worker != nil && contract.Worker.Id != user.Id) && (contract.Buyer != nil && contract.Buyer.Id != user.Id ) {
 		return nil, errors.New("User is not part of contract")
 	}
 	contract.FigmaLink = req.FigmaLink
@@ -104,7 +104,7 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 	if err != nil {
 		return nil, err
 	}
-	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
+	if (contract.Worker != nil && contract.Worker.Id != user.Id) && (contract.Buyer != nil && contract.Buyer.Id != user.Id ) {
 		return nil, errors.New("User is not part of contract")
 	}
 	contract.FigmaConnected = true
