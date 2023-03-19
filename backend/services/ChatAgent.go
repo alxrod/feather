@@ -138,10 +138,7 @@ func (agent *ChatAgent) SendMessage(req *comms.SendRequest, database *mongo.Data
 func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Database) error {
 	room_id := msg.RoomId
 	entry, ok := agent.ActiveRooms[room_id]
-	if !ok && !msg.SystemMessage {
-		log.Println(color.Ize(color.Red, fmt.Sprintf("The room %s is not active", room_id.Hex())))
-		return errors.New("You must join the room before sending messages, this room is not active")
-	} else if !ok {
+	if !ok {
 		log.Println(color.Ize(color.Yellow, fmt.Sprintf("Sending message to room %s in background", room_id.Hex())))
 		room, err := db.ChatRoomQueryId(room_id, database)
 		if err != nil {

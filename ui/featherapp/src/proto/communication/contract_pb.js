@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -276,7 +270,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.communication.ItemEntity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.ItemEntity.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.communication.ItemEntity, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1158,7 +1152,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.communication.FigmaItemRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.FigmaItemRequest.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.communication.FigmaItemRequest, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -5328,13 +5322,6 @@ proto.communication.UserNubEntity.prototype.setBuyerModeEnabled = function(value
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.communication.ItemEntity.repeatedFields_ = [29];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -5378,7 +5365,7 @@ proto.communication.ItemEntity.toObject = function(includeInstance, msg) {
     workerSettled: jspb.Message.getFieldWithDefault(msg, 26, 0),
     buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0),
     adminSettled: jspb.Message.getFieldWithDefault(msg, 28, 0),
-    figmaNodeIdsList: (f = jspb.Message.getRepeatedField(msg, 29)) == null ? undefined : f
+    figmaComponentId: jspb.Message.getFieldWithDefault(msg, 29, "")
   };
 
   if (includeInstance) {
@@ -5465,7 +5452,7 @@ proto.communication.ItemEntity.deserializeBinaryFromReader = function(msg, reade
       break;
     case 29:
       var value = /** @type {string} */ (reader.readString());
-      msg.addFigmaNodeIds(value);
+      msg.setFigmaComponentId(value);
       break;
     default:
       reader.skipField();
@@ -5580,9 +5567,9 @@ proto.communication.ItemEntity.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getFigmaNodeIdsList();
+  f = message.getFigmaComponentId();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       29,
       f
     );
@@ -5807,39 +5794,20 @@ proto.communication.ItemEntity.prototype.setAdminSettled = function(value) {
 
 
 /**
- * repeated string figma_node_ids = 29;
- * @return {!Array<string>}
+ * optional string figma_component_id = 29;
+ * @return {string}
  */
-proto.communication.ItemEntity.prototype.getFigmaNodeIdsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 29));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setFigmaNodeIdsList = function(value) {
-  return jspb.Message.setField(this, 29, value || []);
+proto.communication.ItemEntity.prototype.getFigmaComponentId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 29, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.communication.ItemEntity} returns this
  */
-proto.communication.ItemEntity.prototype.addFigmaNodeIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 29, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.clearFigmaNodeIdsList = function() {
-  return this.setFigmaNodeIdsList([]);
+proto.communication.ItemEntity.prototype.setFigmaComponentId = function(value) {
+  return jspb.Message.setProto3StringField(this, 29, value);
 };
 
 
@@ -14506,13 +14474,6 @@ proto.communication.FigmaLinkRequest.prototype.setFigmaLink = function(value) {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.communication.FigmaItemRequest.repeatedFields_ = [4];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -14547,7 +14508,7 @@ proto.communication.FigmaItemRequest.toObject = function(includeInstance, msg) {
     contractId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     userId: jspb.Message.getFieldWithDefault(msg, 5, ""),
     itemId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    nodeIdsList: (f = jspb.Message.getRepeatedField(msg, 4)) == null ? undefined : f
+    componentId: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -14598,7 +14559,7 @@ proto.communication.FigmaItemRequest.deserializeBinaryFromReader = function(msg,
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.addNodeIds(value);
+      msg.setComponentId(value);
       break;
     default:
       reader.skipField();
@@ -14650,9 +14611,9 @@ proto.communication.FigmaItemRequest.serializeBinaryToWriter = function(message,
       f
     );
   }
-  f = message.getNodeIdsList();
+  f = message.getComponentId();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       4,
       f
     );
@@ -14715,39 +14676,20 @@ proto.communication.FigmaItemRequest.prototype.setItemId = function(value) {
 
 
 /**
- * repeated string node_ids = 4;
- * @return {!Array<string>}
+ * optional string component_id = 4;
+ * @return {string}
  */
-proto.communication.FigmaItemRequest.prototype.getNodeIdsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 4));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.communication.FigmaItemRequest} returns this
- */
-proto.communication.FigmaItemRequest.prototype.setNodeIdsList = function(value) {
-  return jspb.Message.setField(this, 4, value || []);
+proto.communication.FigmaItemRequest.prototype.getComponentId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @param {number=} opt_index
  * @return {!proto.communication.FigmaItemRequest} returns this
  */
-proto.communication.FigmaItemRequest.prototype.addNodeIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 4, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.FigmaItemRequest} returns this
- */
-proto.communication.FigmaItemRequest.prototype.clearNodeIdsList = function() {
-  return this.setNodeIdsList([]);
+proto.communication.FigmaItemRequest.prototype.setComponentId = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

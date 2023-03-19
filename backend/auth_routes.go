@@ -203,18 +203,3 @@ func (s *BackServer) ChangePassword(ctx context.Context, req *comms.ChangePasswo
 	}, nil
 
 }
-
-func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRequest) (*comms.NullResponse, error) {
-	database := s.dbClient.Database(s.dbName)
-	id, err := primitive.ObjectIDFromHex(req.UserId)
-	if err != nil {
-		return nil, err
-	}
-	filter := bson.D{{"_id", id}}
-	update := bson.D{{"$set", bson.D{
-		{"figma_connected", true},
-		{"figma_code", req.FigmaCode},
-	}}}
-	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-	return &comms.NullResponse{}, nil
-}

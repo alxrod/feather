@@ -22,7 +22,7 @@ const Profile = (props) => {
 
   const figmaLink = "https://www.figma.com/oauth?"+
     "client_id="+process.env.REACT_APP_FIGMA_ID+"&"+
-    "redirect_uri="+"http://localhost:3000"+"/figma/oauth-callback&"+
+    "redirect_uri="+process.env.REACT_APP_SITE_BASE+"/figma/oauth-callback&"+
     "scope=file_read&"+
     "state="+state+"&"+
     "response_type=code"

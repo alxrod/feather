@@ -7,6 +7,7 @@ import (
 	"log"
 	"sort"
 	"time"
+	"strings"
 
 	"github.com/TwiN/go-color"
 	comms "github.com/alxrod/feather/communication"
@@ -64,6 +65,16 @@ type Contract struct {
 
 	FigmaLink      string `bson:"figma_link,omitempty"`
 	FigmaConnected bool   `bson:"figma_connected,omitempty"`
+}
+
+func (contract *Contract) GetFigmaKey() string {
+	splits := strings.Split(contract.FigmaLink, "/file/")
+	if (len(splits) < 2) {
+		return ""
+	}
+	key_seg := splits[1]
+	slash_split := strings.Split(key_seg, "/")
+	return slash_split[0]
 }
 
 func (contract *Contract) Proto() *comms.ContractEntity {

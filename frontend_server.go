@@ -74,13 +74,10 @@ func NewFrontServer(react_fs embed.FS) (*FrontServer, error) {
 	fileServer := http.FileServer(srv.fs)
 
 	srv.webapp = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Serving for %s", r.URL.Path)
 		serve_path := r.URL.Path
 		if serve_path == "" {
-			log.Printf("RENDERING INDEX")
 			serve_path = "/index.html"
 		} else {
-			log.Println("RENDERING other:", serve_path)
 			serve_path = path.Clean(r.URL.Path)
 		}
 
@@ -181,7 +178,6 @@ func (m *grpcMultiplexer) Handler(next http.Handler, assetHandler func(w http.Re
 		for _, route := range routes {
 			r_exp := regexp.MustCompile(route)
 			if r_exp.MatchString(path) || path == "/" {
-				log.Printf(path)
 				fmt.Printf(color.Ize(color.Purple, fmt.Sprintf("Page Load: %s\n", path)))
 				r.URL = &url.URL{Host: r.URL.Host, Path: ""}
 				next.ServeHTTP(w, r)

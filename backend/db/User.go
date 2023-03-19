@@ -62,6 +62,8 @@ type User struct {
 	// ================================= FIGMA ========================================
 	FigmaConnected bool   `bson:"figma_connected"`
 	FigmaCode      string `bson:"figma_code,omitempty"`
+	FigmaRefreshCode      string `bson:"figma_refresh_code,omitempty"`
+	FigmaExpireIn      int64 `bson:"figma_expire_in,omitempty"`
 }
 
 func (user *User) Proto() *comms.UserEntity {

@@ -155,7 +155,7 @@ message ItemEntity {
     uint32 buyer_settled = 27;
     uint32 admin_settled = 28;
 
-    repeated string figma_node_ids = 29;
+    string figma_component_id = 29;
 }
 
 message ItemNub {
@@ -411,7 +411,7 @@ message FigmaItemRequest {
     string contract_id = 1;
     string user_id = 5;
     string item_id = 3;
-    repeated string node_ids = 4;
+    string component_id = 4;
 }
 
 message FigmaFileConnectRequest {

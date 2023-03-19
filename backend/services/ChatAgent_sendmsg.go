@@ -843,7 +843,6 @@ func (agent *ChatAgent) SendFigmaItemNodesMessage(
 
 	body := &db.MessageBody{
 		ItemId:  item.Id,
-		NodeIds: item.FigmaNodeIds,
 	}
 
 	msg := &db.Message{

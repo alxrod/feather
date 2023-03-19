@@ -16,7 +16,7 @@ const FigmaOAuthCallback = (props) => {
   useEffect( () => {
     const { code, state } = queryString.parse(loc.search)
     if (props.figmaState !== "") {
-      if (state !== props.state) {
+      if (state !== props.figmaState) {
         console.log("ERROR: returned state ", state, " does not match initial state ", props.figmaState)
         props.push(props.figmaRedirect)
         return
