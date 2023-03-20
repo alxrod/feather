@@ -83,9 +83,10 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 		return nil, errors.New("User is not part of contract")
 	}
 	contract.FigmaConnected = true
+	contract.FigmaLink = req.FigmaLink
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{
-		{"figma_link", req.FigmaLink},
+		{"figma_link", contract.FigmaLink},
 	}}}
 
 	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
@@ -99,16 +100,6 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 	}
 
 	return &comms.ContractEditResponse{}, nil
-}
-
-type FigmaComponentMeta struct {
-	ThumbnailUrl string `json:"thumbnail_url"`
-}
-
-type FigmaComponentResp struct {
-	Status int                `json:"status"`
-	Error  bool               `json:"error"`
-	Meta   FigmaComponentMeta `json:"meta"`
 }
 
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
