@@ -90,10 +90,11 @@ export const HubUI = (
             verticalAlignItems="start"
             height="hug-contents"
             padding={5}
-            spacing={450}
+            spacing={200}
           >
           <Text
               fontSize={36}
+              width={450}
           >
             {contract.title}
           </Text>

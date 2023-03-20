@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react"
 import {contractStages} from "../api.service"
-
+import { getKey } from "./ContractList"
 
 const ContractNub = (props:any) => {
   const [stageBg, setStageBg] = useState("#def7ec")
   const [stageTextColor, setStageTextColor] = useState("#04543e")
+  const [selectable, setSelectable] = useState((((props.contract.figmaLink ? props.contract.figmaLink : "") === "")) && props.contract.stage < contractStages.SETTLE)
 
   useEffect(() => {
     if (props.contract.stage < contractStages.SETTLE) {
@@ -13,7 +14,15 @@ const ContractNub = (props:any) => {
     }
   }, [props.contract])
 
-  const selectable = ((props.contract?.figmaLink ? props.contract.figmaLink : "") !== "" && props.contract.stage < contractStages.SETTLE)
+  useEffect(() => {
+    console.log("RECHRECKING ", props.linkInContracts)
+    if (getKey(props.link) == getKey(props.contract.figmaLink) && props.linkInContracts) {
+      console.log("VALID")
+      setSelectable(true)
+    } else if (props.linkInContracts) {
+      setSelectable(false)
+    }
+  }, [props.link, props.linkInContracts])
 
   return (
       

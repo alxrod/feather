@@ -77,10 +77,11 @@ class ApiService {
     ).response
   }
 
-  confirmContractConnected(contract_id: string, user_id: string, user_token: string): Promise<ContractEditResponse> {
+  confirmContractConnected(contract_id: string, user_id: string, link: string, user_token: string): Promise<ContractEditResponse> {
     let conRequest: FigmaFileConnectRequest = {
       userId: user_id,
       contractId: contract_id,
+      figmaLink: link,
     };
     return contractClient.setFigmaConnected(conRequest,
       {meta: {authorization: user_token}}

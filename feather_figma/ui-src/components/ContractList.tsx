@@ -8,20 +8,52 @@ import {
 } from "../proto/communication/contract";
 import ContractNubView from "./ContractNub";
 
+export const isValidUrl = (urlString: string) => {
+  var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+  '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+  '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+  '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+  '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+  '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+  return !!urlPattern.test(urlString);
+}
+
+export const getKey = (link: string) => {
+  if (link === "" || link === undefined) {
+    return ""
+  }
+  const spl = link.split("file/")
+  if (spl.length < 2) {
+    return ""
+  }
+  const spl2 = spl[1].split("/")
+  return spl2[0]
+}
+
 const ContractListCard = (props: any) => {
 
   const [contractNubs, setContractNubs] = useState([] as any[])
   const [genError, setGenError] = useState("")
   const [link, setLink] = useState("")
+  const [linkInContracts, setLinkInContracts] = useState(false)
+  
 
-  const isValidUrl = (urlString: string) => {
-    var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
-    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
-    return !!urlPattern.test(urlString);
+  const changeLink = (e:any) => {
+    console.log("RUNNING")
+    const newVal = e.target.value
+    setLink(newVal)
+    if (isValidUrl(newVal) && (newVal).includes("figma.com/file/")) {
+      
+      setGenError("")
+      
+      for (let i = 0; i < contractNubs.length; i++) {
+        console.log("Test ", contractNubs[i].figmaLink, " ", newVal)
+        if (getKey(contractNubs[i].figmaLink) == getKey(newVal)) {
+          setLinkInContracts(true)
+          break
+        }
+      }
+    }
   }
 
 
@@ -36,6 +68,7 @@ const ContractListCard = (props: any) => {
     ApiService.confirmContractConnected(
       contract_id,
       props.user_id, 
+      link,
       props.token,
     ).then(
       (resp: ContractEditResponse) => {
@@ -83,7 +116,7 @@ const ContractListCard = (props: any) => {
             type="text"
             required
             value={link}
-            onChange={(e: any) => setLink(e.target.value)}
+            onChange={changeLink}
             placeholder="Click Share then paste here"
             className={
               `appearance-none block w-full px-3 py-2 border border-gray-300 
@@ -99,7 +132,7 @@ const ContractListCard = (props: any) => {
       </p>
       {contractNubs.map((contract) => (
         <div key={contract.id} className="mb-2">
-          <ContractNubView contract={contract} selectContract={selectContract}/>
+          <ContractNubView contract={contract} selectContract={selectContract} link={link} linkInContracts={linkInContracts}/>
         </div>
       ))}
     </div>

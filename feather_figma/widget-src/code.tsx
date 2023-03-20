@@ -83,8 +83,8 @@ function Widget() {
           setContractId(msg.payload.id ? msg.payload.id : "")
           setContractSecret(msg.payload.invitePassword ? msg.payload.invitePassword : "")
           
-          await figma.clientStorage.setAsync('contract_id', msg.payload.id)
-          await figma.clientStorage.setAsync('contract_secret', msg.payload.invitePassword)
+          figma.getNodeById(widgetId)?.setPluginData('contract_id', msg.payload.id)
+          figma.getNodeById(widgetId)?.setPluginData('contract_secret', msg.payload.invitePassword)
 
           adjustItems(newCon, widgetId)
           figma.closePlugin()
@@ -94,19 +94,20 @@ function Widget() {
   }
 
   const updateContractInfo = async () => {
-    const contract_id = await figma.clientStorage.getAsync('contract_id')
-    const contract_secret = await figma.clientStorage.getAsync('contract_secret')
+    const contract_id = figma.getNodeById(widgetId)?.getPluginData('contract_id')
+    const contract_secret = figma.getNodeById(widgetId)?.getPluginData('contract_secret')
     await new Promise((resolve) => {
-      console.log("Start: ")
-  
-      console.log("SETTING UP UI IN THE BACKGROUND")
+
       figma.showUI(__uiFiles__.main, {visible: false})
       figma.ui.postMessage({ type: 'set_display_mode', payload: "BACKGROUND_CONTRACT_QUERY" })
-      figma.ui.postMessage({ type: 'pass_con_creds', payload: {id: contract_id, secret: contract_secret} })
+      figma.ui.postMessage({ type: 'pass_con_creds', payload: {
+        id: contract_id ? contract_id : "", 
+        secret: contract_secret ? contract_secret : ""
+      }})
       
       figma.ui.on('message', async (msg) => {
         if (msg.type === "updated_contract") {
-          let newCon = parseContract(msg.payload)
+          let newCon = parseContract(msg.payload) 
           setContract(newCon)
           adjustItems(newCon, widgetId)
           figma.closePlugin()
