@@ -19,6 +19,7 @@ export default (state = initialState, action) => {
                 curContract: {
                     ...state.curContract,
                     figmaLink: action.payload.link,
+                    figmaFileKey: helpers.parseKeyFromLink(action.payload.link)
                 }
             }
         case actions.CONTRACT_PURGE_SIGNING:

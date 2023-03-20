@@ -356,7 +356,7 @@ const ContractItem = (props) => {
           <ItemTextArea item_id={props.id} lock={lock} override={props.createMode} role={role} contract_info={contract_info} text_body={item_text} disabled={props.disabled} set_text={setContractText}/>
         </div>
 
-        {(!props.createMode && contract_info.figmaComponentId !== "") && (
+        {(!props.createMode && contract_info.figmaComponentId !== "" && props.curContract.figmaLink !== "") && (
           <div className="mt-2">
             <h1 className="text-gray-500 text-xl">Component Draft: </h1>
             <FigmaDraft item_id={props.id} item_info={contract_info}/>

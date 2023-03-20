@@ -12,6 +12,14 @@ export const editAdminRequested = (contract, admin_requested) => {
     contract.adminRequested = admin_requested
     return contract
 }
+export const parseKeyFromLink = (link) => {
+    const spl = link.split("file/")
+    if (spl.length < 2) {
+        return ""
+    }
+    const spl2 = spl[1].split("/")
+    return spl2[0]
+}
 export const replaceContractNub = (nubs, new_nub) => {
     for (let i = 0; i < nubs.length; i++) {
         if (nubs[i].id === new_nub.id) {
