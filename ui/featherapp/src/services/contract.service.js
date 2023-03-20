@@ -899,25 +899,6 @@ class ContractService {
         });
     }
 
-    setFigmaLink(token, user_id, contract_id, figma_link) {
-        
-        let linkRequest = new FigmaLinkRequest();
-
-        linkRequest.setUserId(user_id);
-        linkRequest.setContractId(contract_id);
-        linkRequest.setFigmaLink(figma_link);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.setFigmaLink(linkRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve()
-            });
-        });
-    }
-
     queryInvite(contract_id, contract_secret) {
         let queryRequest = new InviteDataRequest();
         queryRequest.setId(contract_id);

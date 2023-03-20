@@ -92,8 +92,9 @@ export const ItemUI = (
 
         </AutoLayout>
         <Text
-          fontSize={20}
-          fill={"#9ca3af"}
+          fontSize={30}
+          fill={"#60646c"}
+          width={450}
         >
           {selectedItem.body}
         </Text>

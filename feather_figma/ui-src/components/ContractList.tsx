@@ -12,8 +12,27 @@ const ContractListCard = (props: any) => {
 
   const [contractNubs, setContractNubs] = useState([] as any[])
   const [genError, setGenError] = useState("")
+  const [link, setLink] = useState("")
+
+  const isValidUrl = (urlString: string) => {
+    var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+    '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+    return !!urlPattern.test(urlString);
+  }
+
 
   const selectContract = (contract_id: string) => {
+    if (!isValidUrl(link)) {
+      setGenError("You did not enter a valid link")
+      return
+    } else if (!link.includes("figma.com/file/")) {
+      setGenError("That is not a figma link")
+      return
+    }
     ApiService.confirmContractConnected(
       contract_id,
       props.user_id, 
@@ -50,9 +69,34 @@ const ContractListCard = (props: any) => {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4 text-center">Your Contracts: </h1>
-      {genError !== "" && (
-        <p className="text-red-400">{genError}</p>
-      )}
+      <div>
+        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          This File's Shareable Link
+        </label>
+        {genError !== "" && (
+          <p className="text-red-400">{genError}</p>
+        )}
+        <div className="mt-1 mb-2">
+          <input
+            id="link"
+            name="link"
+            type="text"
+            required
+            value={link}
+            onChange={(e: any) => setLink(e.target.value)}
+            placeholder="Click Share then paste here"
+            className={
+              `appearance-none block w-full px-3 py-2 border border-gray-300 
+              rounded-md shadow-sm placeholder-gray-400 focus:outline-none
+              focus:ring-primary4 focus:border-primary4 sm:text-sm `}
+          />
+        </div>
+      </div>
+      
+
+      <p className="block text-sm font-medium text-gray-700 mb-1">
+        Then click the contract you want to connect to:
+      </p>
       {contractNubs.map((contract) => (
         <div key={contract.id} className="mb-2">
           <ContractNubView contract={contract} selectContract={selectContract}/>

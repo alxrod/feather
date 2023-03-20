@@ -13,6 +13,7 @@ export const HubUI = (
   setContractSecret: any,
   contract: ContractNub,
   contractSelected: boolean,
+  updateContractInfo: any,
 
 
   ) => {
@@ -50,6 +51,29 @@ export const HubUI = (
           width={"fill-parent"}
           height={10}
         />
+        {contractSelected && (
+        <AutoLayout
+          direction="horizontal"
+          horizontalAlignItems="center"
+          verticalAlignItems="center"
+          height="hug-contents"
+
+          fill={"#1C6D3A"}
+          cornerRadius={6}
+          padding={10}
+
+          onClick={updateContractInfo}
+        >
+
+          <Text
+            fontSize={20}
+            fill={"#FFFFFF"}
+          >
+            Reload
+          </Text>
+        
+        </AutoLayout>
+        )}
       </AutoLayout>
       {contractSelected ? (
         <AutoLayout
@@ -140,7 +164,7 @@ export const HubUI = (
                                 <Ellipse width={10} height={10} fill={"#1C6D3A"}/>
                                 <Text fontSize={20}>{item.name}</Text>
                               </AutoLayout>
-                              <Text fill={"#9ca3af"}>{item.body}</Text>
+                              <Text width={"fill-parent"} fill={"#9ca3af"}>{item.body}</Text>
 
                             </AutoLayout>
                           )

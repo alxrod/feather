@@ -265,6 +265,10 @@ export interface ContractEntity {
      */
     figmaLink: string;
     /**
+     * @generated from protobuf field: string figma_file_key = 21;
+     */
+    figmaFileKey: string;
+    /**
      * @generated from protobuf field: bool figma_connected = 20;
      */
     figmaConnected: boolean;
@@ -1293,6 +1297,10 @@ export interface FigmaFileConnectRequest {
      * @generated from protobuf field: string contract_id = 2;
      */
     contractId: string;
+    /**
+     * @generated from protobuf field: string figma_link = 3;
+     */
+    figmaLink: string;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class PriceEntity$Type extends MessageType<PriceEntity> {
@@ -1718,11 +1726,12 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
             { no: 16, name: "disputed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 17, name: "admin_requested", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 19, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "figma_file_key", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 20, name: "figma_connected", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<ContractEntity>): ContractEntity {
-        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false, figmaLink: "", figmaConnected: false };
+        const message = { id: "", invitedEmail: "", invitePassword: "", deadlines: [], currentDeadlineId: "", title: "", summary: "", stage: 0, universalLock: false, workerApproved: false, buyerApproved: false, items: [], roomId: "", disputed: false, adminRequested: false, figmaLink: "", figmaFileKey: "", figmaConnected: false };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ContractEntity>(this, message, value);
@@ -1789,6 +1798,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
                     break;
                 case /* string figma_link */ 19:
                     message.figmaLink = reader.string();
+                    break;
+                case /* string figma_file_key */ 21:
+                    message.figmaFileKey = reader.string();
                     break;
                 case /* bool figma_connected */ 20:
                     message.figmaConnected = reader.bool();
@@ -1862,6 +1874,9 @@ class ContractEntity$Type extends MessageType<ContractEntity> {
         /* string figma_link = 19; */
         if (message.figmaLink !== "")
             writer.tag(19, WireType.LengthDelimited).string(message.figmaLink);
+        /* string figma_file_key = 21; */
+        if (message.figmaFileKey !== "")
+            writer.tag(21, WireType.LengthDelimited).string(message.figmaFileKey);
         /* bool figma_connected = 20; */
         if (message.figmaConnected !== false)
             writer.tag(20, WireType.Varint).bool(message.figmaConnected);
@@ -5123,11 +5138,12 @@ class FigmaFileConnectRequest$Type extends MessageType<FigmaFileConnectRequest> 
     constructor() {
         super("communication.FigmaFileConnectRequest", [
             { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "contract_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "figma_link", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<FigmaFileConnectRequest>): FigmaFileConnectRequest {
-        const message = { userId: "", contractId: "" };
+        const message = { userId: "", contractId: "", figmaLink: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<FigmaFileConnectRequest>(this, message, value);
@@ -5143,6 +5159,9 @@ class FigmaFileConnectRequest$Type extends MessageType<FigmaFileConnectRequest> 
                     break;
                 case /* string contract_id */ 2:
                     message.contractId = reader.string();
+                    break;
+                case /* string figma_link */ 3:
+                    message.figmaLink = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -5162,6 +5181,9 @@ class FigmaFileConnectRequest$Type extends MessageType<FigmaFileConnectRequest> 
         /* string contract_id = 2; */
         if (message.contractId !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.contractId);
+        /* string figma_link = 3; */
+        if (message.figmaLink !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.figmaLink);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -5215,7 +5237,6 @@ export const Contract = new ServiceType("communication.Contract", [
     { name: "FinishDeadline", options: {}, I: FinishDeadlineRequest, O: NullResponse },
     { name: "ConfirmDeadline", options: {}, I: ConfirmDeadlineRequest, O: NullResponse },
     { name: "UndoDeadline", options: {}, I: UndoDeadlineRequest, O: NullResponse },
-    { name: "SetFigmaLink", options: {}, I: FigmaLinkRequest, O: ContractEditResponse },
     { name: "SetFigmaConnected", options: {}, I: FigmaFileConnectRequest, O: ContractEditResponse },
     { name: "SetItemFigmaNodes", options: {}, I: FigmaItemRequest, O: ContractEditResponse }
 ]);

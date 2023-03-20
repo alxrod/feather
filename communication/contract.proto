@@ -418,6 +418,7 @@ message FigmaItemRequest {
 message FigmaFileConnectRequest {
     string user_id = 1;
     string contract_id = 2;
+    string figma_link = 3;
 }
 
 service Contract {
@@ -478,7 +479,6 @@ service Contract {
     rpc ConfirmDeadline(ConfirmDeadlineRequest) returns (NullResponse) {};
     rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
 
-    rpc SetFigmaLink(FigmaLinkRequest) returns (ContractEditResponse) {};
     rpc SetFigmaConnected(FigmaFileConnectRequest) returns (ContractEditResponse) {};
     rpc SetItemFigmaNodes(FigmaItemRequest) returns (ContractEditResponse) {};
 }   

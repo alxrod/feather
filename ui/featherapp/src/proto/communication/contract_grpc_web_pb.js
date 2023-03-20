@@ -2458,67 +2458,6 @@ proto.communication.ContractPromiseClient.prototype.undoDeadline =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.FigmaLinkRequest,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SetFigmaLink = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SetFigmaLink',
-  grpc.web.MethodType.UNARY,
-  proto.communication.FigmaLinkRequest,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.FigmaLinkRequest} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.FigmaLinkRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.setFigmaLink =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SetFigmaLink',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SetFigmaLink,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.FigmaLinkRequest} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.setFigmaLink =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SetFigmaLink',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SetFigmaLink);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
  *   !proto.communication.FigmaFileConnectRequest,
  *   !proto.communication.ContractEditResponse>}
  */

@@ -13,7 +13,7 @@ const ContractNub = (props:any) => {
     }
   }, [props.contract])
 
-  const selectable = ((props.contract?.figmaLink ? props.contract.figmaLink : "") !== "" && !props.contract.figmaConnected && props.contract.stage < contractStages.SETTLE)
+  const selectable = ((props.contract?.figmaLink ? props.contract.figmaLink : "") !== "" && props.contract.stage < contractStages.SETTLE)
 
   return (
       

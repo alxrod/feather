@@ -14762,7 +14762,8 @@ proto.communication.FigmaFileConnectRequest.prototype.toObject = function(opt_in
 proto.communication.FigmaFileConnectRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
     userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, "")
+    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    figmaLink: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -14807,6 +14808,10 @@ proto.communication.FigmaFileConnectRequest.deserializeBinaryFromReader = functi
       var value = /** @type {string} */ (reader.readString());
       msg.setContractId(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFigmaLink(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -14850,6 +14855,13 @@ proto.communication.FigmaFileConnectRequest.serializeBinaryToWriter = function(m
       f
     );
   }
+  f = message.getFigmaLink();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -14886,6 +14898,24 @@ proto.communication.FigmaFileConnectRequest.prototype.getContractId = function()
  */
 proto.communication.FigmaFileConnectRequest.prototype.setContractId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string figma_link = 3;
+ * @return {string}
+ */
+proto.communication.FigmaFileConnectRequest.prototype.getFigmaLink = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.FigmaFileConnectRequest} returns this
+ */
+proto.communication.FigmaFileConnectRequest.prototype.setFigmaLink = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

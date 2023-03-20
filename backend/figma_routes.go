@@ -7,51 +7,26 @@ import (
 	// "log"
 	"os"
 
-	db "github.com/alxrod/feather/backend/db"
-	comms "github.com/alxrod/feather/communication"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	db "github.com/alxrod/feather/backend/db"
+	comms "github.com/alxrod/feather/communication"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *BackServer) SetFigmaLink(ctx context.Context, req *comms.FigmaLinkRequest) (*comms.ContractEditResponse, error) {
-	database := s.dbClient.Database(s.dbName)
-	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
-	if err != nil {
-		return nil, err
-	}
-	if contract.Worker.Id != user.Id && contract.Buyer.Id != user.Id {
-		return nil, errors.New("User is not part of contract")
-	}
-	contract.FigmaLink = req.FigmaLink
-	filter := bson.D{{"_id", contract.Id}}
-	update := bson.D{{"$set", bson.D{
-		{"figma_link", req.FigmaLink},
-	}}}
-	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		return nil, err
-	}
-	err = s.ChatAgent.SendFigmaLinkMessage(contract, user, database)
-	if err != nil {
-		return nil, err
-	}
-	return &comms.ContractEditResponse{}, nil
-}
-
 type FigmaAuthResp struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn int `json:"expires_in"`
+	AccessToken  string `json:"access_token"`
+	ExpiresIn    int    `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
 }
 
-
 func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRequest) (*comms.NullResponse, error) {
 	database := s.dbClient.Database(s.dbName)
-	
+
 	id, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		return nil, err
@@ -59,15 +34,15 @@ func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRe
 
 	client := &http.Client{}
 	url := fmt.Sprintf(
-	"https://www.figma.com/api/oauth/token?client_id=%s&client_secret=%s&redirect_uri=%s/figma/oauth-callback&code=%s&grant_type=authorization_code", 
-	os.Getenv("REACT_APP_FIGMA_ID"),
-	os.Getenv("REACT_APP_FIGMA_SECRET"),
-	os.Getenv("SITE_BASE"),
-	req.FigmaCode)
+		"https://www.figma.com/api/oauth/token?client_id=%s&client_secret=%s&redirect_uri=%s/figma/oauth-callback&code=%s&grant_type=authorization_code",
+		os.Getenv("REACT_APP_FIGMA_ID"),
+		os.Getenv("REACT_APP_FIGMA_SECRET"),
+		os.Getenv("SITE_BASE"),
+		req.FigmaCode)
 
 	figma_req, err := http.NewRequest(
-		"POST", 
-		url, 
+		"POST",
+		url,
 		nil,
 	)
 	figma_req.Header.Add("Accept", "application/json")
@@ -110,24 +85,30 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 	contract.FigmaConnected = true
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{
-		{"figma_connected", true},
+		{"figma_link", req.FigmaLink},
 	}}}
+
 	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
 	}
+
+	err = s.ChatAgent.SendFigmaLinkMessage(contract, user, database)
+	if err != nil {
+		return nil, err
+	}
+
 	return &comms.ContractEditResponse{}, nil
 }
-
 
 type FigmaComponentMeta struct {
 	ThumbnailUrl string `json:"thumbnail_url"`
 }
 
 type FigmaComponentResp struct {
-	Status int `json:"status"`
-	Error bool `json:"error"`
-	Meta FigmaComponentMeta `json:"meta"`
+	Status int                `json:"status"`
+	Error  bool               `json:"error"`
+	Meta   FigmaComponentMeta `json:"meta"`
 }
 
 func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {

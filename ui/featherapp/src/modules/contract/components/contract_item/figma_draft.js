@@ -10,7 +10,7 @@ const FigmaDraft = (props) => {
   const embedUrl = useMemo(() => {
     return "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2F"+
     props.curContract.figmaFileKey+
-    "%3Fnode-id%3"+props.item_info.figmaComponentId
+    "%3Fnode-id%3D"+props.item_info.figmaComponentId
   })
   return (
     <Iframe 
@@ -18,6 +18,7 @@ const FigmaDraft = (props) => {
       width="100%"
       id="myId"
       height="400px"
+      scrolling="no"
       allowFullScreen={false}
     />
   )

@@ -214,25 +214,6 @@ export const finishCreation = (contract_id) => {
     }
 };
 
-export const setFigmaLink = (contract_id, figma_link) => {
-    return dispatch => {
-        return  helpers.authCheck(dispatch).then(
-            (creds) => {
-                return ContractService.setFigmaLink(creds.access_token, creds.user_id, contract_id, figma_link).then(
-                    () => {
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        return Promise.reject(error);
-                    }
-                );
-            },
-            () => {
-            }
-        );
-    }
-};
-
 export const changeInviteEmail = (contract_id, new_email) => {
     return dispatch => {
         return  helpers.authCheck(dispatch).then(

@@ -23,6 +23,7 @@ import {Oval} from 'react-loading-icons'
 const displayModes = {
   "CONTRACTS": 0,
   "ITEM_NODES": 1,
+  "BACKGROUND_CONTRACT_QUERY": 2
 }
 function App() {
   const [token, setToken] = useState("")
@@ -37,12 +38,12 @@ function App() {
 
   const [component_options, setComponentOptions] = useState([])
   const [contract_id, setContractId] = useState("")
+  const [contract_secret, setContractSecret] = useState("")
   const [item_id, setItemId] = useState("")
 
   const selectedContract = (id: string) => {
     ApiService.queryContract(id, user_id, token).then(
       (resp: ContractResponse) => {
-        // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
         const jsonContract = resp.contract ? ContractEntity.toJson(resp.contract) : {}
         console.log("RECEIVED NEW CONTRACT: ", jsonContract)
         window.parent.postMessage(
@@ -54,7 +55,25 @@ function App() {
       }
     )
   }
-
+  useEffect(() => {
+    if (displayMode === displayModes["BACKGROUND_CONTRACT_QUERY"] && contract_id !== "" && contract_secret !== "") {
+      ApiService.queryContractSummary(contract_id, contract_secret).then(
+        (resp: ContractInviteNub) => {
+          const jsonContract = ContractInviteNub.toJson(resp)
+          window.parent.postMessage(
+            {pluginMessage: {type: "updated_contract", payload: jsonContract}}, '*'
+          )
+        },
+        (err: RpcError) => {
+          console.log("err: ", err.message)
+          window.parent.postMessage(
+            {pluginMessage: {type: "close"}}, '*'
+          )
+        }
+      )
+    }
+  }, [displayMode, contract_id, contract_secret])
+  
   window.onmessage = async (event) => {
     if (event.data.pluginMessage.type === 'set_display_mode') {
       setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
@@ -62,6 +81,10 @@ function App() {
       setItemId(event.data.pluginMessage.payload.item_id)
       setContractId(event.data.pluginMessage.payload.contract_id)
       setComponentOptions(event.data.pluginMessage.payload.component_options)
+    } else if (event.data.pluginMessage.type === 'pass_con_creds') {
+      console.log("REceived creds:  ", event.data.pluginMessage.payload)
+      setContractId(event.data.pluginMessage.payload.id)
+      setContractSecret(event.data.pluginMessage.payload.secret)
     } else if (event.data.pluginMessage.type === 'pass_credentials') {
       console.log("Msg received: ", event.data.pluginMessage)
       const t = event.data.pluginMessage.payload.token

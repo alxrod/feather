@@ -1,6 +1,7 @@
 import { logo_image  } from "./images"
 import {widgetTypes, UserNub, DeadlineNub, ItemNub, ContractNub, ComponentSelection} from "./types"
 import parseContract from "./parse_contract"
+import { adjustItems } from "./adjust_items"
 import { dateToString } from "./helpers"
 
 import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, useSyncedMap,
@@ -24,7 +25,7 @@ function Widget() {
   // =========================Hub State:=========================
   const [contractId, setContractId] = useSyncedState("contract_id", "")
   const [contractSecret, setContractSecret] = useSyncedState("contract_secret", "")
-
+  
   const [contract, setContract] = useSyncedState("contract", ({
     title: "Contract Title",
     summary: "Contract Summary",
@@ -32,7 +33,6 @@ function Widget() {
     deadlines: [],
     items: [],
   } as ContractNub))
-
 
   const sendCredentials = async (sess_id: string) => {
     const username = await figma.clientStorage.getAsync('username')
@@ -80,43 +80,43 @@ function Widget() {
         } else if (msg.type === "new_contract") {
           let newCon = parseContract(msg.payload)
           setContract(newCon)
-          setContractId(msg.payload.id)
-          setContractSecret(msg.payload.invitePassword)
+          setContractId(msg.payload.id ? msg.payload.id : "")
+          setContractSecret(msg.payload.invitePassword ? msg.payload.invitePassword : "")
           
           await figma.clientStorage.setAsync('contract_id', msg.payload.id)
           await figma.clientStorage.setAsync('contract_secret', msg.payload.invitePassword)
 
-          for (let i = 0; i < newCon.items.length; i++) {
-            let already_exists = false
-            figma.currentPage.children.forEach(node => {
-              if (node.type === "WIDGET" && node.widgetId === figma.widgetId) {
-                if (node.widgetSyncedState["widget_type"] === widgetTypes.ITEM &&
-                    node.widgetSyncedState["selected_item"].id === newCon.items[i].id) {
-                  
-                  already_exists = true;
-                  return
-                }
-              }
-            })
-            if (already_exists) {
-              continue;
-            }
-            const widgetNode = figma.getNodeById(widgetId) as WidgetNode;
-            const clonedWidget = widgetNode.cloneWidget({ 
-              widget_type: widgetTypes.ITEM,
-              selected_item: newCon.items[i],
-            })
-            
-            // Position the cloned widget beside this widget
-            widgetNode.parent!.appendChild(clonedWidget);
-            clonedWidget.x = widgetNode.x + widgetNode.width +  50;
-            clonedWidget.y = widgetNode.y + i*(300);
-          }
+          adjustItems(newCon, widgetId)
           figma.closePlugin()
         }
       })
     })
   }
+
+  const updateContractInfo = async () => {
+    const contract_id = await figma.clientStorage.getAsync('contract_id')
+    const contract_secret = await figma.clientStorage.getAsync('contract_secret')
+    await new Promise((resolve) => {
+      console.log("Start: ")
+  
+      console.log("SETTING UP UI IN THE BACKGROUND")
+      figma.showUI(__uiFiles__.main, {visible: false})
+      figma.ui.postMessage({ type: 'set_display_mode', payload: "BACKGROUND_CONTRACT_QUERY" })
+      figma.ui.postMessage({ type: 'pass_con_creds', payload: {id: contract_id, secret: contract_secret} })
+      
+      figma.ui.on('message', async (msg) => {
+        if (msg.type === "updated_contract") {
+          let newCon = parseContract(msg.payload)
+          setContract(newCon)
+          adjustItems(newCon, widgetId)
+          figma.closePlugin()
+          resolve(msg)
+        }
+      })
+
+    })
+  } 
+
   // =============================================================
 
 
@@ -195,7 +195,8 @@ function Widget() {
       contractSecret,
       setContractSecret,
       contract,
-      (contractId !== "")
+      (contractId !== ""),
+      updateContractInfo,
     )
   } else if (widgetType === widgetTypes.ITEM) {
     return ItemUI(selectedItem, setItemToSelected)

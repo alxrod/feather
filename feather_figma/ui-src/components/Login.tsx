@@ -60,7 +60,6 @@ const LoginCard = (props: any) => {
             type="text"
             autoComplete="username"
             value={usernameOrEmail}
-            disabled={props.defaultEmail ? true : false}
             onChange={onChangeUsernameOrEmail}
             required
             className={

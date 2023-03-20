@@ -6,7 +6,6 @@ import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { Contract } from "./contract";
 import type { FigmaItemRequest } from "./contract";
 import type { FigmaFileConnectRequest } from "./contract";
-import type { FigmaLinkRequest } from "./contract";
 import type { UndoDeadlineRequest } from "./contract";
 import type { ConfirmDeadlineRequest } from "./contract";
 import type { FinishDeadlineRequest } from "./contract";
@@ -214,10 +213,6 @@ export interface IContractClient {
      * @generated from protobuf rpc: UndoDeadline(communication.UndoDeadlineRequest) returns (communication.NullResponse);
      */
     undoDeadline(input: UndoDeadlineRequest, options?: RpcOptions): UnaryCall<UndoDeadlineRequest, NullResponse>;
-    /**
-     * @generated from protobuf rpc: SetFigmaLink(communication.FigmaLinkRequest) returns (communication.ContractEditResponse);
-     */
-    setFigmaLink(input: FigmaLinkRequest, options?: RpcOptions): UnaryCall<FigmaLinkRequest, ContractEditResponse>;
     /**
      * @generated from protobuf rpc: SetFigmaConnected(communication.FigmaFileConnectRequest) returns (communication.ContractEditResponse);
      */
@@ -510,24 +505,17 @@ export class ContractClient implements IContractClient, ServiceInfo {
         return stackIntercept<UndoDeadlineRequest, NullResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SetFigmaLink(communication.FigmaLinkRequest) returns (communication.ContractEditResponse);
-     */
-    setFigmaLink(input: FigmaLinkRequest, options?: RpcOptions): UnaryCall<FigmaLinkRequest, ContractEditResponse> {
-        const method = this.methods[39], opt = this._transport.mergeOptions(options);
-        return stackIntercept<FigmaLinkRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
      * @generated from protobuf rpc: SetFigmaConnected(communication.FigmaFileConnectRequest) returns (communication.ContractEditResponse);
      */
     setFigmaConnected(input: FigmaFileConnectRequest, options?: RpcOptions): UnaryCall<FigmaFileConnectRequest, ContractEditResponse> {
-        const method = this.methods[40], opt = this._transport.mergeOptions(options);
+        const method = this.methods[39], opt = this._transport.mergeOptions(options);
         return stackIntercept<FigmaFileConnectRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetItemFigmaNodes(communication.FigmaItemRequest) returns (communication.ContractEditResponse);
      */
     setItemFigmaNodes(input: FigmaItemRequest, options?: RpcOptions): UnaryCall<FigmaItemRequest, ContractEditResponse> {
-        const method = this.methods[41], opt = this._transport.mergeOptions(options);
+        const method = this.methods[40], opt = this._transport.mergeOptions(options);
         return stackIntercept<FigmaItemRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
 }
