@@ -82,8 +82,10 @@ func (s *BackServer) PullChatHistory(ctx context.Context, req *comms.ChatPullReq
 
 	protos := make([]*comms.ChatMessage, len(room.Messages))
 	for idx, message := range room.Messages {
-		protos[idx] = message.Proto()
-		message.UpdateReadReceipts(user_id, database)
+		if message != nil {
+			protos[idx] = message.Proto()
+			message.UpdateReadReceipts(user_id, database)
+		}
 	}
 	return &comms.ChatMessageSet{
 		RoomId:   room.Id.Hex(),
@@ -109,14 +111,16 @@ func (s *BackServer) PullNewMessages(ctx context.Context, req *comms.NewMessages
 			continue
 		}
 		for _, message := range room.Messages {
-			for _, receipt := range message.ReadReceipts {
-				if receipt.UserId == user_id && !receipt.Read {
-					msgProto := message.Proto()
-					contractNub, _ := contract.NubProto(user)
-					protos = append(protos, &comms.NewMessageEntity{
-						Contract: contractNub,
-						Message:  msgProto,
-					})
+			if message != nil && message.ReadReceipts != nil {
+				for _, receipt := range message.ReadReceipts {
+					if receipt.UserId == user_id && !receipt.Read {
+						msgProto := message.Proto()
+						contractNub, _ := contract.NubProto(user)
+						protos = append(protos, &comms.NewMessageEntity{
+							Contract: contractNub,
+							Message:  msgProto,
+						})
+					}
 				}
 			}
 		}

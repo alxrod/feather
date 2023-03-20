@@ -13,3 +13,5 @@ export const CONTRACT_ITEM_REPLACE = "contract/item/REPLACE"
 export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
 
 export const CONTRACT_ITEM_SETTLE_UPDATE = "contract/item/SETTLE_UPDATE"
+
+export const CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT = "contract/item/CHANGE_FIGMA_COMPONENT"

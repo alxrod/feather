@@ -52,6 +52,12 @@ export const getContractItem = (items, id) => {
     }
 }
 
+
+export const contractItemUpdateFigmaComponent = (item, new_comp_id) => {
+    item.figmaComponentId = new_comp_id  
+    return item
+}
+
 export const contractItemUpdateBody = (item, newBody) => {
     item.currentBody = newBody.current
     item.workerBody = newBody.worker

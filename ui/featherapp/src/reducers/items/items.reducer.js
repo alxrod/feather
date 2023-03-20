@@ -44,6 +44,16 @@ export default (state = initialState, action) => {
                 itemsChanged: !state.itemsChanged,
                 items: newItemsList,
             }
+
+        case actions.CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT:
+            const replacedItem = helpers.contractItemUpdateFigmaComponent(helpers.getContractItem(state.items, action.payload.item_id), action.payload.component_id)
+            const repItemsList = helpers.replaceContractItem(state.items, replacedItem)
+            return {
+                ...state,
+                itemsChanged: !state.itemsChanged,
+                items: repItemsList,
+            }
+
         case actions.CONTRACT_SUGGEST_ITEM_REMOVE:
             return {
                 ...state,
