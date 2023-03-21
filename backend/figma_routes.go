@@ -33,11 +33,16 @@ func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRe
 	}
 
 	client := &http.Client{}
+	base := os.Getenv("SITE_BASE")
+	if os.Getenv("NEXT_PUBLIC_DEBUG") == "true" {
+		base = "http://localhost:3000"
+	}
+
 	url := fmt.Sprintf(
 		"https://www.figma.com/api/oauth/token?client_id=%s&client_secret=%s&redirect_uri=%s/figma/oauth-callback&code=%s&grant_type=authorization_code",
-		os.Getenv("REACT_APP_FIGMA_ID"),
-		os.Getenv("REACT_APP_FIGMA_SECRET"),
-		os.Getenv("SITE_BASE"),
+		os.Getenv("NEXT_PUBLIC_FIGMA_ID"),
+		os.Getenv("NEXT_PUBLIC_FIGMA_SECRET"),
+		base,
 		req.FigmaCode)
 
 	figma_req, err := http.NewRequest(

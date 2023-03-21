@@ -39,7 +39,6 @@ const ContractListCard = (props: any) => {
   
 
   const changeLink = (e:any) => {
-    console.log("RUNNING")
     const newVal = e.target.value
     setLink(newVal)
     if (isValidUrl(newVal) && (newVal).includes("figma.com/file/")) {
@@ -47,7 +46,6 @@ const ContractListCard = (props: any) => {
       setGenError("")
       
       for (let i = 0; i < contractNubs.length; i++) {
-        console.log("Test ", contractNubs[i].figmaLink, " ", newVal)
         if (getKey(contractNubs[i].figmaLink) == getKey(newVal)) {
           setLinkInContracts(true)
           break

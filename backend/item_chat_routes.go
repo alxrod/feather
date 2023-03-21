@@ -201,7 +201,6 @@ func (s *BackServer) SuggestAddItem(ctx context.Context, req *comms.ContractSugg
 		return nil, err
 	}
 	contract, err = db.ContractUnsign(contract, database)
-	log.Println("UNSIGN ERROR: ", contract)
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {
 		return nil, err

@@ -1,7 +1,6 @@
 import { ContractNub, DeadlineNub, ItemNub } from "./types"
 import { sortDeadlines } from "./helpers"
 const parseContract = (payload: any): ContractNub => {
-  console.log("Working w ", payload)
   let raw_nub = payload
   let deadlines: DeadlineNub[] = []
   for (let i = 0; i < raw_nub.deadlines.length; i++) {

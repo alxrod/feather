@@ -49,7 +49,7 @@ func (s *BackServer) UpdateDraft(ctx context.Context, req *comms.ContractUpdateR
 	}
 	contractId, err := primitive.ObjectIDFromHex(req.ContractId)
 	if err != nil {
-		return nil, errors.New("You must provide a valid User Id")
+		return nil, errors.New("You must provide a valid Contract Id")
 	}
 
 	database := s.dbClient.Database(s.dbName)

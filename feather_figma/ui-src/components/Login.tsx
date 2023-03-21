@@ -33,14 +33,12 @@ const LoginCard = (props: any) => {
         // Somehwere in this message send is a WASM out of bounds error but doesnt seem to change my code
         
         const timeout = Timestamp.toDate(resp.tokenTimeout ? resp.tokenTimeout : Timestamp.now())
-        console.log("TIMEOUT IS: ", timeout)
         props.signinSuccess(resp.user?.id, resp.token, timeout, usernameOrEmail, password);
       },
       (err: RpcError) => {
         setGenError(err.message)
       }
     )
-    props.signinSuccess("test", "test", "test", "test");
   }
 
   return (

@@ -16,7 +16,7 @@ var content embed.FS
 
 func main() {
 
-	key_name := "REACT_APP_STRIPE_PRIVATE_KEY"
+	key_name := "NEXT_PUBLIC_STRIPE_PRIVATE_KEY"
 	_, found := os.LookupEnv(key_name)
 	if !found {
 		log.Fatalln("You need to have a private stripe key in your environment first")

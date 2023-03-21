@@ -8,6 +8,7 @@ communication/*.go
 
 ui/featherapp/src/proto/communication/*
 ui/featherapp/src/tailwind.generated.css
+ui/feahterapp/.next
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,go,react,node,visualstudio,python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,go,react,node,visualstudio,python,jupyternotebooks

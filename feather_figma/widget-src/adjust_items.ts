@@ -27,7 +27,9 @@ export const adjustItems = (newCon: any, widgetId: any) => {
               
           node.setWidgetSyncedState({
             selected_item: newCon.items[i],
-            widget_type: widgetTypes.ITEM
+            widget_type: widgetTypes.ITEM,
+            contractId: newCon.id,
+            contract: newCon,
           })
           already_exists = true;
           return

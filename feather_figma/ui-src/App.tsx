@@ -45,7 +45,6 @@ function App() {
     ApiService.queryContract(id, user_id, token).then(
       (resp: ContractResponse) => {
         const jsonContract = resp.contract ? ContractEntity.toJson(resp.contract) : {}
-        console.log("RECEIVED NEW CONTRACT: ", jsonContract)
         window.parent.postMessage(
           {pluginMessage: {type: "new_contract", payload: jsonContract}}, '*'
         )
@@ -78,15 +77,14 @@ function App() {
     if (event.data.pluginMessage.type === 'set_display_mode') {
       setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
     } else if (event.data.pluginMessage.type === 'set_item_options') {
+      console.log("CONFIGURING FOR CONENCT W PAYLOAD: ", event.data.pluginMessage.payload)
       setItemId(event.data.pluginMessage.payload.item_id)
       setContractId(event.data.pluginMessage.payload.contract_id)
       setComponentOptions(event.data.pluginMessage.payload.component_options)
     } else if (event.data.pluginMessage.type === 'pass_con_creds') {
-      console.log("REceived creds:  ", event.data.pluginMessage.payload)
       setContractId(event.data.pluginMessage.payload.id)
       setContractSecret(event.data.pluginMessage.payload.secret)
     } else if (event.data.pluginMessage.type === 'pass_credentials') {
-      console.log("Msg received: ", event.data.pluginMessage)
       const t = event.data.pluginMessage.payload.token
       const to = event.data.pluginMessage.payload.timeout
       const un = event.data.pluginMessage.payload.username

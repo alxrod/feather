@@ -15,9 +15,7 @@ const ContractNub = (props:any) => {
   }, [props.contract])
 
   useEffect(() => {
-    console.log("RECHRECKING ", props.linkInContracts)
     if (getKey(props.link) == getKey(props.contract.figmaLink) && props.linkInContracts) {
-      console.log("VALID")
       setSelectable(true)
     } else if (props.linkInContracts) {
       setSelectable(false)
