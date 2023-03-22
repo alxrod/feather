@@ -24,7 +24,7 @@ func main() {
 	stripe.Key = os.Getenv(key_name)
 
 	// Create backend server
-	addr := fmt.Sprintf("%s:%s", os.Getenv("BACKEND_IP"), os.Getenv("BACKEND_PORT"))
+	addr := fmt.Sprintf("%s:%s", os.Getenv("GRPC_IP"), os.Getenv("GRPC_PORT"))
 	backend, err := BackEndLib.NewBackServer("cert/server.crt", "cert/server.key", addr)
 	defer backend.Shutdown()
 	if err != nil {
@@ -42,14 +42,14 @@ func main() {
 	}
 
 	// Create a front end server
-	frontend, err := NewFrontServer(content)
+	main, err := NewMainServer(content)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Set up the routes and serve it
-	frontend.SetUpHandler(multiplex)
-	addr = fmt.Sprintf("%s:%s", os.Getenv("SITE_IP"), os.Getenv("FRONTEND_PORT"))
-	frontend.Serve(addr)
+	main.SetUpHandler(multiplex)
+	addr = fmt.Sprintf("%s:%s", os.Getenv("API_IP"), os.Getenv("API_PORT"))
+	main.Serve(addr)
 
 }

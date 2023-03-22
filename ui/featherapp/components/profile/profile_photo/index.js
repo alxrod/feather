@@ -2,11 +2,12 @@ import { UserIcon } from '@heroicons/react/outline'
 import Image from "next/image"
 
 export default (props) => {
-  console.log()
   if (props.user.profilePhotoUploaded) {
     return (
       <Image 
-        className={"h-"+props.height+" w-"+props.width+" rounded-full object-cover"}
+        className={"rounded-full object-cover"}
+        width={props.height*0.25*16}
+        height={props.width*0.25*16}
         src={props.user?.profilePhoto.cacheUrl}
       />
     )

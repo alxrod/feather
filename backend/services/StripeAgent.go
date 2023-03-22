@@ -108,8 +108,8 @@ func (agent *StripeAgent) CreateCustomer(user *db.User, database *mongo.Database
 
 func (agent *StripeAgent) GetAccountOnboardingLink(account_id string, return_route string) (string, error) {
 
-	ACCOUNT_SETUP_RETURN_URL := fmt.Sprintf("%s%s", os.Getenv("SITE_BASE"), return_route)
-	ACCOUNT_SETUP_REFRESH_URL := fmt.Sprintf("%s/profile/onboarding-refresh", os.Getenv("SITE_BASE"))
+	ACCOUNT_SETUP_RETURN_URL := fmt.Sprintf("%s%s", os.Getenv("FRONTEND_URL"), return_route)
+	ACCOUNT_SETUP_REFRESH_URL := fmt.Sprintf("%s/profile/onboarding-refresh", os.Getenv("FRONTEND_URL"))
 
 	params := &stripe.AccountLinkParams{
 		Account:    stripe.String(account_id),
@@ -431,7 +431,7 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 		if err != nil {
 			return err
 		}
-	} 
+	}
 
 	_, err = db.InitializeInternalCharge(
 		contract,

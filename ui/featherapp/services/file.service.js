@@ -5,7 +5,7 @@ import {
     ProfileGetRequest,
  } from "../proto/communication/file_service_pb";
 
-export const fileServiceClient = new FileServiceClient(process.env.NEXT_PUBLIC_SITE_BASE);
+export const fileServiceClient = new FileServiceClient(process.env.NEXT_PUBLIC_API_URL);
 
 class FileService {
 

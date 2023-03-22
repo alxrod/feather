@@ -61,7 +61,7 @@ import {msgMethods,decisionTypes} from "./chat.service"
 import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 
-export const contractClient = new ContractClient(process.env.NEXT_PUBLIC_SITE_BASE);
+export const contractClient = new ContractClient(process.env.NEXT_PUBLIC_API_URL);
 export const contractStages = {
     CREATE: 0,
     INVITE: 1,

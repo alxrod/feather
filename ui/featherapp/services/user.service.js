@@ -15,7 +15,7 @@ import {
 
  } from "../proto/communication/user_pb";
 
-export const authClient = new AuthClient(process.env.NEXT_PUBLIC_SITE_BASE);
+export const authClient = new AuthClient(process.env.NEXT_PUBLIC_API_URL);
 
 export const WORKER_TYPE = 0
 export const BUYER_TYPE = 1

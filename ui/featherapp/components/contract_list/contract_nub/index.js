@@ -114,6 +114,8 @@ const ContractNub = (props) => {
                     <Image
                       className="inline-block h-6 w-6 rounded-full ring-2 ring-white"
                       src={pic}
+                      width={24}
+                      height={24}
                       alt=""
                       key={i}
                     />

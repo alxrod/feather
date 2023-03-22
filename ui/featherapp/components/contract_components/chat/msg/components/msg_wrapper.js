@@ -32,6 +32,8 @@ const ProfileImg = (props) => {
         <Image 
           className={"h-10 w-10 rounded-full object-cover"}
           src={cacheUrl}
+          width={40}
+          height={40}
         />
       ) : (
         <UserIcon className={"h-10 w-10 rounded-full border-2 bg-white border-gray-300 p-1 font-thin text-gray-300"}/>

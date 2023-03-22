@@ -46,7 +46,7 @@ func NewWebHookServer(dbName ...string) *WebhookServer {
 	creds := credentials.NewTLS(loadTLSCfg())
 	conn, err := grpc.DialContext(
 		context.Background(),
-		fmt.Sprintf("%s:%s", os.Getenv("BACKEND_IP"), os.Getenv("BACKEND_PORT")),
+		fmt.Sprintf("%s:%s", os.Getenv("GRPC_IP"), os.Getenv("GRPC_PORT")),
 		grpc.WithTransportCredentials(creds),
 	)
 

@@ -110,7 +110,7 @@ func (s *BackServer) ConfirmProfileUploaded(ctx context.Context, req *comms.Prof
 		return nil, err
 	}
 	user.ProfilePhoto.LocalPath = localPath
-	cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("SITE_BASE"))
+	cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("API_URL"))
 	user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", cacheBase, user.ProfilePhoto.LocalPath)
 	user.ProfilePhoto.InCache = true
 	err = user.ProfilePhoto.Save(database)
@@ -146,7 +146,7 @@ func (s *BackServer) GetProfilePhotos(ctx context.Context, req *comms.ProfileGet
 				return nil, err
 			}
 			user.ProfilePhoto.LocalPath = localPath
-			cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("SITE_BASE"))
+			cacheBase := fmt.Sprintf("%s/asset-cache/", os.Getenv("API_URL"))
 			user.ProfilePhoto.CacheUrl = fmt.Sprintf("%s%s", cacheBase, user.ProfilePhoto.LocalPath)
 			user.ProfilePhoto.InCache = true
 			err = user.ProfilePhoto.Save(database)

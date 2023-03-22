@@ -56,7 +56,7 @@ func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) erro
 
 	agent.SenderEmail = os.Getenv("EMAIL")
 	agent.Password = os.Getenv("EMAIL_PWORD")
-	agent.RootURL = os.Getenv("ROOT_URL")
+	agent.RootURL = os.Getenv("FRONTEND_URL")
 	log.Printf("Email agent username %s password %s", agent.SenderEmail, agent.Password)
 	// Intervals
 	agent.INTERVAL_TIME = 1
@@ -173,7 +173,7 @@ func (agent *EmailAgent) SendResetEmail(link *TempLink) error {
 	return nil
 }
 
-func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, make_new_secret...bool) (error, string) {
+func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, make_new_secret ...bool) (error, string) {
 	gen_new := true
 	if len(make_new_secret) > 0 {
 		gen_new = make_new_secret[0]
@@ -181,7 +181,7 @@ func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, m
 	if contract == nil || user == nil {
 		return errors.New("Invalid contract or user"), ""
 	}
-	
+
 	secret := contract.InvitePassword
 	if gen_new {
 		secret = agent.GenerateInviteSecret()

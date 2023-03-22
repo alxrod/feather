@@ -13,7 +13,7 @@ import {
  } from "../proto/communication/stripe_pb";
 
 
-export const stripeServiceClient = new StripeServiceClient(process.env.NEXT_PUBLIC_SITE_BASE);
+export const stripeServiceClient = new StripeServiceClient(process.env.NEXT_PUBLIC_API_URL);
 
 class StripeService {
 

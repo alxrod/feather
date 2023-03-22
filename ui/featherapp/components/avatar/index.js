@@ -30,7 +30,9 @@ const Avatar = (props) => {
     <>
       {haveProfImg ? (
         <Image 
-          className={"h-"+props.height+" w-"+props.width+" rounded-full object-cover"}
+          className={"rounded-full object-cover"}
+          width={props.height*0.25*16}
+          height={props.width*0.25*16}
           src={`${cacheUrl}?${imageHash}`}
         />
       ) : (

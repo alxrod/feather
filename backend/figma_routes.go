@@ -33,7 +33,7 @@ func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRe
 	}
 
 	client := &http.Client{}
-	base := os.Getenv("SITE_BASE")
+	base := os.Getenv("FRONTEND_URL")
 	if os.Getenv("NEXT_PUBLIC_DEBUG") == "true" {
 		base = "http://localhost:3000"
 	}

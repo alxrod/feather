@@ -24,7 +24,7 @@ const Profile = (props) => {
 
   const figmaLink = "https://www.figma.com/oauth?"+
     "client_id="+process.env.NEXT_PUBLIC_FIGMA_ID+"&"+
-    "redirect_uri="+(process.env.NEXT_PUBLIC_DEBUG == "true" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_SITE_BASE)+"/figma/oauth-callback&"+
+    "redirect_uri="+(process.env.NEXT_PUBLIC_DEBUG == "true" ? "http://localhost:3000" : process.env.NEXT_PUBLIC_FRONTEND_URL)+"/figma/oauth-callback&"+
     "scope=file_read&"+
     "state="+state+"&"+
     "response_type=code"
@@ -47,6 +47,8 @@ const Profile = (props) => {
             <>
               <Image 
                 className={"h-[200px] w-[200px] rounded-md object-cover"}
+                width={200}
+                height={200}
                 src={picUrl}
               />
               
