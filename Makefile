@@ -18,8 +18,8 @@ build:
 backend:
 	go build -o api . && ./api   
 
-.PHONY: debug
-debug:
+.PHONY: frontend
+frontend:
 	npm run dev --prefix ui/featherapp/ 
 
 .PHONY: debug-webhooks

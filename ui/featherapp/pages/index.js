@@ -9,6 +9,8 @@ import CompleteFrame from '../public/landing_page/complete_frame.png';
 
 import ContractStep from "../components/landing_page/contract_step.js";
 
+import FadeInAnimation from "../components/fade_in";
+
 const features = [
   {
     id: 1,
@@ -22,9 +24,11 @@ const features = [
     },
     reversed: false,
     img: () => (
-      <div className="grow max-h-[80vh] flex justify-end">
-        <Image className="h-full" src={InviteFrame} />
-      </div>
+      <FadeInAnimation wrapperElement="div">
+        <div className="grow max-h-[80vh] flex justify-end">
+          <Image className="h-full" src={InviteFrame} />
+        </div>
+      </FadeInAnimation>
     ),
   },
   {
@@ -39,9 +43,11 @@ const features = [
     },
     reversed: true,
     img: () => (
-      <div className="grow max-h-[80vh] flex justify-start">
-        <Image className="h-full" src={ChatFrame} />
-      </div>
+      <FadeInAnimation wrapperElement="div">
+        <div className="grow max-h-[80vh] flex justify-start">
+          <Image className="h-full" src={ChatFrame} />
+        </div>
+      </FadeInAnimation>
     ),
   },
   {
@@ -56,9 +62,11 @@ const features = [
     },
     reversed: false,
     img: () => (
-      <div className="grow max-h-[80vh] flex justify-end">
-        <Image className="h-full" src={CompleteFrame} />
-      </div>
+      <FadeInAnimation wrapperElement="div">
+        <div className="grow max-h-[80vh] flex justify-end">
+          <Image className="h-full" src={CompleteFrame} />
+        </div>
+      </FadeInAnimation>
     ),
   },
   {
@@ -84,33 +92,35 @@ const LandingPage = (props) => {
     <div>
       <div>
         <div className="relative px-6 lg:px-8 flex justify-center">
-          <div className="max-w-6xl flex flex-col-reverse items-center lg:items-start lg:flex-row pt-10 sm:pt-20 pb-32 sm:pb-40">
-            <div>
-              <div className="max-w-md lg:mt-10">
-                <h1 className="text-4xl font-bree-serif tracking-tight text-center sm:text-left sm:text-6xl">
-                  Create contracts you can <b className="text-primary6">trust</b>
-                </h1>
-                <div className="mt-8 flex justify-center sm:justify-start">
-                  {/* <a
-                    href="/register"
-                    className="inline-block rounded-lg bg-primary4 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary4 hover:bg-primary5 hover:ring-primary5"
-                  >
-                    Get started{' '}
-                    <span className="text-indigo-200" aria-hidden="true">
-                      &rarr;
-                    </span>
-                  </a> */}
+          <FadeInAnimation wrapperElement="div">
+            <div className="max-w-6xl flex flex-col-reverse items-center lg:items-start lg:flex-row pt-10 sm:pt-20 pb-32 sm:pb-40">
+              <div>
+                <div className="max-w-md lg:mt-10">
+                  <h1 className="text-4xl font-bree-serif tracking-tight text-center sm:text-left sm:text-6xl">
+                    Create contracts you can <b className="text-primary6">trust</b>
+                  </h1>
+                  <div className="mt-8 flex justify-center sm:justify-start">
+                    {/* <a
+                      href="/register"
+                      className="inline-block rounded-lg bg-primary4 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-primary4 hover:bg-primary5 hover:ring-primary5"
+                    >
+                      Get started{' '}
+                      <span className="text-indigo-200" aria-hidden="true">
+                        &rarr;
+                      </span>
+                    </a> */}
+                  </div>
                 </div>
               </div>
+              <div className="w-[90vw] md:w-[70vw] lg:w-[60vw] ">
+                <Image
+                    src={MainFrame}
+                    alt="Product screenshot"
+                    className="w-full"
+                />
+              </div>
             </div>
-            <div className="w-[90vw] md:w-[70vw] lg:w-[60vw] ">
-              <Image
-                  src={MainFrame}
-                  alt="Product screenshot"
-                  className="w-full"
-              />
-            </div>
-          </div>
+          </FadeInAnimation>
         </div>
       </div>
       <div className="w-full flex flex-col items-center">

@@ -95,6 +95,22 @@ const AppWrapper = (props) => {
   const authRedirect = (wholepath) => {
     let match_found = false;
     let used_key = ""
+
+    let user = props.user
+    let creds;
+    if (!user) {
+      user = JSON.parse(localStorage.getItem("user"));
+      creds = JSON.parse(localStorage.getItem("creds"));
+      if (!user) {
+        user = JSON.parse(sessionStorage.getItem("user"));
+        creds = JSON.parse(sessionStorage.getItem("creds"));
+      }
+      
+      if (user) {
+        props.setUser(user, creds)
+      }
+    }
+
     for (let i = 0; i < Object.keys(routes).length; i++) {
       if (wholepath.match(Object.keys(routes)[i])) {
         match_found = true;
@@ -102,32 +118,23 @@ const AppWrapper = (props) => {
         break;
       }
     }
-    if (props.user === null && routes[used_key] === STD_ROLE) {
-      let user = JSON.parse(localStorage.getItem("user"));
-      let creds = JSON.parse(localStorage.getItem("creds"));
-      if (!user) {
-          user = JSON.parse(sessionStorage.getItem("user"));
-          creds = JSON.parse(sessionStorage.getItem("creds"));
-      }
-      if (user) {
-        props.setUser(user, creds)
-        return true
-      } else {
-        props.pullUser().then(
-          () => {
-            return true
-          },
-          () => {
-            props.setRedirect(wholepath)
-            router.push("/login")
-            return false
-          }
-        )
-      }
-    } else if (props.user !== null && routes[used_key] === UNAUTH_ROLE) {
+
+    if (user === null && routes[used_key] === STD_ROLE) {
+      props.pullUser().then(
+        () => {
+          return true
+        },
+        () => {
+          props.setRedirect(wholepath)
+          router.push("/login")
+          return false
+        }
+      )
+    } else if (user !== null && routes[used_key] === UNAUTH_ROLE) {
       router.push("/contracts")
       return false
     }
+    console.log("REACHING END OF AUHT REDIRECT")
     return true
   }
 

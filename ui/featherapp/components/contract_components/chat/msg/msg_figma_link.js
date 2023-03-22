@@ -8,20 +8,7 @@ import MsgWrapper from "./components/msg_wrapper"
 import { fontSize } from './components/msg_helpers'
 import FigmaLogo from "../../figma_link/figma_logo"
 
-const DateMsg = (props) => {
-
-  const [otherUsername, setOtherUsername] = useState("")
-
-  useEffect( () => {
-    if (props.curContract.id) {
-      if (props.curContract.worker.username === props.user.username) {
-        setOtherUsername(props.curContract.buyer.username)
-      } else {
-        setOtherUsername(props.curContract.worker.username)
-      }
-    }
-  }, [props.curContract])
-
+const FigmaLinkMsg = (props) => {
 
   const Icon = () => {
     return (
@@ -66,4 +53,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DateMsg)
+)(FigmaLinkMsg)

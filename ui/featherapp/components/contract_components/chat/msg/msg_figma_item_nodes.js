@@ -8,7 +8,7 @@ import MsgWrapper from "./components/msg_wrapper"
 import { fontSize } from './components/msg_helpers'
 import FigmaLogo from "../../figma_link/figma_logo"
 
-const DateMsg = (props) => {
+const FigmaNodesMsg = (props) => {
 
   const Icon = () => {
     return (
@@ -45,4 +45,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DateMsg)
+)(FigmaNodesMsg)
