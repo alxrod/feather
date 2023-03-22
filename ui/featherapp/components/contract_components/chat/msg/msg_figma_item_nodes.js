@@ -5,24 +5,10 @@ import { finishedReload } from '../../../../reducers/chat/dispatchers/chat.dispa
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
-import MsgDecisionFooter from "./components/msg_decision_footer"
 import { fontSize } from './components/msg_helpers'
 import FigmaLogo from "../../figma_link/figma_logo"
 
 const DateMsg = (props) => {
-
-  const [otherUsername, setOtherUsername] = useState("")
-
-  useEffect( () => {
-    if (props.curContract.id) {
-      if (props.curContract.worker.username === props.user.username) {
-        setOtherUsername(props.curContract.buyer.username)
-      } else {
-        setOtherUsername(props.curContract.worker.username)
-      }
-    }
-  }, [props.curContract])
-
 
   const Icon = () => {
     return (
@@ -39,15 +25,8 @@ const DateMsg = (props) => {
           </div>
           <div className="w-6"></div>
         </div>
-        <MsgDecisionFooter 
-          msg={props.msg} 
-          embedded={props.embedded}
-          adminStatus={props.msg.adminStatus}
-          otherUsername={otherUsername}
-        />
       </div>
     </MsgWrapper>
-
   )
 }
 

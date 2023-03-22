@@ -5,7 +5,6 @@ import { finishedReload } from '../../../../reducers/chat/dispatchers/chat.dispa
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import MsgWrapper from "./components/msg_wrapper"
-import MsgDecisionFooter from "./components/msg_decision_footer"
 import { fontSize } from './components/msg_helpers'
 import FigmaLogo from "../../figma_link/figma_logo"
 
@@ -46,13 +45,6 @@ const DateMsg = (props) => {
           </div>
           <div className="w-6"></div>
         </div>
-        <MsgDecisionFooter 
-          msg={props.msg} 
-          embedded={props.embedded}
-          otherStatus={otherStatus} 
-          adminStatus={props.msg.adminStatus}
-          otherUsername={otherUsername}
-        />
       </div>
     </MsgWrapper>
 
