@@ -28,7 +28,7 @@ import {
 } from "./proto/communication/user.client" 
 
 let transport = new GrpcWebFetchTransport({
-  baseUrl: "https://feathercontracts.com",
+  baseUrl: "https://api.feathercontracts.com",
 });
 
 let contractClient = new ContractClient(transport);
