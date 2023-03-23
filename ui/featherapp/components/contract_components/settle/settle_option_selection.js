@@ -19,61 +19,29 @@ function classNames(...classes) {
 const SettleOption = (props) => {
   const [selected, setSelected] = useState({id: 2, name: 'Pending', action: ITEM_PENDING})
 
-  const optionDisabled = useMemo(() => {
-    if (props.role !== ADMIN_TYPE && props.adminSettled !== ITEM_PENDING) {
-      return true
-    }
-    if (props.role === WORKER_TYPE && props.deadlineWorkerSettled) {
-      return true
-    }
-    if (props.role === BUYER_TYPE && props.deadlineBuyerSettled) {
-      return true
-    }
-    return false
-            
-  })
   useEffect( () => {
-    if (props.role === WORKER_TYPE) {
-      if (props.workerSettled === ITEM_APPROVED) {
-        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
-      } else if (props.workerSettled === ITEM_REJECTED) {
-        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
-      } else {
-        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
-      }
-    } else if (props.role === BUYER_TYPE) {
-      if (props.buyerSettled === ITEM_APPROVED) {
-        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
-      } else if (props.buyerSettled === ITEM_REJECTED) {
-        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
-      } else {
-        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
-      }
-    } else if (props.role === ADMIN_TYPE) {
-      if (props.adminSettled === ITEM_APPROVED) {
-        setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
-      } else if (props.adminSettled === ITEM_REJECTED) {
-        setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
-      } else {
-        setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
-      }
+    if (props.buyerSettled === ITEM_APPROVED) {
+      setSelected({ id: 1, name: 'Approve', action: ITEM_APPROVED })
+    } else if (props.buyerSettled === ITEM_REJECTED) {
+      setSelected({ id: 2, name: 'Reject', action: ITEM_REJECTED })
+    } else {
+      setSelected({id: 2, name: 'Pending', action: ITEM_PENDING})
     }
-  }, [props.workerSettled, props.buyerSettled, props.role])
-
+  }, [props.buyerSettled])
 
   const switchStatus = (new_status) => {
     setSelected(new_status)
     props.switchStatus(new_status.action)
   }
   return (
-    <Listbox value={selected} onChange={switchStatus} disabled={optionDisabled}>
+    <Listbox value={selected} onChange={switchStatus}>
       {({ open }) => (
         <>
           <div className="w-[50px] lg:w-[125px]">
             <Listbox.Button className={
                                 classNames(
                                   "relative rounded-md shadow-sm pl-2 w-full pr-2 py-1.5 text-left focus:outline-none focus:ring-0 sm:text-sm text-gray-900 border border-gray-400", 
-                                  (optionDisabled) ? "bg-gray-100" : "cursor-pointer"
+                                  "cursor-pointer"
                                 )}>
               <span className="flex items-center">
               {(selected.action == ITEM_APPROVED) && (

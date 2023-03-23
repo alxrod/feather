@@ -586,6 +586,13 @@ func (s *BackServer) SettleItem(ctx context.Context, req *comms.ContractSettleIt
 	if err != nil {
 		return nil, err
 	}
+	if contract.Stage != db.SETTLE {
+		return nil, errors.New("Contract not in settling period")
+	}
+	if contract.Buyer.Id != user.Id {
+		return nil, errors.New("User is not the buyer so cannot settle on item")
+	}
+
 	err = db.ContractItemChangeSettle(item, deadline, user, contract, req.NewState, database)
 	if err != nil {
 		return nil, err

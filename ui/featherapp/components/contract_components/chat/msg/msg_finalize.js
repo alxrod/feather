@@ -23,15 +23,14 @@ const ContractFinalizeMsg = (props) => {
       <DocumentIcon className={"text-gray-400 " + (props.msg.isAdmin ? "h-4 w-4" : "h-5 w-5") } aria-hidden="true" />
     )
   }
+
   return (
     <MsgWrapper msg={props.msg} editString={editString} icon={Icon} embedded={props.embedded}>
       <div className={"mt-2 text-gray-700 " + fontSize(1, props.embedded)}>
         <div className="flex items-center">
           <div className="flex items-center">
             <h3 className={"text-gray-400 font-medium " + fontSize(4, props.embedded)}>
-              {actorUsername} 
-              {props.msg.body.confirmed ? " confirmed the final settlement" : 
-              props.msg.body.undo ? " went back to reviewing items" : 
+              {actorUsername +  
               " finished reviewing contract items"}
             </h3>
           </div>

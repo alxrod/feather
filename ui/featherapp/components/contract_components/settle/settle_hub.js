@@ -12,7 +12,7 @@ const SettleHub = (props) => {
   const [totalItemLength, setTotalItemLength] = useState(0)
 
   const [yourRole, setYourRole] = useState(WORKER_TYPE)
-  const [workerApprovedCount, setWorkerApprovedCount] = useState(0)
+
   const [buyerApprovedCount, setBuyerApprovedCount] = useState(0)
 
   const percentComplete = (count) => {
@@ -25,15 +25,11 @@ const SettleHub = (props) => {
         if (props.deadlines[i].id === curDeadlineId) {
           setCurDeadline(props.deadlines[i])
           const new_items = []
-          let worker_approved = 0
           let buyer_approved = 0
           for (let j =0; j < props.items.length; j++) {
             for (let k = 0; k < props.deadlines[i].itemsList.length; k++) {
               if (props.deadlines[i].itemsList[k].id == props.items[j].id) {
                 new_items.push(props.items[j])
-                if (props.items[j].workerSettled === ITEM_APPROVED) {
-                  worker_approved += 1
-                }
                 if (props.items[j].buyerSettled === ITEM_APPROVED) {
                   buyer_approved += 1
                 }
@@ -44,7 +40,6 @@ const SettleHub = (props) => {
           setCurItems(new_items)
           setTotalItemLength(new_items.length)
           
-          setWorkerApprovedCount(worker_approved)
           setBuyerApprovedCount(buyer_approved)
           if (props.user.id === props.curContract.worker.id) {
             setYourRole(WORKER_TYPE)
@@ -61,20 +56,13 @@ const SettleHub = (props) => {
   return (
     <div className="bg-white overflow-hidden shadow rounded-lg divide-y divide-gray-200">
       <div className="px-4 pt-5 pb-2 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Settlement Status</h3>
+          <h3 className="text-lg leading-6 font-medium text-gray-900">Deadline Feedback</h3>
           <div className="mt-1">
             <SettleProgress 
-              key={yourRole === ADMIN_TYPE ? "worker" : "you"} 
-              user_str={yourRole === ADMIN_TYPE ? "Worker's": "Your"} 
-              progress={yourRole === BUYER_TYPE ? percentComplete(buyerApprovedCount) : percentComplete(workerApprovedCount)}
-              tasks_complete={yourRole === BUYER_TYPE ? buyerApprovedCount : workerApprovedCount}
-              tasks_total={totalItemLength}
-            />
-            <SettleProgress 
-              key={yourRole === ADMIN_TYPE ? "buyer" : "partner"} 
-              user_str={yourRole === ADMIN_TYPE ? "Buyers's": "Partner's"} 
-              progress={yourRole === BUYER_TYPE ? percentComplete(workerApprovedCount) : percentComplete(buyerApprovedCount)}
-              tasks_complete={yourRole === BUYER_TYPE ? workerApprovedCount : buyerApprovedCount}
+              key={"buyer"} 
+              user_str={"Review"} 
+              progress={percentComplete(buyerApprovedCount)}
+              tasks_complete={buyerApprovedCount}
               tasks_total={totalItemLength}
             />
           </div>

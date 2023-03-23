@@ -813,40 +813,6 @@ class ContractService {
             });
         });
     }
-
-    confirmDeadline(token, user_id, contract_id, deadline_id) {
-        let request = new ConfirmDeadlineRequest();
-        request.setUserId(user_id);
-        request.setContractId(contract_id);
-        request.setDeadlineId(deadline_id);
-
-        return new Promise( (resolve, reject) => {
-            var metadata = {"authorization": token}
-            contractClient.confirmDeadline(request, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response.toObject())
-            });
-        });
-    }
-
-    undoDeadline(token, user_id, contract_id, deadline_id) {
-        let request = new UndoDeadlineRequest();
-        request.setUserId(user_id);
-        request.setContractId(contract_id);
-        request.setDeadlineId(deadline_id);
-
-        return new Promise( (resolve, reject) => {
-            var metadata = {"authorization": token}
-            contractClient.undoDeadline(request, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response.toObject())
-            });
-        });
-    }
     
     settleItem(token, user_id, contract_id, deadline_id, item_id, new_state) {
         let settleRequest = new ContractSettleItemRequest()

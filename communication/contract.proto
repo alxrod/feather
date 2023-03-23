@@ -19,11 +19,7 @@ message DeadlineEntity {
     bool complete = 25;
     bool expired = 31;
 
-    bool worker_settled = 26;
     bool buyer_settled = 27;
-    bool worker_confirmed = 29;
-    bool buyer_confirmed = 30;
-    bool admin_settled = 28;
     
     bool awaiting_creation = 20;
     bool awaiting_deletion = 21;
@@ -152,9 +148,7 @@ message ItemEntity {
     bool awaiting_creation = 9;
     bool awaiting_deletion = 10;
 
-    uint32 worker_settled = 26;
     uint32 buyer_settled = 27;
-    uint32 admin_settled = 28;
 
     string figma_component_id = 29;
 }
@@ -476,8 +470,6 @@ service Contract {
     rpc ResolveAdmin(ContractAdminSupport) returns (NullResponse) {};
 
     rpc FinishDeadline(FinishDeadlineRequest) returns (NullResponse) {};
-    rpc ConfirmDeadline(ConfirmDeadlineRequest) returns (NullResponse) {};
-    rpc UndoDeadline(UndoDeadlineRequest) returns (NullResponse) {};
 
     rpc SetFigmaConnected(FigmaFileConnectRequest) returns (ContractEditResponse) {};
     rpc SetItemFigmaNodes(FigmaItemRequest) returns (ContractEditResponse) {};
