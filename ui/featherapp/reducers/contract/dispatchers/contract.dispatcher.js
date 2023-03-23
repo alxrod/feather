@@ -102,6 +102,14 @@ export const queryContractNubs = () => {
 
 export const createContract = (title, summary, price_set, deadlines, items, invited_email, role) => {
     return dispatch => {
+        dispatch({
+            type: itemActions.CONTRACT_ITEM_LOAD,
+            payload: [],
+        })
+        dispatch({
+            type: deadlineActions.CONTRACT_DEADLINE_LOAD,
+            payload: [],
+        })
         return  helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.createContract(creds.access_token, creds.user_id, title, summary, price_set, deadlines, items, invited_email, role).then(
