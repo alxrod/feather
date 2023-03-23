@@ -11,19 +11,22 @@ import * as helpers from "../../helpers"
 
 export const clearSelected = () => {
     return dispatch => {
-        dispatch({
-            type: contractActions.CONTRACT_CLEAR_SELECTED,
-        });
-        dispatch({
-            type: itemActions.CONTRACT_ITEM_LOAD,
-            payload: [],
-        });
-        dispatch({
-            type: deadlineActions.CONTRACT_DEADLINE_LOAD,
-            payload: [],
-        });
-        dispatch({
-            type: chatActions.CHAT_CLEAR_REJOIN,
+        return new Promise((resolve, reject) => {
+            dispatch({
+                type: contractActions.CONTRACT_CLEAR_SELECTED,
+            });
+            dispatch({
+                type: itemActions.CONTRACT_ITEM_LOAD,
+                payload: [],
+            });
+            dispatch({
+                type: deadlineActions.CONTRACT_DEADLINE_LOAD,
+                payload: [],
+            });
+            dispatch({
+                type: chatActions.CHAT_CLEAR_REJOIN,
+            })
+            resolve()
         })
     }
 }

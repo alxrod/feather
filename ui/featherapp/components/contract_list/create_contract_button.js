@@ -1,7 +1,7 @@
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { PlusIcon } from '@heroicons/react/solid'
-import { createContract } from "../../reducers/contract/dispatchers/contract.dispatcher";
+import { createContract, clearSelected} from "../../reducers/contract/dispatchers/contract.dispatcher";
 import { genEmptyDeadlineSet } from "../contract_components/deadline/helpers";
 import { BUYER_TYPE, WORKER_TYPE } from '../../services/user.service';
 import { useRouter } from "next/router";
@@ -27,12 +27,13 @@ const CreateContract = (props) => {
     }
     // (title, summary, price_set, deadlines, items, password, role)
     setLoadingNewContract(true)
-    props.createContract("", "", {current:0, worker:0, buyer:0}, genEmptyDeadlineSet(), [], "", role).then(
-      (id) => {
-        setLoadingNewContract(false)
-        router.push("/create/"+id)
-      }
-    )
+    props.clearSelected().then(() => {
+      props.createContract("", "", {current:0, worker:0, buyer:0}, genEmptyDeadlineSet(), [], "", role).then(
+        (id) => {
+          router.push("/create/"+id)
+        }
+      )
+    })
     
   }
 
@@ -58,6 +59,7 @@ const mapStateToProps = ({  user }) => ({
 })
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   createContract,
+  clearSelected,
 }, dispatch)
 export default connect(
   mapStateToProps,
