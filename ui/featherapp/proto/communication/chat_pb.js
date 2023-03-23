@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -7601,13 +7595,8 @@ proto.communication.FinalizeMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
     contractId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     deadlineId: jspb.Message.getFieldWithDefault(msg, 9, ""),
-    confirmed: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
-    undo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
     contractStage: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    workerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    workerConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    buyerConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
+    buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -7652,33 +7641,13 @@ proto.communication.FinalizeMsgBody.deserializeBinaryFromReader = function(msg, 
       var value = /** @type {string} */ (reader.readString());
       msg.setDeadlineId(value);
       break;
-    case 3:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setConfirmed(value);
-      break;
-    case 10:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setUndo(value);
-      break;
     case 4:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setContractStage(value);
       break;
-    case 5:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerSettled(value);
-      break;
-    case 6:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerConfirmed(value);
-      break;
     case 7:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBuyerSettled(value);
-      break;
-    case 8:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerConfirmed(value);
       break;
     default:
       reader.skipField();
@@ -7723,20 +7692,6 @@ proto.communication.FinalizeMsgBody.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getConfirmed();
-  if (f) {
-    writer.writeBool(
-      3,
-      f
-    );
-  }
-  f = message.getUndo();
-  if (f) {
-    writer.writeBool(
-      10,
-      f
-    );
-  }
   f = message.getContractStage();
   if (f !== 0) {
     writer.writeUint32(
@@ -7744,31 +7699,10 @@ proto.communication.FinalizeMsgBody.serializeBinaryToWriter = function(message, 
       f
     );
   }
-  f = message.getWorkerSettled();
-  if (f) {
-    writer.writeBool(
-      5,
-      f
-    );
-  }
-  f = message.getWorkerConfirmed();
-  if (f) {
-    writer.writeBool(
-      6,
-      f
-    );
-  }
   f = message.getBuyerSettled();
   if (f) {
     writer.writeBool(
       7,
-      f
-    );
-  }
-  f = message.getBuyerConfirmed();
-  if (f) {
-    writer.writeBool(
-      8,
       f
     );
   }
@@ -7812,42 +7746,6 @@ proto.communication.FinalizeMsgBody.prototype.setDeadlineId = function(value) {
 
 
 /**
- * optional bool confirmed = 3;
- * @return {boolean}
- */
-proto.communication.FinalizeMsgBody.prototype.getConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 3, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.FinalizeMsgBody} returns this
- */
-proto.communication.FinalizeMsgBody.prototype.setConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 3, value);
-};
-
-
-/**
- * optional bool undo = 10;
- * @return {boolean}
- */
-proto.communication.FinalizeMsgBody.prototype.getUndo = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.FinalizeMsgBody} returns this
- */
-proto.communication.FinalizeMsgBody.prototype.setUndo = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 10, value);
-};
-
-
-/**
  * optional uint32 contract_stage = 4;
  * @return {number}
  */
@@ -7866,42 +7764,6 @@ proto.communication.FinalizeMsgBody.prototype.setContractStage = function(value)
 
 
 /**
- * optional bool worker_settled = 5;
- * @return {boolean}
- */
-proto.communication.FinalizeMsgBody.prototype.getWorkerSettled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.FinalizeMsgBody} returns this
- */
-proto.communication.FinalizeMsgBody.prototype.setWorkerSettled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
-};
-
-
-/**
- * optional bool worker_confirmed = 6;
- * @return {boolean}
- */
-proto.communication.FinalizeMsgBody.prototype.getWorkerConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.FinalizeMsgBody} returns this
- */
-proto.communication.FinalizeMsgBody.prototype.setWorkerConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 6, value);
-};
-
-
-/**
  * optional bool buyer_settled = 7;
  * @return {boolean}
  */
@@ -7916,24 +7778,6 @@ proto.communication.FinalizeMsgBody.prototype.getBuyerSettled = function() {
  */
 proto.communication.FinalizeMsgBody.prototype.setBuyerSettled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 7, value);
-};
-
-
-/**
- * optional bool buyer_confirmed = 8;
- * @return {boolean}
- */
-proto.communication.FinalizeMsgBody.prototype.getBuyerConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.FinalizeMsgBody} returns this
- */
-proto.communication.FinalizeMsgBody.prototype.setBuyerConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 

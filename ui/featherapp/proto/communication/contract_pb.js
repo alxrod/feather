@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -1483,11 +1477,7 @@ proto.communication.DeadlineEntity.toObject = function(includeInstance, msg) {
     name: jspb.Message.getFieldWithDefault(msg, 18, ""),
     complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
     expired: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    workerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
     buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
-    workerConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 29, false),
-    buyerConfirmed: jspb.Message.getBooleanFieldWithDefault(msg, 30, false),
-    adminSettled: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
     deadlineProposerId: jspb.Message.getFieldWithDefault(msg, 22, ""),
@@ -1563,25 +1553,9 @@ proto.communication.DeadlineEntity.deserializeBinaryFromReader = function(msg, r
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setExpired(value);
       break;
-    case 26:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerSettled(value);
-      break;
     case 27:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBuyerSettled(value);
-      break;
-    case 29:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerConfirmed(value);
-      break;
-    case 30:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerConfirmed(value);
-      break;
-    case 28:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAdminSettled(value);
       break;
     case 20:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -1725,38 +1699,10 @@ proto.communication.DeadlineEntity.serializeBinaryToWriter = function(message, w
       f
     );
   }
-  f = message.getWorkerSettled();
-  if (f) {
-    writer.writeBool(
-      26,
-      f
-    );
-  }
   f = message.getBuyerSettled();
   if (f) {
     writer.writeBool(
       27,
-      f
-    );
-  }
-  f = message.getWorkerConfirmed();
-  if (f) {
-    writer.writeBool(
-      29,
-      f
-    );
-  }
-  f = message.getBuyerConfirmed();
-  if (f) {
-    writer.writeBool(
-      30,
-      f
-    );
-  }
-  f = message.getAdminSettled();
-  if (f) {
-    writer.writeBool(
-      28,
       f
     );
   }
@@ -1984,24 +1930,6 @@ proto.communication.DeadlineEntity.prototype.setExpired = function(value) {
 
 
 /**
- * optional bool worker_settled = 26;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getWorkerSettled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setWorkerSettled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 26, value);
-};
-
-
-/**
  * optional bool buyer_settled = 27;
  * @return {boolean}
  */
@@ -2016,60 +1944,6 @@ proto.communication.DeadlineEntity.prototype.getBuyerSettled = function() {
  */
 proto.communication.DeadlineEntity.prototype.setBuyerSettled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 27, value);
-};
-
-
-/**
- * optional bool worker_confirmed = 29;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getWorkerConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 29, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setWorkerConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 29, value);
-};
-
-
-/**
- * optional bool buyer_confirmed = 30;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getBuyerConfirmed = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 30, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setBuyerConfirmed = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 30, value);
-};
-
-
-/**
- * optional bool admin_settled = 28;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getAdminSettled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 28, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setAdminSettled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 28, value);
 };
 
 
@@ -5398,9 +5272,7 @@ proto.communication.ItemEntity.toObject = function(includeInstance, msg) {
     awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
     awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
     awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
-    workerSettled: jspb.Message.getFieldWithDefault(msg, 26, 0),
     buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0),
-    adminSettled: jspb.Message.getFieldWithDefault(msg, 28, 0),
     figmaComponentId: jspb.Message.getFieldWithDefault(msg, 29, "")
   };
 
@@ -5474,17 +5346,9 @@ proto.communication.ItemEntity.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setAwaitingDeletion(value);
       break;
-    case 26:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setWorkerSettled(value);
-      break;
     case 27:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setBuyerSettled(value);
-      break;
-    case 28:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setAdminSettled(value);
       break;
     case 29:
       var value = /** @type {string} */ (reader.readString());
@@ -5582,24 +5446,10 @@ proto.communication.ItemEntity.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getWorkerSettled();
-  if (f !== 0) {
-    writer.writeUint32(
-      26,
-      f
-    );
-  }
   f = message.getBuyerSettled();
   if (f !== 0) {
     writer.writeUint32(
       27,
-      f
-    );
-  }
-  f = message.getAdminSettled();
-  if (f !== 0) {
-    writer.writeUint32(
-      28,
       f
     );
   }
@@ -5776,24 +5626,6 @@ proto.communication.ItemEntity.prototype.setAwaitingDeletion = function(value) {
 
 
 /**
- * optional uint32 worker_settled = 26;
- * @return {number}
- */
-proto.communication.ItemEntity.prototype.getWorkerSettled = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 26, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setWorkerSettled = function(value) {
-  return jspb.Message.setProto3IntField(this, 26, value);
-};
-
-
-/**
  * optional uint32 buyer_settled = 27;
  * @return {number}
  */
@@ -5808,24 +5640,6 @@ proto.communication.ItemEntity.prototype.getBuyerSettled = function() {
  */
 proto.communication.ItemEntity.prototype.setBuyerSettled = function(value) {
   return jspb.Message.setProto3IntField(this, 27, value);
-};
-
-
-/**
- * optional uint32 admin_settled = 28;
- * @return {number}
- */
-proto.communication.ItemEntity.prototype.getAdminSettled = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 28, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setAdminSettled = function(value) {
-  return jspb.Message.setProto3IntField(this, 28, value);
 };
 
 

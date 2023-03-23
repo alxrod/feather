@@ -199,14 +199,10 @@ message AdminMsgBody {
 message FinalizeMsgBody {
     string contract_id = 1;
     string deadline_id = 9;
-    bool confirmed = 3;
-    bool undo = 10;
+
     uint32 contract_stage = 4;
 
-    bool worker_settled = 5;
-    bool worker_confirmed = 6;
     bool buyer_settled = 7;
-    bool buyer_confirmed = 8;
 }
 
 message DeadlineExpireMsgBody {

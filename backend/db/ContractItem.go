@@ -33,9 +33,7 @@ type ContractItem struct {
 	AwaitingCreation bool               `bson:"awaiting_creation"`
 	AwaitingDeletion bool               `bson:"awaiting_deletion"`
 
-	WorkerSettled uint32 `bson:"worker_settled"`
 	BuyerSettled  uint32 `bson:"buyer_settled"`
-	AdminSettled  uint32 `bson:"admin_settled"`
 
 	FigmaComponentId string `bson:"figma_component_id"`
 }
@@ -50,9 +48,8 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		AwaitingApproval: ci.AwaitingApproval,
 		AwaitingCreation: ci.AwaitingCreation,
 		AwaitingDeletion: ci.AwaitingDeletion,
-		WorkerSettled:    ci.WorkerSettled,
+
 		BuyerSettled:     ci.BuyerSettled,
-		AdminSettled:     ci.AdminSettled,
 
 		CurrentBody:  ci.CurrentBody,
 		WorkerBody:   ci.WorkerBody,
@@ -240,23 +237,12 @@ func ContractItemChangeSettle(
 		return errors.New("contract item not required for current deadline")
 	}
 
-	if user.Id == contract.Worker.Id {
-		item.WorkerSettled = newState
-	} else if user.Id == contract.Buyer.Id {
-		item.BuyerSettled = newState
-	} else if user.AdminStatus {
-		log.Println("admin overrode item settlement property")
-		item.AdminSettled = newState
-	} else {
-		return errors.New("current user is not connected to the current contract")
-	}
-	if item.WorkerSettled == ITEM_APPROVE && item.BuyerSettled == ITEM_REJECT {
+	item.BuyerSettled = newState
+	
+	if newState == ITEM_REJECT {
 		contract.Disputed = true
-	} else if item.BuyerSettled == ITEM_APPROVE && item.WorkerSettled == ITEM_REJECT {
-		contract.Disputed = true
-	} else {
-		contract.Disputed = false
-	}
+	} 
+	
 	err := ContractItemReplace(item, database)
 	if err != nil {
 		return err

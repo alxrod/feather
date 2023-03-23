@@ -7,28 +7,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (s *BackServer) DeadlineSettled(deadline *db.Deadline) bool {
-	if deadline.WorkerConfirmed && deadline.BuyerConfirmed {
-		return true
-	}
-	if deadline.AdminSettled {
-		return true
-	}
-	return false
-}
-
 func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contract, deadline *db.Deadline, database *mongo.Database) error {
 	log.Printf("Begining Transition logic")
-	if contract.Stage == db.SETTLE && s.DeadlineSettled(deadline) {
-		log.Printf("It has been settled")
+	if contract.Stage == db.SETTLE {
 		all_approved := true
 		for _, item := range deadline.Items {
-			if item.WorkerSettled != db.ITEM_APPROVE || item.BuyerSettled != db.ITEM_APPROVE {
+			if item.BuyerSettled != db.ITEM_APPROVE {
 				all_approved = false
 				log.Printf(
 					"Item failed: %v because %v and %v",
 					item.Name,
-					item.WorkerSettled,
 					item.BuyerSettled,
 				)
 				break

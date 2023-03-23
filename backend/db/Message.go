@@ -163,12 +163,7 @@ type MessageBody struct {
 	ItemAdminSettle  uint32 `bson:"item_admin_settle,omitempty"`
 
 	// For finalize message
-	Confirmed       bool `bson:"confirmed"`
-	Undo            bool `bson:"undo"`
-	WorkerSettled   bool `bson:"worker_settled,omitempty"`
 	BuyerSettled    bool `bson:"buyer_settled,omitempty"`
-	WorkerConfirmed bool `bson:"worker_confirmed,omitempty"`
-	BuyerConfirmed  bool `bson:"buyer_confirmed,omitempty"`
 
 	FigmaLink   string `bson:"figma_link,omitempty"`
 	ComponentId string `bson:"figma_node_ids,omitempty"`
@@ -394,13 +389,10 @@ func (b *MessageBody) FinalizeProto() *comms.ChatMessage_FinalizeBody {
 		FinalizeBody: &comms.FinalizeMsgBody{
 			ContractId:      b.ContractId.Hex(),
 			DeadlineId:      b.DeadlineId.Hex(),
-			Confirmed:       b.Confirmed,
-			Undo:            b.Undo,
+
 			ContractStage:   b.ContractStage,
-			WorkerSettled:   b.WorkerSettled,
 			BuyerSettled:    b.BuyerSettled,
-			WorkerConfirmed: b.WorkerConfirmed,
-			BuyerConfirmed:  b.BuyerConfirmed,
+
 		},
 	}
 }

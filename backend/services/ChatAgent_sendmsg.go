@@ -654,9 +654,7 @@ func (agent *ChatAgent) SendItemSettleMessage(contract *db.Contract,
 		ContractId:       contract.Id,
 		DeadlineId:       deadline.Id,
 		ItemId:           item.Id,
-		ItemWorkerSettle: item.WorkerSettled,
 		ItemBuyerSettle:  item.BuyerSettled,
-		ItemAdminSettle:  item.AdminSettled,
 	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
@@ -691,13 +689,8 @@ func (agent *ChatAgent) SendItemFinalizeMessage(
 	body := &db.MessageBody{
 		ContractId:      contract.Id,
 		ContractStage:   contract.Stage,
-		Confirmed:       confirmed,
-		Undo:            undo,
 		DeadlineId:      deadline.Id,
-		WorkerSettled:   deadline.WorkerSettled,
 		BuyerSettled:    deadline.BuyerSettled,
-		WorkerConfirmed: deadline.WorkerConfirmed,
-		BuyerConfirmed:  deadline.BuyerConfirmed,
 	}
 
 	msg := &db.Message{
