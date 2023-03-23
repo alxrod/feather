@@ -126,10 +126,6 @@ export const getDeadline = (deadlines, id) => {
 } 
 
 export const updateSettleInfo = (deadline, info) => {
-    console.log("Deadline is: ", deadline)
-    deadline.workerSettled = info?.workerSettled
     deadline.buyerSettled = info?.buyerSettled
-    deadline.workerConfirmed = info?.workerConfirmed
-    deadline.buyerConfirmed = info?.buyerConfirmed
     return deadline
 }
