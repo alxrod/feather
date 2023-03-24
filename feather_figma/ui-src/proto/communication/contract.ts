@@ -63,25 +63,9 @@ export interface DeadlineEntity {
      */
     expired: boolean;
     /**
-     * @generated from protobuf field: bool worker_settled = 26;
-     */
-    workerSettled: boolean;
-    /**
      * @generated from protobuf field: bool buyer_settled = 27;
      */
     buyerSettled: boolean;
-    /**
-     * @generated from protobuf field: bool worker_confirmed = 29;
-     */
-    workerConfirmed: boolean;
-    /**
-     * @generated from protobuf field: bool buyer_confirmed = 30;
-     */
-    buyerConfirmed: boolean;
-    /**
-     * @generated from protobuf field: bool admin_settled = 28;
-     */
-    adminSettled: boolean;
     /**
      * @generated from protobuf field: bool awaiting_creation = 20;
      */
@@ -475,17 +459,9 @@ export interface ItemEntity {
      */
     awaitingDeletion: boolean;
     /**
-     * @generated from protobuf field: uint32 worker_settled = 26;
-     */
-    workerSettled: number;
-    /**
      * @generated from protobuf field: uint32 buyer_settled = 27;
      */
     buyerSettled: number;
-    /**
-     * @generated from protobuf field: uint32 admin_settled = 28;
-     */
-    adminSettled: number;
     /**
      * @generated from protobuf field: string figma_component_id = 29;
      */
@@ -1386,11 +1362,7 @@ class DeadlineEntity$Type extends MessageType<DeadlineEntity> {
             { no: 18, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 25, name: "complete", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 31, name: "expired", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 26, name: "worker_settled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 27, name: "buyer_settled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 29, name: "worker_confirmed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 30, name: "buyer_confirmed", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 28, name: "admin_settled", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 20, name: "awaiting_creation", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 21, name: "awaiting_deletion", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 22, name: "deadline_proposer_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -1412,7 +1384,7 @@ class DeadlineEntity$Type extends MessageType<DeadlineEntity> {
         ]);
     }
     create(value?: PartialMessage<DeadlineEntity>): DeadlineEntity {
-        const message = { id: "", contractId: "", name: "", complete: false, expired: false, workerSettled: false, buyerSettled: false, workerConfirmed: false, buyerConfirmed: false, adminSettled: false, awaitingCreation: false, awaitingDeletion: false, deadlineProposerId: "", currentPayout: 0n, workerPayout: 0n, buyerPayout: 0n, payoutAwaitingApproval: false, payoutProposerId: "", dateAwaitingApproval: false, dateProposerId: "", draftRequired: false, itemsProposerId: "", itemStates: [], items: [], itemsAwaitingApproval: false };
+        const message = { id: "", contractId: "", name: "", complete: false, expired: false, buyerSettled: false, awaitingCreation: false, awaitingDeletion: false, deadlineProposerId: "", currentPayout: 0n, workerPayout: 0n, buyerPayout: 0n, payoutAwaitingApproval: false, payoutProposerId: "", dateAwaitingApproval: false, dateProposerId: "", draftRequired: false, itemsProposerId: "", itemStates: [], items: [], itemsAwaitingApproval: false };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<DeadlineEntity>(this, message, value);
@@ -1438,20 +1410,8 @@ class DeadlineEntity$Type extends MessageType<DeadlineEntity> {
                 case /* bool expired */ 31:
                     message.expired = reader.bool();
                     break;
-                case /* bool worker_settled */ 26:
-                    message.workerSettled = reader.bool();
-                    break;
                 case /* bool buyer_settled */ 27:
                     message.buyerSettled = reader.bool();
-                    break;
-                case /* bool worker_confirmed */ 29:
-                    message.workerConfirmed = reader.bool();
-                    break;
-                case /* bool buyer_confirmed */ 30:
-                    message.buyerConfirmed = reader.bool();
-                    break;
-                case /* bool admin_settled */ 28:
-                    message.adminSettled = reader.bool();
                     break;
                 case /* bool awaiting_creation */ 20:
                     message.awaitingCreation = reader.bool();
@@ -1538,21 +1498,9 @@ class DeadlineEntity$Type extends MessageType<DeadlineEntity> {
         /* bool expired = 31; */
         if (message.expired !== false)
             writer.tag(31, WireType.Varint).bool(message.expired);
-        /* bool worker_settled = 26; */
-        if (message.workerSettled !== false)
-            writer.tag(26, WireType.Varint).bool(message.workerSettled);
         /* bool buyer_settled = 27; */
         if (message.buyerSettled !== false)
             writer.tag(27, WireType.Varint).bool(message.buyerSettled);
-        /* bool worker_confirmed = 29; */
-        if (message.workerConfirmed !== false)
-            writer.tag(29, WireType.Varint).bool(message.workerConfirmed);
-        /* bool buyer_confirmed = 30; */
-        if (message.buyerConfirmed !== false)
-            writer.tag(30, WireType.Varint).bool(message.buyerConfirmed);
-        /* bool admin_settled = 28; */
-        if (message.adminSettled !== false)
-            writer.tag(28, WireType.Varint).bool(message.adminSettled);
         /* bool awaiting_creation = 20; */
         if (message.awaitingCreation !== false)
             writer.tag(20, WireType.Varint).bool(message.awaitingCreation);
@@ -2341,14 +2289,12 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
             { no: 8, name: "awaiting_approval", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 9, name: "awaiting_creation", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
             { no: 10, name: "awaiting_deletion", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 26, name: "worker_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 27, name: "buyer_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-            { no: 28, name: "admin_settled", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
             { no: 29, name: "figma_component_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ItemEntity>): ItemEntity {
-        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, workerSettled: 0, buyerSettled: 0, adminSettled: 0, figmaComponentId: "" };
+        const message = { id: "", contractId: "", name: "", currentBody: "", workerBody: "", buyerBody: "", awaitingApproval: false, awaitingCreation: false, awaitingDeletion: false, buyerSettled: 0, figmaComponentId: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<ItemEntity>(this, message, value);
@@ -2386,14 +2332,8 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
                 case /* bool awaiting_deletion */ 10:
                     message.awaitingDeletion = reader.bool();
                     break;
-                case /* uint32 worker_settled */ 26:
-                    message.workerSettled = reader.uint32();
-                    break;
                 case /* uint32 buyer_settled */ 27:
                     message.buyerSettled = reader.uint32();
-                    break;
-                case /* uint32 admin_settled */ 28:
-                    message.adminSettled = reader.uint32();
                     break;
                 case /* string figma_component_id */ 29:
                     message.figmaComponentId = reader.string();
@@ -2437,15 +2377,9 @@ class ItemEntity$Type extends MessageType<ItemEntity> {
         /* bool awaiting_deletion = 10; */
         if (message.awaitingDeletion !== false)
             writer.tag(10, WireType.Varint).bool(message.awaitingDeletion);
-        /* uint32 worker_settled = 26; */
-        if (message.workerSettled !== 0)
-            writer.tag(26, WireType.Varint).uint32(message.workerSettled);
         /* uint32 buyer_settled = 27; */
         if (message.buyerSettled !== 0)
             writer.tag(27, WireType.Varint).uint32(message.buyerSettled);
-        /* uint32 admin_settled = 28; */
-        if (message.adminSettled !== 0)
-            writer.tag(28, WireType.Varint).uint32(message.adminSettled);
         /* string figma_component_id = 29; */
         if (message.figmaComponentId !== "")
             writer.tag(29, WireType.LengthDelimited).string(message.figmaComponentId);
@@ -5235,8 +5169,6 @@ export const Contract = new ServiceType("communication.Contract", [
     { name: "RequestAdmin", options: {}, I: ContractAdminSupport, O: NullResponse },
     { name: "ResolveAdmin", options: {}, I: ContractAdminSupport, O: NullResponse },
     { name: "FinishDeadline", options: {}, I: FinishDeadlineRequest, O: NullResponse },
-    { name: "ConfirmDeadline", options: {}, I: ConfirmDeadlineRequest, O: NullResponse },
-    { name: "UndoDeadline", options: {}, I: UndoDeadlineRequest, O: NullResponse },
     { name: "SetFigmaConnected", options: {}, I: FigmaFileConnectRequest, O: ContractEditResponse },
     { name: "SetItemFigmaNodes", options: {}, I: FigmaItemRequest, O: ContractEditResponse }
 ]);

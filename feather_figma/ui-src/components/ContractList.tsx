@@ -7,6 +7,7 @@ import {
   ContractEditResponse
 } from "../proto/communication/contract";
 import ContractNubView from "./ContractNub";
+import {contractStages} from "../api.service";
 
 export const isValidUrl = (urlString: string) => {
   var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
@@ -128,7 +129,7 @@ const ContractListCard = (props: any) => {
       <p className="block text-sm font-medium text-gray-700 mb-1">
         Then click the contract you want to connect to:
       </p>
-      {contractNubs.map((contract) => (
+      {contractNubs.filter(contract => contract.stage > contractStages.CREATE).map((contract) => (
         <div key={contract.id} className="mb-2">
           <ContractNubView contract={contract} selectContract={selectContract} link={link} linkInContracts={linkInContracts}/>
         </div>

@@ -6,31 +6,20 @@ import { connect } from 'react-redux'
 import { finishDeadline, confirmDeadline, undoDeadline } from "../../../reducers/deadlines/dispatchers/deadlines.settle.dispatcher"
 import { WORKER_TYPE, BUYER_TYPE, ADMIN_TYPE} from "../../../services/user.service"
 import {ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING} from "../../../custom_encodings"
+import {displayPrice } from "../../helpers"
+import {Oval} from 'react-loading-icons'
+
+
 const CompleteDeadlineButton = (props) => {
   const [role, setRole] = useState(WORKER_TYPE)
 
-  const [workerSettled, setWorkerSettled] = useState(false)
   const [buyerSettled, setBuyerSettled] = useState(false)
-  const [adminSettled, setAdminSettled] = useState(false)
+
   const [curDeadline, setCurDeadline] = useState({})
   const [disputedItems, setDisputedItems] = useState([])
-
-  const [confirmMode, setConfirmMode] = useState(false)
-  const [undoMode, setUndoMode] = useState(false)
+  const [advancingDeadline, setAdvancingDeadline] = useState(false)
   
   const [allowSettlement, setAllowSettlement] = useState(false)
-
-  const youSettled = useMemo(() => {
-    if (role === WORKER_TYPE) {
-      return workerSettled
-    } else if (role === BUYER_TYPE) {
-      return buyerSettled
-    } else if (role === ADMIN_TYPE) {
-      return adminSettled
-    } else {
-      return false
-    }
-  })
 
   useEffect( () => {
     if (props.curContract.id && props.user) {
@@ -48,44 +37,20 @@ const CompleteDeadlineButton = (props) => {
           for (let k = 0; k < props.items.length; k++) {
             for (let j = 0; j < props.deadlines[i].itemsList.length; j++) {
               if (props.items[k].id === props.deadlines[i].itemsList[j].id) {
-                if (role === WORKER_TYPE && props.items[k].workerSettled === ITEM_PENDING) {
-                  allSettled = false
-                } else if (role === BUYER_TYPE && props.items[k].buyerSettled === ITEM_PENDING) {
+                if (props.items[k].buyerSettled === ITEM_PENDING) {
                   allSettled = false
                 }
-
-                if (props.items[k].buyerSettled === ITEM_REJECTED || props.items[k].workerSettled === ITEM_REJECTED) {
+                if (props.items[k].buyerSettled === ITEM_REJECTED) {
                   disputed.push(props.items[k])
                 }
               }
             }
           }
-          setAllowSettlement(allSettled)
+          setAllowSettlement((allSettled && role == BUYER_TYPE))
           setDisputedItems(disputed)
           
-          setWorkerSettled(props.deadlines[i].workerSettled)
           setBuyerSettled(props.deadlines[i].buyerSettled)
-          setAdminSettled(props.deadlines[i].adminSettled)
           setRole(role)
-
-          if (role === WORKER_TYPE && props.deadlines[i].workerSettled && !props.deadlines[i].workerConfirmed) {
-            setUndoMode(true)
-            if (props.deadlines[i].buyerSettled) {
-              setConfirmMode(true)
-            } else {
-              setConfirmMode(false)
-            }
-          } else if (role === BUYER_TYPE && props.deadlines[i].buyerSettled && !props.deadlines[i].buyerConfirmed) {
-            setUndoMode(true)
-            if (props.deadlines[i].workerSettled) {
-              setConfirmMode(true)
-            } else {
-              setConfirmMode(false)
-            }
-          } else {
-            setUndoMode(false)
-            setConfirmMode(false)
-          }
         }
       }
     }
@@ -110,67 +75,55 @@ const CompleteDeadlineButton = (props) => {
   }
 
   const handleFinishDeadline = () => {
+    setAdvancingDeadline(true)
     props.finishDeadline(props.curContract.id, curDeadline.id)
-  }
-  const handleConfirmDeadline = () => {
-    props.confirmDeadline(props.curContract.id, curDeadline.id)
-  }
-
-  const handleUndoDeadline = () => {
-    props.undoDeadline(props.curContract.id, curDeadline.id)
   }
 
   return (
     <div className="bg-white shadow sm:rounded-lg">
       <div className="px-4 py-5 sm:p-6">
         <div>
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Finalize Settlement</h3>
+          <h3 className="text-lg leading-6 font-medium text-gray-900">Finish Reviewing Deadline</h3>
 
-          {role === ADMIN_TYPE ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex">
-              {workerSettled ? (
-                <SettleStatus settled={true} string={"Worker has finished settling"}/>
-              ) : (
-                <SettleStatus settled={false} string={"Worker is still settling"}/>
-              )}
-              {buyerSettled ? (
-                <div className="lg:ml-2">
-                  <SettleStatus settled={true} string={"Buyer has finished settling"}/>
-                </div>
-              ) : (
-                <div className="lg:ml-2">
-                  <SettleStatus settled={false} string={"Buyer is still settling"}/>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex">
-              {(role === WORKER_TYPE && workerSettled) || (role === BUYER_TYPE && buyerSettled) ? (
-                <SettleStatus settled={true} string={"You have finished settling"}/>
-              ) : (
-                <SettleStatus settled={false} string={"You are still finishing settling"}/>
-              )}
-              {(role === WORKER_TYPE && buyerSettled) || (role === BUYER_TYPE && workerSettled) ? (
-                <div className="lg:ml-2">
-                  <SettleStatus settled={true} string={"Your partner has finished settling"}/>
-                </div>
-              ) : (
-                <div className="lg:ml-2">
-                  <SettleStatus settled={false} string={"Your partner is still finishing settling"}/>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="flex flex-wrap mt-1">
-            {!allowSettlement && (
-              <p className="mr-1">Before you can finish settling, you must approve or reject every required item.{" "}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex">
+            {role === WORKER_TYPE && buyerSettled ? (
+              <div>
+                <SettleStatus settled={true} string={"Your partner has finished reviewing the deadline"}/>
+              </div>
+            ) : (role === WORKER_TYPE && !buyerSettled) ? (
+              <div>
+                <SettleStatus settled={false} string={"Your partner is still reviewing this deadline"}/>
+              </div>
+            ) : (role === BUYER_TYPE && buyerSettled) ? (
+              <div>
+                <SettleStatus settled={true} string={"You have finished reviewing this deadline"}/>
+              </div>
+            ) : (role === BUYER_TYPE && allowSettlement) ? (
+              <div>
+                <SettleStatus settled={true} string={"Click payout when you are ready to pay your partner and move onto the next deadline"}/>
+              </div>
+            ) : (
+              <div>
+                <SettleStatus settled={false} string={"You are still reviewing the contract"}/>
+              </div>
             )}
+          </div>
+
+          <div className="flex flex-wrap mt-1">
+            {!allowSettlement && (role === BUYER_TYPE) ? (
+              <p className="mr-1">Before you can finish reviewing, you must approve or reject every required item.{" "}</p>
+            ) : !allowSettlement && (role !== BUYER_TYPE) ? (
+              <p className="mr-1">Your partner is still reviewing the deadline.{" "}</p>
+            ) : (
+              null
+            )}
+
             {disputedItems.length !== 0 && (
-              <p>
+              <p className="text-red-500">
                 {"Currently, "}
                 {disputedItems.map((item,idx) => (
                   <Fragment key={idx}>
-                    <b className="font-normal text-primary6">
+                    <b className="font-semibold text-red-400">
                       {item.name}
                     </b>
                     {idx < disputedItems.length-2 ? ", " :
@@ -181,42 +134,27 @@ const CompleteDeadlineButton = (props) => {
                 ))}{" "}
                 {disputedItems.length === 1 ? "is " : "are "} 
                 disputed so the{" "}
-                <b className="text-primary4">
-                  {percentageString(curDeadline.currentPayout)} 
+                <b className="text-red-400">
+                  {"$"+displayPrice(curDeadline.currentPayout)} 
                 </b>
                 {" "}
                 payout will not go through.
               </p>
-            )}    
+            )}
           </div>
+
           {allowSettlement && (
             <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center sm:justify-end">
-              {undoMode && (
-                <button
-                  type="button"
-                  onClick={handleUndoDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-primary7 bg-primary1 hover:bg-primary2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary2 text-md mr-2"
-                >
-                undo
-              </button>
-              )}
-              {confirmMode ? (
-                <button
-                  type="button"
-                  onClick={handleConfirmDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4 text-md"
-                >
-                  confirm
-                </button>
-              ) : !youSettled ? (
+                {advancingDeadline && (
+                  <Oval className="w-6 h-6 mr-2" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
+                )}
                 <button
                   type="button"
                   onClick={handleFinishDeadline}
                   className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary5 text-md"
                 >
-                  finish
+                  Payout for Deadline
                 </button>
-              ) : null}
             </div>
           )}
 
