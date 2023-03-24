@@ -77,7 +77,7 @@ const AppWrapper = (props) => {
     }
     
     authRedirect(router.pathname)
-  }, []);
+  }, [router.pathname]);
 
   useEffect( () => {
     if (pullReq == true && props.user !== null) {

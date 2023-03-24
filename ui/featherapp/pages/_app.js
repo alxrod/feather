@@ -15,7 +15,7 @@ const FeatherApp = ({Component, pageProps}) => {
   return (
     <>
       <Head>
-        <meta charset="utf-8" />
+        <meta charSet="utf-8" />
         <link rel="icon" href={process.env.NEXT_PUBLIC_FRONTEND_URL+"/favicon.ico"} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
@@ -26,7 +26,7 @@ const FeatherApp = ({Component, pageProps}) => {
         <link rel="apple-touch-icon" href={process.env.NEXT_PUBLIC_FRONTEND_URL+"/logo192.png"} />
         
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
         <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet"/>
         
         <link rel="manifest" href={process.env.NEXT_PUBLIC_FRONTEND_URL+"/manifest.json"} />
