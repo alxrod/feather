@@ -11423,7 +11423,8 @@ proto.communication.QueryByUserRequest.prototype.toObject = function(opt_include
  */
 proto.communication.QueryByUserRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    unsorted: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -11464,6 +11465,10 @@ proto.communication.QueryByUserRequest.deserializeBinaryFromReader = function(ms
       var value = /** @type {string} */ (reader.readString());
       msg.setUserId(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setUnsorted(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -11500,6 +11505,13 @@ proto.communication.QueryByUserRequest.serializeBinaryToWriter = function(messag
       f
     );
   }
+  f = message.getUnsorted();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -11518,6 +11530,24 @@ proto.communication.QueryByUserRequest.prototype.getUserId = function() {
  */
 proto.communication.QueryByUserRequest.prototype.setUserId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool unsorted = 2;
+ * @return {boolean}
+ */
+proto.communication.QueryByUserRequest.prototype.getUnsorted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.QueryByUserRequest} returns this
+ */
+proto.communication.QueryByUserRequest.prototype.setUnsorted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 

@@ -316,6 +316,7 @@ message ContractResponse {
 }
 message QueryByUserRequest {
     string user_id = 1;
+    bool unsorted = 2;
 }
 
 message ClaimContractRequest {

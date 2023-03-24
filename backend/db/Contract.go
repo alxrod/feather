@@ -1059,3 +1059,11 @@ func ContractAddDeadline(deadline *Deadline, contract *Contract, database *mongo
 	}
 	return nil
 }
+
+
+func SortContracts(contracts []*Contract) []*Contract {
+	sort.Slice(contracts[:], func(i, j int) bool {
+		return contracts[i].CreationTime.After(contracts[j].CreationTime)
+	})
+	return contracts
+}
