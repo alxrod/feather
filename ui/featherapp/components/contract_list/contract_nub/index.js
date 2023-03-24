@@ -11,7 +11,6 @@ import Image from "next/image"
 const ContractNub = (props) => {
   const [stageBg, setStageBg] = useState("green")
   const [link, setLink] = useState("/contracts")
-  const [newMsgCount, setNewMsgCount] = useState(0)
   const [profPics, setProfPics] = useState([])
 
   useEffect(() => {
@@ -32,17 +31,7 @@ const ContractNub = (props) => {
       setProfPics(newPics)
     }
   }, [props.cachedProfileUrls, props.user])
-  useEffect(() =>  {
-    if (props.contract && props.newMessages.length > 0) {
-      let msgCount = 0
-      for (let i = 0; i < props.newMessages.length; i++) {
-        if (props.newMessages[i].contractInfo.id === props.contract.id) {
-          msgCount++
-        }
-      }
-      setNewMsgCount(msgCount)
-    }
-  }, [props.newMessages, props.contract])
+
   useEffect(() => {
     if (props.contract) {
       if (props.contract.stage < contractStages.SETTLE) {
@@ -101,9 +90,9 @@ const ContractNub = (props) => {
                 )}
               </span>
               
-              {newMsgCount > 0 && (
+              {props.newMsgs > 0 && (
                 <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-sm font-medium text-red-800">
-                  {newMsgCount}
+                  {props.newMsgs}
                   <MailIcon className="w-4 h-4 mx-1"/>
                 </span>
               )}
@@ -159,7 +148,6 @@ const ContractNub = (props) => {
 // newMessages
 
 const mapStateToProps = ({ chat, file, user}) => ({
-  newMessages: chat.newMessages,
   cachedProfileUrls: file.cachedProfileUrls,
   user: user.user,
 })

@@ -10,6 +10,8 @@ import ContractNub from "./contract_nub"
 
 const ContractList = (props) => {
   const [no_contracts, setNoContracts] = useState(true)
+  const [newMsgs, setNewMsgs] = useState({})
+
   useEffect( () => {
     if (props.contracts !== undefined && props.contracts.length > 0) {
       // Made so only called once
@@ -42,6 +44,19 @@ const ContractList = (props) => {
     }
   }, [props.contracts])
 
+  useEffect(() =>  {
+    const newSet = {}
+    for (let j = 0; j < props.contracts.length; j++) {
+      newSet[props.contracts[j].id] = 0
+      for (let i = 0; i < props.newMessages.length; i++) {
+        if (props.newMessages[i].contractInfo.id === props.contracts[j].id) {
+          newSet[props.contracts[j].id]++
+        }
+      }
+    }
+    setNewMsgs(newSet)
+  }, [props.newMessages.length, props.contracts.length])
+
   const formatDate = (date) => {
     if (date) {
       return date.toLocaleTimeString('en-US', {timeStyle: "short"}) + " " + date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"})
@@ -58,9 +73,9 @@ const ContractList = (props) => {
         <div>
           <div className="inline-block min-w-full py-2 align-middle md:px-12 lg:px-8">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
-              { props.allFilters[props.selected](props.contracts).map((contract) => (
+              { props.allFilters[props.selected](props.contracts).sort((a, b) => (newMsgs[b.id] > 0) - (newMsgs[a.id] > 0)).map((contract) => (
                 <Fragment key={contract.id}>
-                  <ContractNub contract={contract}/>
+                  <ContractNub contract={contract} newMsgs={newMsgs[contract.id] ? newMsgs[contract.id] : 0}/>
                 </Fragment>
               ))}      
             </div>
@@ -76,9 +91,10 @@ const ContractList = (props) => {
   )
 }
 
-const mapStateToProps = ({ contract, file, user }) => ({
+const mapStateToProps = ({ contract, file, user, chat }) => ({
   contracts: contract.contractNubs,
   cachedUrls: file.cachedProfileUrls,
+  newMessages: chat.newMessages,
   user: user.user,
 })
 const mapDispatchToProps = (dispatch) => bindActionCreators({

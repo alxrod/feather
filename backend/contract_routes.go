@@ -538,6 +538,10 @@ func (s *BackServer) QueryByUser(ctx context.Context, req *comms.QueryByUserRequ
 	}
 	log.Println("Contracts queried successfully")
 
+	if !req.Unsorted {
+		contracts = db.SortContracts(contracts)
+	}
+
 	contractNubs := make([]*comms.ContractNub, len(contracts))
 	for idx, contract := range contracts {
 		conNub, err := contract.NubProto(user)

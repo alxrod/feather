@@ -46,7 +46,7 @@ const NavBar = (props) => {
       setShowShadow(true)
     )
 
-  }, [props.curContract, router.pathname])
+  }, [props.curContract.id, router.pathname])
   
   return (
     <Disclosure as="nav" className={"bg-secondary1 " + (showShadow ? "shadow" : "")}>
