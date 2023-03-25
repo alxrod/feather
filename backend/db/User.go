@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 const (
@@ -64,6 +65,8 @@ type User struct {
 	FigmaCode      string `bson:"figma_code,omitempty"`
 	FigmaRefreshCode      string `bson:"figma_refresh_code,omitempty"`
 	FigmaExpireIn      int64 `bson:"figma_expire_in,omitempty"`
+
+	CreationTime time.Time `bson:"creation_time,omitempty"`
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -271,6 +274,7 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 	userD := &User{
 		Username:  req.Username,
 		Password:  string(hashedPassword),
+		CreationTime:   time.Now(),
 		Email:     req.Email,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,

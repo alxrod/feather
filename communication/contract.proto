@@ -395,6 +395,9 @@ message EmailChangeRequest {
     string contract_id = 2;
     string new_email = 3;
 }
+message EmailChangeResponse {
+    string new_secret = 1;
+}
 
 message EmailResendRequest {
     string user_id = 1;
@@ -428,7 +431,7 @@ service Contract {
     rpc UpdateDraft(ContractUpdateRequest) returns (ContractResponse) {};
     rpc FinishCreation(ContractFinishCreationRequest) returns (ContractResponse) {}
 
-    rpc ChangeInviteEmail(EmailChangeRequest) returns (NullResponse) {};
+    rpc ChangeInviteEmail(EmailChangeRequest) returns (EmailChangeResponse) {};
     rpc ResendInviteEmail(EmailResendRequest) returns (NullResponse) {};
 
     rpc InviteQuery(InviteDataRequest) returns (ContractInviteNub) {};

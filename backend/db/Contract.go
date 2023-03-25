@@ -460,8 +460,8 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 }
 
 func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (*Contract, error) {
-	if contract.InvitedEmail == "" {
-		return nil, errors.New("Contract must invite a partner's real email")
+	if contract.InvitedEmail == "" && !contract.LinkShare {
+		return nil, errors.New("Contract must invite a partner's real email or enable link sharing")
 	} else if contract.Price.Current < 1 {
 		return nil, errors.New("Contract price must be greater than $1")
 	} else if contract.Summary == "" {

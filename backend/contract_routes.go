@@ -161,7 +161,7 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 
 }
 
-func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChangeRequest) (*comms.NullResponse, error) {
+func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChangeRequest) (*comms.EmailChangeResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
 		return nil, errors.New("You must provide a valid User Id")
@@ -194,11 +194,12 @@ func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChan
 		}}}
 		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 	}(database, contract, user)
-	return &comms.NullResponse{}, nil
+
+	
+	return &comms.EmailChangeResponse{NewSecret: contract.InvitePassword}, nil
 }
 
-// rpc ChangeInviteEmail(EmailChangeRequest) returns (NullResponse) {};
-//     rpc ResendInviteEmail(EmailResendRequest) returns (NullResponse) {};
+
 func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailResendRequest) (*comms.NullResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(req.UserId)
 	if err != nil {
