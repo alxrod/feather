@@ -62,6 +62,7 @@ type Contract struct {
 
 	InvitedEmail   string `bson:"invited_email"`
 	InvitePassword string `bson:"invite_password"`
+	LinkShare      bool   `bson:"link_share"`
 
 	FigmaLink      string `bson:"figma_link,omitempty"`
 	FigmaConnected bool   `bson:"figma_connected,omitempty"`
@@ -98,6 +99,8 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		Title:          contract.Title,
 		InvitedEmail:   contract.InvitedEmail,
 		InvitePassword: contract.InvitePassword,
+		LinkShare:      contract.LinkShare,
+
 		Items:          items,
 		Stage:          contract.Stage,
 		WorkerApproved: contract.WorkerApproved,
@@ -225,6 +228,7 @@ func (contract *Contract) InviteProto() *comms.ContractInviteNub {
 		Summary:      contract.Summary,
 		Title:        contract.Title,
 		InvitedEmail: contract.InvitedEmail,
+		LinkShare:    contract.LinkShare,
 		Items:        items,
 	}
 	if !contract.Id.IsZero() {
@@ -417,6 +421,7 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 	contract.Title = req.Title
 	contract.Summary = req.Summary
 	contract.InvitedEmail = req.InvitedEmail
+	contract.LinkShare = req.LinkShare
 	contract.CreationTime = time.Now()
 	contract.Stage = stage
 	contract.WorkerApproved = false
@@ -455,8 +460,8 @@ func (contract *Contract) UpdateDraft(req *comms.ContractUpdateRequest, user *Us
 }
 
 func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (*Contract, error) {
-	if contract.InvitedEmail == "" {
-		return nil, errors.New("Contract must invite a partner's real email")
+	if contract.InvitedEmail == "" && !contract.LinkShare {
+		return nil, errors.New("Contract must invite a partner's real email or enable link sharing")
 	} else if contract.Price.Current < 1 {
 		return nil, errors.New("Contract price must be greater than $1")
 	} else if contract.Summary == "" {
@@ -1059,7 +1064,6 @@ func ContractAddDeadline(deadline *Deadline, contract *Contract, database *mongo
 	}
 	return nil
 }
-
 
 func SortContracts(contracts []*Contract) []*Contract {
 	sort.Slice(contracts[:], func(i, j int) bool {

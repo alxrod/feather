@@ -120,7 +120,8 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 					icharge.TransferGroup,
 				)
 				if err != nil {
-					return nil, err
+					log.Println("ERROR: ", err)
+					continue
 				}
 				icharge.UpdateState(database, db.CHARGE_STATE_TRANSFER_CREATED)
 				user.OutstandingBalance -= icharge.Amount

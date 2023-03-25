@@ -7,7 +7,7 @@ import LoginCard from "../auth/login_card"
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
+import Link from "next/link"
 import { 
   register,
 } from "../../reducers/user/dispatchers/user.dispatcher";
@@ -19,13 +19,11 @@ const SetupModal = (props) => {
 
   const [serverError, setServerError] = useState()
   const [loginMode, setLoginMode] = useState(null)
-  const [defaultEmail, setDefaultEmail] = useState("")
-
-  const [connectFcaMode, setConnectFcaMode] = useState(true)
+  const [defaultEmail, setDefaultEmail] = useState(undefined)
   const [connectLoading, setConnectLoading] = useState(false)
 
   useEffect(() => {
-    if (defaultEmail === "" && props.defaultEmail) {
+    if (defaultEmail === null && props.defaultEmail && props.defaultEmail !== "") {
       setDefaultEmail(props.defaultEmail)
     }
   }, [props.defaultEmail])
@@ -91,7 +89,12 @@ const SetupModal = (props) => {
                     <h1 className="text-2xl font-semibold text-gray-600 text-center w-full">
                       Sign up to join the contract
                     </h1>
-                    <p className="text-red-400 text-sm">{serverError}</p>
+                    {!defaultEmail && (
+                      <div className="flex justify-center text-gray-400 hover:text-primary5">
+                        <button onClick={() => setLoginMode(true)}>or log in</button>
+                      </div>
+                    )}
+                    <p className="text-center text-red-400 text-sm">{serverError}</p>
                     <div className="p-8 md:px-10 lg:px-16">
                       <RegisterCard onSubmit={onRegister} defaultEmail={defaultEmail}/>
                     </div>
@@ -101,6 +104,11 @@ const SetupModal = (props) => {
                     <h1 className="text-2xl font-semibold text-gray-600 text-center w-full">
                       Log in to join the contract
                     </h1>
+                    {!defaultEmail && (
+                      <div className="flex justify-center text-gray-400 hover:text-primary5">
+                        <button onClick={() => setLoginMode(false)}>or sign up</button>
+                      </div>
+                    )}
                     <p className="text-red-400 text-sm">{serverError}</p>
                     <div className="p-8 md:px-10 lg:px-16">
                       <LoginCard defaultEmail={defaultEmail}/>

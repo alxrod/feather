@@ -145,11 +145,11 @@ export const createContract = (title, summary, price_set, deadlines, items, invi
     }
 };
 
-export const updateContract = (contract_id, title, summary, price_set, deadlines, items, password, role) => {
+export const updateContract = (contract_id, title, summary, price_set, deadlines, items, invite_email, link_share, role) => {
     return dispatch => {
         return  helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.updateContract(creds.access_token, creds.user_id, contract_id, title, summary, price_set, deadlines, items, password, role).then(
+                return ContractService.updateContract(creds.access_token, creds.user_id, contract_id, title, summary, price_set, deadlines, items, invite_email, link_share, role).then(
                     (data) => {
                         if (data.contract.worker.id == creds.user_id) {
                             data.contract.user_type = WORKER_TYPE
@@ -229,7 +229,11 @@ export const changeInviteEmail = (contract_id, new_email) => {
         return  helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.changeInviteEmail(creds.access_token, creds.user_id, contract_id, new_email).then(
-                    () => {
+                    (secret) => {
+                        dispatch({
+                            type: contractActions.CONTRACT_CHANGE_SECRET,
+                            payload: secret
+                        });
                         return Promise.resolve();
                     },
                     (error) => {

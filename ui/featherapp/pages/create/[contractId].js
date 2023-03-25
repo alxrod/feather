@@ -49,6 +49,7 @@ const ContractCreate = (props) => {
             changeInvitedEmail(contract.invitedEmail)
             changeRole(contract.role)
             changePrice(contract.price.current)
+            toggleLinkShare(contract.linkShare)
           },
           () => {
             router.push("/unknown")
@@ -111,6 +112,7 @@ const ContractCreate = (props) => {
   const [conTitle, setConTitle] = useState("")
   const [conDescript, setConDescript] = useState("")
   const [invitedEmail, setInvitedEmail] = useState("")
+  const [linkShare, toggleLinkShare] = useState(false)
   const [conRole, setConRole] = useState(-1)
 
   const [nextId, setNextId] = useState(1)
@@ -170,7 +172,7 @@ const ContractCreate = (props) => {
       setShowSavingNotif(true)
       const updateID = setTimeout(
       () => {
-        props.updateContract(props.contractId, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, invitedEmail, conRole).then(
+        props.updateContract(props.contractId, conTitle, conDescript, priceObj, props.deadlines, props.contractItems, invitedEmail, linkShare, conRole).then(
           () => {
             setNewContractMode(false)
             setUpdateTimeoutId(-1)
@@ -189,7 +191,7 @@ const ContractCreate = (props) => {
       }
     }
 
-  }, [conTitle, conDescript, conRole, invitedEmail, price, props.deadlinesChanged, props.itemsChanged])
+  }, [conTitle, conDescript, conRole, invitedEmail, price, props.deadlinesChanged, props.itemsChanged, linkShare])
 
   const validateEmail = (email) => {
     return String(email)
@@ -218,9 +220,12 @@ const ContractCreate = (props) => {
       errors += "You need a description. "
     }
     
-    if (!validateEmail(invitedEmail)) {
-      errors += "You need to invite with your partner's real email"
+    if (!linkShare && invitedEmail === "") {
+      errors += "You need to include an email or share via link. "
+    } else if (!validateEmail(invitedEmail) && invitedEmail !== "") {
+      errors += "If you include an email, it must be valid. "
     }
+
     return errors
   } 
 
@@ -274,6 +279,8 @@ const ContractCreate = (props) => {
             <InviteField
               invitedEmail={invitedEmail}
               setInvitedEmail={setInvitedEmail}
+              linkShare={linkShare}
+              toggleLinkShare={toggleLinkShare}
             />
           </div>
         </div>
