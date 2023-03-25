@@ -49,7 +49,7 @@ const ContractInvite = (props) => {
   const [setupModalOpen, openSetupModal] = useState(false)
 
   useEffect(() => {
-    if (props.isLoggedIn && props.user.email !== contract?.invitedEmail) {
+    if (props.isLoggedIn && props.user.email !== contract?.invitedEmail && !contract?.linkShare) {
       setWrongUser(true)
     } else {
       setWrongUser(false)

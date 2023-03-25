@@ -49,6 +49,7 @@ const ContractCreate = (props) => {
             changeInvitedEmail(contract.invitedEmail)
             changeRole(contract.role)
             changePrice(contract.price.current)
+            toggleLinkShare(contract.linkShare)
           },
           () => {
             router.push("/unknown")

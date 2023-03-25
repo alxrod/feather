@@ -137,27 +137,20 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 		return nil, err
 	}
 
+	secret := s.EmailAgent.GenerateInviteSecret()
+	contract.InvitePassword = secret
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"invite_password", secret},
+	}}}
+	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 	if contract.InvitedEmail != "" {
 		go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-			err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+			err := s.EmailAgent.SendInviteEmail(contract, user, secret)
 			if err != nil {
 				return
 			}
-			contract.InvitePassword = secret
-			filter := bson.D{{"_id", contract.Id}}
-			update := bson.D{{"$set", bson.D{
-				{"invite_password", secret},
-			}}}
-			_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 		}(database, contract, user)
-	} else if contract.LinkShare {
-		secret := s.EmailAgent.GenerateInviteSecret()
-		contract.InvitePassword = secret
-		filter := bson.D{{"_id", contract.Id}}
-		update := bson.D{{"$set", bson.D{
-			{"invite_password", secret},
-		}}}
-		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 	}
 
 	contractProto := contract.Proto()
@@ -188,8 +181,9 @@ func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChan
 		return nil, err
 	}
 	contract.ChangeInviteEmail(req.NewEmail, database)
+	secret := s.EmailAgent.GenerateInviteSecret()
 	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+		err := s.EmailAgent.SendInviteEmail(contract, user, secret)
 		if err != nil {
 			return
 		}
@@ -225,7 +219,7 @@ func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailRese
 		return nil, err
 	}
 	go func(contract *db.Contract, user *db.User) {
-		err, _ := s.EmailAgent.SendInviteEmail(contract, user, false)
+		err := s.EmailAgent.SendInviteEmail(contract, user, contract.InvitePassword)
 		if err != nil {
 			return
 		}

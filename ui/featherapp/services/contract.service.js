@@ -335,6 +335,8 @@ class ContractService {
             contractClient.finishCreation(finishRequest, metadata, function(error, response) {
                 if (error) {
                     reject(error)
+                    console.log("Error: ", error.message)
+                    return
                 }
                 // console.log(response)
                 var resp = response.toObject();

@@ -173,20 +173,10 @@ func (agent *EmailAgent) SendResetEmail(link *TempLink) error {
 	return nil
 }
 
-func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, make_new_secret ...bool) (error, string) {
-	gen_new := true
-	if len(make_new_secret) > 0 {
-		gen_new = make_new_secret[0]
-	}
+func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, secret string) error {
 	if contract == nil || user == nil {
-		return errors.New("Invalid contract or user"), ""
+		return errors.New("Invalid contract or user")
 	}
-
-	secret := contract.InvitePassword
-	if gen_new {
-		secret = agent.GenerateInviteSecret()
-	}
-
 	email := &Email{
 		Recipient: contract.InvitedEmail,
 		Subject:   fmt.Sprintf("%s invited you to a contract on Feather", strings.Title(user.FirstName)),
@@ -198,8 +188,8 @@ func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, m
 		),
 	}
 	if err := agent.SendEmail(email); err != nil {
-		return err, ""
+		return err
 	}
 
-	return nil, secret
+	return nil
 }
