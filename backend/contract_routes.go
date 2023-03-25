@@ -137,18 +137,28 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 		return nil, err
 	}
 
-	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-		err, secret := s.EmailAgent.SendInviteEmail(contract, user)
-		if err != nil {
-			return
-		}
+	if contract.InvitedEmail != "" {
+		go func(database *mongo.Database, contract *db.Contract, user *db.User) {
+			err, secret := s.EmailAgent.SendInviteEmail(contract, user)
+			if err != nil {
+				return
+			}
+			contract.InvitePassword = secret
+			filter := bson.D{{"_id", contract.Id}}
+			update := bson.D{{"$set", bson.D{
+				{"invite_password", secret},
+			}}}
+			_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+		}(database, contract, user)
+	} else if contract.LinkShare {
+		secret := s.EmailAgent.GenerateInviteSecret()
 		contract.InvitePassword = secret
 		filter := bson.D{{"_id", contract.Id}}
 		update := bson.D{{"$set", bson.D{
 			{"invite_password", secret},
 		}}}
 		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
-	}(database, contract, user)
+	}
 
 	contractProto := contract.Proto()
 	return &comms.ContractResponse{

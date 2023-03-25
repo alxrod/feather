@@ -26,8 +26,8 @@ const InviteField = (props) => {
                 type="email"
                 name="email"
                 id="email"
-                className="block text-lg p-3 w-full border-0 ring-0 pl-20 text-gray-900 focus:ring-0 placeholder:text-gray-400 sm:leading-6"
-                placeholder="Your Partner's Email"
+                className="block text-sm p-3 w-full border-0 ring-0 pl-20 text-gray-900 focus:ring-0 placeholder:text-gray-400 sm:leading-6"
+                placeholder="Enter your partner's email or share via link"
                 value={props.invitedEmail}
                 onChange={changeInvitedEmail}
               />
@@ -38,7 +38,9 @@ const InviteField = (props) => {
             <div className="flex items-center gap-2 px-4">
               <div class="flex items-center">
                 <label for="default-checkbox" class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">Link Share</label>
-                <input id="default-checkbox" type="checkbox" value="" class="w-4 h-4 text-primary5 bg-gray-100 border-gray-300 rounded focus:ring-primary5 dark:focus:ring-primary5 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                <input 
+                  onChange={() => (props.toggleLinkShare(!props.linkShare))}
+                  id="default-checkbox" type="checkbox" value="SHARE" class="w-4 h-4 text-primary5 bg-gray-100 border-gray-300 rounded focus:ring-primary5 dark:focus:ring-primary5 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
               </div>
             </div>
             

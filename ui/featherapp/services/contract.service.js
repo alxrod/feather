@@ -258,7 +258,7 @@ class ContractService {
         });
     }
 
-    updateContract(token, user_id, contract_id, title, summary, price_set, deadlines, items, invited_email, role) {
+    updateContract(token, user_id, contract_id, title, summary, price_set, deadlines, items, invited_email, link_share, role) {
 
         let updateRequest = new ContractUpdateRequest();   
 
@@ -267,7 +267,8 @@ class ContractService {
         updateRequest.setTitle(title);
         updateRequest.setSummary(summary);
         updateRequest.setPrice(this.generatePriceEntity(price_set));
-        updateRequest.setInvitedEmail(invited_email)
+        updateRequest.setInvitedEmail(invited_email);
+        updateRequest.setLinkShare(link_share);
         updateRequest.setRole(role)
         console.log("UPDATING W ITEMS: ", items)
 
