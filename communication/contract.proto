@@ -435,7 +435,6 @@ service Contract {
     rpc ResendInviteEmail(EmailResendRequest) returns (NullResponse) {};
 
     rpc InviteQuery(InviteDataRequest) returns (ContractInviteNub) {};
-
     rpc Claim(ClaimContractRequest) returns (ContractResponse) {};
     rpc Sign(SignContractRequest) returns (ContractResponse) {};
     rpc Settle(SettleContractRequest) returns (ContractResponse) {};

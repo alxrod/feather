@@ -146,10 +146,7 @@ func (s *BackServer) FinishCreation(ctx context.Context, req *comms.ContractFini
 	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 	if contract.InvitedEmail != "" {
 		go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-			err := s.EmailAgent.SendInviteEmail(contract, user, secret)
-			if err != nil {
-				return
-			}
+			s.EmailAgent.SendInviteEmail(contract, user, secret)
 		}(database, contract, user)
 	}
 
@@ -182,20 +179,18 @@ func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChan
 	}
 	contract.ChangeInviteEmail(req.NewEmail, database)
 	secret := s.EmailAgent.GenerateInviteSecret()
-	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
-		err := s.EmailAgent.SendInviteEmail(contract, user, secret)
-		if err != nil {
-			return
-		}
-		contract.InvitePassword = secret
+	contract.InvitePassword = secret
 		filter := bson.D{{"_id", contract.Id}}
 		update := bson.D{{"$set", bson.D{
 			{"invite_password", secret},
 		}}}
-		_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+
+	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
+		s.EmailAgent.SendInviteEmail(contract, user, secret)
 	}(database, contract, user)
 
-	
+
 	return &comms.EmailChangeResponse{NewSecret: contract.InvitePassword}, nil
 }
 
@@ -220,10 +215,7 @@ func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailRese
 		return nil, err
 	}
 	go func(contract *db.Contract, user *db.User) {
-		err := s.EmailAgent.SendInviteEmail(contract, user, contract.InvitePassword)
-		if err != nil {
-			return
-		}
+		s.EmailAgent.SendInviteEmail(contract, user, contract.InvitePassword)
 	}(contract, user)
 	return &comms.NullResponse{}, nil
 }
