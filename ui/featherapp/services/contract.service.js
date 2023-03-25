@@ -125,7 +125,8 @@ class ContractService {
                 if (error) {
                     reject(error)
                 }
-                resolve()
+                const resp = response.toObject();
+                resolve(resp.newSecret)
             });
         });
     }

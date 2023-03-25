@@ -13,6 +13,14 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case actions.CONTRACT_CHANGE_SECRET:
+            return {
+                ...state,
+                curContract: {
+                    ...state.curContract,
+                    invitePassword: action.payload
+                }
+            }
         case actions.CONTRACT_FIGMA_LINK_CHANGE:
             return {
                 ...state,

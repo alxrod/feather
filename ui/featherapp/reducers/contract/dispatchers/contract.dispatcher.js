@@ -229,7 +229,11 @@ export const changeInviteEmail = (contract_id, new_email) => {
         return  helpers.authCheck(dispatch).then(
             (creds) => {
                 return ContractService.changeInviteEmail(creds.access_token, creds.user_id, contract_id, new_email).then(
-                    () => {
+                    (secret) => {
+                        dispatch({
+                            type: contractActions.CONTRACT_CHANGE_SECRET,
+                            payload: secret
+                        });
                         return Promise.resolve();
                     },
                     (error) => {

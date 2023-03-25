@@ -87,7 +87,7 @@ const PartnerProfile = (props) => {
               </div>
             </div>
           )}
-          {(!partnerExists && inviteEmail !== "") && (
+          {(!partnerExists && props.inviteEmail !== "") && (
             <div className={"items-center px-4 py-4 sm:px-6 " + (!partnerExists ? "border-t border-gray-100" : "")}>
               <h1 className="mb-1">Already Invited:</h1>
 

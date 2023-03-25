@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 goog.exportSymbol('proto.communication.ProfileGetRequest', null, global);
 goog.exportSymbol('proto.communication.ProfileGetResponse', null, global);
@@ -913,7 +919,8 @@ proto.communication.ProfileGetResponse.prototype.getCacheUrlsMap = function(opt_
  */
 proto.communication.ProfileGetResponse.prototype.clearCacheUrlsMap = function() {
   this.getCacheUrlsMap().clear();
-  return this;};
+  return this;
+};
 
 
 
