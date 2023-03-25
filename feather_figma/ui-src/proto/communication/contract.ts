@@ -999,6 +999,10 @@ export interface QueryByUserRequest {
      * @generated from protobuf field: string user_id = 1;
      */
     userId: string;
+    /**
+     * @generated from protobuf field: bool unsorted = 2;
+     */
+    unsorted: boolean;
 }
 /**
  * @generated from protobuf message communication.ClaimContractRequest
@@ -4064,11 +4068,12 @@ export const ContractResponse = new ContractResponse$Type();
 class QueryByUserRequest$Type extends MessageType<QueryByUserRequest> {
     constructor() {
         super("communication.QueryByUserRequest", [
-            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "unsorted", kind: "scalar", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<QueryByUserRequest>): QueryByUserRequest {
-        const message = { userId: "" };
+        const message = { userId: "", unsorted: false };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<QueryByUserRequest>(this, message, value);
@@ -4081,6 +4086,9 @@ class QueryByUserRequest$Type extends MessageType<QueryByUserRequest> {
             switch (fieldNo) {
                 case /* string user_id */ 1:
                     message.userId = reader.string();
+                    break;
+                case /* bool unsorted */ 2:
+                    message.unsorted = reader.bool();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -4097,6 +4105,9 @@ class QueryByUserRequest$Type extends MessageType<QueryByUserRequest> {
         /* string user_id = 1; */
         if (message.userId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.userId);
+        /* bool unsorted = 2; */
+        if (message.unsorted !== false)
+            writer.tag(2, WireType.Varint).bool(message.unsorted);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

@@ -2,7 +2,6 @@ import { useEffect } from "react"
 import { RefreshIcon } from "@heroicons/react/outline"
 import { MailIcon, XIcon } from "@heroicons/react/outline"
 
-
 const InviteField = (props) => {
     const clearEmail = (e) => {
       e.preventDefault();
@@ -33,10 +32,16 @@ const InviteField = (props) => {
                 onChange={changeInvitedEmail}
               />
             </div>
-    
-            <button onClick={clearEmail} className="px-4">
+            <button onClick={clearEmail} className="px-4 bg-white">
               <XIcon className="w-5 h-5 text-gray-400"/>
             </button>
+            <div className="flex items-center gap-2 px-4">
+              <div class="flex items-center">
+                <label for="default-checkbox" class="mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">Link Share</label>
+                <input id="default-checkbox" type="checkbox" value="" class="w-4 h-4 text-primary5 bg-gray-100 border-gray-300 rounded focus:ring-primary5 dark:focus:ring-primary5 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+              </div>
+            </div>
+            
           </div>
         </div>
       </div>

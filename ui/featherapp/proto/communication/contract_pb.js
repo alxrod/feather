@@ -2716,6 +2716,7 @@ proto.communication.ContractEntity.toObject = function(includeInstance, msg) {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     invitedEmail: jspb.Message.getFieldWithDefault(msg, 11, ""),
     invitePassword: jspb.Message.getFieldWithDefault(msg, 18, ""),
+    linkShare: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
     worker: (f = msg.getWorker()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
     buyer: (f = msg.getBuyer()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
@@ -2783,6 +2784,10 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
     case 18:
       var value = /** @type {string} */ (reader.readString());
       msg.setInvitePassword(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLinkShare(value);
       break;
     case 2:
       var value = new proto.communication.UserNubEntity;
@@ -2908,6 +2913,13 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
   if (f.length > 0) {
     writer.writeString(
       18,
+      f
+    );
+  }
+  f = message.getLinkShare();
+  if (f) {
+    writer.writeBool(
+      22,
       f
     );
   }
@@ -3096,6 +3108,24 @@ proto.communication.ContractEntity.prototype.getInvitePassword = function() {
  */
 proto.communication.ContractEntity.prototype.setInvitePassword = function(value) {
   return jspb.Message.setProto3StringField(this, 18, value);
+};
+
+
+/**
+ * optional bool link_share = 22;
+ * @return {boolean}
+ */
+proto.communication.ContractEntity.prototype.getLinkShare = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.ContractEntity} returns this
+ */
+proto.communication.ContractEntity.prototype.setLinkShare = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 22, value);
 };
 
 
@@ -4292,6 +4322,7 @@ proto.communication.ContractInviteNub.toObject = function(includeInstance, msg) 
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     invitedEmail: jspb.Message.getFieldWithDefault(msg, 11, ""),
+    linkShare: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
     invitedUserInSystem: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     worker: (f = msg.getWorker()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
     buyer: (f = msg.getBuyer()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
@@ -4345,6 +4376,10 @@ proto.communication.ContractInviteNub.deserializeBinaryFromReader = function(msg
     case 11:
       var value = /** @type {string} */ (reader.readString());
       msg.setInvitedEmail(value);
+      break;
+    case 13:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLinkShare(value);
       break;
     case 12:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -4423,6 +4458,13 @@ proto.communication.ContractInviteNub.serializeBinaryToWriter = function(message
   if (f.length > 0) {
     writer.writeString(
       11,
+      f
+    );
+  }
+  f = message.getLinkShare();
+  if (f) {
+    writer.writeBool(
+      13,
       f
     );
   }
@@ -4523,6 +4565,24 @@ proto.communication.ContractInviteNub.prototype.getInvitedEmail = function() {
  */
 proto.communication.ContractInviteNub.prototype.setInvitedEmail = function(value) {
   return jspb.Message.setProto3StringField(this, 11, value);
+};
+
+
+/**
+ * optional bool link_share = 13;
+ * @return {boolean}
+ */
+proto.communication.ContractInviteNub.prototype.getLinkShare = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.ContractInviteNub} returns this
+ */
+proto.communication.ContractInviteNub.prototype.setLinkShare = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 13, value);
 };
 
 
@@ -6475,6 +6535,7 @@ proto.communication.ContractUpdateRequest.toObject = function(includeInstance, m
     title: jspb.Message.getFieldWithDefault(msg, 3, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 4, ""),
     invitedEmail: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    linkShare: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
     role: jspb.Message.getFieldWithDefault(msg, 6, 0),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
@@ -6536,6 +6597,10 @@ proto.communication.ContractUpdateRequest.deserializeBinaryFromReader = function
     case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setInvitedEmail(value);
+      break;
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setLinkShare(value);
       break;
     case 6:
       var value = /** @type {number} */ (reader.readUint32());
@@ -6617,6 +6682,13 @@ proto.communication.ContractUpdateRequest.serializeBinaryToWriter = function(mes
   if (f.length > 0) {
     writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getLinkShare();
+  if (f) {
+    writer.writeBool(
+      10,
       f
     );
   }
@@ -6741,6 +6813,24 @@ proto.communication.ContractUpdateRequest.prototype.getInvitedEmail = function()
  */
 proto.communication.ContractUpdateRequest.prototype.setInvitedEmail = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional bool link_share = 10;
+ * @return {boolean}
+ */
+proto.communication.ContractUpdateRequest.prototype.getLinkShare = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.ContractUpdateRequest} returns this
+ */
+proto.communication.ContractUpdateRequest.prototype.setLinkShare = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 

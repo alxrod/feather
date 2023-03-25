@@ -60,6 +60,8 @@ message ContractEntity {
     string id = 1;
     string invited_email = 11;
     string invite_password = 18;
+    bool link_share = 22;
+
     UserNubEntity worker = 2;
     UserNubEntity buyer = 3;
     PriceEntity price = 4;
@@ -112,6 +114,7 @@ message InviteDataRequest {
 message ContractInviteNub {
     string id = 1;
     string invited_email = 11;
+    bool link_share = 13;
     bool invited_user_in_system = 12;
     UserNubEntity worker = 2;
     UserNubEntity buyer = 3;
@@ -181,6 +184,7 @@ message ContractUpdateRequest {
     string title = 3;
     string summary = 4;
     string invited_email = 5;
+    bool link_share = 10;
     uint32 role = 6;
     PriceEntity price = 7;
     repeated DeadlineEntity deadlines = 8;
