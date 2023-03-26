@@ -75,8 +75,10 @@ message UserEntity {
 
     int64 outstanding_balance = 30;
 
-    bool FigmaConnected = 31;
-    string FigmaCode = 32;
+    bool figma_connected = 31;
+    string figma_code = 32;
+
+    uint32 free_contracts = 33;
 
 }
 

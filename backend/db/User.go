@@ -101,6 +101,7 @@ func (user *User) Proto() *comms.UserEntity {
 
 		FigmaConnected: user.FigmaConnected,
 		FigmaCode:      user.FigmaCode,
+		FreeContracts:  user.FreeContracts,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
@@ -278,12 +279,13 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 	}
 
 	userD := &User{
-		Username:     req.Username,
-		Password:     string(hashedPassword),
-		CreationTime: time.Now(),
-		Email:        req.Email,
-		FirstName:    req.FirstName,
-		LastName:     req.LastName,
+		Username:      req.Username,
+		Password:      string(hashedPassword),
+		CreationTime:  time.Now(),
+		Email:         req.Email,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		FreeContracts: 2,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)

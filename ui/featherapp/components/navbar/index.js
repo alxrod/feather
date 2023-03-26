@@ -76,9 +76,16 @@ const NavBar = (props) => {
                         href="/contracts"
                         className=" text-primary7 inline-flex items-center"
                     >
-                        Contracts
+                      Contracts
                     </Link>
-                    
+                  </div>
+                  <div className="flex px-1 pt-1 font-medium ">
+                    <Link
+                        href="/profile"
+                        className=" text-primary7 inline-flex items-center"
+                    >
+                      Profile
+                    </Link>
                   </div>
             
                   </>

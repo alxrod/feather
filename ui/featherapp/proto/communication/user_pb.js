@@ -1418,8 +1418,9 @@ proto.communication.UserEntity.toObject = function(includeInstance, msg) {
     buyerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
     defaultFca: jspb.Message.getFieldWithDefault(msg, 29, ""),
     outstandingBalance: jspb.Message.getFieldWithDefault(msg, 30, 0),
-    figmaconnected: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    figmacode: jspb.Message.getFieldWithDefault(msg, 32, "")
+    figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
+    figmaCode: jspb.Message.getFieldWithDefault(msg, 32, ""),
+    freeContracts: jspb.Message.getFieldWithDefault(msg, 33, 0)
   };
 
   if (includeInstance) {
@@ -1561,11 +1562,15 @@ proto.communication.UserEntity.deserializeBinaryFromReader = function(msg, reade
       break;
     case 31:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setFigmaconnected(value);
+      msg.setFigmaConnected(value);
       break;
     case 32:
       var value = /** @type {string} */ (reader.readString());
-      msg.setFigmacode(value);
+      msg.setFigmaCode(value);
+      break;
+    case 33:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setFreeContracts(value);
       break;
     default:
       reader.skipField();
@@ -1772,17 +1777,24 @@ proto.communication.UserEntity.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getFigmaconnected();
+  f = message.getFigmaConnected();
   if (f) {
     writer.writeBool(
       31,
       f
     );
   }
-  f = message.getFigmacode();
+  f = message.getFigmaCode();
   if (f.length > 0) {
     writer.writeString(
       32,
+      f
+    );
+  }
+  f = message.getFreeContracts();
+  if (f !== 0) {
+    writer.writeUint32(
+      33,
       f
     );
   }
@@ -2278,10 +2290,10 @@ proto.communication.UserEntity.prototype.setOutstandingBalance = function(value)
 
 
 /**
- * optional bool FigmaConnected = 31;
+ * optional bool figma_connected = 31;
  * @return {boolean}
  */
-proto.communication.UserEntity.prototype.getFigmaconnected = function() {
+proto.communication.UserEntity.prototype.getFigmaConnected = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
 };
 
@@ -2290,16 +2302,16 @@ proto.communication.UserEntity.prototype.getFigmaconnected = function() {
  * @param {boolean} value
  * @return {!proto.communication.UserEntity} returns this
  */
-proto.communication.UserEntity.prototype.setFigmaconnected = function(value) {
+proto.communication.UserEntity.prototype.setFigmaConnected = function(value) {
   return jspb.Message.setProto3BooleanField(this, 31, value);
 };
 
 
 /**
- * optional string FigmaCode = 32;
+ * optional string figma_code = 32;
  * @return {string}
  */
-proto.communication.UserEntity.prototype.getFigmacode = function() {
+proto.communication.UserEntity.prototype.getFigmaCode = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 32, ""));
 };
 
@@ -2308,8 +2320,26 @@ proto.communication.UserEntity.prototype.getFigmacode = function() {
  * @param {string} value
  * @return {!proto.communication.UserEntity} returns this
  */
-proto.communication.UserEntity.prototype.setFigmacode = function(value) {
+proto.communication.UserEntity.prototype.setFigmaCode = function(value) {
   return jspb.Message.setProto3StringField(this, 32, value);
+};
+
+
+/**
+ * optional uint32 free_contracts = 33;
+ * @return {number}
+ */
+proto.communication.UserEntity.prototype.getFreeContracts = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.communication.UserEntity} returns this
+ */
+proto.communication.UserEntity.prototype.setFreeContracts = function(value) {
+  return jspb.Message.setProto3IntField(this, 33, value);
 };
 
 
