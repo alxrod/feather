@@ -26,7 +26,7 @@ const features = [
     img: () => (
       <FadeInAnimation wrapperElement="div">
         <div className="grow max-h-[80vh] flex justify-end">
-          <Image className="h-full" src={InviteFrame} />
+          <Image className="h-full" src={InviteFrame} alt="invite frame"/>
         </div>
       </FadeInAnimation>
     ),
@@ -45,7 +45,7 @@ const features = [
     img: () => (
       <FadeInAnimation wrapperElement="div">
         <div className="grow max-h-[80vh] flex justify-start">
-          <Image className="h-full" src={ChatFrame} />
+          <Image className="h-full" src={ChatFrame} alt="chat frame" />
         </div>
       </FadeInAnimation>
     ),
@@ -64,7 +64,7 @@ const features = [
     img: () => (
       <FadeInAnimation wrapperElement="div">
         <div className="grow max-h-[80vh] flex justify-end">
-          <Image className="h-full" src={CompleteFrame} />
+          <Image className="h-full" src={CompleteFrame} alt="complete frame" />
         </div>
       </FadeInAnimation>
     ),

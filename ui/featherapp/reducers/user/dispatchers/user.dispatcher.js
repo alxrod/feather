@@ -96,7 +96,6 @@ export const logout = () => {
 }
 
 export const setRedirect = (link) => {
-    console.log("setting redirect to ", link)
     return dispatch => {
         dispatch({
             type: userActions.SET_REDIRECT_LINK,

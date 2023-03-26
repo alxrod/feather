@@ -31,7 +31,6 @@ const RejoinMonitor = props => {
   useEffect( () => {
     if (props.rejoinSequenceActive && props.curContract.id !== "") {
       setTimeout(() => {  
-        console.log("Attempting a rejoin to the chat")
         rejoin()
         if (waitTimeIdx < waitTimes.length - 1) {
           setWaitTimeIdx(waitTimeIdx+1)

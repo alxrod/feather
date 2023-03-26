@@ -59,12 +59,12 @@ const NavBar = (props) => {
                   <Image
                     className="block lg:hidden h-8 w-auto"
                     src={f_logo}
-                    alt="Workflow"
+                    alt="Logo"
                   />
                   <Image
                     className="hidden lg:block h-8 w-auto"
                     src={feather_logo}
-                    alt="Workflow"
+                    alt="Logo"
                   />
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

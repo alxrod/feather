@@ -65,11 +65,9 @@ const ItemBodyMsg = (props) => {
 
   const acceptChange = () => {
     props.reactItem(props.curContract.id, props.msg.id, props.msg.body.itemId, decisionTypes.YES)
-    console.log("Accepting change")
   }
   const rejectChange = () => {
     props.reactItem(props.curContract.id, props.msg.id, props.msg.body.itemId, decisionTypes.NO)
-    console.log("Rejecting change")
   }
   
   

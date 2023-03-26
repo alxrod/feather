@@ -130,7 +130,6 @@ const ContractCreate = (props) => {
         router.push("/negotiate/"+props.curContract.id)
       }, (error) => {
         setOpenBanner(true)
-        console.log(error)
         setError(error)
       }
     )
@@ -142,7 +141,6 @@ const ContractCreate = (props) => {
         router.push("/contracts")
       }, (error) => {
         setOpenBanner(true)
-        console.log(error)
         setError(error)
       }
     )
@@ -162,9 +160,6 @@ const ContractCreate = (props) => {
 
   }
   useEffect(() => {
-    console.log("CHANING CON TO : ", props)
-  }, [props.curContract])
-  useEffect(() => {
     if (!isFirstLoad && !emptyContract(conTitle, conDescript, invitedEmail, conRole, price, props.deadlines, props.contractItems)) {
       if (updateTimeoutId !== -1) {
         clearTimeout(updateTimeoutId)
@@ -179,7 +174,6 @@ const ContractCreate = (props) => {
             setShowSavingNotif(false)
           }, (error) => {
             setOpenBanner(true)
-            console.log(error)
             setError(error)
           }
         )
@@ -205,12 +199,8 @@ const ContractCreate = (props) => {
     let errors = ""
     if (props.deadlines.length < 2) {
       errors += "You must choose 2 future deadlines for start and end"
-      console.log("deadlines:")
-      console.log(props.deadlines)
     }
     if (price.you <= 0) {
-      console.log("Price issue:");
-      console.log(price)
       errors += "You must choose a price greater than $0. "
     }
     if (conTitle === "") {

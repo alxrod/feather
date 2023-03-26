@@ -88,11 +88,9 @@ const DeadlineCreateMsg = (props) => {
 
   const acceptChange = () => {
     props.reactAddDeadline(props.curContract.id, props.msg.id, props.msg.body.deadline.id, decisionTypes.YES)
-    console.log("Accepting change")
   }
   const rejectChange = () => {
     props.reactAddDeadline(props.curContract.id, props.msg.id, props.msg.body.deadline.id, decisionTypes.NO)
-    console.log("Rejecting change")
   }
 
   const Icon = () => {

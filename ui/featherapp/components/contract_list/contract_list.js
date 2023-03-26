@@ -34,7 +34,6 @@ const ContractList = (props) => {
             user_ids.push(props.contracts[i].workerId)
           }
           if (!buyer_in && props.contracts[i].buyerId && props.user?.id != props.contracts[i].buyerId) {
-            console.log("Adding ", props.contracts[i].buyerId)
             user_ids.push(props.contracts[i].buyerId)
           }
         }

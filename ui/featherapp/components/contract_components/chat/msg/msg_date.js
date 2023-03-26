@@ -78,11 +78,9 @@ const DateMsg = (props) => {
 
   const acceptChange = () => {
     props.reactDate(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
-    console.log("Accepting change")
   }
   const rejectChange = () => {
     props.reactDate(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
-    console.log("Rejecting change")
   }
 
   const Icon = () => {

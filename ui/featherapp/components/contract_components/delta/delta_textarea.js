@@ -141,7 +141,6 @@ export default (props) => {
           return generateContractText(0, "", UNEDITED)
         }
         
-        // console.log(text_body)
         let i = 0
         for (const [key, chunk] of Object.entries(text_body)) {
           let text = chunk.text
@@ -151,8 +150,7 @@ export default (props) => {
           html_string += generateContractText(key, text, chunk.type)
           i++
         }
-        // console.log("HTML STRING:")
-        // console.log(html_string)
+
         return html_string;
     };
 

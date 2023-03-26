@@ -18,17 +18,14 @@ const FigmaOAuthCallback = (props) => {
     const old_state = sessionStorage.getItem("figmaState")
     if (old_state !== "") {
       if (state !== old_state) {
-        console.log("ERROR: returned state ", state, " does not match initial state ", old_state)
         router.push(props.figmaRedirect)
         return
       }
-      console.log("Code: ", code, " State: ", state)
       props.connectFigma(code).then(
         () => {
           router.push(props.figmaRedirect)
         },
         (error) => {
-          console.log("ERROR WAS: ", error)
           router.push(props.figmaRedirect)
         }
       )

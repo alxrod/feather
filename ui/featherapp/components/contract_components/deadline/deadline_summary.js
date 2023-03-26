@@ -290,7 +290,6 @@ const DeadlineSummary = (props) => {
         total += sortedDeadlines[i].currentPayout
       }
     }
-    console.log("PREVIOUS TOTAL GOES TO ", total)
     if (payoutValue && (total + payoutValue > props.curPrice)) {
       setPrevPayoutPerc(  Math.round( 10000*(props.curPrice - total) / props.curPrice)/100 )
     } else {

@@ -9,6 +9,7 @@ export default (props) => {
         width={props.height*0.25*16}
         height={props.width*0.25*16}
         src={props.user?.profilePhoto.cacheUrl}
+        alt="profile_pic"
       />
     )
   } else {

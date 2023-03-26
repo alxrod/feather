@@ -140,9 +140,6 @@ class UserService {
                 // just using to check where to save
                 let creds = JSON.parse(localStorage.getItem("creds"))
                 if (creds === null) {
-                    console.log("ENMPTY OBJ: ", creds)
-                }
-                if (creds === null) {
                     localStorage.setItem("user", JSON.stringify(resp));
                 } else {
                     sessionStorage.setItem("user", JSON.stringify(resp));

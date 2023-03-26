@@ -60,7 +60,8 @@ func (srv *MainServer) HandleAssetRequest(w http.ResponseWriter, r *http.Request
 	path := fmt.Sprintf("%v", r.URL)
 	split_path := strings.Split(path, "/asset-cache/")
 	if len(split_path) != 2 {
-		log.Fatal(errors.New("invalid asset path"))
+		log.Println(errors.New("invalid asset path"))
+		errorHandler(w, r, 404)
 	}
 	filename := strings.Split(split_path[1], "?")[0]
 	split_on_dot := strings.Split(filename, ".")

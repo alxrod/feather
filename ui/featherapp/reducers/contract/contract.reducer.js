@@ -31,7 +31,6 @@ export default (state = initialState, action) => {
                 }
             }
         case actions.CONTRACT_PURGE_SIGNING:
-            console.log("Purging signing")
             return {
                 ...state,
                 curContract: {

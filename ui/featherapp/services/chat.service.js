@@ -138,13 +138,13 @@ class ChatService {
             })
         })
         stream.on('status', function(status) {
-            console.log(status.code);
-            console.log(status.details);
-            console.log(status.metadata);
+            // console.log(status.code);
+            // console.log(status.details);
+            // console.log(status.metadata);
         });
         stream.on('end', function(end) {
-            console.log("Stream ended")
-            console.log(end)
+            // console.log("Stream ended")
+            // console.log(end)
         });
 
         return Promise.resolve();
@@ -211,8 +211,6 @@ class ChatService {
                         reformMsg.contractInfo = resp.messagesList[i].contract
                         messages.push(reformMsg)
                     }
-                    console.log("New Messages:")
-                    console.log(messages)
 
                     resolve(messages.reverse())
                 }
@@ -243,9 +241,6 @@ class ChatService {
             
             chatClient.sendCommentMessage(sendRequest, metadata, function(error, response) {
                 if (error) {
-                    console.log("Error")
-                    console.log(error)
-                    console.log(token)
                     reject(error)
                 } else {
                     resolve(response.toObject())
@@ -313,7 +308,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
         })
 
     } else if (msg.method === msgMethods.DATE) {
-        console.log("RECEIVED DATE MSG W INFO: ", msg)
         let newDate = {
             proposerId: msg.user.id,
             deadlineId: msg.body.deadlineId,
@@ -460,7 +454,6 @@ const parseMessage = (msg, role, this_user_id, dispatch) => {
             payload: false
         })
     } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
-        console.log("FINALIZED SETTLE W ", msg.body)
         dispatch({
             type: CONTRACT_DEADLINE_FINALIZE_SETTLE,
             payload: msg.body

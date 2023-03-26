@@ -50,6 +50,7 @@ const Profile = (props) => {
                 width={200}
                 height={200}
                 src={picUrl}
+                alt="profile_pic"
               />
               
               <button 

@@ -68,11 +68,9 @@ const ItemDeleteMsg = (props) => {
 
   const acceptChange = () => {
     props.reactDeleteItem(props.curContract.id, props.msg.id, props.msg.body.item.id, decisionTypes.YES)
-    // console.log("Accepting change")
   }
   const rejectChange = () => {
     props.reactDeleteItem(props.curContract.id, props.msg.id, props.msg.body.item.id, decisionTypes.NO)
-    // console.log("Rejecting change")
   }
 
   const Icon = () => {

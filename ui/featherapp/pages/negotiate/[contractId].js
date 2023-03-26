@@ -55,7 +55,6 @@ const ContractNegotiate = (props) => {
 
   useEffect(() => {
     if (reload) {
-      console.log("Calling the reload effect")
       props.queryContract(props.contractId).then(
         () => {},
         () => {
@@ -71,7 +70,6 @@ const ContractNegotiate = (props) => {
 
   useEffect(() => {
     if (contractItemIds !== undefined) {
-      console.log("ITEMS: ", props.curConItems)
       let ids = []
       let max = 0
       for (let i = 0; i < props.curConItems.length; i++) {

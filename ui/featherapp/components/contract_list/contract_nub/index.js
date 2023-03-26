@@ -107,6 +107,7 @@ const ContractNub = (props) => {
                       height={24}
                       alt=""
                       key={i}
+                      alt="profile_pic"
                     />
                   )
                 })}

@@ -160,8 +160,6 @@ export const updateContract = (contract_id, title, summary, price_set, deadlines
                             type: contractActions.CONTRACT_DRAFT_UPDATE,
                             payload: data.contract
                         });
-                        // console.log("Finished Contract Creation")
-                        // console.log(data)
                         return Promise.resolve();
                     },
                     (error) => {
@@ -209,8 +207,6 @@ export const finishCreation = (contract_id) => {
                             type: contractActions.CONTRACT_DRAFT_UPDATE,
                             payload: data.contract
                         });
-                        // console.log("Finished Contract Creation")
-                        // console.log(data)
                         return Promise.resolve();
                     },
                     (error) => {
@@ -272,7 +268,6 @@ export const claimContract = (contract_id, password) => {
             (creds) => {
                 return ContractService.claimContract(creds.access_token, creds.user_id, contract_id, password).then(
                     () => {
-                        console.log("Approval received")
                         dispatch({
                             type: contractActions.CONTRACT_CLAIM,
                         });

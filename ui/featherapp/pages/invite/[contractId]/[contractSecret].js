@@ -62,9 +62,8 @@ const ContractInvite = (props) => {
       return
     }
     props.claimContract(props.contractId, props.contractSecret).then(() => {
-      console.log("Contract claimed")
     }).catch((error) => {
-      console.log("Error is: ", error)
+      console.log("Error: ", error)
       setErrorMessage(error)
     })
   }
@@ -77,7 +76,6 @@ const ContractInvite = (props) => {
           for (let j = 0; j < body.deadlinesList[i].itemsList.length; j++) {
             for (let k = 0; k < body.itemsList.length; k++) {
               if (body.deadlinesList[i].itemsList[j].id ===  body.itemsList[k].id) {
-                console.log("FOUND it ")
                 items.push(body.itemsList[k])
               }
             }
@@ -85,7 +83,6 @@ const ContractInvite = (props) => {
           body.deadlinesList[i].items = items
         }
         setContract(body)
-        console.log("BODY: ", body)
         if (props.user !== null && (body.worker.id === props.user.id || body.buyer.id === props.user.id)) {
           setOwner(true)
           setExistingUser(props.user)
