@@ -80,7 +80,7 @@ func (s *BackServer) GetInitialSetupSecret(ctx context.Context, req *comms.Payme
 		user.AccountAddsInDay = 1
 		user.MostRecentAdd = time.Now()
 	} else if user.AccountAddsInDay >= 5 && user.MostRecentAdd.After(dayAgo) {
-		return nil, errors.New("You can only connect 5 accounts in one day for security")
+		return nil, errors.New("You have reached the maximum number of connections for a day. You can only connect 5 accounts in one day for security")
 	} else {
 		user.AccountAddsInDay += 1
 		user.MostRecentAdd = time.Now()

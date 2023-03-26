@@ -154,6 +154,7 @@ func (contract *Contract) ChangeInviteEmail(new_email string, database *mongo.Da
 		{"invited_email", new_email},
 		{"invite_password", ""},
 	}}}
+
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	return err
 }
