@@ -12,12 +12,10 @@ export const replaceSuggestItemCurCon = (items, replacement) => {
 export const activateDeletionOfItem = (items, id) => {
     for (let i = 0; i < items.length; i++) {
         if (items[i].id === id) {
-            console.log("Updating the deletion")
             items[i].awaitingDeletion = true
             items[i].awaitingApproval = true
         }
     }
-    console.log(items)
     return items
 }
 
@@ -38,8 +36,6 @@ export const removeItemCurCon = (items, remove) => {
             newItems.push(items[i])
         }
     }
-    console.log("new items leaving: ")
-    console.log(newItems)
     return newItems
 }
 

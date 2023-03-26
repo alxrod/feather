@@ -54,7 +54,6 @@ const PriceMsg = (props) => {
   }, [props.curContract])
 
   useEffect( () => {
-    // console.log("WTFFF")
     assignStatus(props.msg, props.user, props.yourRole, setStatus, setOtherStatus)
     
   }, [props.msg, props.yourRole, props.user, version])

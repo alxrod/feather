@@ -26,20 +26,16 @@ const bailAuth = (dispatch) => {
     dispatch({
         type: LOGOUT,
     })
-    // dispatch(push("/"))
 }
 
 export const parseError = (error, dispatch) => {
-    console.log("Parsing error")
     const message = 
         (error.response &&
         error.response.data &&
         error.response.data.message) ||
         error.message ||
         error.toString();
-    console.log("ERROR: ", error)
-    
 
-    console.log("ERROR CAUGHT IN DISPATCH: " + message)
+    console.log("ERROR CAUGHT IN PARSE ERROR: " + message)
     return Promise.reject(message);
 }

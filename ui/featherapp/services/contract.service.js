@@ -242,7 +242,6 @@ class ContractService {
             createRequest.addDeadlines(deadlineEntity, i)
             i++
         }
-        // console.log(createRequest)
         
 
         return new Promise( (resolve, reject) => { 
@@ -251,7 +250,6 @@ class ContractService {
                 if (error) {
                     reject(error)
                 }
-                // console.log(response)
                 var resp = response.toObject();
                 resp.contract.role = resp.role
                 resolve(resp)
@@ -271,7 +269,6 @@ class ContractService {
         updateRequest.setInvitedEmail(invited_email);
         updateRequest.setLinkShare(link_share);
         updateRequest.setRole(role)
-        console.log("UPDATING W ITEMS: ", items)
 
         let i = 0
         for (const [_, item] of Object.entries(items)) {
@@ -295,7 +292,6 @@ class ContractService {
                     reject(error.message)
                     return
                 }
-                // console.log(response)
                 var resp = response.toObject();
                 resp.contract = cleanDeadlines(response.getContract())
                 resp.contract.role = resp.role
@@ -339,7 +335,6 @@ class ContractService {
                     console.log("Error: ", error.message)
                     return
                 }
-                // console.log(response)
                 var resp = response.toObject();
                 resp.contract.role = resp.role
                 resolve(resp)
@@ -679,7 +674,6 @@ class ContractService {
     
     changeDeadlineItems(token, user_id, contract_id, deadline_id, item_ids) {
         let changeRequest = new ContractSuggestDeadlineItems();
-        console.log("SHIPPING IDS: ",item_ids )
         changeRequest.setDeadlineId(deadline_id)
         changeRequest.setUserId(user_id)
         changeRequest.setContractId(contract_id)
@@ -874,12 +868,10 @@ class ContractService {
     queryInvite(contract_id, contract_secret) {
         let queryRequest = new InviteDataRequest();
         queryRequest.setId(contract_id);
-        console.log("Trying to set to ", contract_secret)
         queryRequest.setSecret(contract_secret);
         return new Promise( (resolve, reject) => { 
             contractClient.inviteQuery(queryRequest, null, function(error, response) {
                 if (error) {
-                    console.log("Info got error of ", error)
                     reject(error)
                 }
                 const resp = response.toObject()

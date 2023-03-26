@@ -1282,6 +1282,9 @@ input:checked + .toggle-bg {
 .ml-1 {
   margin-left: 0.25rem;
 }
+.ml-1\.5 {
+  margin-left: 0.375rem;
+}
 .ml-2 {
   margin-left: 0.5rem;
 }
@@ -1475,9 +1478,6 @@ input:checked + .toggle-bg {
 .h-px {
   height: 1px;
 }
-.max-h-56 {
-  max-height: 14rem;
-}
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1561,9 +1561,6 @@ input:checked + .toggle-bg {
 }
 .w-5 {
   width: 1.25rem;
-}
-.w-52 {
-  width: 13rem;
 }
 .w-6 {
   width: 1.5rem;
@@ -1892,11 +1889,6 @@ input:checked + .toggle-bg {
   --tw-space-x-reverse: 0;
   margin-right: calc(-1px * var(--tw-space-x-reverse));
   margin-left: calc(-1px * calc(1 - var(--tw-space-x-reverse)));
-}
-.space-x-1 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.25rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
 }
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -3792,10 +3784,6 @@ html {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(90 164 117 / var(--tw-ring-opacity));
 }
-.focus\:ring-primary3:focus {
-  --tw-ring-opacity: 1;
-  --tw-ring-color: rgb(73 152 102 / var(--tw-ring-opacity));
-}
 .focus\:ring-primary4:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(56 137 86 / var(--tw-ring-opacity));
@@ -4443,6 +4431,10 @@ html {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(157 23 77 / var(--tw-ring-opacity));
 }
+.dark .dark\:focus\:ring-primary5:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(28 109 58 / var(--tw-ring-opacity));
+}
 .dark .dark\:focus\:ring-purple-800:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(107 33 168 / var(--tw-ring-opacity));
@@ -4601,20 +4593,12 @@ html {
     margin-bottom: auto;
   }
 
-  .sm\:-ml-1 {
-    margin-left: -0.25rem;
-  }
-
   .sm\:-mr-2 {
     margin-right: -0.5rem;
   }
 
   .sm\:mb-0 {
     margin-bottom: 0px;
-  }
-
-  .sm\:ml-2 {
-    margin-left: 0.5rem;
   }
 
   .sm\:ml-3 {
@@ -5103,10 +5087,6 @@ html {
     margin-bottom: 2rem;
   }
 
-  .lg\:ml-2 {
-    margin-left: 0.5rem;
-  }
-
   .lg\:mt-10 {
     margin-top: 2.5rem;
   }
@@ -5123,12 +5103,12 @@ html {
     display: none;
   }
 
-  .lg\:h-9 {
-    height: 2.25rem;
+  .lg\:h-6 {
+    height: 1.5rem;
   }
 
-  .lg\:w-9 {
-    width: 2.25rem;
+  .lg\:w-6 {
+    width: 1.5rem;
   }
 
   .lg\:w-\[125px\] {
@@ -5184,11 +5164,6 @@ html {
 
   .lg\:text-right {
     text-align: right;
-  }
-
-  .lg\:text-xl {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
   }
 }
 @media (min-width: 1280px) {

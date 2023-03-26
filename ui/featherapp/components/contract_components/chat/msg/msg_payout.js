@@ -37,7 +37,6 @@ const PayoutMsg = (props) => {
   const [version, setVersion] = useState(1)
   useEffect( () => {
     if (props.reloaded === true) {
-      console.log("RELOADED MESSAGE FOR PAYOUT")
       if ((version+1) > 1) {
         props.updateLocalPayout(props.msg)
       }
@@ -79,11 +78,9 @@ const PayoutMsg = (props) => {
 
   const acceptChange = () => {
     props.reactPayout(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.YES)
-    console.log("Accepting change")
   }
   const rejectChange = () => {
     props.reactPayout(props.curContract.id, props.msg.id, props.msg.body.deadlineId, decisionTypes.NO)
-    console.log("Rejecting change")
   }
   
   

@@ -70,9 +70,6 @@ export const updateLocalItemBody = (msg) => {
             newBody.worker = msg.body.newVersion
         }
 
-        console.log("New body:")
-        console.log(msg)
-        console.log(newBody)
         dispatch({
             type: itemActions.CONTRACT_ITEM_UPDATE_BODY,
             payload: newBody,

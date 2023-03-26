@@ -12,7 +12,6 @@ import {
 
  } from "../proto/communication/stripe_pb";
 
-
 export const stripeServiceClient = new StripeServiceClient(process.env.NEXT_PUBLIC_API_URL);
 
 class StripeService {
@@ -21,7 +20,6 @@ class StripeService {
         let req = new SetupConfirm();
         req.setUserId(user_id);
         req.setPmId(pm_id)
-        console.log("Shipping off ", pm_id);
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
             stripeServiceClient.confirmPaymentConnected(req, metadata, function(error, response) {
@@ -43,7 +41,6 @@ class StripeService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                console.log("Resp: ", resp)
                 resolve(resp.accountsList)
             });
         });
@@ -59,7 +56,6 @@ class StripeService {
                     reject(error)
                 }
                 var resp = response.toObject();
-                console.log("Resp: ", resp)
                 resolve(resp.accountsList)
             });
         });
@@ -213,6 +209,8 @@ class StripeService {
             stripeServiceClient.getInternalCharges(req, metadata, function(error, response) {
                 if (error) {
                     reject(error)
+                    console.log("ERROR: ", error.message)
+                    return
                 }
                 var resp = response.toObject();
                 resolve(resp.chargesList)

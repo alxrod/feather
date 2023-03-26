@@ -31,11 +31,9 @@ export const getAccountOnboardLink = (return_route) => {
             (creds) => {
                 return StripeService.getAccountOnboardLink(creds.access_token, creds.user_id, return_route).then(
                     (url) => {
-                        console.log("Succesfuly created session ")
                         return Promise.resolve(url);
                     },
                     (error) => {
-                        console.log("Error w session: ", error)
                         return helpers.parseError(error, dispatch);
                     }
                 );

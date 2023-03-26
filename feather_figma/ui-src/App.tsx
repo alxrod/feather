@@ -50,7 +50,7 @@ function App() {
         )
       },
       (err: RpcError) => {
-        console.log("err: ", err.message)
+        console.log("Error: ", err.message)
       }
     )
   }
@@ -64,7 +64,7 @@ function App() {
           )
         },
         (err: RpcError) => {
-          console.log("err: ", err.message)
+          console.log("Error: ", err.message)
           window.parent.postMessage(
             {pluginMessage: {type: "close"}}, '*'
           )
@@ -77,7 +77,6 @@ function App() {
     if (event.data.pluginMessage.type === 'set_display_mode') {
       setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
     } else if (event.data.pluginMessage.type === 'set_item_options') {
-      console.log("CONFIGURING FOR CONENCT W PAYLOAD: ", event.data.pluginMessage.payload)
       setItemId(event.data.pluginMessage.payload.item_id)
       setContractId(event.data.pluginMessage.payload.contract_id)
       setComponentOptions(event.data.pluginMessage.payload.component_options)

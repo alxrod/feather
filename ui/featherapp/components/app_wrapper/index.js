@@ -83,7 +83,6 @@ const AppWrapper = (props) => {
     if (pullReq == true && props.user !== null) {
       setPullReq(false);
       props.pullUser().then(() => {
-        // console.log("Finished pull")
         setTimeout(() => {
           setPullReq(true)
         }, 10 * 60 * 1000)
@@ -134,7 +133,6 @@ const AppWrapper = (props) => {
       router.push("/contracts")
       return false
     }
-    console.log("REACHING END OF AUHT REDIRECT")
     return true
   }
 

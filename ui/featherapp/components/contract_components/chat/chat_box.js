@@ -36,7 +36,6 @@ const ChatBox = (props) => {
 
   const handleSend = (e) => {
     e.preventDefault()
-    console.log("Sending message?")
     if (message !== "" && props.roomId !== undefined) {
       props.sendMessage(props.roomId, message, labelled).then(
         setMessage("")

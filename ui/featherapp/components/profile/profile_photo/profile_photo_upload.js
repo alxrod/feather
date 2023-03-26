@@ -22,7 +22,6 @@ const ProfilePhotoUpload = (props) => {
   const [success, SetSuccess] = useState(false)
 
   const handleUpload = async (blob) => {
-    console.log("Working w blob: ", blob)
     setPhotoInTransit(true)
 
     const converted_image = new File(
@@ -41,7 +40,6 @@ const ProfilePhotoUpload = (props) => {
         }   
       },
       (err) => {
-        console.log("FAILED PUT")
       }
     )
   
@@ -95,7 +93,6 @@ const ProfilePhotoUpload = (props) => {
       200
     )
     setCrop(crop)
-    console.log("Initial crop is: ", crop)
     getCroppedImg(
       e.currentTarget,
       crop,
@@ -114,7 +111,6 @@ const ProfilePhotoUpload = (props) => {
   const onCropChange = (crop, percentCrop) => {
     // You could also use percentCrop:
     // this.setState({ crop: percentCrop });
-    console.log("Setting crop to: ", crop);
     setCrop(crop);
   };
 
@@ -125,7 +121,6 @@ const ProfilePhotoUpload = (props) => {
         crop,
         "newFile.jpeg"
       );
-      console.log("Success w blob: ", croppedBlob)
       setCroppedBlob(croppedBlob);
     }
   }
@@ -227,7 +222,7 @@ const ProfilePhotoUpload = (props) => {
         >
           <XIcon className="w-4 h-4"/>
         </button>
-        <Image className="w-[200px]" width={200} src={src} onLoad={onImageLoaded}/>
+        <Image className="w-[200px]" width={200} src={src} onLoad={onImageLoaded} alt="profile_pic"/>
       </ReactCrop>
       <div className="w-[200px] flex justify-center mt-4">
         <button 

@@ -50,11 +50,9 @@ const PaymentInfo = (props) => {
   const refreshPaymentMethods = () => {
     props.listFcas().then(
       (methods) => {
-        console.log("Methods: ", methods)
         setPaymentMethods(methods)
       },
       (error) => {
-        console.log("Failure mode")
       }
     )
   }
@@ -62,11 +60,9 @@ const PaymentInfo = (props) => {
   const refreshBankAccounts = () => {
     props.listExBAs().then(
       (accounts) => {
-        console.log("Accounts: ", accounts)
         setExBankAcounts(accounts)
       },
       (error) => {
-        console.log("Failure mode")
       }
     )
   }
@@ -90,15 +86,10 @@ const PaymentInfo = (props) => {
         setBaWarningOpen(false)
       },
       (error) => {
-        console.log("ERROR was: ", error)
         setErrorBody(error)
       }
     )
   }
-  
-  useEffect(() => {
-    console.log(props.user)
-  }, [props.user])
 
   return (
     <div className="max-w-2xl w-full">

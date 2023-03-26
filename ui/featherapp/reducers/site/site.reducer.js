@@ -65,7 +65,6 @@ export const setNavbar = (navbar_stat) => {
 };
 
 export const toggleFromRegister = (register_state) => {
-    console.log("TOGGLIGN FROM REG TO ", register_state)
     return dispatch => {
         dispatch({
             type: TOGGLE_PAYMENT_FROM_REG,
@@ -75,7 +74,6 @@ export const toggleFromRegister = (register_state) => {
 };
 
 export const toggleRegisterMethods = (both_state) => {
-    console.log("TOGGLIGN BOTH REG TO ", both_state)
     return dispatch => {
         dispatch({
             type: TOGGLE_REGISTER_BOTH_METHODS,
@@ -85,7 +83,6 @@ export const toggleRegisterMethods = (both_state) => {
 };
 
 export const setRedirectRoute = (redirectRoute) => {
-    console.log("Setting it to ", redirectRoute)
     return dispatch => {
         dispatch({
             type: SET_REDIRECT_ROUTE,

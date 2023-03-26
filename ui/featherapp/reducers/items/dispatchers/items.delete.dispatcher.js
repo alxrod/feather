@@ -18,7 +18,6 @@ export const deleteItem = (contract_id, item_id, item_name, item_body, createMod
                             payload: item_id,
                         })
                         if (createMode) {
-                            console.log("PURGING")
                             dispatch({
                                 type: deadlineActions.CONTRACT_DEADLINE_ITEM_PURGE,
                                 payload: item_id,

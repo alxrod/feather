@@ -49,7 +49,6 @@ const LoginCard = (props) => {
             }
           })
           .catch((error) => {
-            console.log("Caught error")
             setGenError(error)
           })
       }
@@ -109,7 +108,6 @@ const LoginCard = (props) => {
             value={remember}
             checked={remember}
             onChange={(e) => {
-              console.log("test: ", e.target)
               toggleRemember(!remember)
             }}
             className="h-4 w-4 text-primary5 focus:ring-primary4 border-gray-300 rounded"

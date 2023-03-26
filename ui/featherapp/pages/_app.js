@@ -29,7 +29,7 @@ const FeatherApp = ({Component, pageProps}) => {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
         <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap" rel="stylesheet"/>
         
-        <link rel="manifest" href={process.env.NEXT_PUBLIC_FRONTEND_URL+"/manifest.json"} />
+        <link rel="manifest" href={"/manifest.json"}/>
 
         <title>Feather</title>
       </Head>

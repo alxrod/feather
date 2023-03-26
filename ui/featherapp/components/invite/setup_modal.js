@@ -39,7 +39,6 @@ const SetupModal = (props) => {
     const firstName = splitNames[0]
     const lastName = splitNames[splitNames.length - 1]
     props.register(values.username, firstName, lastName, values.email, values.password).then( () => {
-      console.log("Registration complete")
     }, err => {
         setServerError(err)
     })
@@ -124,7 +123,6 @@ const SetupModal = (props) => {
                       <ConnectPayment 
                         finishedConnecting={() => setConnectLoading(false)} 
                         secondaryHandle={() => {
-                          console.log("FCA's connected")
                           // if (props.redirectRoute !== "") {
                           //   // props.setRedirectRoute("")
                           //   // props.push(props.redirectRoute)

@@ -10,7 +10,6 @@ const initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
         case actions.CONTRACT_ITEM_ADD:
-            console.log("ADDING ITME")
             return {
                 ...state,
                 itemsChanged: !state.itemsChanged,

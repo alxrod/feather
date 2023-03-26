@@ -54,7 +54,6 @@ const ContractLockMsg = (props) => {
 
   useEffect( () => {
     if (props.msg) {
-      // console.log("New Status for " + props.msg.id)
       if (props.yourRole == WORKER_TYPE) {
         setStatus(props.msg.body.workerStatus)
         setOtherStatus(props.msg.body.buyerStatus)

@@ -35,6 +35,7 @@ const Avatar = (props) => {
           height={props.width*0.25*16}
           // src={`${cacheUrl}?${imageHash}`}
           src={cacheUrl}
+          alt="profile_pic"
         />
       ) : (
         <UserIcon className={"h-"+props.height+" w-"+props.width+" rounded-full border-2 bg-white border-gray-300 p-1 font-thin text-gray-300"}/>

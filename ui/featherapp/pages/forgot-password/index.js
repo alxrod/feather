@@ -27,7 +27,6 @@ const ForgotPassword = (props) => {
       if (isValidEmail(email)) {
         props.forgotPassword(email).then(
           () => {
-            console.log("Successful sending email")
           },
           (error) => {
             setErrorMsg(error)

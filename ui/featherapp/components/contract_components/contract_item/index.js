@@ -173,7 +173,6 @@ const ContractItem = (props) => {
         clearTimeout(saveTimeoutId);
       }
       const id = setTimeout(function() {
-        // console.log("Saving the contract item...")
         props.editContractItem(new_contract_info);
         setSaveTimeoutId(-1)
       },SAVE_TIME)

@@ -110,14 +110,12 @@ const PriceField = (props) => {
   const handlePriceChange = (e) => {
     const new_val = e.target.value
     if (!isFloat(new_val)) {
-      console.log("New val: ", new_val)
       setErrorMsg("the price must be a number")
       setTimeout(() => {
         setErrorMsg("")
       }, 1000)
       return
     } else if (new_val.split(".").length > 2 || (new_val.split(".").length === 2 && new_val.split(".")[1].length > 2)) {
-      console.log(parseFloat(new_val).toFixed(2).toString(), " vs ", e.target.value)
       setErrorMsg("You can only set the price in full cents (0.01)")
       setTimeout(() => {
         setErrorMsg("")
@@ -133,19 +131,16 @@ const PriceField = (props) => {
       toggleProposing(false)
     }
 
-    console.log("Setting field to ", new_val)
     setFieldValue(new_val)
     if (isNaN(internal_val)) {
       internal_val = 0
     }
     if (props.changePrice) {
-        console.log("CHANGIGN PRICE TO ", internal_val)
         props.changePrice(internal_val)      
     }
   }
 
   const submitChange = () => {
-    console.log("Approving change")
     let newVal = internalizePrice(fieldValue)
     if (isNaN(newVal)) {
       newVal = 0
@@ -157,7 +152,6 @@ const PriceField = (props) => {
   }
 
   const rejectChange = () => {
-    console.log("Rejecting change")
     toggleProposing(false)
     setFieldValue(displayPrice(origPrice))
   }

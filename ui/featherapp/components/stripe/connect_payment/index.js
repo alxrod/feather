@@ -43,13 +43,11 @@ const ConnectPayment = (props) => {
           } else if (setupIntent.status === 'requires_payment_method') {
             // Customer canceled the hosted verification modal. Present them with other
             // payment method type options.
-            console.log("Cancleed")
           } else if (setupIntent.status === 'requires_confirmation') {
             // We collected an account - possibly instantly verified, but possibly
             // manually-entered. Display payment method details and mandate text
             // to the customer and confirm the intent once they accept
             // the mandate.
-            console.log("Need to confirm")
             setSetupIntent(setupIntent)
             setShowMandate(true)
           }
@@ -60,7 +58,6 @@ const ConnectPayment = (props) => {
         });
       },
       (error) => {
-        console.log("Failed to get intent secret, got error: ", error)
       }
     )
     
@@ -72,17 +69,12 @@ const ConnectPayment = (props) => {
         console.error(error.message);
         // The payment failed for some reason.
       } else if (setupIntent.status === "requires_payment_method") {
-        console.log("Try different payment method")
         // Confirmation failed. Attempt again with a different payment method.
       } else if (setupIntent.status === "succeeded") {
-        console.log("Success")
-        console.log(setupIntent)
         props.confirmPaymentConnected(setupIntent.payment_method).then(() => {
-          console.log("Props: ", props)
           props.secondaryHandle()
         })
       } else if (setupIntent.next_action?.type === "verify_with_microdeposits") {
-        console.log("Verify")
       }
     });
   }
