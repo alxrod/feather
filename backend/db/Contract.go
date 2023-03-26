@@ -476,6 +476,7 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 	}
 
 	if user.FreeContracts > 0 {
+		log.Println("Applying ", user.Username, "'s free contract")
 		user.FreeContracts -= 1
 		contract.FreeStatus = true
 		filter := bson.D{{"_id", user.Id}}
