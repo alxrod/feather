@@ -66,6 +66,8 @@ type Contract struct {
 
 	FigmaLink      string `bson:"figma_link,omitempty"`
 	FigmaConnected bool   `bson:"figma_connected,omitempty"`
+
+	FreeStatus bool `bson:"free_status"`
 }
 
 func (contract *Contract) GetFigmaKey() string {

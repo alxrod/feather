@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 
+	"time"
+
 	"github.com/TwiN/go-color"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 const (
@@ -61,12 +62,17 @@ type User struct {
 	// ================================================================================
 
 	// ================================= FIGMA ========================================
-	FigmaConnected bool   `bson:"figma_connected"`
-	FigmaCode      string `bson:"figma_code,omitempty"`
-	FigmaRefreshCode      string `bson:"figma_refresh_code,omitempty"`
-	FigmaExpireIn      int64 `bson:"figma_expire_in,omitempty"`
+	FigmaConnected   bool   `bson:"figma_connected"`
+	FigmaCode        string `bson:"figma_code,omitempty"`
+	FigmaRefreshCode string `bson:"figma_refresh_code,omitempty"`
+	FigmaExpireIn    int64  `bson:"figma_expire_in,omitempty"`
 
 	CreationTime time.Time `bson:"creation_time,omitempty"`
+
+	AccountAddsInDay uint32    `bson:"account_adds_in_day"`
+	MostRecentAdd    time.Time `bson:"most_recent_add"`
+
+	FreeContracts uint32 `bson:"free_contracts"`
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -272,12 +278,12 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 	}
 
 	userD := &User{
-		Username:  req.Username,
-		Password:  string(hashedPassword),
-		CreationTime:   time.Now(),
-		Email:     req.Email,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
+		Username:     req.Username,
+		Password:     string(hashedPassword),
+		CreationTime: time.Now(),
+		Email:        req.Email,
+		FirstName:    req.FirstName,
+		LastName:     req.LastName,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)
