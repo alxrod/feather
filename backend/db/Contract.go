@@ -475,6 +475,12 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 		return nil, errors.New("Contract must have at least a start and end deadline")
 	}
 
+	users := []*User{user}
+	room, err := ChatRoomInsert(contract.Id, users, database)
+	if err != nil {
+		return nil, err
+	}
+
 	if user.FreeContracts > 0 {
 		log.Println("Applying ", user.Username, "'s free contract")
 		user.FreeContracts -= 1
@@ -488,16 +494,12 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 		contract.FreeStatus = false
 	}
 
-	users := []*User{user}
-	room, err := ChatRoomInsert(contract.Id, users, database)
-	if err != nil {
-		return nil, err
-	}
 	contract.RoomId = room.Id
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{
 		{"room_id", room.Id},
 		{"stage", INVITE},
+		{"free_status", contract.FreeStatus},
 	}}}
 	_, err = database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {

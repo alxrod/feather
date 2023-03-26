@@ -10,10 +10,9 @@ const PromotionAlert = (props) => {
     if (props.user?.freeContracts == 0) {
       setShow(false)
     }
-  }, [props.user])
+  }, [props.user?.freeContracts])
   return (
     <>
-      {/* Global notification live region, render this permanently at the end of the document */}
       <div
         className={"w-full flex items-end py-2 mb-4 sm:items-start " + (show ? "" : "hidden")}
       >
