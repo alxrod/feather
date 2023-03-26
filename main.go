@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	key_name := "NEXT_PUBLIC_STRIPE_PRIVATE_KEY"
 	_, found := os.LookupEnv(key_name)
 	if !found {
