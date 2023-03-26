@@ -483,7 +483,7 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 		update := bson.D{{"$set", bson.D{
 			{"free_contracts", user.FreeContracts},
 		}}}
-		database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+		database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
 	} else {
 		contract.FreeStatus = false
 	}
