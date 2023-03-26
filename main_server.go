@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -48,7 +47,7 @@ type MainServer struct {
 	webhook *WebhookServer
 }
 
-func NewMainServer(react_fs embed.FS) (*MainServer, error) {
+func NewMainServer() (*MainServer, error) {
 
 	srv := &MainServer{
 		router:  http.NewServeMux(),

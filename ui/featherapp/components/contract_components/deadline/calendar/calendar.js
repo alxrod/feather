@@ -50,6 +50,7 @@ const Calendar = (props) => {
 
   useEffect( () => {
     if (curDeadline !== undefined) {
+      console.log("DETECTING DEADLINE CHANGE")
       let yD = curDeadline.currentDate
       let pD = curDeadline.currentDate
 
@@ -85,6 +86,7 @@ const Calendar = (props) => {
   
     }
   }, [
+    curDeadline.id,
     curDeadline.currentDate.getSeconds(), 
     curDeadline.workerDate.getSeconds(),
     curDeadline.buyerDate.getSeconds(),
