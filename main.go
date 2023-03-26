@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -10,9 +9,6 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/stripe/stripe-go/v74"
 )
-
-//go:embed ui/featherapp/build
-var content embed.FS
 
 func main() {
 
@@ -42,7 +38,7 @@ func main() {
 	}
 
 	// Create a front end server
-	main, err := NewMainServer(content)
+	main, err := NewMainServer()
 	if err != nil {
 		log.Fatal(err)
 	}
