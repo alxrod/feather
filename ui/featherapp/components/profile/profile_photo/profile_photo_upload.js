@@ -222,8 +222,9 @@ const ProfilePhotoUpload = (props) => {
         >
           <XIcon className="w-4 h-4"/>
         </button>
-        <Image className="w-[200px]" width={200} src={src} onLoad={onImageLoaded} alt="profile_pic"/>
+        <img className="w-[200px]" width={200} src={src} onLoad={onImageLoaded}/>
       </ReactCrop>
+        
       <div className="w-[200px] flex justify-center mt-4">
         <button 
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary5 hover:bg-primary6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary4"

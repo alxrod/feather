@@ -11,12 +11,11 @@ run:
 
 .PHONY: build
 build:
-	PUBLIC_URL=/ npm run build --prefix ui/featherapp/ 
-	go build -o api . && ./api    
+	go build -o api .    
 
 .PHONY: backend
 backend:
-	go build -o api . && ./api   
+	./api   
 
 .PHONY: frontend
 frontend:
@@ -31,6 +30,12 @@ proto:
 	protoc communication/*.proto \
 		--js_out=import_style=commonjs,binary:./ui/featherapp/proto\
 		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ui/featherapp/proto \
+		--go-grpc_out=./communication \
+		--go_out=./communication
+
+.PHONY: proto-server
+proto-server:
+	protoc communication/*.proto \
 		--go-grpc_out=./communication \
 		--go_out=./communication
 

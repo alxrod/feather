@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"fmt"
 	"log"
 	"os"
@@ -11,11 +10,7 @@ import (
 	"github.com/stripe/stripe-go/v74"
 )
 
-//go:embed ui/featherapp/build
-var content embed.FS
-
 func main() {
-
 	key_name := "NEXT_PUBLIC_STRIPE_PRIVATE_KEY"
 	_, found := os.LookupEnv(key_name)
 	if !found {
@@ -42,7 +37,7 @@ func main() {
 	}
 
 	// Create a front end server
-	main, err := NewMainServer(content)
+	main, err := NewMainServer()
 	if err != nil {
 		log.Fatal(err)
 	}
