@@ -177,6 +177,9 @@ func (agent *EmailAgent) SendResetEmail(link *TempLink) error {
 }
 
 func (agent *EmailAgent) SendNotificationEmail(title string, body string) {
+	if os.Getenv("NOTIFICATIONS_ON") == "false" {
+		return
+	}
 	go func(agent *EmailAgent, title string, body string) {
 		email := &Email{
 			Recipient: agent.NotificationEmail,

@@ -348,7 +348,7 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 			fmt.Sprintf("%s and %s have signed a contract with eachother for a total of %d",
 				worker.Email,
 				buyer.Email,
-				contract.Price.Current),
+				(float64(contract.Price.Current)/100)),
 		)
 	}
 

@@ -32,7 +32,7 @@ func (s *BackServer) TransferDeadlineFunds(ctx context.Context, charge_entity *c
 			fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %d",
 				icharge.Id.Hex(),
 				icharge.Worker.Username,
-				icharge.Amount,
+				(float64(icharge.Amount)/100),
 			),
 		)
 		icharge.UpdateState(database, db.CHARGE_STATE_CHARGE_SUCCEEDED)

@@ -9,6 +9,7 @@ import {ITEM_APPROVED, ITEM_REJECTED, ITEM_PENDING} from "../../../custom_encodi
 import {displayPrice } from "../../helpers"
 import {Oval} from 'react-loading-icons'
 
+import PayoutWarning from "./payout_warning"
 
 const CompleteDeadlineButton = (props) => {
   const [role, setRole] = useState(WORKER_TYPE)
@@ -20,6 +21,8 @@ const CompleteDeadlineButton = (props) => {
   const [advancingDeadline, setAdvancingDeadline] = useState(false)
   
   const [allowSettlement, setAllowSettlement] = useState(false)
+
+  const [showWarning, setShowWarning] = useState(false)
 
   useEffect( () => {
     if (props.curContract.id && props.user) {
@@ -75,93 +78,108 @@ const CompleteDeadlineButton = (props) => {
   }
 
   const handleFinishDeadline = () => {
+    setShowWarning(true)
+  }
+
+  const confirmFinishDeadline = () => {
+    setShowWarning(false)
     setAdvancingDeadline(true)
     props.finishDeadline(props.curContract.id, curDeadline.id)
   }
 
   return (
-    <div className="bg-white shadow sm:rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
-        <div>
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Finish Reviewing Deadline</h3>
+    <>
+      <div className="bg-white shadow sm:rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
+          <div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">Finish Reviewing Deadline</h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex">
-            {role === WORKER_TYPE && buyerSettled ? (
-              <div>
-                <SettleStatus settled={true} string={"Your partner has finished reviewing the deadline"}/>
-              </div>
-            ) : (role === WORKER_TYPE && !buyerSettled) ? (
-              <div>
-                <SettleStatus settled={false} string={"Your partner is still reviewing this deadline"}/>
-              </div>
-            ) : (role === BUYER_TYPE && buyerSettled) ? (
-              <div>
-                <SettleStatus settled={true} string={"You have finished reviewing this deadline"}/>
-              </div>
-            ) : (role === BUYER_TYPE && allowSettlement) ? (
-              <div>
-                <SettleStatus settled={true} string={"Click payout when you are ready to pay your partner and move onto the next deadline"}/>
-              </div>
-            ) : (
-              <div>
-                <SettleStatus settled={false} string={"You are still reviewing the contract"}/>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap mt-1">
-            {!allowSettlement && (role === BUYER_TYPE) ? (
-              <p className="mr-1">Before you can finish reviewing, you must approve or reject every required item.{" "}</p>
-            ) : !allowSettlement && (role !== BUYER_TYPE) ? (
-              <p className="mr-1">Your partner is still reviewing the deadline.{" "}</p>
-            ) : (
-              null
-            )}
-
-            {disputedItems.length !== 0 && (
-              <p className="text-red-500">
-                {"Currently, "}
-                {disputedItems.map((item,idx) => (
-                  <Fragment key={idx}>
-                    <b className="font-semibold text-red-400">
-                      {item.name}
-                    </b>
-                    {idx < disputedItems.length-2 ? ", " :
-                    (idx === disputedItems.length-2 && disputedItems.length == 2) ? " and " : 
-                    idx === disputedItems.length-2 ? ", and " : 
-                    ""}
-                  </Fragment>
-                ))}{" "}
-                {disputedItems.length === 1 ? "is " : "are "} 
-                disputed so the{" "}
-                <b className="text-red-400">
-                  {"$"+displayPrice(curDeadline.currentPayout)} 
-                </b>
-                {" "}
-                payout will not go through.
-              </p>
-            )}
-          </div>
-
-          {allowSettlement && (
-            <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center sm:justify-end">
-                {advancingDeadline && (
-                  <Oval className="w-6 h-6 mr-2" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
-                )}
-                <button
-                  type="button"
-                  onClick={handleFinishDeadline}
-                  className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary5 text-md"
-                >
-                  Payout for Deadline
-                </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex">
+              {role === WORKER_TYPE && buyerSettled ? (
+                <div>
+                  <SettleStatus settled={true} string={"Your partner has finished reviewing the deadline"}/>
+                </div>
+              ) : (role === WORKER_TYPE && !buyerSettled) ? (
+                <div>
+                  <SettleStatus settled={false} string={"Your partner is still reviewing this deadline"}/>
+                </div>
+              ) : (role === BUYER_TYPE && buyerSettled) ? (
+                <div>
+                  <SettleStatus settled={true} string={"You have finished reviewing this deadline"}/>
+                </div>
+              ) : (role === BUYER_TYPE && allowSettlement) ? (
+                <div>
+                  <SettleStatus settled={true} string={"Click payout when you are ready to pay your partner and move onto the next deadline"}/>
+                </div>
+              ) : (
+                <div>
+                  <SettleStatus settled={false} string={"You are still reviewing the contract"}/>
+                </div>
+              )}
             </div>
-          )}
 
+            <div className="flex flex-wrap mt-1">
+              {!allowSettlement && (role === BUYER_TYPE) ? (
+                <p className="mr-1">Before you can finish reviewing, you must approve or reject every required item.{" "}</p>
+              ) : !allowSettlement && (role !== BUYER_TYPE) ? (
+                <p className="mr-1">Your partner is still reviewing the deadline.{" "}</p>
+              ) : (
+                null
+              )}
+
+              {disputedItems.length !== 0 && (
+                <p className="text-red-500">
+                  {"Currently, "}
+                  {disputedItems.map((item,idx) => (
+                    <Fragment key={idx}>
+                      <b className="font-semibold text-red-400">
+                        {item.name}
+                      </b>
+                      {idx < disputedItems.length-2 ? ", " :
+                      (idx === disputedItems.length-2 && disputedItems.length == 2) ? " and " : 
+                      idx === disputedItems.length-2 ? ", and " : 
+                      ""}
+                    </Fragment>
+                  ))}{" "}
+                  {disputedItems.length === 1 ? "is " : "are "} 
+                  disputed so the{" "}
+                  <b className="text-red-400">
+                    {"$"+displayPrice(curDeadline.currentPayout)} 
+                  </b>
+                  {" "}
+                  payout will not go through.
+                </p>
+              )}
+            </div>
+
+            {allowSettlement && (
+              <div className="mt-5 sm:mt-0 sm:ml-6 sm:flex-shrink-0 sm:flex sm:items-center sm:justify-end">
+                  {advancingDeadline && (
+                    <Oval className="w-6 h-6 mr-2" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleFinishDeadline}
+                    className="inline-flex items-center px-4 py-1 border border-transparent shadow-sm rounded-md text-white bg-primary5 hover:bg-primary5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary5 text-md"
+                  >
+                    Payout for Deadline
+                  </button>
+              </div>
+            )}
+
+          </div>
+            
         </div>
-          
       </div>
-    </div>
+      <PayoutWarning 
+        open={showWarning} 
+        setOpen={setShowWarning} 
+        onConfirm={confirmFinishDeadline}
+        amount={(curDeadline.currentPayout / 100).toFixed(2)}
+        fee={(curDeadline.currentPayout * (props.curContract.freeStatus ? 0 : 0.05) / 100).toFixed(2)}
+        total={(curDeadline.currentPayout * (props.curContract.freeStatus ? 1 : 1.05) / 100).toFixed(2)}
+      />
+    </>
   )
 }
 
