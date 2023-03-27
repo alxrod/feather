@@ -110,6 +110,7 @@ func (contract *Contract) Proto() *comms.ContractEntity {
 		FigmaLink:      contract.FigmaLink,
 		FigmaFileKey:   contract.GetFigmaKey(),
 		FigmaConnected: contract.FigmaConnected,
+		FreeStatus:     contract.FreeStatus,
 	}
 	if !contract.Id.IsZero() {
 		proto.Id = contract.Id.Hex()

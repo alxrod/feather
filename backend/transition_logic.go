@@ -34,7 +34,7 @@ func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contrac
 				amount_w_fee := amount + ((amount * s.StripeAgent.ServiceFee) / 100)
 				s.EmailAgent.SendNotificationEmail(
 					"charge created",
-					fmt.Sprintf("%s has been charged %d (%d with fee) for contract %s which was free: %b",
+					fmt.Sprintf("%s has been charged %f (%f with fee) for contract %s which was free: %v",
 						contract.Buyer.Username,
 						(float64(amount)/100),
 						(float64(amount_w_fee)/100),

@@ -132,7 +132,7 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 				}
 				s.EmailAgent.SendNotificationEmail(
 					"outstanding charge transfered",
-					fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %d",
+					fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %f",
 						icharge.Id.Hex(),
 						icharge.Worker.Username,
 						(float64(icharge.Amount)/100),

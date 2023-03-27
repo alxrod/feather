@@ -28,7 +28,7 @@ const PromotionAlert = (props) => {
                   <div className="ml-3 w-0 flex-1 pt-0.5">
                     <p className="text-lg font-medium text-green-900">{"You have "}{props.user?.freeContracts}{" more free contract"}{props.user?.freeContracts > 1 ? "s!" : "!"}</p>
                     <p className="mt-1 text-sm text-gray-500 pb-4">
-                      As part of our launch, we are offering 2 free contracts with 0% transaction fee. Create a contract to take advantage of the deal. For each user you refer with this link, we will give you an extra free contract. After you use up your free contracts, there will be a 5% service fee on future contracts.
+                      As part of our launch, we are offering 2 free contracts with 0% transaction fee. Create a contract to take advantage of the deal. After you use up your free contracts, there will be a 5% service fee on future contracts.
                     </p>
                   </div>
                   <div className="ml-4 flex flex-shrink-0">

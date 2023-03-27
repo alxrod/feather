@@ -28,7 +28,7 @@ import {
 } from "./proto/communication/user.client" 
 
 let transport = new GrpcWebFetchTransport({
-  baseUrl: "https://api.feathercontracts.com",
+  baseUrl: "https://dapi.feathercontracts.com",
 });
 
 let contractClient = new ContractClient(transport);
@@ -91,6 +91,7 @@ class ApiService {
   queryContractList(user_id: string, user_token: string): Promise<ContractNubSet> {
     let queryRequest: QueryByUserRequest = {
       userId: user_id,
+      unsorted: false,
     };
     return contractClient.queryByUser(queryRequest,
       {meta: {authorization: user_token}}

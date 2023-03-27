@@ -87,7 +87,7 @@ const DeadlineItems = (props) => {
           <div 
             className="flex w-full justify-center items-center cursor-pointer p-8 border border-2 border-gray-400 border-dashed rounded-md text-gray-400"
           >
-            <h1 className="grow text-center text-xl  font-medium">You need to approve creating this deadline to add items</h1>
+            <h1 className="grow text-center text-xl  font-medium">This Deadline is currently locked</h1>
           </div>
         ) : (
           <div 

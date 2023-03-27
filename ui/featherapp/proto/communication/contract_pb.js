@@ -2758,7 +2758,8 @@ proto.communication.ContractEntity.toObject = function(includeInstance, msg) {
     adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 17, false),
     figmaLink: jspb.Message.getFieldWithDefault(msg, 19, ""),
     figmaFileKey: jspb.Message.getFieldWithDefault(msg, 21, ""),
-    figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 20, false)
+    figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
+    freeStatus: jspb.Message.getBooleanFieldWithDefault(msg, 23, false)
   };
 
   if (includeInstance) {
@@ -2887,6 +2888,10 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
     case 20:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setFigmaConnected(value);
+      break;
+    case 23:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setFreeStatus(value);
       break;
     default:
       reader.skipField();
@@ -3073,6 +3078,13 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
   if (f) {
     writer.writeBool(
       20,
+      f
+    );
+  }
+  f = message.getFreeStatus();
+  if (f) {
+    writer.writeBool(
+      23,
       f
     );
   }
@@ -3569,6 +3581,24 @@ proto.communication.ContractEntity.prototype.getFigmaConnected = function() {
  */
 proto.communication.ContractEntity.prototype.setFigmaConnected = function(value) {
   return jspb.Message.setProto3BooleanField(this, 20, value);
+};
+
+
+/**
+ * optional bool free_status = 23;
+ * @return {boolean}
+ */
+proto.communication.ContractEntity.prototype.getFreeStatus = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.ContractEntity} returns this
+ */
+proto.communication.ContractEntity.prototype.setFreeStatus = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 23, value);
 };
 
 
