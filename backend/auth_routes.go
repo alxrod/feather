@@ -46,6 +46,13 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 			return nil, err
 		}
 
+		s.EmailAgent.SendNotificationEmail(
+			"user registered",
+			fmt.Sprintf("A new user with the email %s and username %s has been registered",
+				user.Email,
+				user.Username),
+		)
+
 		return &comms.UserSigninResponse{
 			Token:        tkn,
 			TokenTimeout: timestamppb.New(tkn_timeout),
@@ -123,6 +130,14 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 					log.Println("ERROR: ", err)
 					continue
 				}
+				s.EmailAgent.SendNotificationEmail(
+					"outstanding charge transfered",
+					fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %d",
+						icharge.Id.Hex(),
+						icharge.Worker.Username,
+						icharge.Amount,
+					),
+				)
 				icharge.UpdateState(database, db.CHARGE_STATE_TRANSFER_CREATED)
 				user.OutstandingBalance -= icharge.Amount
 			}

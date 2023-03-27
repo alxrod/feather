@@ -48,6 +48,8 @@ type EmailAgent struct {
 	ResetLinks []*TempLink
 
 	INTERVAL_TIME uint32
+
+	NotificationEmail string
 }
 
 func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) error {
@@ -55,6 +57,7 @@ func (agent *EmailAgent) Initialize(config *tls.Config, db *mongo.Database) erro
 	agent.Config = config
 
 	agent.SenderEmail = os.Getenv("EMAIL")
+	agent.NotificationEmail = os.Getenv("NOTIFICATION_EMAIL")
 	agent.Password = os.Getenv("EMAIL_PWORD")
 	agent.RootURL = os.Getenv("FRONTEND_URL")
 	log.Printf("Email agent username %s password %s", agent.SenderEmail, agent.Password)
@@ -171,6 +174,18 @@ func (agent *EmailAgent) SendResetEmail(link *TempLink) error {
 		return err
 	}
 	return nil
+}
+
+func (agent *EmailAgent) SendNotificationEmail(title string, body string) {
+	go func(agent *EmailAgent, title string, body string) {
+		email := &Email{
+			Recipient: agent.NotificationEmail,
+			Subject:   fmt.Sprintf("[FEATHER] %s", title),
+			BodyType:  "text/plain",
+			Body:      body,
+		}
+		agent.SendEmail(email)
+	}(agent, title, body)
 }
 
 func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, secret string) error {

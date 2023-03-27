@@ -132,6 +132,7 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		dbCtx:    ctx,
 	}
 
+	s.StripeAgent.Initialize()
 	s.AWSAgent.Initialize()
 	// needs to be fixed for actual prod to be valid TLS configs
 	s.EmailAgent.Initialize(&tls.Config{

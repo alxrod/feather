@@ -3415,6 +3415,7 @@ proto.communication.InternalChargeEntity.toObject = function(includeInstance, ms
     state: jspb.Message.getFieldWithDefault(msg, 5, 0),
     stateMessage: jspb.Message.getFieldWithDefault(msg, 14, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    amountWFee: jspb.Message.getFieldWithDefault(msg, 15, 0),
     paymentintentid: jspb.Message.getFieldWithDefault(msg, 8, ""),
     chargeid: jspb.Message.getFieldWithDefault(msg, 9, ""),
     transferid: jspb.Message.getFieldWithDefault(msg, 10, ""),
@@ -3490,6 +3491,10 @@ proto.communication.InternalChargeEntity.deserializeBinaryFromReader = function(
     case 6:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setAmount(value);
+      break;
+    case 15:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setAmountWFee(value);
       break;
     case 8:
       var value = /** @type {string} */ (reader.readString());
@@ -3599,6 +3604,13 @@ proto.communication.InternalChargeEntity.serializeBinaryToWriter = function(mess
   if (f !== 0) {
     writer.writeInt64(
       6,
+      f
+    );
+  }
+  f = message.getAmountWFee();
+  if (f !== 0) {
+    writer.writeInt64(
+      15,
       f
     );
   }
@@ -3826,6 +3838,24 @@ proto.communication.InternalChargeEntity.prototype.getAmount = function() {
  */
 proto.communication.InternalChargeEntity.prototype.setAmount = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional int64 amount_w_fee = 15;
+ * @return {number}
+ */
+proto.communication.InternalChargeEntity.prototype.getAmountWFee = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.communication.InternalChargeEntity} returns this
+ */
+proto.communication.InternalChargeEntity.prototype.setAmountWFee = function(value) {
+  return jspb.Message.setProto3IntField(this, 15, value);
 };
 
 

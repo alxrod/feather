@@ -6,11 +6,13 @@ import { connect } from 'react-redux'
 
 const PromotionAlert = (props) => {
   const [show, setShow] = useState(true)
+  
   useEffect(() => {
     if (props.user?.freeContracts == 0) {
       setShow(false)
     }
   }, [props.user?.freeContracts])
+
   return (
     <>
       <div

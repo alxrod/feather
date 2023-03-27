@@ -23,6 +23,14 @@ if (user) {
 
 export default (state = initialState, action) => {
     switch (action.type) {
+        case userActions.USER_CHANGE_FREE_CONTRACTS:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    freeContracts: action.payload
+                }
+            }
         case userActions.USER_CONNECT_FIGMA:
             return {
                 ...state,

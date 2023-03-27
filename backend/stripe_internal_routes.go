@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
@@ -26,6 +27,14 @@ func (s *BackServer) TransferDeadlineFunds(ctx context.Context, charge_entity *c
 		if err != nil {
 			return nil, err
 		}
+		s.EmailAgent.SendNotificationEmail(
+			"outstanding charge transfered",
+			fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %d",
+				icharge.Id.Hex(),
+				icharge.Worker.Username,
+				icharge.Amount,
+			),
+		)
 		icharge.UpdateState(database, db.CHARGE_STATE_CHARGE_SUCCEEDED)
 	} else {
 		icharge.ActivateRegistrationHold(database)

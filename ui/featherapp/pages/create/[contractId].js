@@ -16,6 +16,7 @@ import ErrorBanner from "../../components/contract_components/create/error_banne
 import SavingNotification from '../../components/contract_components/create/saving_notification';
 
 import { loadLocalDeadlines } from "../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { changeFreeContracts } from "../../reducers/user/dispatchers/user.dispatcher"
 import { useRouter } from "next/router"
 
 
@@ -123,6 +124,9 @@ const ContractCreate = (props) => {
       setOpenBanner(true)
       setError(errors)
       return
+    }
+    if (props.user?.freeContracts > 0) {
+      props.changeFreeContracts(props.user?.freeContracts - 1)
     }
 
     props.finishCreation(props.curContract.id).then(
@@ -327,6 +331,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   loadLocalDeadlines,
   finishCreation,
   deleteContractDraft,
+  changeFreeContracts,
 }, dispatch)
 
 export default connect(

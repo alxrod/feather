@@ -44,8 +44,9 @@ type InternalCharge struct {
 	PayoutId        string `bson:"payout_id"`
 	TransferGroup   string `bson:"transfer_group"`
 
-	State  uint32 `bson:"state"`
-	Amount int64  `bson:"amount"`
+	State      uint32 `bson:"state"`
+	AmountWFee int64  `bson:"amount_w_fee"`
+	Amount     int64  `bson:"amount"`
 }
 
 func (charge *InternalCharge) Proto() *comms.InternalChargeEntity {
@@ -69,7 +70,9 @@ func (charge *InternalCharge) Proto() *comms.InternalChargeEntity {
 
 		State:        charge.State,
 		StateMessage: charge.GenerateStateMessage(),
-		Amount:       charge.Amount,
+
+		Amount:     charge.Amount,
+		AmountWFee: charge.AmountWFee,
 	}
 }
 
@@ -92,8 +95,9 @@ func ReadChargeProto(proto *comms.InternalChargeEntity, database *mongo.Database
 		PayoutId:        proto.PayoutId,
 		TransferGroup:   proto.TransferGroup,
 
-		State:  proto.State,
-		Amount: proto.Amount,
+		State:      proto.State,
+		Amount:     proto.Amount,
+		AmountWFee: proto.AmountWFee,
 	}
 
 	contract_id, err := primitive.ObjectIDFromHex(proto.ContractId)
@@ -102,14 +106,17 @@ func ReadChargeProto(proto *comms.InternalChargeEntity, database *mongo.Database
 	}
 	icharge.ContractId = contract_id
 
-	worker_id, err := primitive.ObjectIDFromHex(proto.Worker.Id)
-	buyer_id, err := primitive.ObjectIDFromHex(proto.Buyer.Id)
-	if err != nil {
+	worker_id, err1 := primitive.ObjectIDFromHex(proto.Worker.Id)
+	buyer_id, err2 := primitive.ObjectIDFromHex(proto.Buyer.Id)
+	if err1 != nil || err2 != nil {
 		return nil
 	}
 
-	worker, err := UserQueryId(worker_id, database)
-	buyer, err := UserQueryId(buyer_id, database)
+	worker, err1 := UserQueryId(worker_id, database)
+	buyer, err2 := UserQueryId(buyer_id, database)
+	if err1 != nil || err2 != nil {
+		return nil
+	}
 
 	icharge.Worker = worker
 	icharge.WorkerId = worker_id
@@ -166,6 +173,7 @@ func InitializeInternalCharge(
 	transfer_id string,
 	transfer_group string,
 	amount int64,
+	amount_w_fee int64,
 	database *mongo.Database) (*InternalCharge, error) {
 
 	charge := &InternalCharge{
@@ -181,6 +189,7 @@ func InitializeInternalCharge(
 		WorkerId:        worker.Id,
 		BuyerId:         buyer.Id,
 		Amount:          amount,
+		AmountWFee:      amount_w_fee,
 
 		State: CHARGE_STATE_CREATED_INTERNAL,
 	}
