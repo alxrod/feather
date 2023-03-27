@@ -83,6 +83,7 @@ message ContractEntity {
     string figma_link = 19;
     string figma_file_key = 21;
     bool figma_connected = 20;
+    bool free_status = 23;
 }
 
 message ContractNub {

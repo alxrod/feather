@@ -83,14 +83,17 @@ export const queryContractNubs = () => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                // console
                 return ContractService.query_contract_nubs(creds.access_token, creds.user_id, creds.admin_status).then(
                     (data) => {
+                        let list = data.contractNubsList
+                        if (list === undefined) {
+                            list = []
+                        } 
                         dispatch({
                             type: contractActions.CONTRACT_NUB_PULL_ALL,
-                            payload: data.contractNubsList,
+                            payload: list,
                         });
-                        return Promise.resolve(data.contractNubsList);
+                        return Promise.resolve(list);
                     },
                     (error) => {
                         return helpers.parseError(error, dispatch);
