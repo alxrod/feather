@@ -345,7 +345,7 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 		}
 		s.EmailAgent.SendNotificationEmail(
 			"contract created",
-			fmt.Sprintf("%s and %s have signed a contract with eachother for a total of %d",
+			fmt.Sprintf("%s and %s have signed a contract with eachother for a total of %f",
 				worker.Email,
 				buyer.Email,
 				(float64(contract.Price.Current)/100)),

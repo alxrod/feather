@@ -361,7 +361,7 @@ func (agent *StripeAgent) CreateContractSetupIntent(worker, buyer *db.User, cont
 			},
 			BillingDetails: &stripe.SetupIntentPaymentMethodDataBillingDetailsParams{
 				Email: stripe.String(buyer.Email),
-				Name:  stripe.String(fmt.Sprint("%s %s", buyer.FirstName, buyer.LastName)),
+				Name:  stripe.String(fmt.Sprintf("%s %s", buyer.FirstName, buyer.LastName)),
 			},
 		},
 		MandateData: &stripe.SetupIntentMandateDataParams{

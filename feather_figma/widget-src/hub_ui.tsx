@@ -108,6 +108,7 @@ export const HubUI = (
           <Text
             fontSize={20}
             fill={"#9ca3af"}
+            width={"fill-parent"}
           >
             {contract.summary}
           </Text>

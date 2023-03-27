@@ -5,6 +5,8 @@ import Image from 'next/image'
 import MainFrame from '../public/landing_page/main_frame.png';
 import InviteFrame from '../public/landing_page/invite_frame.png';
 import ChatFrame from '../public/landing_page/chat_frame.png';
+import FigmaFrame from '../public/landing_page/figma_frame.png';
+import ReviewFrame from '../public/landing_page/review_frame.png';
 import CompleteFrame from '../public/landing_page/complete_frame.png';
 
 import ContractStep from "../components/landing_page/contract_step.js";
@@ -56,6 +58,44 @@ const features = [
     message: () => {
       return (
         <>
+          Bring your contracts into Figma with our  <b className="text-primary6">custom widget</b>
+        </>
+      )
+    },
+    reversed: false,
+    img: () => (
+      <FadeInAnimation wrapperElement="div">
+        <div className="grow max-h-[80vh] flex justify-start">
+          <Image className="h-full" src={FigmaFrame} alt="chat frame" />
+        </div>
+      </FadeInAnimation>
+    ),
+  },
+  {
+    id: 4,
+    number: "04",
+    message: () => {
+      return (
+        <>
+          Then review the drafts all organized with the according to the <b className="text-primary6">contract structure</b>
+        </>
+      )
+    },
+    reversed: true,
+    img: () => (
+      <FadeInAnimation wrapperElement="div">
+        <div className="grow max-h-[80vh] flex justify-start">
+          <Image className="h-full" src={ReviewFrame} alt="chat frame" />
+        </div>
+      </FadeInAnimation>
+    ),
+  },
+  {
+    id: 5,
+    number: "05",
+    message: () => {
+      return (
+        <>
           Set deadlines and <b className="text-primary6">get paid</b> when uploading drafts
         </>
       )
@@ -70,8 +110,8 @@ const features = [
     ),
   },
   {
-    id: 4,
-    number: "04",
+    id: 6,
+    number: "06",
     message: () => {
       return (
         <>
@@ -79,7 +119,7 @@ const features = [
         </>
       )
     },
-    reversed: true,
+    reversed: false,
     img: () => (
       <div className="grow max-h-[80vh] flex justify-end">
       </div>
@@ -97,7 +137,7 @@ const LandingPage = (props) => {
               <div>
                 <div className="max-w-md lg:mt-10">
                   <h1 className="text-4xl font-bree-serif tracking-tight text-center sm:text-left sm:text-6xl">
-                    Create contracts you can <b className="text-primary6">trust</b>
+                    Contracts designed for <b className="text-primary6">your workflow</b>
                   </h1>
                   <div className="mt-8 flex justify-center sm:justify-start">
                     {/* <a
