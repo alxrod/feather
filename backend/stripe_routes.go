@@ -3,6 +3,7 @@ package backend
 import (
 	"context"
 	"errors"
+	"time"
 
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
@@ -74,6 +75,23 @@ func (s *BackServer) GetInitialSetupSecret(ctx context.Context, req *comms.Payme
 	if user.StripeCustomerId == "" {
 		user, err = s.StripeAgent.CreateCustomer(user, database)
 	}
+	dayAgo := time.Now().Add(time.Hour * -24)
+	if user.AccountAddsInDay >= 5 && user.MostRecentAdd.Before(dayAgo) {
+		user.AccountAddsInDay = 1
+		user.MostRecentAdd = time.Now()
+	} else if user.AccountAddsInDay >= 5 && user.MostRecentAdd.After(dayAgo) {
+		return nil, errors.New("You have reached the maximum number of connections for a day. You can only connect 5 accounts in one day for security")
+	} else {
+		user.AccountAddsInDay += 1
+		user.MostRecentAdd = time.Now()
+	}
+	filter := bson.D{{"_id", user.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"account_adds_in_day", user.AccountAddsInDay},
+		{"most_recent_add", user.MostRecentAdd},
+	}}}
+	_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
+
 	secret, err := s.StripeAgent.CreateInitialSetupIntentSecret(user, database)
 	if err != nil {
 		return nil, err

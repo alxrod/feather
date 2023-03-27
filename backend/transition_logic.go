@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"fmt"
 	"log"
 
 	db "github.com/alxrod/feather/backend/db"
@@ -27,6 +28,19 @@ func (s *BackServer) DeadlineTransitionLogic(user *db.User, contract *db.Contrac
 			err := s.StripeAgent.ChargeContract(contract, deadline, database)
 			if err != nil {
 				return err
+			}
+			amount := deadline.CurrentPayout
+			if amount > 0 {
+				amount_w_fee := amount + ((amount * s.StripeAgent.ServiceFee) / 100)
+				s.EmailAgent.SendNotificationEmail(
+					"charge created",
+					fmt.Sprintf("%s has been charged %d (%d with fee) for contract %s which was free: %b",
+						contract.Buyer.Username,
+						(float64(amount)/100),
+						(float64(amount_w_fee)/100),
+						contract.Id.Hex(),
+						contract.FreeStatus),
+				)
 			}
 		}
 

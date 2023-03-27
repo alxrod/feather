@@ -104,6 +104,15 @@ export const setRedirect = (link) => {
     }
 }
 
+export const changeFreeContracts = (new_num) => {
+    return dispatch => {
+        dispatch({
+            type: userActions.USER_CHANGE_FREE_CONTRACTS,
+            payload: new_num,
+        })
+    }
+}
+
 export const setRegisterRole = (role) => {
     return dispatch => {
         dispatch({

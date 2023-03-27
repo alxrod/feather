@@ -28,9 +28,15 @@ import (
 // Change to secure for prod
 
 type StripeAgent struct {
-	Database   *mongo.Database
 	PrivateKey string
 	PublicKey  string
+	ServiceFee int64
+}
+
+func (agent *StripeAgent) Initialize() {
+	agent.PrivateKey = os.Getenv("NEXT_PRIVATE_STRIPE_PRIVATE_KEY")
+	agent.PublicKey = os.Getenv("NEXT_PUBLIC_STRIPE_PRIVATE_KEY")
+	agent.ServiceFee = 5
 }
 
 func (agent *StripeAgent) CreateConnectedAccount(user *db.User, database *mongo.Database) (*db.User, error) {
@@ -402,6 +408,12 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	if amount == 0 {
 		return nil
 	}
+	var amount_w_fee int64
+	if contract.FreeStatus {
+		amount_w_fee = amount
+	} else {
+		amount_w_fee = amount + ((amount * agent.ServiceFee) / 100)
+	}
 
 	// What to do:
 	// 1.Create payment intent to charge buyer for the correct contract amount +fee
@@ -409,7 +421,7 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 	transfer_group := deadline.Id.Hex()
 	pi, err := agent.CreateContractPaymentIntent(
 		buyer,
-		amount,
+		amount_w_fee,
 		seti,
 		transfer_group,
 	)
@@ -442,6 +454,7 @@ func (agent *StripeAgent) ChargeContract(contract *db.Contract, deadline *db.Dea
 		"",
 		transfer_group,
 		amount,
+		amount_w_fee,
 		database)
 
 	return err

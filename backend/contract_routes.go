@@ -180,20 +180,18 @@ func (s *BackServer) ChangeInviteEmail(ctx context.Context, req *comms.EmailChan
 	contract.ChangeInviteEmail(req.NewEmail, database)
 	secret := s.EmailAgent.GenerateInviteSecret()
 	contract.InvitePassword = secret
-		filter := bson.D{{"_id", contract.Id}}
-		update := bson.D{{"$set", bson.D{
-			{"invite_password", secret},
-		}}}
+	filter := bson.D{{"_id", contract.Id}}
+	update := bson.D{{"$set", bson.D{
+		{"invite_password", secret},
+	}}}
 	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
 
 	go func(database *mongo.Database, contract *db.Contract, user *db.User) {
 		s.EmailAgent.SendInviteEmail(contract, user, secret)
 	}(database, contract, user)
 
-
 	return &comms.EmailChangeResponse{NewSecret: contract.InvitePassword}, nil
 }
-
 
 func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailResendRequest) (*comms.NullResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(req.UserId)
@@ -345,6 +343,13 @@ func (s *BackServer) Sign(ctx context.Context, req *comms.SignContractRequest) (
 		if err != nil {
 			return nil, err
 		}
+		s.EmailAgent.SendNotificationEmail(
+			"contract created",
+			fmt.Sprintf("%s and %s have signed a contract with eachother for a total of %d",
+				worker.Email,
+				buyer.Email,
+				(float64(contract.Price.Current)/100)),
+		)
 	}
 
 	// CreateContractSetupIntent

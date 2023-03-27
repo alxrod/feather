@@ -53,7 +53,7 @@ export const getInitialSetupSecret = () => {
                         return Promise.resolve(secret);
                     },
                     (error) => {
-                        return helpers.parseError(error, dispatch);
+                        return Promise.reject(error);
                     }
                 );
             },

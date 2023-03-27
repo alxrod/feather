@@ -129,7 +129,8 @@ class StripeService {
             var metadata = {"authorization": token}
             stripeServiceClient.getInitialSetupSecret(req, metadata, function(error, response) {
                 if (error) {
-                    reject(error)
+                    reject(error.message)
+                    return
                 }
                 var resp = response.toObject();
                 resolve(resp.clientSecret)

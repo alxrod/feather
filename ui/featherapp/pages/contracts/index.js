@@ -14,6 +14,7 @@ import ContractList from '../../components/contract_list/contract_list'
 import ContractTableHeader from '../../components/contract_list/contracts_header'
 import { contractStages } from "../../services/contract.service";
 import { displayPrice } from '../../components/helpers';
+import PromotionAlert from '../../components/contract_list/promotion_alert';
 
 const ContractsList = (props) => {
     const [alreadyPulled, setAlreadyPulled] = useState(false)
@@ -131,15 +132,17 @@ const ContractsList = (props) => {
             </div>
           </div>
 
-        {props.contractNubs.length != 0 && (
-          <ContractTableHeader 
-            allFilters={allFilters} 
-            selected={selectedFilter} 
-            setSelected={setSelectedFilter}
-            refreshFilters={refreshFilters}
-            user={props.user}
-          />
-        )}
+          <PromotionAlert/>
+
+          {props.contractNubs.length != 0 && (
+            <ContractTableHeader 
+              allFilters={allFilters} 
+              selected={selectedFilter} 
+              setSelected={setSelectedFilter}
+              refreshFilters={refreshFilters}
+              user={props.user}
+            />
+          )}
 
           <ContractList 
             allFilters={allFilters} 

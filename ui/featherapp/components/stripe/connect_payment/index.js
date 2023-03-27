@@ -10,6 +10,7 @@ import {
 
 import {useStripe} from '@stripe/react-stripe-js';
 import MandateModal from "../mandate_modal"
+import WarningModal from "./warning_modal";
 
 export const CreatePaymentMethodContext = createContext(() => {})
 
@@ -18,6 +19,9 @@ const ConnectPayment = (props) => {
   const [clientSecret, setClientSecret] = useState("")
   const [setupIntent, setSetupIntent] = useState("")
   const [showMandate, setShowMandate] = useState(false)
+
+  const [showWarning, setShowWarning] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   const handleCreate = (e) => {
     props.getInitialSetupSecret().then(
@@ -58,6 +62,9 @@ const ConnectPayment = (props) => {
         });
       },
       (error) => {
+        console.log("Error: ", error)
+        setErrorMsg(error)
+        setShowWarning(true)
       }
     )
     
@@ -82,6 +89,7 @@ const ConnectPayment = (props) => {
   return (
     <div>
       <CreatePaymentMethodContext.Provider value={handleCreate}>
+          <WarningModal open={showWarning} setOpen={setShowWarning} errorMsg={errorMsg}/>
           {props.children}
           <MandateModal confirmMandate={handleAccept} showMandate={showMandate}/>
       </CreatePaymentMethodContext.Provider>

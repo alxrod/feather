@@ -17,7 +17,6 @@ func main() {
 		log.Fatalln("You need to have a private stripe key in your environment first")
 	}
 	stripe.Key = os.Getenv(key_name)
-
 	// Create backend server
 	addr := fmt.Sprintf("%s:%s", os.Getenv("GRPC_IP"), os.Getenv("GRPC_PORT"))
 	backend, err := BackEndLib.NewBackServer("cert/server.crt", "cert/server.key", addr)

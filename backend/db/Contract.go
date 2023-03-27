@@ -66,6 +66,8 @@ type Contract struct {
 
 	FigmaLink      string `bson:"figma_link,omitempty"`
 	FigmaConnected bool   `bson:"figma_connected,omitempty"`
+
+	FreeStatus bool `bson:"free_status"`
 }
 
 func (contract *Contract) GetFigmaKey() string {
@@ -152,6 +154,7 @@ func (contract *Contract) ChangeInviteEmail(new_email string, database *mongo.Da
 		{"invited_email", new_email},
 		{"invite_password", ""},
 	}}}
+
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	return err
 }
@@ -477,11 +480,26 @@ func (contract *Contract) FinishCreation(user *User, database *mongo.Database) (
 	if err != nil {
 		return nil, err
 	}
+
+	if user.FreeContracts > 0 {
+		log.Println("Applying ", user.Username, "'s free contract")
+		user.FreeContracts -= 1
+		contract.FreeStatus = true
+		filter := bson.D{{"_id", user.Id}}
+		update := bson.D{{"$set", bson.D{
+			{"free_contracts", user.FreeContracts},
+		}}}
+		database.Collection(USERS_COL).UpdateOne(context.TODO(), filter, update)
+	} else {
+		contract.FreeStatus = false
+	}
+
 	contract.RoomId = room.Id
 	filter := bson.D{{"_id", contract.Id}}
 	update := bson.D{{"$set", bson.D{
 		{"room_id", room.Id},
 		{"stage", INVITE},
+		{"free_status", contract.FreeStatus},
 	}}}
 	_, err = database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {

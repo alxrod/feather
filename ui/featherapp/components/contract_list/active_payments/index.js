@@ -69,7 +69,7 @@ const ActivePayments = (props) => {
                             </td>
                           ) : (
                             <td className="align-top whitespace-nowrap px-2 py-2 text-xs font-medium text-red2">
-                              {"-"+displayPrice(charge.amount).toFixed(2)}
+                              {"-"+displayPrice(charge.amountWFee).toFixed(2)}
                             </td>
                           )}
                           

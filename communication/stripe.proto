@@ -96,7 +96,9 @@ message InternalChargeEntity {
 
     uint32 state = 5;
     string state_message = 14;
+    
     int64 amount = 6;
+    int64 amount_w_fee = 15;
 
     string PaymentIntentId = 8;
     string ChargeId = 9;
