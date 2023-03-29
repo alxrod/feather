@@ -125,20 +125,20 @@ const ContractInvite = (props) => {
           needPaymentMethod={contract.buyer.id === ""}
           handleClaim={handleClaim}
         />
-        <div className="pt-4 pb-16 px-12">
+        <div className="pt-4 pb-16 sm:px-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center lg:justify-center">
               <div className="overflow-hidden rounded-lg bg-white shadow w-full">
                 <div className="bg-white p-6">
                   <div className="sm:flex sm:items-center sm:justify-between">
                     <div className="sm:flex sm:space-x-5">
-                      <div className="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
+                      <div className="mt-4 sm:mt-0 sm:pt-1 sm:text-left">
                         <p className="text-sm font-medium text-gray-600">Contract Title:</p>
                         <p className="text-xl font-bold text-gray-900 sm:text-2xl">{contract.title}</p>
                         {(contract.worker.id === "") ?
-                          <p className="text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a contractor</p>
+                          <p className="text-sm sm:text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a contractor</p>
                         : (
-                          <p className="text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a sponsor</p>
+                          <p className="text-sm sm:text-lg font-medium text-primary5">{existingUser?.username+" "}is looking for a sponsor</p>
                         )}
                       </div>
                     </div>
@@ -175,7 +175,7 @@ const ContractInvite = (props) => {
                 )}
               </div>
 
-              <div className="flow-root w-full px-16 py-10">
+              <div className="flow-root w-full sm:px-16 py-10">
                 <ul role="list" className="-mb-8">
                   {contract.deadlinesList.map((deadline, deadlineIdx) => (
                     <li key={deadline.id} className="group">
@@ -193,14 +193,14 @@ const ContractInvite = (props) => {
                             >
                             </span>
                           </div>
-                          <div className="flex min-w-0 flex-1 justify-between space-x-4">
+                          <div className="flex justify-between space-x-2 sm:space-x-4 items-center w-full">
                             <div>
-                              <p className="text-2xl text-gray-800 font-semibold">
-                                {deadline.name}{' '}
+                              <p className="text-lg sm:text-2xl text-gray-800 font-semibold">
+                                {deadline.name}
                               </p>
                             </div>
-                            <div className="whitespace-nowrap text-right text-base text-gray-500">
-                              <strong className={"text-primary5 text-xl font-medium"}>${displayPrice(deadline.currentPayout)}</strong> on {" "}
+                            <div className="text-right text-sm sm:text-base text-gray-500">
+                              <strong className={"text-primary5 text-base sm:text-xl font-medium"}>${displayPrice(deadline.currentPayout)}</strong> on {" "}
                               <time dateTime={deadline.currentDate}>{genTimeString(deadline.currentDate)}</time>
                             </div>
                           </div>
