@@ -4,9 +4,10 @@
     "jsxFactory": "figma.widget.h",
     "jsxFragmentFactory": "figma.widget.Fragment",
     "moduleResolution":"node",
+    "module": "ES2020",
     "target": "es6",
     "lib": ["es6"],
-    "strict": true,
+    "strict": false,
     "typeRoots": [
       "../node_modules/@figma"
     ]

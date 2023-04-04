@@ -51,7 +51,7 @@ const PartnerProfile = (props) => {
     if (typeof window !== 'undefined') {
       navigator.clipboard.writeText(
         process.env.NEXT_PUBLIC_FRONTEND_URL+
-        "/invite/"+
+        "/contract/invite/"+
         props.curContract.id+
         "/"+props.curContract.invitePassword
       );

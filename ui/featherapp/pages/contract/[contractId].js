@@ -29,17 +29,17 @@ const ContractRedirect = (props) => {
           for (let i = 0; i < newContracts.length; i++) {
             if (newContracts[i].id === props.contractId) {
               if (newContracts[i].stage == contractStages.INVITE) {
-                path="/negotiate/"+props.contractId
+                path="/contract/negotiate/"+props.contractId
               } else if (newContracts[i].stage == contractStages.NEGOTIATE) {
-                path="/negotiate/"+props.contractId
+                path="/contract/negotiate/"+props.contractId
               } else if (newContracts[i].stage == contractStages.SIGNED) {
-                path="/view/"+props.contractId
+                path="/contract/view/"+props.contractId
               } else if (newContracts[i].stage == contractStages.ACTIVE) {
-                path="/view/"+props.contractId
+                path="/contract/view/"+props.contractId
               } else if (newContracts[i].stage == contractStages.SETTLE) {
-                path="/settle/"+props.contractId
+                path="/contract/settle/"+props.contractId
               } else if (newContracts[i].stage == contractStages.COMPLETE) {
-                path="/view/"+props.contractId
+                path="/contract/view/"+props.contractId
               }
             }
           }

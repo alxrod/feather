@@ -1,0 +1,13 @@
+{
+  "name": "Quill",
+  "id": "1223066195117992008",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma",
+    "figjam"
+  ],
+  "ui": "ui.html"
+}

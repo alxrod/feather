@@ -1,0 +1,28 @@
+<h2>Quill File Generator</h2>
+<p>Filename: <input id="fname" type="string" value=""></p>
+<button id="pull">Pull</button>
+<button id="cancel">Cancel</button>
+<script>
+
+
+document.getElementById('pull').onclick = async () => {
+  const textbox = document.getElementById('fname');
+  const fname = textbox.value;
+
+  const response = window.fetch('http://127.0.0.1:5000/jsonfile/'+fname, {
+    method: 'GET',
+    headers: {
+      'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
+    },
+  }).then((response) => response.json())
+  .then((data) => {
+    parent.postMessage({ pluginMessage: { type: 'create-file', payload: data } }, '*')
+  });
+
+}
+
+document.getElementById('cancel').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+}
+
+</script>

@@ -11,15 +11,11 @@ export default defineConfig({
     assetsInlineLimit: 100000000,
     chunkSizeWarningLimit: 100000000,
     cssCodeSplit: false,
-    brotliSize: false,
     outDir: '../dist',
     rollupOptions: {
-      inlineDynamicImports: true,
+      inlineDynamicImports: false,
       input: {
         main: resolve(__dirname, 'ui-src/'+process.env.UI_TARGET),
-      },
-      output: {
-        manualChunks: () => 'everything.js',
       },
     },
   },

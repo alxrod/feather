@@ -1,4 +1,4 @@
 export const { widget } = figma
-export const { AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, 
+export const { AutoLayout, Frame, Text, Rectangle, Ellipse, SVG, useSyncedState, 
         Input, Image, useEffect, waitForTask,useWidgetId,useSyncedMap
 } = widget

@@ -1,10 +1,10 @@
 import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, 
-  Input, Image, useEffect, waitForTask } from "./widget"
+  Input, Image, useEffect, waitForTask } from "../widget"
 
-import { ItemNub } from "./types";
-import { ContractNub } from "./types";
-import { logo_image } from "./images";
-import { dateToString } from "./helpers";
+import { ItemNub } from "../types";
+import { ContractNub } from "../types";
+import { logo_image } from "../images";
+import { dateToString } from "../helpers";
 
 export const ItemUI = (
   selectedItem: ItemNub, 

@@ -6,6 +6,8 @@ export type ComponentSelection ={
 export const widgetTypes = {
   HUB: 0,
   ITEM: 1,
+  OPTIONS: 2,
+  QUILL: 3,
 }
 export type UserNub = {
   id: string,

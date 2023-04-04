@@ -7,8 +7,7 @@
   "containsWidget": true,
   "main": "dist/code.js",
   "ui": {
-    "main": "dist/main.html",
-    "background": "dist/background.html"
+    "main": "dist/main.html"
   },
   "widgetApi": "1.0.0"
 }

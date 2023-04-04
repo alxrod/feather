@@ -7,17 +7,20 @@ import { dateToString } from "./helpers"
 import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, useSyncedMap,
   Input, Image, useEffect, waitForTask, useWidgetId } from "./widget"
 
-import { HubUI } from "./hub_ui"
-import { ItemUI } from "./item_ui"
+import { HubUI } from "./ui/hub_ui"
+import { ItemUI } from "./ui/item_ui"
+import { OptionsUI } from "./ui/options_ui"
+import { QuillUI } from "./ui/quill_ui"
 
 type Token = {
   value: string,
   user_id: string,
   timeout: Date,
 }
+
 function Widget() {
 
-  const [widgetType, setWidgetType] = useSyncedState("widget_type", widgetTypes.HUB)
+  const [widgetType, setWidgetType] = useSyncedState("widget_type", widgetTypes.OPTIONS)
   const tokenMap = useSyncedMap<Token>("user_tokens")
 
   const widgetId = useWidgetId()
@@ -25,7 +28,9 @@ function Widget() {
   // =========================Hub State:=========================
   const [contractId, setContractId] = useSyncedState("contract_id", "")
   const [contractSecret, setContractSecret] = useSyncedState("contract_secret", "")
-  
+
+  const [reloadTicker, setReloadTicker] = useSyncedState("reload_ticker", 0)
+
   const [contract, setContract] = useSyncedState("contract", ({
     title: "Contract Title",
     summary: "Contract Summary",
@@ -35,9 +40,9 @@ function Widget() {
   } as ContractNub))
 
   const sendCredentials = async (sess_id: string) => {
+
     const username = await figma.clientStorage.getAsync('username')
     const password = await figma.clientStorage.getAsync('password')
-
     
     let existing_token = tokenMap.get(sess_id);
     if (existing_token === undefined) {
@@ -77,8 +82,11 @@ function Widget() {
               user_id: msg.payload.user_id
             })
           }
-        } else if (msg.type === "new_contract") {
+
+        } else if (msg.type === "new_contract") {          
+
           let newCon = parseContract(msg.payload)
+          
           setContract(newCon)
           setContractId(msg.payload.id ? msg.payload.id : "")
           setContractSecret(msg.payload.invitePassword ? msg.payload.invitePassword : "")
@@ -188,7 +196,71 @@ function Widget() {
   }
   // =============================================================
 
-  if (widgetType === widgetTypes.HUB) {
+
+  // =============================OPTIONS================================
+  const createDocClick = () => {
+
+  }
+  const createConClick = () => {
+
+  }
+  const quillClick = () => {
+
+  }
+  const connectClick = () => {
+
+  }
+
+  // ====================================================================
+
+  function extractCode(msg: string): string {
+    // if return markdown then only return code inside
+    if (msg.includes('```')) {
+        msg = msg.split(/```.*/)[1]
+    }
+    // all plugins contain this line, remove it
+    msg = msg.replace(`figma.showUI(__html__);`, '')
+    return msg
+  }
+
+  const promptQuill = async () => {
+    await new Promise((resolve) => {
+
+      figma.showUI(__uiFiles__.main, {width: 500, height: 250, title: "Quill"})
+      figma.ui.postMessage({ type: 'set_display_mode', payload: "QUILL_PROMPT" })
+      
+      figma.ui.on('message', async (msg) => {
+        if (msg.type === 'gpt_code') {
+          // console.log(msg.code)
+          let code = extractCode(msg.code)
+          console.log('code\n', code)
+          try {
+            eval(code)
+          } catch (e: any) {
+              // console.error(e)
+              figma.notify('Could not run generated code: ' + e.message, {
+                  error: true,
+              })
+          }
+          figma.closePlugin()
+          return
+        }
+      })
+    })
+  }
+
+  if (widgetType === widgetTypes.OPTIONS) {
+    return OptionsUI(
+      createDocClick,
+      createConClick,
+      quillClick,
+      connectClick,
+    )
+  } else if (widgetType === widgetTypes.QUILL) {
+    return QuillUI(
+      promptQuill,
+    )
+  } else if (widgetType === widgetTypes.HUB) {
     return HubUI(
       onConnect,
       contractId,

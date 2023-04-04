@@ -2,21 +2,22 @@ import React, {useState, useMemo, useEffect } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import {queryContract } from "../../reducers/contract/dispatchers/contract.dispatcher"
-import { toggleLock } from "../../reducers/contract/dispatchers/contract.lock.dispatcher"
-import { addItem } from "../../reducers/items/dispatchers/items.add.dispatcher"
-import { contractStages } from '../../services/contract.service';
+import { useRouter } from "next/router"
 
-import ContractItem from "../../components/contract_components/contract_item";
-import MainChat from "../../components/contract_components/chat/main_chat";
-import DeadlineField from "../../components/contract_components/deadline/deadline_field";
+import { queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
+import { toggleLock } from "../../../reducers/contract/dispatchers/contract.lock.dispatcher"
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { contractStages } from '../../../services/contract.service';
 
-import SettleHub from "../../components/contract_components/settle/settle_hub"
-import CompleteDeadlineButton from "../../components/contract_components/advance_cards/complete_deadline"
-import RejoinMonitor from "../../components/contract_components/rejoin_monitor"
-import FigmaLinkField from '../../components/contract_components/figma_link';
-
-import { useRouter } from "next/router";
+import ContractItem from "../../../components/contract_components/contract_item";
+import NewContractItem from "../../../components/contract_components/contract_item/new_contract_item";
+import MainChat from "../../../components/contract_components/chat/main_chat";
+import OverviewCard from "../../../components/contract_components/summary/overview_card";
+import SettleContract from "../../../components/contract_components/advance_cards/settle_contract";
+import DeadlineField from "../../../components/contract_components/deadline/deadline_field";
+import UniversalLockCard from "../../../components/contract_components/universal_lock/universal_lock_card";
+import RejoinMonitor from "../../../components/contract_components/rejoin_monitor"
+import FigmaLinkField from '../../../components/contract_components/figma_link';
 
 export async function getStaticPaths() {
   return {
@@ -35,7 +36,10 @@ export async function getStaticProps({ params }) {
 
 const ContractDraft = (props) => {
   const [universalLock, setUniversalLock] = useState(true)
+  const [completeMode, setCompleteMode] = useState(false)
+
   const [reload, setReload] = useState(true)
+
   const router = useRouter()
 
   useEffect( () => {
@@ -45,8 +49,11 @@ const ContractDraft = (props) => {
       } else {
         setUniversalLock(false)
       }
-      if (props.curContract.stage !== contractStages.SETTLE) {
+      if (props.curContract.stage > contractStages.ACTIVE && props.curContract.stage !== contractStages.COMPLETE) {
         router.push("/contract/"+props.curContract.id)
+      } else if (props.curContract.stage === contractStages.COMPLETE) {
+        setCompleteMode(true)
+        setUniversalLock(true)
       }
     }
   }, [props.curContract])
@@ -82,21 +89,36 @@ const ContractDraft = (props) => {
     }
   }, [props.curContract, props.contractItemsChanged, props.curConItems.length])
 
+  const addItem = (name, body) => {
+    props.addItem(props.curContract.id, name, body, props.curConItems)
+    toggleAddItemMode(true)
+  }
+
+  const requestLockChange = () => {
+    props.toggleLock(props.curContract.id, !universalLock)
+  }
+
 	return (
     <>
       <RejoinMonitor/>
       <div className="p-4 sm:p-6 lg:p-12 m-auto">
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex flex-col grow order-2 md:order-1">
-            <div> 
-              <SettleHub/>
-            </div>
+            {!completeMode && (
+              <div className="mb-2">
+                <UniversalLockCard 
+                  universalLock={universalLock}
+                  requestLockChange={requestLockChange}
+                />
+              </div>
+            )}
+            <OverviewCard title={props.curContract.title} summary={props.curContract.summary} universalLock={universalLock}/>
             <div className="mt-5">
-              <FigmaLinkField lock={true}/>
+              <FigmaLinkField lock={universalLock}/>
             </div>
             <DeadlineField
               createMode={false} 
-              universalLock={true}
+              universalLock={universalLock}
               contractItemIds={contractItemIds}
             />
           </div>
@@ -104,9 +126,11 @@ const ContractDraft = (props) => {
             <MainChat roomId={props.curContract.roomId}/>
           </div>
         </div>
-        <div className="mt-4">
-          <CompleteDeadlineButton/>
-        </div>
+        {!completeMode && (
+          <div className="mt-5">
+            <SettleContract/>
+          </div>
+        )}
         <div className="mt-5">
           {contractItemIds.map((item_id) => (
             <div className="min-h-[100px] w-full mb-5" key={item_id}>
@@ -114,6 +138,9 @@ const ContractDraft = (props) => {
             </div>
           ))}
         </div>
+        {(!addItemMode && !universalLock) && (
+          <NewContractItem addItem={addItem} createMode={false}/>
+        )}  
       </div>
     </>
 	)

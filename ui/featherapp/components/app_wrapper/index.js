@@ -25,11 +25,11 @@ const AppWrapper = (props) => {
     "^/contracts$": STD_ROLE,
   
     "^/contract/[^/]*$": STD_ROLE,
-    "^/create/[^/]*$": STD_ROLE,
-    "^/negotiate/[^/]*$": STD_ROLE,
-    "^/view/[^/]*$": STD_ROLE,
-    "^/settle/[^/]*$": STD_ROLE,
-    "^/invite/[^/]*/[^/]*$": STD_UNAUTH_ROLE,
+    "^/contract/create/[^/]*$": STD_ROLE,
+    "^/contract/negotiate/[^/]*$": STD_ROLE,
+    "^/contract/view/[^/]*$": STD_ROLE,
+    "^/contract/settle/[^/]*$": STD_ROLE,
+    "^/contract/invite/[^/]*/[^/]*$": STD_UNAUTH_ROLE,
     
     "^/figma/oauth-callback[^/]*$": STD_ROLE,
   

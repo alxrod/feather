@@ -4,13 +4,13 @@ import {useState, useEffect} from "react"
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { claimContract, queryInvite} from "../../../reducers/contract/dispatchers/contract.dispatcher";
-import { setRedirect, setRegisterRole } from "../../../reducers/user/dispatchers/user.dispatcher";
+import { claimContract, queryInvite} from "../../../../reducers/contract/dispatchers/contract.dispatcher";
+import { setRedirect, setRegisterRole } from "../../../../reducers/user/dispatchers/user.dispatcher";
 
-import { displayPrice } from "../../../components/helpers"
+import { displayPrice } from "../../../../components/helpers"
 import {useRouter} from "next/router"
 
-import SetupModal from "../../../components/invite/setup_modal"
+import SetupModal from "../../../../components/invite/setup_modal"
 
 export async function getStaticPaths() {
   return {
@@ -99,7 +99,7 @@ const ContractInvite = (props) => {
   }, [props.contractId])
 
   if (props.contractClaimed) {
-    router.push("/negotiate/"+props.contractId)
+    router.push("/contract/negotiate/"+props.contractId)
   }
 
   const genTimeString = (date) => {

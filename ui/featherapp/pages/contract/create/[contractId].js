@@ -1,22 +1,22 @@
 import React, {useState, useRef, useEffect} from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { createContract, updateContract, clearSelected, queryContract, finishCreation, deleteContractDraft} from "../../reducers/contract/dispatchers/contract.dispatcher";
-import { addItem } from "../../reducers/items/dispatchers/items.add.dispatcher";
+import { createContract, updateContract, clearSelected, queryContract, finishCreation, deleteContractDraft} from "../../../reducers/contract/dispatchers/contract.dispatcher";
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher";
 
-import ContractItem from "../../components/contract_components/contract_item";
-import CombinedCriteria from "../../components/contract_components/criteria/combined_criteria";
-import NewContractItem from "../../components/contract_components/contract_item/new_contract_item";
+import ContractItem from "../../../components/contract_components/contract_item";
+import CombinedCriteria from "../../../components/contract_components/criteria/combined_criteria";
+import NewContractItem from "../../../components/contract_components/contract_item/new_contract_item";
 
-import CreateSummary from "../../components/contract_components/create/create_summary.js"
-import InviteField from "../../components/contract_components/create/invite_field"
-import RoleField from "../../components/contract_components/create/role_field"
-import ErrorBanner from "../../components/contract_components/create/error_banner.js"
+import CreateSummary from "../../../components/contract_components/create/create_summary.js"
+import InviteField from "../../../components/contract_components/create/invite_field"
+import RoleField from "../../../components/contract_components/create/role_field"
+import ErrorBanner from "../../../components/contract_components/create/error_banner.js"
 
-import SavingNotification from '../../components/contract_components/create/saving_notification';
+import SavingNotification from '../../../components/contract_components/create/saving_notification';
 
-import { loadLocalDeadlines } from "../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
-import { changeFreeContracts } from "../../reducers/user/dispatchers/user.dispatcher"
+import { loadLocalDeadlines } from "../../../reducers/deadlines/dispatchers/deadlines.add.dispatcher"
+import { changeFreeContracts } from "../../../reducers/user/dispatchers/user.dispatcher"
 import { useRouter } from "next/router"
 
 
@@ -131,7 +131,7 @@ const ContractCreate = (props) => {
 
     props.finishCreation(props.curContract.id).then(
       () => {
-        router.push("/negotiate/"+props.curContract.id)
+        router.push("/contract/negotiate/"+props.curContract.id)
       }, (error) => {
         setOpenBanner(true)
         setError(error)

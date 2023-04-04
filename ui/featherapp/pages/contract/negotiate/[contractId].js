@@ -2,21 +2,21 @@ import React, {useState, useMemo, useEffect } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import {queryContract } from "../../reducers/contract/dispatchers/contract.dispatcher"
-import { addItem } from "../../reducers/items/dispatchers/items.add.dispatcher"
-import { genEmptyContract } from '../../services/contract.service';
-import { contractStages } from '../../services/contract.service';
+import {queryContract } from "../../../reducers/contract/dispatchers/contract.dispatcher"
+import { addItem } from "../../../reducers/items/dispatchers/items.add.dispatcher"
+import { genEmptyContract } from '../../../services/contract.service';
+import { contractStages } from '../../../services/contract.service';
 
-import ContractItem from "../../components/contract_components/contract_item";
-import NewContractItem from "../../components/contract_components/contract_item/new_contract_item";
-import CriticalCriteria from "../../components/contract_components/criteria/critical_criteria";
-import MainChat from "../../components/contract_components/chat/main_chat";
-import PartnerCard from "../../components/contract_components/summary/partner_profile_card";
-import SignContract from "../../components/contract_components/advance_cards/sign_contract";
+import ContractItem from "../../../components/contract_components/contract_item";
+import NewContractItem from "../../../components/contract_components/contract_item/new_contract_item";
+import CriticalCriteria from "../../../components/contract_components/criteria/critical_criteria";
+import MainChat from "../../../components/contract_components/chat/main_chat";
+import PartnerCard from "../../../components/contract_components/summary/partner_profile_card";
+import SignContract from "../../../components/contract_components/advance_cards/sign_contract";
 
-import FigmaLinkField from '../../components/contract_components/figma_link';
+import FigmaLinkField from '../../../components/contract_components/figma_link';
 import { useRouter } from 'next/router';
-import RejoinMonitor from "../../components/contract_components/rejoin_monitor"
+import RejoinMonitor from "../../../components/contract_components/rejoin_monitor"
 
 export async function getStaticPaths() {
   return {

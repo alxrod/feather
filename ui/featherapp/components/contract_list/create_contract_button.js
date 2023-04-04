@@ -30,7 +30,7 @@ const CreateContract = (props) => {
     props.clearSelected().then(() => {
       props.createContract("", "", {current:0, worker:0, buyer:0}, genEmptyDeadlineSet(), [], "", role).then(
         (id) => {
-          router.push("/create/"+id)
+          router.push("/contract/create/"+id)
         }
       )
     })

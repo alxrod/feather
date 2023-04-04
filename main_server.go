@@ -15,32 +15,6 @@ import (
 )
 
 // These need to be updated by final secur verison
-var routes []string = []string{
-	"^/contracts$",
-
-	"^/login$",
-	"^/setup-profile-pic$",
-	"^/setup-payment$",
-	"^/setup-payout$",
-	"^/setup-choice$",
-	"^/profile$",
-	"^/profile/onboarding-refresh$",
-	"^/register$",
-	"^/setup-payment$",
-	"^/logout$",
-	"^/reset-password$",
-	"^/forgot-password$",
-	"^/unknown$",
-
-	"^/create/[^/]*$",
-	"^/invite/[a-zA-Z0-9-]*/[a-zA-Z0-9_]*$",
-	"^/contract/[^/]*$",
-	"^/negotiate/[^/]*$",
-	"^/view/[^/]*$",
-	"^/settle/[^/]*$",
-
-	"^/figma/oauth-callback??(?:&?[^=&]*=[^=&]*)*",
-}
 
 type MainServer struct {
 	router  *http.ServeMux

@@ -1,9 +1,9 @@
 import { widget, AutoLayout, Frame, Text, Rectangle, Ellipse, useSyncedState, 
-  Input, Image, useEffect, waitForTask } from "./widget"
+  Input, Image, useEffect, waitForTask } from "../widget"
 
-import { ContractNub } from "./types";
-import { logo_image } from "./images";
-import { dateToString } from "./helpers";
+import { ContractNub } from "../types";
+import { logo_image } from "../images";
+import { dateToString } from "../helpers";
 
 export const HubUI = (
   connectToFeather: any, 

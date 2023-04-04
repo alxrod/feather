@@ -1,0 +1,196 @@
+{
+  "componentSets": {},
+  "components": {},
+  "document": {
+    "children": [
+      {
+        "backgroundColor": {
+          "a": 1.0,
+          "b": 0.9607843160629272,
+          "g": 0.9607843160629272,
+          "r": 0.9607843160629272
+        },
+        "children": [
+          {
+            "absoluteBoundingBox": {
+              "height": 6089.0,
+              "width": 7820.0,
+              "x": -7754.0,
+              "y": 44.0
+            },
+            "absoluteRenderBounds": {
+              "height": 6089.0,
+              "width": 7820.0,
+              "x": -7754.0,
+              "y": 44.0
+            },
+            "background": [],
+            "backgroundColor": {
+              "a": 0.0,
+              "b": 0.0,
+              "g": 0.0,
+              "r": 0.0
+            },
+            "blendMode": "PASS_THROUGH",
+            "children": [
+              {
+                "absoluteBoundingBox": {
+                  "height": 6089.0,
+                  "width": 7820.0,
+                  "x": -7754.0,
+                  "y": 44.0
+                },
+                "absoluteRenderBounds": {
+                  "height": 6089.0,
+                  "width": 7820.0,
+                  "x": -7754.0,
+                  "y": 44.0
+                },
+                "blendMode": "PASS_THROUGH",
+                "constraints": {
+                  "horizontal": "LEFT",
+                  "vertical": "TOP"
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "blendMode": "NORMAL",
+                    "color": {
+                      "a": 1.0,
+                      "b": 0.8509804010391235,
+                      "g": 0.8509804010391235,
+                      "r": 0.8509804010391235
+                    },
+                    "type": "SOLID"
+                  }
+                ],
+                "id": "18:141",
+                "name": "Rectangle 1",
+                "scrollBehavior": "SCROLLS",
+                "strokeAlign": "INSIDE",
+                "strokeWeight": 1.0,
+                "strokes": [],
+                "type": "RECTANGLE"
+              },
+              {
+                "absoluteBoundingBox": {
+                  "height": 1884.0,
+                  "width": 5630.0,
+                  "x": -6659.0,
+                  "y": 3417.0
+                },
+                "absoluteRenderBounds": {
+                  "height": 1884.0,
+                  "width": 5630.0,
+                  "x": -6659.0,
+                  "y": 3417.0
+                },
+                "blendMode": "PASS_THROUGH",
+                "constraints": {
+                  "horizontal": "LEFT",
+                  "vertical": "TOP"
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "blendMode": "NORMAL",
+                    "color": {
+                      "a": 1.0,
+                      "b": 0.9375,
+                      "g": 0.26249998807907104,
+                      "r": 0.0
+                    },
+                    "type": "SOLID"
+                  }
+                ],
+                "id": "18:143",
+                "name": "Rectangle 3",
+                "scrollBehavior": "SCROLLS",
+                "strokeAlign": "INSIDE",
+                "strokeWeight": 1.0,
+                "strokes": [],
+                "type": "RECTANGLE"
+              },
+              {
+                "absoluteBoundingBox": {
+                  "height": 1621.0,
+                  "width": 5760.0,
+                  "x": -6659.0,
+                  "y": 1052.0
+                },
+                "absoluteRenderBounds": {
+                  "height": 1621.0,
+                  "width": 5760.0,
+                  "x": -6659.0,
+                  "y": 1052.0
+                },
+                "blendMode": "PASS_THROUGH",
+                "constraints": {
+                  "horizontal": "LEFT",
+                  "vertical": "TOP"
+                },
+                "effects": [],
+                "fills": [
+                  {
+                    "blendMode": "NORMAL",
+                    "color": {
+                      "a": 1.0,
+                      "b": 0.0,
+                      "g": 0.0,
+                      "r": 1.0
+                    },
+                    "type": "SOLID"
+                  }
+                ],
+                "id": "18:142",
+                "name": "Rectangle 2",
+                "scrollBehavior": "SCROLLS",
+                "strokeAlign": "INSIDE",
+                "strokeWeight": 1.0,
+                "strokes": [],
+                "type": "RECTANGLE"
+              }
+            ],
+            "clipsContent": false,
+            "constraints": {
+              "horizontal": "LEFT",
+              "vertical": "TOP"
+            },
+            "effects": [],
+            "fills": [],
+            "id": "18:144",
+            "name": "Frame 1",
+            "scrollBehavior": "SCROLLS",
+            "strokeAlign": "INSIDE",
+            "strokeWeight": 1.0,
+            "strokes": [],
+            "type": "FRAME"
+          }
+        ],
+        "flowStartingPoints": [],
+        "id": "0:1",
+        "name": "Page 1",
+        "prototypeDevice": {
+          "rotation": "NONE",
+          "type": "NONE"
+        },
+        "prototypeStartNodeID": null,
+        "scrollBehavior": "SCROLLS",
+        "type": "CANVAS"
+      }
+    ],
+    "id": "0:0",
+    "name": "Document",
+    "scrollBehavior": "SCROLLS",
+    "type": "DOCUMENT"
+  },
+  "editorType": "figma",
+  "lastModified": "2023-03-30T17:15:52Z",
+  "linkAccess": "view",
+  "name": "Untitled",
+  "role": "owner",
+  "schemaVersion": 0,
+  "styles": {},
+  "thumbnailUrl": "https://s3-alpha.figma.com/thumbnails/8be6e5e4-0652-4866-9635-c47585f926d9?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAQ4GOSFWCX7GOXQGG%2F20230330%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230330T000000Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=692cc0ccd26356a4af9bf13c64ed257ab770f2966bc9bbadb2582772bda76868",
+  "version": "3262051643"
+}

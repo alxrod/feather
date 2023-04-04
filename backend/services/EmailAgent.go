@@ -202,7 +202,7 @@ func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, s
 		Body: fmt.Sprintf(
 			"Click this link to view the invitation \n %s%s",
 			agent.RootURL,
-			fmt.Sprintf("/invite/%s/%s", contract.Id.Hex(), secret),
+			fmt.Sprintf("/contract/invite/%s/%s", contract.Id.Hex(), secret),
 		),
 	}
 	if err := agent.SendEmail(email); err != nil {

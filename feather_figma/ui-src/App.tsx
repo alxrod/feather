@@ -19,11 +19,13 @@ import LoginCard from "./components/Login"
 import ContractListCard from './components/ContractList';
 import ItemNodeSet from "./components/ItemNodeSet";
 import {Oval} from 'react-loading-icons'
+import QuillPrompt from "./components/QuillPrompt"
 
 const displayModes = {
   "CONTRACTS": 0,
   "ITEM_NODES": 1,
-  "BACKGROUND_CONTRACT_QUERY": 2
+  "BACKGROUND_CONTRACT_QUERY": 2,
+  "QUILL_PROMPT": 3, 
 }
 function App() {
   const [token, setToken] = useState("")
@@ -54,27 +56,28 @@ function App() {
       }
     )
   }
-  useEffect(() => {
-    if (displayMode === displayModes["BACKGROUND_CONTRACT_QUERY"] && contract_id !== "" && contract_secret !== "") {
-      ApiService.queryContractSummary(contract_id, contract_secret).then(
-        (resp: ContractInviteNub) => {
-          const jsonContract = ContractInviteNub.toJson(resp)
-          window.parent.postMessage(
-            {pluginMessage: {type: "updated_contract", payload: jsonContract}}, '*'
-          )
-        },
-        (err: RpcError) => {
-          console.log("Error: ", err.message)
-          window.parent.postMessage(
-            {pluginMessage: {type: "close"}}, '*'
-          )
-        }
-      )
-    }
-  }, [displayMode, contract_id, contract_secret])
+  // useEffect(() => {
+  //   if (displayMode === displayModes["BACKGROUND_CONTRACT_QUERY"] && contract_id !== "" && contract_secret !== "") {
+  //     ApiService.queryContractSummary(contract_id, contract_secret).then(
+  //       (resp: ContractInviteNub) => {
+  //         const jsonContract = ContractInviteNub.toJson(resp)
+  //         window.parent.postMessage(
+  //           {pluginMessage: {type: "updated_contract", payload: jsonContract}}, '*'
+  //         )
+  //       },
+  //       (err: RpcError) => {
+  //         console.log("Error: ", err.message)
+  //         window.parent.postMessage(
+  //           {pluginMessage: {type: "close"}}, '*'
+  //         )
+  //       }
+  //     )
+  //   }
+  // }, [displayMode, contract_id, contract_secret])
   
   window.onmessage = async (event) => {
     if (event.data.pluginMessage.type === 'set_display_mode') {
+      console.log("Setting display mode to: ", (displayModes as any)[event.data.pluginMessage.payload])
       setDisplayMode( (displayModes as any)[event.data.pluginMessage.payload] )
     } else if (event.data.pluginMessage.type === 'set_item_options') {
       setItemId(event.data.pluginMessage.payload.item_id)
@@ -145,7 +148,9 @@ function App() {
   }
   return (
     <div className="App w-full h-full">
-      {!finishedLoading ? (
+      {displayMode === displayModes["QUILL_PROMPT"] ? (
+        <QuillPrompt/>
+      ) : !finishedLoading ? (
         <div className="w-full h-full flex justify-center items-center">
           <Oval className="w-32 h-32" stroke={"#7993A0"} fill={"#7993A0"} strokeWidth={4}/>
         </div>
