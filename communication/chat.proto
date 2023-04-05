@@ -264,6 +264,7 @@ message ChatMessageSet{
 
 message NewMessagesRequest{
     string user_id = 1;
+    bool doc_mode = 2;
 }
 
 message NewMessageEntity {

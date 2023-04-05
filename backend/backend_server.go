@@ -147,6 +147,8 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	// Have to add this for every service
 	comms.RegisterAuthServer(grpcServer, s)
 	comms.RegisterContractServer(grpcServer, s)
+	comms.RegisterItemServer(grpcServer, s)
+	comms.RegisterDeadlineServer(grpcServer, s)
 	comms.RegisterChatServer(grpcServer, s)
 	comms.RegisterFileServiceServer(grpcServer, s)
 	comms.RegisterStripeServiceServer(grpcServer, s)

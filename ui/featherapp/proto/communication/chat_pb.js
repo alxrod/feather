@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -9850,7 +9844,8 @@ proto.communication.NewMessagesRequest.prototype.toObject = function(opt_include
  */
 proto.communication.NewMessagesRequest.toObject = function(includeInstance, msg) {
   var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    docMode: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
   };
 
   if (includeInstance) {
@@ -9891,6 +9886,10 @@ proto.communication.NewMessagesRequest.deserializeBinaryFromReader = function(ms
       var value = /** @type {string} */ (reader.readString());
       msg.setUserId(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDocMode(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -9927,6 +9926,13 @@ proto.communication.NewMessagesRequest.serializeBinaryToWriter = function(messag
       f
     );
   }
+  f = message.getDocMode();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -9945,6 +9951,24 @@ proto.communication.NewMessagesRequest.prototype.getUserId = function() {
  */
 proto.communication.NewMessagesRequest.prototype.setUserId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool doc_mode = 2;
+ * @return {boolean}
+ */
+proto.communication.NewMessagesRequest.prototype.getDocMode = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.NewMessagesRequest} returns this
+ */
+proto.communication.NewMessagesRequest.prototype.setDocMode = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
