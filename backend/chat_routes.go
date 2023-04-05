@@ -3,7 +3,6 @@ package backend
 import (
 	"context"
 	"errors"
-
 	db "github.com/alxrod/feather/backend/db"
 	comms "github.com/alxrod/feather/communication"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -102,28 +101,61 @@ func (s *BackServer) PullNewMessages(ctx context.Context, req *comms.NewMessages
 
 	user, err := db.UserQueryId(user_id, database)
 
-	contracts, err := db.ContractsByUser(user_id, database)
 	protos := make([]*comms.NewMessageEntity, 0)
+	if req.DocMode == false {
 
-	for _, contract := range contracts {
-		room, err := db.ChatRoomQueryId(contract.RoomId, database)
+		contracts, err := db.ContractsByUser(user_id, database)
 		if err != nil {
-			continue
+			return nil, err
 		}
-		for _, message := range room.Messages {
-			if message != nil && message.ReadReceipts != nil {
-				for _, receipt := range message.ReadReceipts {
-					if receipt.UserId == user_id && !receipt.Read {
-						msgProto := message.Proto()
-						contractNub, _ := contract.NubProto(user)
-						protos = append(protos, &comms.NewMessageEntity{
-							Contract: contractNub,
-							Message:  msgProto,
-						})
+		for _, contract := range contracts {
+			room, err := db.ChatRoomQueryId(contract.RoomId, database)
+			if err != nil { 
+				continue
+			}
+			for _, message := range room.Messages {
+				if message != nil && message.ReadReceipts != nil {
+					for _, receipt := range message.ReadReceipts {
+						if receipt.UserId == user.Id && !receipt.Read {
+							msgProto := message.Proto()
+							contractNub, _ := contract.NubProto(user)
+							protos = append(protos, &comms.NewMessageEntity{
+								Contract: contractNub,
+								DocMode: false,
+								Message:  msgProto,
+							})
+						}
 					}
-				}
+				}		
 			}
 		}
+	} else {
+		documents, err := db.DocumentsByUser(user_id, database)
+		if err != nil {
+			return nil, err
+		}
+		for _, document := range documents {
+			room, err := db.ChatRoomQueryId(document.RoomId, database)
+			if err != nil { 
+				continue
+			}
+			for _, message := range room.Messages {
+				if message != nil && message.ReadReceipts != nil {
+					for _, receipt := range message.ReadReceipts {
+						if receipt.UserId == user.Id && !receipt.Read {
+							msgProto := message.Proto()
+							documentNub, _ := document.NubProto(user)
+							protos = append(protos, &comms.NewMessageEntity{
+								Document: documentNub,
+								DocMode: true,
+								Message:  msgProto,
+							})
+						}
+					}
+				}		
+			}			
+		}
+		
 	}
 	return &comms.NewMessageSet{
 		Messages: protos,

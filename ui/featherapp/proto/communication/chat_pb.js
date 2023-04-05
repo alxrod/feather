@@ -19,6 +19,8 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 goog.object.extend(proto, google_protobuf_timestamp_pb);
 var communication_contract_pb = require('../communication/contract_pb.js');
 goog.object.extend(proto, communication_contract_pb);
+var communication_document_pb = require('../communication/document_pb.js');
+goog.object.extend(proto, communication_document_pb);
 var communication_deadline_pb = require('../communication/deadline_pb.js');
 goog.object.extend(proto, communication_deadline_pb);
 var communication_item_pb = require('../communication/item_pb.js');
@@ -10005,7 +10007,9 @@ proto.communication.NewMessageEntity.prototype.toObject = function(opt_includeIn
 proto.communication.NewMessageEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
     message: (f = msg.getMessage()) && proto.communication.ChatMessage.toObject(includeInstance, f),
-    contract: (f = msg.getContract()) && communication_contract_pb.ContractNub.toObject(includeInstance, f)
+    contract: (f = msg.getContract()) && communication_contract_pb.ContractNub.toObject(includeInstance, f),
+    document: (f = msg.getDocument()) && communication_document_pb.DocumentNub.toObject(includeInstance, f),
+    docmode: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -10052,6 +10056,15 @@ proto.communication.NewMessageEntity.deserializeBinaryFromReader = function(msg,
       reader.readMessage(value,communication_contract_pb.ContractNub.deserializeBinaryFromReader);
       msg.setContract(value);
       break;
+    case 3:
+      var value = new communication_document_pb.DocumentNub;
+      reader.readMessage(value,communication_document_pb.DocumentNub.deserializeBinaryFromReader);
+      msg.setDocument(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDocmode(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -10095,6 +10108,21 @@ proto.communication.NewMessageEntity.serializeBinaryToWriter = function(message,
       2,
       f,
       communication_contract_pb.ContractNub.serializeBinaryToWriter
+    );
+  }
+  f = message.getDocument();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      communication_document_pb.DocumentNub.serializeBinaryToWriter
+    );
+  }
+  f = message.getDocmode();
+  if (f) {
+    writer.writeBool(
+      4,
+      f
     );
   }
 };
@@ -10171,6 +10199,61 @@ proto.communication.NewMessageEntity.prototype.clearContract = function() {
  */
 proto.communication.NewMessageEntity.prototype.hasContract = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional DocumentNub document = 3;
+ * @return {?proto.communication.DocumentNub}
+ */
+proto.communication.NewMessageEntity.prototype.getDocument = function() {
+  return /** @type{?proto.communication.DocumentNub} */ (
+    jspb.Message.getWrapperField(this, communication_document_pb.DocumentNub, 3));
+};
+
+
+/**
+ * @param {?proto.communication.DocumentNub|undefined} value
+ * @return {!proto.communication.NewMessageEntity} returns this
+*/
+proto.communication.NewMessageEntity.prototype.setDocument = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.communication.NewMessageEntity} returns this
+ */
+proto.communication.NewMessageEntity.prototype.clearDocument = function() {
+  return this.setDocument(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.communication.NewMessageEntity.prototype.hasDocument = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional bool DocMode = 4;
+ * @return {boolean}
+ */
+proto.communication.NewMessageEntity.prototype.getDocmode = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.communication.NewMessageEntity} returns this
+ */
+proto.communication.NewMessageEntity.prototype.setDocmode = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 

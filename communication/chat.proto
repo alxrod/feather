@@ -4,6 +4,7 @@ option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 
 import "communication/contract.proto";
+import "communication/document.proto";
 import "communication/deadline.proto";
 import "communication/item.proto";
 
@@ -270,6 +271,8 @@ message NewMessagesRequest{
 message NewMessageEntity {
     ChatMessage message = 1;
     ContractNub contract = 2;
+    DocumentNub document = 3;
+    bool DocMode = 4;
 }
 message NewMessageSet{
     repeated NewMessageEntity messages = 2;

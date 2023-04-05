@@ -24,6 +24,8 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 
 var communication_contract_pb = require('../communication/contract_pb.js')
 
+var communication_document_pb = require('../communication/document_pb.js')
+
 var communication_deadline_pb = require('../communication/deadline_pb.js')
 
 var communication_item_pb = require('../communication/item_pb.js')
