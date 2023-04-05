@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 // ########################################################################################################################
 
 func (agent *ChatAgent) SendPriceMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	newPrice int64,
 	oldPrice int64,
@@ -29,13 +30,13 @@ func (agent *ChatAgent) SendPriceMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
 
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -56,7 +57,7 @@ func (agent *ChatAgent) SendPriceMessage(
 }
 
 func (agent *ChatAgent) SendPayoutMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	deadline *db.Deadline,
 	newPayout int64,
@@ -76,7 +77,7 @@ func (agent *ChatAgent) SendPayoutMessage(
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
 
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -94,7 +95,7 @@ func (agent *ChatAgent) SendPayoutMessage(
 		label_name = "Deadline"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -116,7 +117,7 @@ func (agent *ChatAgent) SendPayoutMessage(
 }
 
 func (agent *ChatAgent) SendDateMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	deadline *db.Deadline,
 	newDate time.Time,
@@ -135,7 +136,7 @@ func (agent *ChatAgent) SendDateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -152,7 +153,7 @@ func (agent *ChatAgent) SendDateMessage(
 		label_name = "Deadline"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -176,7 +177,7 @@ func (agent *ChatAgent) SendDateMessage(
 
 func (agent *ChatAgent) SendItemMessage(
 	item *db.ContractItem,
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	newBody string,
 	oldBody string,
@@ -193,7 +194,7 @@ func (agent *ChatAgent) SendItemMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -202,7 +203,7 @@ func (agent *ChatAgent) SendItemMessage(
 		label_name = "Item"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -224,7 +225,7 @@ func (agent *ChatAgent) SendItemMessage(
 }
 func (agent *ChatAgent) SendItemCreateMessage(
 	item *db.ContractItem,
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	editType uint32,
 	database *mongo.Database) error {
@@ -238,7 +239,7 @@ func (agent *ChatAgent) SendItemCreateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -247,7 +248,7 @@ func (agent *ChatAgent) SendItemCreateMessage(
 		label_name = "Item"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -270,7 +271,7 @@ func (agent *ChatAgent) SendItemCreateMessage(
 
 func (agent *ChatAgent) SendItemDeleteMessage(
 	item *db.ContractItem,
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	editType uint32,
 	database *mongo.Database) error {
@@ -284,7 +285,7 @@ func (agent *ChatAgent) SendItemDeleteMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -294,7 +295,7 @@ func (agent *ChatAgent) SendItemDeleteMessage(
 		label_name = "Item"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -317,7 +318,7 @@ func (agent *ChatAgent) SendItemDeleteMessage(
 
 func (agent *ChatAgent) SendDeadlineCreateMessage(
 	deadline *db.Deadline,
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	editType uint32,
 	database *mongo.Database) error {
@@ -331,7 +332,7 @@ func (agent *ChatAgent) SendDeadlineCreateMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -340,7 +341,7 @@ func (agent *ChatAgent) SendDeadlineCreateMessage(
 		label_name = "New Deadline"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -363,7 +364,7 @@ func (agent *ChatAgent) SendDeadlineCreateMessage(
 
 func (agent *ChatAgent) SendDeadlineDeleteMessage(
 	deadline *db.Deadline,
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	editType uint32,
 	database *mongo.Database) error {
@@ -377,7 +378,7 @@ func (agent *ChatAgent) SendDeadlineDeleteMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -386,7 +387,7 @@ func (agent *ChatAgent) SendDeadlineDeleteMessage(
 		label_name = "Item"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -407,7 +408,7 @@ func (agent *ChatAgent) SendDeadlineDeleteMessage(
 }
 
 func (agent *ChatAgent) SendDeadlineItemMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	deadline *db.Deadline,
 	editType uint32,
@@ -429,7 +430,7 @@ func (agent *ChatAgent) SendDeadlineItemMessage(
 		WorkerStatus:  db.DECISION_UNDECIDED,
 		BuyerStatus:   db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -446,7 +447,7 @@ func (agent *ChatAgent) SendDeadlineItemMessage(
 		label_name = "Deadline"
 	}
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),
@@ -470,6 +471,7 @@ func (agent *ChatAgent) SendContractSignMessage(
 	contract *db.Contract,
 	user *db.User,
 	database *mongo.Database) error {
+
 	body := &db.MessageBody{
 		ContractStage: contract.Stage,
 		ContractId:    contract.Id,
@@ -651,10 +653,10 @@ func (agent *ChatAgent) SendItemSettleMessage(contract *db.Contract,
 		label_name = "Item"
 	}
 	body := &db.MessageBody{
-		ContractId:       contract.Id,
-		DeadlineId:       deadline.Id,
-		ItemId:           item.Id,
-		ItemBuyerSettle:  item.BuyerSettled,
+		ContractId:      contract.Id,
+		DeadlineId:      deadline.Id,
+		ItemId:          item.Id,
+		ItemBuyerSettle: item.BuyerSettled,
 	}
 	msg := &db.Message{
 		RoomId:    contract.RoomId,
@@ -687,10 +689,10 @@ func (agent *ChatAgent) SendItemFinalizeMessage(
 	database *mongo.Database) error {
 
 	body := &db.MessageBody{
-		ContractId:      contract.Id,
-		ContractStage:   contract.Stage,
-		DeadlineId:      deadline.Id,
-		BuyerSettled:    deadline.BuyerSettled,
+		ContractId:    contract.Id,
+		ContractStage: contract.Stage,
+		DeadlineId:    deadline.Id,
+		BuyerSettled:  deadline.BuyerSettled,
 	}
 
 	msg := &db.Message{
@@ -724,11 +726,16 @@ func (agent *ChatAgent) SendRevMessage(msg *db.Message, database *mongo.Database
 }
 
 func (agent *ChatAgent) SendToggleLockMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	lockState bool,
 	editType uint32,
 	database *mongo.Database) error {
+
+	if target.ContentType != db.WRAPPER_CONTRACT {
+		return errors.New("target is not a contract")
+	}
+	contract := target.Contract
 
 	body := &db.MessageBody{
 		Type:         editType,
@@ -739,7 +746,7 @@ func (agent *ChatAgent) SendToggleLockMessage(
 		WorkerStatus: db.DECISION_UNDECIDED,
 		BuyerStatus:  db.DECISION_UNDECIDED,
 	}
-	err := agent.AdjustMsgBody(user, contract, body)
+	err := agent.AdjustMsgBody(user, target, body)
 	if err != nil {
 		return err
 	}
@@ -771,26 +778,32 @@ func (agent *ChatAgent) SendToggleLockMessage(
 
 // Helper
 
-func (agent *ChatAgent) AdjustMsgBody(user *db.User, contract *db.Contract, body *db.MessageBody) error {
-	if contract.Worker == nil {
-		body.WorkerStatus = db.DECISION_YES
-	}
-	if contract.Buyer == nil {
-		body.BuyerStatus = db.DECISION_YES
-	}
+func (agent *ChatAgent) AdjustMsgBody(user *db.User, target *db.TargetWrapper, body *db.MessageBody) error {
 
-	if contract.Worker != nil && contract.Worker.Id == user.Id {
-		log.Println("Sender is worker")
-		body.WorkerStatus = db.DECISION_YES
-	} else if contract.Buyer != nil && contract.Buyer.Id == user.Id {
-		log.Println("Sender is buyer")
-		body.BuyerStatus = db.DECISION_YES
-	} else if user.AdminStatus {
-		body.BuyerStatus = db.DECISION_YES
-		body.WorkerStatus = db.DECISION_YES
-	}
+	if target.ContentType == db.WRAPPER_CONTRACT {
+		if target.Contract.Worker == nil {
+			body.WorkerStatus = db.DECISION_YES
+		}
+		if target.Contract.Buyer == nil {
+			body.BuyerStatus = db.DECISION_YES
+		}
 
-	if body.BuyerStatus == db.DECISION_YES && body.WorkerStatus == db.DECISION_YES {
+		if target.Contract.Worker != nil && target.Contract.Worker.Id == user.Id {
+			log.Println("Sender is worker")
+			body.WorkerStatus = db.DECISION_YES
+		} else if target.Contract.Buyer != nil && target.Contract.Buyer.Id == user.Id {
+			log.Println("Sender is buyer")
+			body.BuyerStatus = db.DECISION_YES
+		} else if user.AdminStatus {
+			body.BuyerStatus = db.DECISION_YES
+			body.WorkerStatus = db.DECISION_YES
+		}
+
+		if body.BuyerStatus == db.DECISION_YES && body.WorkerStatus == db.DECISION_YES {
+			body.ResolStatus = db.RESOL_APPROVED
+			body.Resolved = true
+		}
+	} else {
 		body.ResolStatus = db.RESOL_APPROVED
 		body.Resolved = true
 	}
@@ -798,16 +811,16 @@ func (agent *ChatAgent) AdjustMsgBody(user *db.User, contract *db.Contract, body
 }
 
 func (agent *ChatAgent) SendFigmaLinkMessage(
-	contract *db.Contract,
+	target *db.TargetWrapper,
 	user *db.User,
 	database *mongo.Database) error {
 
 	body := &db.MessageBody{
-		FigmaLink: contract.FigmaLink,
+		FigmaLink: target.GetFigmaLink(),
 	}
 
 	msg := &db.Message{
-		RoomId:    contract.RoomId,
+		RoomId:    target.GetRoomId(),
 		User:      user,
 		UserId:    user.Id,
 		Timestamp: time.Now().Local(),

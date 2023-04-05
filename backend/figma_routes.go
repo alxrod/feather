@@ -99,7 +99,7 @@ func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFile
 		return nil, err
 	}
 
-	err = s.ChatAgent.SendFigmaLinkMessage(contract, user, database)
+	err = s.ChatAgent.SendFigmaLinkMessage(db.CastContract(contract), user, database)
 	if err != nil {
 		return nil, err
 	}

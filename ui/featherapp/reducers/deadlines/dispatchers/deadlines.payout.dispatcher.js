@@ -1,4 +1,4 @@
-import ContractService from "../../../services/contract.service";
+import DeadlineService from "../../../services/deadline.service";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 
 import {resolTypes} from "../../../services/chat.service";
@@ -10,7 +10,7 @@ export const suggestPayout = (contract_id, deadline_id, new_payout) => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.suggestPayout(creds.access_token, creds.user_id, contract_id, deadline_id, new_payout).then(
+                return DeadlineService.suggestPayout(creds.access_token, creds.user_id, contract_id, deadline_id, new_payout).then(
                     () => {
                         return Promise.resolve();
                     },
@@ -29,7 +29,7 @@ export const reactPayout = (contract_id, message_id, deadline_id, status) => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.reactPayout(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                return DeadlineService.reactPayout(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
                     () => {
                         return Promise.resolve();
                     },

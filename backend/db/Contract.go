@@ -871,9 +871,9 @@ func ContractSign(user *User, contract *Contract, database *mongo.Database) erro
 	return nil
 }
 
-func ContractUnsign(contract *Contract, database *mongo.Database) (*Contract, error) {
+func (contract *Contract) Unsign(database *mongo.Database) error {
 	if contract.Worker == nil || contract.Buyer == nil || contract.Stage < NEGOTIATE {
-		return contract, nil
+		return nil
 	}
 	if contract.WorkerApproved && !contract.BuyerApproved {
 		contract.WorkerApproved = false
@@ -889,9 +889,9 @@ func ContractUnsign(contract *Contract, database *mongo.Database) (*Contract, er
 	}
 	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return contract, nil
+	return nil
 }
 
 func ContractSettle(user *User, contract *Contract, database *mongo.Database) error {
@@ -1034,7 +1034,7 @@ func ContractRemoveItem(item *ContractItem, contract *Contract, user *User, data
 	for _, deadline := range contract.Deadlines {
 		for _, id := range deadline.ItemIds {
 			if id == item.Id {
-				DeadlineRemoveItem(deadline, contract, user, item, database)
+				DeadlineRemoveItem(deadline, item, database)
 			}
 		}
 	}

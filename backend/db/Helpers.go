@@ -11,6 +11,7 @@ const (
 	ITEM_COL     = "contract_items"
 	DEADLINE_COL = "contract_deadlines"
 	CON_COL      = "contracts"
+	DOC_COL      = "documents"
 
 	ROOM_COL       = "chat_rooms"
 	MSG_COL        = "chat_messages"

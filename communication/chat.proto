@@ -2,7 +2,10 @@ syntax = "proto3";
 package communication;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
+
 import "communication/contract.proto";
+import "communication/deadline.proto";
+import "communication/item.proto";
 
 message UserHandle {
     string id = 1;

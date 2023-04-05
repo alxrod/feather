@@ -46,7 +46,12 @@ func accessibleRoles() []string {
 
 type BackServer struct {
 	comms.UnimplementedAuthServer
+
 	comms.UnimplementedContractServer
+	comms.UnimplementedDocumentServer
+	comms.UnimplementedDeadlineServer
+	comms.UnimplementedItemServer
+
 	comms.UnimplementedChatServer
 
 	comms.UnimplementedFileServiceServer

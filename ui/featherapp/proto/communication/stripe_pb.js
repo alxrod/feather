@@ -23,6 +23,10 @@ var global =
 
 var communication_contract_pb = require('../communication/contract_pb.js');
 goog.object.extend(proto, communication_contract_pb);
+var communication_user_pb = require('../communication/user_pb.js');
+goog.object.extend(proto, communication_user_pb);
+var communication_generic_pb = require('../communication/generic_pb.js');
+goog.object.extend(proto, communication_generic_pb);
 goog.exportSymbol('proto.communication.AccountLinkResp', null, global);
 goog.exportSymbol('proto.communication.AddressEntity', null, global);
 goog.exportSymbol('proto.communication.BASet', null, global);
@@ -3410,8 +3414,8 @@ proto.communication.InternalChargeEntity.toObject = function(includeInstance, ms
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     contractTitle: jspb.Message.getFieldWithDefault(msg, 7, ""),
     contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    worker: (f = msg.getWorker()) && communication_contract_pb.UserNubEntity.toObject(includeInstance, f),
-    buyer: (f = msg.getBuyer()) && communication_contract_pb.UserNubEntity.toObject(includeInstance, f),
+    worker: (f = msg.getWorker()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
+    buyer: (f = msg.getBuyer()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
     state: jspb.Message.getFieldWithDefault(msg, 5, 0),
     stateMessage: jspb.Message.getFieldWithDefault(msg, 14, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 6, 0),
@@ -3471,13 +3475,13 @@ proto.communication.InternalChargeEntity.deserializeBinaryFromReader = function(
       msg.setContractId(value);
       break;
     case 3:
-      var value = new communication_contract_pb.UserNubEntity;
-      reader.readMessage(value,communication_contract_pb.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setWorker(value);
       break;
     case 4:
-      var value = new communication_contract_pb.UserNubEntity;
-      reader.readMessage(value,communication_contract_pb.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setBuyer(value);
       break;
     case 5:
@@ -3575,7 +3579,7 @@ proto.communication.InternalChargeEntity.serializeBinaryToWriter = function(mess
     writer.writeMessage(
       3,
       f,
-      communication_contract_pb.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getBuyer();
@@ -3583,7 +3587,7 @@ proto.communication.InternalChargeEntity.serializeBinaryToWriter = function(mess
     writer.writeMessage(
       4,
       f,
-      communication_contract_pb.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getState();
@@ -3719,7 +3723,7 @@ proto.communication.InternalChargeEntity.prototype.setContractId = function(valu
  */
 proto.communication.InternalChargeEntity.prototype.getWorker = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.UserNubEntity, 3));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 3));
 };
 
 
@@ -3756,7 +3760,7 @@ proto.communication.InternalChargeEntity.prototype.hasWorker = function() {
  */
 proto.communication.InternalChargeEntity.prototype.getBuyer = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.UserNubEntity, 4));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 4));
 };
 
 

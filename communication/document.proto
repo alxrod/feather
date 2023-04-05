@@ -1,0 +1,61 @@
+syntax = "proto3";
+package communication;
+option go_package=".;communication";
+import "communication/deadline.proto";
+import "communication/user.proto";
+import "communication/item.proto";
+import "communication/requests.proto";
+
+
+message DocumentEntity {
+  string id = 1;
+
+  bool link_share = 2;
+
+  repeated UserNubEntity users = 3;
+  repeated DeadlineEntity deadlines = 4;
+
+  string title = 5;
+  string summary = 6;
+
+  repeated ItemEntity items = 7;
+  string room_id = 8;
+
+  string figma_link = 9;
+  string figma_file_key = 10;
+  bool figma_connected = 11;
+}
+
+message DocumentNub {
+  string id = 1;
+  string title = 2;
+  string summary = 3;
+
+  repeated string user_ids = 4;
+
+  string figma_link = 5;
+  bool figma_connected = 6;
+  repeated DeadlineNub deadlines = 7;
+}
+
+message DocumentNubSet {
+  repeated DocumentNub document_nubs = 1;
+}
+
+// Requests:
+message DocumentCreateRequest {
+  string user_id = 1;
+  string title = 2;
+  string summary = 3;
+  repeated DeadlineEntity deadlines = 6;
+  repeated ItemEntity items = 7;
+}
+
+
+service Document {
+
+  rpc CreateDoc(DocumentCreateRequest) returns (DocumentEntity) {};
+
+  rpc QueryDocById(QueryByIdRequest) returns (DocumentEntity) {};
+  rpc QueryDocByUser(QueryByUserRequest) returns (DocumentNubSet) {};
+}   

@@ -219,7 +219,7 @@ func (s *BackServer) ResendInviteEmail(ctx context.Context, req *comms.EmailRese
 }
 
 func (s *BackServer) QueryById(ctx context.Context, req *comms.QueryByIdRequest) (*comms.ContractResponse, error) {
-	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	contract_id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
 		return nil, errors.New("invalid contract id")
 	}
@@ -443,7 +443,7 @@ func (s *BackServer) ToggleLock(ctx context.Context, req *comms.ContractToggleLo
 			return nil, err
 		}
 	}
-	err = s.ChatAgent.SendToggleLockMessage(contract, user, req.ContractLock, db.SUGGEST, database)
+	err = s.ChatAgent.SendToggleLockMessage(db.CastContract(contract), user, req.ContractLock, db.SUGGEST, database)
 	if err != nil {
 		return nil, err
 	}

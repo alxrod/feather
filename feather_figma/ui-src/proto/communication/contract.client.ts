@@ -6,41 +6,22 @@ import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { Contract } from "./contract";
 import type { FigmaItemRequest } from "./contract";
 import type { FigmaFileConnectRequest } from "./contract";
-import type { FinishDeadlineRequest } from "./contract";
 import type { ContractAdminSupport } from "./contract";
-import type { ContractSettleItemRequest } from "./contract";
 import type { ContractReactLockRequest } from "./contract";
 import type { ContractToggleLockRequest } from "./contract";
-import type { ContractReactDeadlineItems } from "./contract";
-import type { ContractSuggestDeadlineItems } from "./contract";
-import type { ContractReactDelDeadline } from "./contract";
-import type { ContractSuggestDelDeadline } from "./contract";
-import type { ContractReactAddDeadline } from "./contract";
-import type { DeadlineEntity } from "./contract";
-import type { ContractSuggestAddDeadline } from "./contract";
-import type { ContractReactDelItem } from "./contract";
-import type { ContractSuggestDelItem } from "./contract";
-import type { ContractReactAddItem } from "./contract";
-import type { ItemEntity } from "./contract";
-import type { ContractSuggestAddItem } from "./contract";
-import type { ContractReactItem } from "./contract";
-import type { ContractSuggestItem } from "./contract";
-import type { ContractReactPayout } from "./contract";
-import type { ContractSuggestPayout } from "./contract";
-import type { ContractReactDate } from "./contract";
-import type { ContractSuggestDate } from "./contract";
-import type { ContractReactPrice } from "./contract";
-import type { ContractSuggestPrice } from "./contract";
+import type { ReactPriceReq } from "./contract";
+import type { SuggestPriceReq } from "./contract";
 import type { ContractNubSet } from "./contract";
-import type { QueryByUserRequest } from "./contract";
-import type { QueryByIdRequest } from "./contract";
+import type { QueryByUserRequest } from "./requests";
+import type { QueryByIdRequest } from "./requests";
 import type { SettleContractRequest } from "./contract";
 import type { SignContractRequest } from "./contract";
 import type { ClaimContractRequest } from "./contract";
 import type { ContractInviteNub } from "./contract";
 import type { InviteDataRequest } from "./contract";
+import type { NullResponse } from "./generic";
 import type { EmailResendRequest } from "./contract";
-import type { NullResponse } from "./contract";
+import type { EmailChangeResponse } from "./contract";
 import type { EmailChangeRequest } from "./contract";
 import type { ContractFinishCreationRequest } from "./contract";
 import type { ContractUpdateRequest } from "./contract";
@@ -72,9 +53,9 @@ export interface IContractClient {
      */
     finishCreation(input: ContractFinishCreationRequest, options?: RpcOptions): UnaryCall<ContractFinishCreationRequest, ContractResponse>;
     /**
-     * @generated from protobuf rpc: ChangeInviteEmail(communication.EmailChangeRequest) returns (communication.NullResponse);
+     * @generated from protobuf rpc: ChangeInviteEmail(communication.EmailChangeRequest) returns (communication.EmailChangeResponse);
      */
-    changeInviteEmail(input: EmailChangeRequest, options?: RpcOptions): UnaryCall<EmailChangeRequest, NullResponse>;
+    changeInviteEmail(input: EmailChangeRequest, options?: RpcOptions): UnaryCall<EmailChangeRequest, EmailChangeResponse>;
     /**
      * @generated from protobuf rpc: ResendInviteEmail(communication.EmailResendRequest) returns (communication.NullResponse);
      */
@@ -108,77 +89,13 @@ export interface IContractClient {
      */
     queryByAdmin(input: QueryByUserRequest, options?: RpcOptions): UnaryCall<QueryByUserRequest, ContractNubSet>;
     /**
-     * @generated from protobuf rpc: SuggestPrice(communication.ContractSuggestPrice) returns (communication.ContractEditResponse);
+     * @generated from protobuf rpc: SuggestPrice(communication.SuggestPriceReq) returns (communication.ContractEditResponse);
      */
-    suggestPrice(input: ContractSuggestPrice, options?: RpcOptions): UnaryCall<ContractSuggestPrice, ContractEditResponse>;
+    suggestPrice(input: SuggestPriceReq, options?: RpcOptions): UnaryCall<SuggestPriceReq, ContractEditResponse>;
     /**
-     * @generated from protobuf rpc: ReactPrice(communication.ContractReactPrice) returns (communication.ContractEditResponse);
+     * @generated from protobuf rpc: ReactPrice(communication.ReactPriceReq) returns (communication.ContractEditResponse);
      */
-    reactPrice(input: ContractReactPrice, options?: RpcOptions): UnaryCall<ContractReactPrice, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestDate(communication.ContractSuggestDate) returns (communication.ContractEditResponse);
-     */
-    suggestDate(input: ContractSuggestDate, options?: RpcOptions): UnaryCall<ContractSuggestDate, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactDate(communication.ContractReactDate) returns (communication.ContractEditResponse);
-     */
-    reactDate(input: ContractReactDate, options?: RpcOptions): UnaryCall<ContractReactDate, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestPayout(communication.ContractSuggestPayout) returns (communication.ContractEditResponse);
-     */
-    suggestPayout(input: ContractSuggestPayout, options?: RpcOptions): UnaryCall<ContractSuggestPayout, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactPayout(communication.ContractReactPayout) returns (communication.ContractEditResponse);
-     */
-    reactPayout(input: ContractReactPayout, options?: RpcOptions): UnaryCall<ContractReactPayout, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestItem(communication.ContractSuggestItem) returns (communication.ContractEditResponse);
-     */
-    suggestItem(input: ContractSuggestItem, options?: RpcOptions): UnaryCall<ContractSuggestItem, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactItem(communication.ContractReactItem) returns (communication.ContractEditResponse);
-     */
-    reactItem(input: ContractReactItem, options?: RpcOptions): UnaryCall<ContractReactItem, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestAddItem(communication.ContractSuggestAddItem) returns (communication.ItemEntity);
-     */
-    suggestAddItem(input: ContractSuggestAddItem, options?: RpcOptions): UnaryCall<ContractSuggestAddItem, ItemEntity>;
-    /**
-     * @generated from protobuf rpc: ReactAddItem(communication.ContractReactAddItem) returns (communication.ContractEditResponse);
-     */
-    reactAddItem(input: ContractReactAddItem, options?: RpcOptions): UnaryCall<ContractReactAddItem, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestDeleteItem(communication.ContractSuggestDelItem) returns (communication.ContractEditResponse);
-     */
-    suggestDeleteItem(input: ContractSuggestDelItem, options?: RpcOptions): UnaryCall<ContractSuggestDelItem, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactDeleteItem(communication.ContractReactDelItem) returns (communication.ContractEditResponse);
-     */
-    reactDeleteItem(input: ContractReactDelItem, options?: RpcOptions): UnaryCall<ContractReactDelItem, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestAddDeadline(communication.ContractSuggestAddDeadline) returns (communication.DeadlineEntity);
-     */
-    suggestAddDeadline(input: ContractSuggestAddDeadline, options?: RpcOptions): UnaryCall<ContractSuggestAddDeadline, DeadlineEntity>;
-    /**
-     * @generated from protobuf rpc: ReactAddDeadline(communication.ContractReactAddDeadline) returns (communication.ContractEditResponse);
-     */
-    reactAddDeadline(input: ContractReactAddDeadline, options?: RpcOptions): UnaryCall<ContractReactAddDeadline, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestDeleteDeadline(communication.ContractSuggestDelDeadline) returns (communication.ContractEditResponse);
-     */
-    suggestDeleteDeadline(input: ContractSuggestDelDeadline, options?: RpcOptions): UnaryCall<ContractSuggestDelDeadline, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactDeleteDeadline(communication.ContractReactDelDeadline) returns (communication.ContractEditResponse);
-     */
-    reactDeleteDeadline(input: ContractReactDelDeadline, options?: RpcOptions): UnaryCall<ContractReactDelDeadline, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: SuggestDeadlineItems(communication.ContractSuggestDeadlineItems) returns (communication.ContractEditResponse);
-     */
-    suggestDeadlineItems(input: ContractSuggestDeadlineItems, options?: RpcOptions): UnaryCall<ContractSuggestDeadlineItems, ContractEditResponse>;
-    /**
-     * @generated from protobuf rpc: ReactDeadlineItems(communication.ContractReactDeadlineItems) returns (communication.ContractEditResponse);
-     */
-    reactDeadlineItems(input: ContractReactDeadlineItems, options?: RpcOptions): UnaryCall<ContractReactDeadlineItems, ContractEditResponse>;
+    reactPrice(input: ReactPriceReq, options?: RpcOptions): UnaryCall<ReactPriceReq, ContractEditResponse>;
     /**
      * @generated from protobuf rpc: ToggleLock(communication.ContractToggleLockRequest) returns (communication.ContractEditResponse);
      */
@@ -188,10 +105,6 @@ export interface IContractClient {
      */
     reactLock(input: ContractReactLockRequest, options?: RpcOptions): UnaryCall<ContractReactLockRequest, ContractEditResponse>;
     /**
-     * @generated from protobuf rpc: SettleItem(communication.ContractSettleItemRequest) returns (communication.ContractEditResponse);
-     */
-    settleItem(input: ContractSettleItemRequest, options?: RpcOptions): UnaryCall<ContractSettleItemRequest, ContractEditResponse>;
-    /**
      * @generated from protobuf rpc: RequestAdmin(communication.ContractAdminSupport) returns (communication.NullResponse);
      */
     requestAdmin(input: ContractAdminSupport, options?: RpcOptions): UnaryCall<ContractAdminSupport, NullResponse>;
@@ -199,10 +112,6 @@ export interface IContractClient {
      * @generated from protobuf rpc: ResolveAdmin(communication.ContractAdminSupport) returns (communication.NullResponse);
      */
     resolveAdmin(input: ContractAdminSupport, options?: RpcOptions): UnaryCall<ContractAdminSupport, NullResponse>;
-    /**
-     * @generated from protobuf rpc: FinishDeadline(communication.FinishDeadlineRequest) returns (communication.NullResponse);
-     */
-    finishDeadline(input: FinishDeadlineRequest, options?: RpcOptions): UnaryCall<FinishDeadlineRequest, NullResponse>;
     /**
      * @generated from protobuf rpc: SetFigmaConnected(communication.FigmaFileConnectRequest) returns (communication.ContractEditResponse);
      */
@@ -250,11 +159,11 @@ export class ContractClient implements IContractClient, ServiceInfo {
         return stackIntercept<ContractFinishCreationRequest, ContractResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: ChangeInviteEmail(communication.EmailChangeRequest) returns (communication.NullResponse);
+     * @generated from protobuf rpc: ChangeInviteEmail(communication.EmailChangeRequest) returns (communication.EmailChangeResponse);
      */
-    changeInviteEmail(input: EmailChangeRequest, options?: RpcOptions): UnaryCall<EmailChangeRequest, NullResponse> {
+    changeInviteEmail(input: EmailChangeRequest, options?: RpcOptions): UnaryCall<EmailChangeRequest, EmailChangeResponse> {
         const method = this.methods[4], opt = this._transport.mergeOptions(options);
-        return stackIntercept<EmailChangeRequest, NullResponse>("unary", this._transport, method, opt, input);
+        return stackIntercept<EmailChangeRequest, EmailChangeResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ResendInviteEmail(communication.EmailResendRequest) returns (communication.NullResponse);
@@ -313,185 +222,59 @@ export class ContractClient implements IContractClient, ServiceInfo {
         return stackIntercept<QueryByUserRequest, ContractNubSet>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: SuggestPrice(communication.ContractSuggestPrice) returns (communication.ContractEditResponse);
+     * @generated from protobuf rpc: SuggestPrice(communication.SuggestPriceReq) returns (communication.ContractEditResponse);
      */
-    suggestPrice(input: ContractSuggestPrice, options?: RpcOptions): UnaryCall<ContractSuggestPrice, ContractEditResponse> {
+    suggestPrice(input: SuggestPriceReq, options?: RpcOptions): UnaryCall<SuggestPriceReq, ContractEditResponse> {
         const method = this.methods[13], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestPrice, ContractEditResponse>("unary", this._transport, method, opt, input);
+        return stackIntercept<SuggestPriceReq, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
-     * @generated from protobuf rpc: ReactPrice(communication.ContractReactPrice) returns (communication.ContractEditResponse);
+     * @generated from protobuf rpc: ReactPrice(communication.ReactPriceReq) returns (communication.ContractEditResponse);
      */
-    reactPrice(input: ContractReactPrice, options?: RpcOptions): UnaryCall<ContractReactPrice, ContractEditResponse> {
+    reactPrice(input: ReactPriceReq, options?: RpcOptions): UnaryCall<ReactPriceReq, ContractEditResponse> {
         const method = this.methods[14], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactPrice, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestDate(communication.ContractSuggestDate) returns (communication.ContractEditResponse);
-     */
-    suggestDate(input: ContractSuggestDate, options?: RpcOptions): UnaryCall<ContractSuggestDate, ContractEditResponse> {
-        const method = this.methods[15], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestDate, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactDate(communication.ContractReactDate) returns (communication.ContractEditResponse);
-     */
-    reactDate(input: ContractReactDate, options?: RpcOptions): UnaryCall<ContractReactDate, ContractEditResponse> {
-        const method = this.methods[16], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactDate, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestPayout(communication.ContractSuggestPayout) returns (communication.ContractEditResponse);
-     */
-    suggestPayout(input: ContractSuggestPayout, options?: RpcOptions): UnaryCall<ContractSuggestPayout, ContractEditResponse> {
-        const method = this.methods[17], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestPayout, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactPayout(communication.ContractReactPayout) returns (communication.ContractEditResponse);
-     */
-    reactPayout(input: ContractReactPayout, options?: RpcOptions): UnaryCall<ContractReactPayout, ContractEditResponse> {
-        const method = this.methods[18], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactPayout, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestItem(communication.ContractSuggestItem) returns (communication.ContractEditResponse);
-     */
-    suggestItem(input: ContractSuggestItem, options?: RpcOptions): UnaryCall<ContractSuggestItem, ContractEditResponse> {
-        const method = this.methods[19], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestItem, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactItem(communication.ContractReactItem) returns (communication.ContractEditResponse);
-     */
-    reactItem(input: ContractReactItem, options?: RpcOptions): UnaryCall<ContractReactItem, ContractEditResponse> {
-        const method = this.methods[20], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactItem, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestAddItem(communication.ContractSuggestAddItem) returns (communication.ItemEntity);
-     */
-    suggestAddItem(input: ContractSuggestAddItem, options?: RpcOptions): UnaryCall<ContractSuggestAddItem, ItemEntity> {
-        const method = this.methods[21], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestAddItem, ItemEntity>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactAddItem(communication.ContractReactAddItem) returns (communication.ContractEditResponse);
-     */
-    reactAddItem(input: ContractReactAddItem, options?: RpcOptions): UnaryCall<ContractReactAddItem, ContractEditResponse> {
-        const method = this.methods[22], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactAddItem, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestDeleteItem(communication.ContractSuggestDelItem) returns (communication.ContractEditResponse);
-     */
-    suggestDeleteItem(input: ContractSuggestDelItem, options?: RpcOptions): UnaryCall<ContractSuggestDelItem, ContractEditResponse> {
-        const method = this.methods[23], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestDelItem, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactDeleteItem(communication.ContractReactDelItem) returns (communication.ContractEditResponse);
-     */
-    reactDeleteItem(input: ContractReactDelItem, options?: RpcOptions): UnaryCall<ContractReactDelItem, ContractEditResponse> {
-        const method = this.methods[24], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactDelItem, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestAddDeadline(communication.ContractSuggestAddDeadline) returns (communication.DeadlineEntity);
-     */
-    suggestAddDeadline(input: ContractSuggestAddDeadline, options?: RpcOptions): UnaryCall<ContractSuggestAddDeadline, DeadlineEntity> {
-        const method = this.methods[25], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestAddDeadline, DeadlineEntity>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactAddDeadline(communication.ContractReactAddDeadline) returns (communication.ContractEditResponse);
-     */
-    reactAddDeadline(input: ContractReactAddDeadline, options?: RpcOptions): UnaryCall<ContractReactAddDeadline, ContractEditResponse> {
-        const method = this.methods[26], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactAddDeadline, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestDeleteDeadline(communication.ContractSuggestDelDeadline) returns (communication.ContractEditResponse);
-     */
-    suggestDeleteDeadline(input: ContractSuggestDelDeadline, options?: RpcOptions): UnaryCall<ContractSuggestDelDeadline, ContractEditResponse> {
-        const method = this.methods[27], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestDelDeadline, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactDeleteDeadline(communication.ContractReactDelDeadline) returns (communication.ContractEditResponse);
-     */
-    reactDeleteDeadline(input: ContractReactDelDeadline, options?: RpcOptions): UnaryCall<ContractReactDelDeadline, ContractEditResponse> {
-        const method = this.methods[28], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactDelDeadline, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SuggestDeadlineItems(communication.ContractSuggestDeadlineItems) returns (communication.ContractEditResponse);
-     */
-    suggestDeadlineItems(input: ContractSuggestDeadlineItems, options?: RpcOptions): UnaryCall<ContractSuggestDeadlineItems, ContractEditResponse> {
-        const method = this.methods[29], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSuggestDeadlineItems, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: ReactDeadlineItems(communication.ContractReactDeadlineItems) returns (communication.ContractEditResponse);
-     */
-    reactDeadlineItems(input: ContractReactDeadlineItems, options?: RpcOptions): UnaryCall<ContractReactDeadlineItems, ContractEditResponse> {
-        const method = this.methods[30], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractReactDeadlineItems, ContractEditResponse>("unary", this._transport, method, opt, input);
+        return stackIntercept<ReactPriceReq, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ToggleLock(communication.ContractToggleLockRequest) returns (communication.ContractEditResponse);
      */
     toggleLock(input: ContractToggleLockRequest, options?: RpcOptions): UnaryCall<ContractToggleLockRequest, ContractEditResponse> {
-        const method = this.methods[31], opt = this._transport.mergeOptions(options);
+        const method = this.methods[15], opt = this._transport.mergeOptions(options);
         return stackIntercept<ContractToggleLockRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ReactLock(communication.ContractReactLockRequest) returns (communication.ContractEditResponse);
      */
     reactLock(input: ContractReactLockRequest, options?: RpcOptions): UnaryCall<ContractReactLockRequest, ContractEditResponse> {
-        const method = this.methods[32], opt = this._transport.mergeOptions(options);
+        const method = this.methods[16], opt = this._transport.mergeOptions(options);
         return stackIntercept<ContractReactLockRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: SettleItem(communication.ContractSettleItemRequest) returns (communication.ContractEditResponse);
-     */
-    settleItem(input: ContractSettleItemRequest, options?: RpcOptions): UnaryCall<ContractSettleItemRequest, ContractEditResponse> {
-        const method = this.methods[33], opt = this._transport.mergeOptions(options);
-        return stackIntercept<ContractSettleItemRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: RequestAdmin(communication.ContractAdminSupport) returns (communication.NullResponse);
      */
     requestAdmin(input: ContractAdminSupport, options?: RpcOptions): UnaryCall<ContractAdminSupport, NullResponse> {
-        const method = this.methods[34], opt = this._transport.mergeOptions(options);
+        const method = this.methods[17], opt = this._transport.mergeOptions(options);
         return stackIntercept<ContractAdminSupport, NullResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: ResolveAdmin(communication.ContractAdminSupport) returns (communication.NullResponse);
      */
     resolveAdmin(input: ContractAdminSupport, options?: RpcOptions): UnaryCall<ContractAdminSupport, NullResponse> {
-        const method = this.methods[35], opt = this._transport.mergeOptions(options);
+        const method = this.methods[18], opt = this._transport.mergeOptions(options);
         return stackIntercept<ContractAdminSupport, NullResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: FinishDeadline(communication.FinishDeadlineRequest) returns (communication.NullResponse);
-     */
-    finishDeadline(input: FinishDeadlineRequest, options?: RpcOptions): UnaryCall<FinishDeadlineRequest, NullResponse> {
-        const method = this.methods[36], opt = this._transport.mergeOptions(options);
-        return stackIntercept<FinishDeadlineRequest, NullResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetFigmaConnected(communication.FigmaFileConnectRequest) returns (communication.ContractEditResponse);
      */
     setFigmaConnected(input: FigmaFileConnectRequest, options?: RpcOptions): UnaryCall<FigmaFileConnectRequest, ContractEditResponse> {
-        const method = this.methods[37], opt = this._transport.mergeOptions(options);
+        const method = this.methods[19], opt = this._transport.mergeOptions(options);
         return stackIntercept<FigmaFileConnectRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: SetItemFigmaNodes(communication.FigmaItemRequest) returns (communication.ContractEditResponse);
      */
     setItemFigmaNodes(input: FigmaItemRequest, options?: RpcOptions): UnaryCall<FigmaItemRequest, ContractEditResponse> {
-        const method = this.methods[38], opt = this._transport.mergeOptions(options);
+        const method = this.methods[20], opt = this._transport.mergeOptions(options);
         return stackIntercept<FigmaItemRequest, ContractEditResponse>("unary", this._transport, method, opt, input);
     }
 }

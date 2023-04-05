@@ -23,8 +23,17 @@ var global =
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
+var communication_deadline_pb = require('../communication/deadline_pb.js');
+goog.object.extend(proto, communication_deadline_pb);
+var communication_user_pb = require('../communication/user_pb.js');
+goog.object.extend(proto, communication_user_pb);
+var communication_item_pb = require('../communication/item_pb.js');
+goog.object.extend(proto, communication_item_pb);
+var communication_generic_pb = require('../communication/generic_pb.js');
+goog.object.extend(proto, communication_generic_pb);
+var communication_requests_pb = require('../communication/requests_pb.js');
+goog.object.extend(proto, communication_requests_pb);
 goog.exportSymbol('proto.communication.ClaimContractRequest', null, global);
-goog.exportSymbol('proto.communication.ConfirmDeadlineRequest', null, global);
 goog.exportSymbol('proto.communication.ContractAdminSupport', null, global);
 goog.exportSymbol('proto.communication.ContractCreateRequest', null, global);
 goog.exportSymbol('proto.communication.ContractDeleteDraftRequest', null, global);
@@ -34,49 +43,22 @@ goog.exportSymbol('proto.communication.ContractFinishCreationRequest', null, glo
 goog.exportSymbol('proto.communication.ContractInviteNub', null, global);
 goog.exportSymbol('proto.communication.ContractNub', null, global);
 goog.exportSymbol('proto.communication.ContractNubSet', null, global);
-goog.exportSymbol('proto.communication.ContractReactAddDeadline', null, global);
-goog.exportSymbol('proto.communication.ContractReactAddItem', null, global);
-goog.exportSymbol('proto.communication.ContractReactDate', null, global);
-goog.exportSymbol('proto.communication.ContractReactDeadlineItems', null, global);
-goog.exportSymbol('proto.communication.ContractReactDelDeadline', null, global);
-goog.exportSymbol('proto.communication.ContractReactDelItem', null, global);
-goog.exportSymbol('proto.communication.ContractReactItem', null, global);
 goog.exportSymbol('proto.communication.ContractReactLockRequest', null, global);
-goog.exportSymbol('proto.communication.ContractReactPayout', null, global);
-goog.exportSymbol('proto.communication.ContractReactPrice', null, global);
 goog.exportSymbol('proto.communication.ContractResponse', null, global);
-goog.exportSymbol('proto.communication.ContractSettleItemRequest', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestAddDeadline', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestAddItem', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestDate', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestDeadlineItems', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestDelDeadline', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestDelItem', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestItem', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestPayout', null, global);
-goog.exportSymbol('proto.communication.ContractSuggestPrice', null, global);
 goog.exportSymbol('proto.communication.ContractToggleLockRequest', null, global);
 goog.exportSymbol('proto.communication.ContractUpdateRequest', null, global);
-goog.exportSymbol('proto.communication.DeadlineEntity', null, global);
-goog.exportSymbol('proto.communication.DeadlineNub', null, global);
 goog.exportSymbol('proto.communication.EmailChangeRequest', null, global);
 goog.exportSymbol('proto.communication.EmailChangeResponse', null, global);
 goog.exportSymbol('proto.communication.EmailResendRequest', null, global);
 goog.exportSymbol('proto.communication.FigmaFileConnectRequest', null, global);
 goog.exportSymbol('proto.communication.FigmaItemRequest', null, global);
 goog.exportSymbol('proto.communication.FigmaLinkRequest', null, global);
-goog.exportSymbol('proto.communication.FinishDeadlineRequest', null, global);
 goog.exportSymbol('proto.communication.InviteDataRequest', null, global);
-goog.exportSymbol('proto.communication.ItemEntity', null, global);
-goog.exportSymbol('proto.communication.ItemNub', null, global);
-goog.exportSymbol('proto.communication.NullResponse', null, global);
 goog.exportSymbol('proto.communication.PriceEntity', null, global);
-goog.exportSymbol('proto.communication.QueryByIdRequest', null, global);
-goog.exportSymbol('proto.communication.QueryByUserRequest', null, global);
+goog.exportSymbol('proto.communication.ReactPriceReq', null, global);
 goog.exportSymbol('proto.communication.SettleContractRequest', null, global);
 goog.exportSymbol('proto.communication.SignContractRequest', null, global);
-goog.exportSymbol('proto.communication.UndoDeadlineRequest', null, global);
-goog.exportSymbol('proto.communication.UserNubEntity', null, global);
+goog.exportSymbol('proto.communication.SuggestPriceReq', null, global);
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -97,48 +79,6 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.communication.PriceEntity.displayName = 'proto.communication.PriceEntity';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.DeadlineEntity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.DeadlineEntity.repeatedFields_, null);
-};
-goog.inherits(proto.communication.DeadlineEntity, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.DeadlineEntity.displayName = 'proto.communication.DeadlineEntity';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.DeadlineNub = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.DeadlineNub, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.DeadlineNub.displayName = 'proto.communication.DeadlineNub';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -255,69 +195,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.communication.UserNubEntity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.UserNubEntity, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.UserNubEntity.displayName = 'proto.communication.UserNubEntity';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ItemEntity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ItemEntity, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ItemEntity.displayName = 'proto.communication.ItemEntity';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ItemNub = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ItemNub, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ItemNub.displayName = 'proto.communication.ItemNub';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.communication.ContractCreateRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.ContractCreateRequest.repeatedFields_, null);
 };
@@ -381,405 +258,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.communication.QueryByIdRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.QueryByIdRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.QueryByIdRequest.displayName = 'proto.communication.QueryByIdRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestPrice = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestPrice, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestPrice.displayName = 'proto.communication.ContractSuggestPrice';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactPrice = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactPrice, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactPrice.displayName = 'proto.communication.ContractReactPrice';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestDate = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestDate, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestDate.displayName = 'proto.communication.ContractSuggestDate';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestPayout = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestPayout, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestPayout.displayName = 'proto.communication.ContractSuggestPayout';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestDeadlineItems = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.ContractSuggestDeadlineItems.repeatedFields_, null);
-};
-goog.inherits(proto.communication.ContractSuggestDeadlineItems, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestDeadlineItems.displayName = 'proto.communication.ContractSuggestDeadlineItems';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactDeadlineItems = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactDeadlineItems, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactDeadlineItems.displayName = 'proto.communication.ContractReactDeadlineItems';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactDate = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactDate, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactDate.displayName = 'proto.communication.ContractReactDate';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactPayout = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactPayout, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactPayout.displayName = 'proto.communication.ContractReactPayout';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestItem.displayName = 'proto.communication.ContractSuggestItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactItem.displayName = 'proto.communication.ContractReactItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestAddItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestAddItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestAddItem.displayName = 'proto.communication.ContractSuggestAddItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactAddItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactAddItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactAddItem.displayName = 'proto.communication.ContractReactAddItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestDelItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestDelItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestDelItem.displayName = 'proto.communication.ContractSuggestDelItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactDelItem = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactDelItem, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactDelItem.displayName = 'proto.communication.ContractReactDelItem';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestAddDeadline = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestAddDeadline, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestAddDeadline.displayName = 'proto.communication.ContractSuggestAddDeadline';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactAddDeadline = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactAddDeadline, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactAddDeadline.displayName = 'proto.communication.ContractReactAddDeadline';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractSuggestDelDeadline = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSuggestDelDeadline, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSuggestDelDeadline.displayName = 'proto.communication.ContractSuggestDelDeadline';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ContractReactDelDeadline = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractReactDelDeadline, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractReactDelDeadline.displayName = 'proto.communication.ContractReactDelDeadline';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.communication.ContractResponse = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -790,27 +268,6 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.communication.ContractResponse.displayName = 'proto.communication.ContractResponse';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.QueryByUserRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.QueryByUserRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.QueryByUserRequest.displayName = 'proto.communication.QueryByUserRequest';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -885,69 +342,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.communication.FinishDeadlineRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.FinishDeadlineRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.FinishDeadlineRequest.displayName = 'proto.communication.FinishDeadlineRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.ConfirmDeadlineRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ConfirmDeadlineRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ConfirmDeadlineRequest.displayName = 'proto.communication.ConfirmDeadlineRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.UndoDeadlineRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.UndoDeadlineRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.UndoDeadlineRequest.displayName = 'proto.communication.UndoDeadlineRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.communication.ContractAdminSupport = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1011,27 +405,6 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.communication.ContractSettleItemRequest = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.ContractSettleItemRequest, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.ContractSettleItemRequest.displayName = 'proto.communication.ContractSettleItemRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
 proto.communication.ContractDeleteDraftRequest = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1042,27 +415,6 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.communication.ContractDeleteDraftRequest.displayName = 'proto.communication.ContractDeleteDraftRequest';
-}
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.communication.NullResponse = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
-};
-goog.inherits(proto.communication.NullResponse, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  /**
-   * @public
-   * @override
-   */
-  proto.communication.NullResponse.displayName = 'proto.communication.NullResponse';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -1210,6 +562,48 @@ if (goog.DEBUG && !COMPILED) {
    * @override
    */
   proto.communication.FigmaFileConnectRequest.displayName = 'proto.communication.FigmaFileConnectRequest';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.communication.SuggestPriceReq = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.communication.SuggestPriceReq, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.communication.SuggestPriceReq.displayName = 'proto.communication.SuggestPriceReq';
+}
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.communication.ReactPriceReq = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.communication.ReactPriceReq, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  /**
+   * @public
+   * @override
+   */
+  proto.communication.ReactPriceReq.displayName = 'proto.communication.ReactPriceReq';
 }
 
 
@@ -1467,1241 +861,6 @@ proto.communication.PriceEntity.prototype.setProposerId = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.communication.DeadlineEntity.repeatedFields_ = [24,14];
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.DeadlineEntity.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.DeadlineEntity.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.DeadlineEntity} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.DeadlineEntity.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 18, ""),
-    complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    expired: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    buyerSettled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
-    awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 20, false),
-    awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 21, false),
-    deadlineProposerId: jspb.Message.getFieldWithDefault(msg, 22, ""),
-    currentPayout: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    workerPayout: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    buyerPayout: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    payoutAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    payoutProposerId: jspb.Message.getFieldWithDefault(msg, 13, ""),
-    currentDate: (f = msg.getCurrentDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    workerDate: (f = msg.getWorkerDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    buyerDate: (f = msg.getBuyerDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    dateAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
-    dateProposerId: jspb.Message.getFieldWithDefault(msg, 17, ""),
-    draftRequired: jspb.Message.getBooleanFieldWithDefault(msg, 19, false),
-    itemsProposerId: jspb.Message.getFieldWithDefault(msg, 23, ""),
-    itemStatesList: (f = jspb.Message.getRepeatedField(msg, 24)) == null ? undefined : f,
-    itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.communication.ItemNub.toObject, includeInstance),
-    itemsAwaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.DeadlineEntity}
- */
-proto.communication.DeadlineEntity.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.DeadlineEntity;
-  return proto.communication.DeadlineEntity.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.DeadlineEntity} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.DeadlineEntity}
- */
-proto.communication.DeadlineEntity.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 18:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
-    case 25:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setComplete(value);
-      break;
-    case 31:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setExpired(value);
-      break;
-    case 27:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerSettled(value);
-      break;
-    case 20:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAwaitingCreation(value);
-      break;
-    case 21:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAwaitingDeletion(value);
-      break;
-    case 22:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineProposerId(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setCurrentPayout(value);
-      break;
-    case 7:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setWorkerPayout(value);
-      break;
-    case 10:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setBuyerPayout(value);
-      break;
-    case 12:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPayoutAwaitingApproval(value);
-      break;
-    case 13:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPayoutProposerId(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCurrentDate(value);
-      break;
-    case 8:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setWorkerDate(value);
-      break;
-    case 11:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setBuyerDate(value);
-      break;
-    case 16:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDateAwaitingApproval(value);
-      break;
-    case 17:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDateProposerId(value);
-      break;
-    case 19:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDraftRequired(value);
-      break;
-    case 23:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemsProposerId(value);
-      break;
-    case 24:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addItemStates(values[i]);
-      }
-      break;
-    case 14:
-      var value = new proto.communication.ItemNub;
-      reader.readMessage(value,proto.communication.ItemNub.deserializeBinaryFromReader);
-      msg.addItems(value);
-      break;
-    case 15:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setItemsAwaitingApproval(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.DeadlineEntity.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.DeadlineEntity.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.DeadlineEntity} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.DeadlineEntity.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      18,
-      f
-    );
-  }
-  f = message.getComplete();
-  if (f) {
-    writer.writeBool(
-      25,
-      f
-    );
-  }
-  f = message.getExpired();
-  if (f) {
-    writer.writeBool(
-      31,
-      f
-    );
-  }
-  f = message.getBuyerSettled();
-  if (f) {
-    writer.writeBool(
-      27,
-      f
-    );
-  }
-  f = message.getAwaitingCreation();
-  if (f) {
-    writer.writeBool(
-      20,
-      f
-    );
-  }
-  f = message.getAwaitingDeletion();
-  if (f) {
-    writer.writeBool(
-      21,
-      f
-    );
-  }
-  f = message.getDeadlineProposerId();
-  if (f.length > 0) {
-    writer.writeString(
-      22,
-      f
-    );
-  }
-  f = message.getCurrentPayout();
-  if (f !== 0) {
-    writer.writeInt64(
-      4,
-      f
-    );
-  }
-  f = message.getWorkerPayout();
-  if (f !== 0) {
-    writer.writeInt64(
-      7,
-      f
-    );
-  }
-  f = message.getBuyerPayout();
-  if (f !== 0) {
-    writer.writeInt64(
-      10,
-      f
-    );
-  }
-  f = message.getPayoutAwaitingApproval();
-  if (f) {
-    writer.writeBool(
-      12,
-      f
-    );
-  }
-  f = message.getPayoutProposerId();
-  if (f.length > 0) {
-    writer.writeString(
-      13,
-      f
-    );
-  }
-  f = message.getCurrentDate();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getWorkerDate();
-  if (f != null) {
-    writer.writeMessage(
-      8,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getBuyerDate();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-  f = message.getDateAwaitingApproval();
-  if (f) {
-    writer.writeBool(
-      16,
-      f
-    );
-  }
-  f = message.getDateProposerId();
-  if (f.length > 0) {
-    writer.writeString(
-      17,
-      f
-    );
-  }
-  f = message.getDraftRequired();
-  if (f) {
-    writer.writeBool(
-      19,
-      f
-    );
-  }
-  f = message.getItemsProposerId();
-  if (f.length > 0) {
-    writer.writeString(
-      23,
-      f
-    );
-  }
-  f = message.getItemStatesList();
-  if (f.length > 0) {
-    writer.writePackedUint32(
-      24,
-      f
-    );
-  }
-  f = message.getItemsList();
-  if (f.length > 0) {
-    writer.writeRepeatedMessage(
-      14,
-      f,
-      proto.communication.ItemNub.serializeBinaryToWriter
-    );
-  }
-  f = message.getItemsAwaitingApproval();
-  if (f) {
-    writer.writeBool(
-      15,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string id = 1;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string name = 18;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 18, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 18, value);
-};
-
-
-/**
- * optional bool complete = 25;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getComplete = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setComplete = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 25, value);
-};
-
-
-/**
- * optional bool expired = 31;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getExpired = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setExpired = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 31, value);
-};
-
-
-/**
- * optional bool buyer_settled = 27;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getBuyerSettled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setBuyerSettled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 27, value);
-};
-
-
-/**
- * optional bool awaiting_creation = 20;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getAwaitingCreation = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 20, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setAwaitingCreation = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 20, value);
-};
-
-
-/**
- * optional bool awaiting_deletion = 21;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getAwaitingDeletion = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 21, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setAwaitingDeletion = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 21, value);
-};
-
-
-/**
- * optional string deadline_proposer_id = 22;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getDeadlineProposerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 22, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setDeadlineProposerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 22, value);
-};
-
-
-/**
- * optional int64 current_payout = 4;
- * @return {number}
- */
-proto.communication.DeadlineEntity.prototype.getCurrentPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setCurrentPayout = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional int64 worker_payout = 7;
- * @return {number}
- */
-proto.communication.DeadlineEntity.prototype.getWorkerPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setWorkerPayout = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
-};
-
-
-/**
- * optional int64 buyer_payout = 10;
- * @return {number}
- */
-proto.communication.DeadlineEntity.prototype.getBuyerPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setBuyerPayout = function(value) {
-  return jspb.Message.setProto3IntField(this, 10, value);
-};
-
-
-/**
- * optional bool payout_awaiting_approval = 12;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getPayoutAwaitingApproval = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setPayoutAwaitingApproval = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 12, value);
-};
-
-
-/**
- * optional string payout_proposer_id = 13;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getPayoutProposerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 13, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setPayoutProposerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 13, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp current_date = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.communication.DeadlineEntity.prototype.getCurrentDate = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.communication.DeadlineEntity} returns this
-*/
-proto.communication.DeadlineEntity.prototype.setCurrentDate = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.clearCurrentDate = function() {
-  return this.setCurrentDate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.hasCurrentDate = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp worker_date = 8;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.communication.DeadlineEntity.prototype.getWorkerDate = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 8));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.communication.DeadlineEntity} returns this
-*/
-proto.communication.DeadlineEntity.prototype.setWorkerDate = function(value) {
-  return jspb.Message.setWrapperField(this, 8, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.clearWorkerDate = function() {
-  return this.setWorkerDate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.hasWorkerDate = function() {
-  return jspb.Message.getField(this, 8) != null;
-};
-
-
-/**
- * optional google.protobuf.Timestamp buyer_date = 11;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.communication.DeadlineEntity.prototype.getBuyerDate = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 11));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.communication.DeadlineEntity} returns this
-*/
-proto.communication.DeadlineEntity.prototype.setBuyerDate = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.clearBuyerDate = function() {
-  return this.setBuyerDate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.hasBuyerDate = function() {
-  return jspb.Message.getField(this, 11) != null;
-};
-
-
-/**
- * optional bool date_awaiting_approval = 16;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getDateAwaitingApproval = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setDateAwaitingApproval = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 16, value);
-};
-
-
-/**
- * optional string date_proposer_id = 17;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getDateProposerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 17, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setDateProposerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 17, value);
-};
-
-
-/**
- * optional bool draft_required = 19;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getDraftRequired = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 19, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setDraftRequired = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 19, value);
-};
-
-
-/**
- * optional string items_proposer_id = 23;
- * @return {string}
- */
-proto.communication.DeadlineEntity.prototype.getItemsProposerId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setItemsProposerId = function(value) {
-  return jspb.Message.setProto3StringField(this, 23, value);
-};
-
-
-/**
- * repeated uint32 item_states = 24;
- * @return {!Array<number>}
- */
-proto.communication.DeadlineEntity.prototype.getItemStatesList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 24));
-};
-
-
-/**
- * @param {!Array<number>} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setItemStatesList = function(value) {
-  return jspb.Message.setField(this, 24, value || []);
-};
-
-
-/**
- * @param {number} value
- * @param {number=} opt_index
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.addItemStates = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 24, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.clearItemStatesList = function() {
-  return this.setItemStatesList([]);
-};
-
-
-/**
- * repeated ItemNub items = 14;
- * @return {!Array<!proto.communication.ItemNub>}
- */
-proto.communication.DeadlineEntity.prototype.getItemsList = function() {
-  return /** @type{!Array<!proto.communication.ItemNub>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.ItemNub, 14));
-};
-
-
-/**
- * @param {!Array<!proto.communication.ItemNub>} value
- * @return {!proto.communication.DeadlineEntity} returns this
-*/
-proto.communication.DeadlineEntity.prototype.setItemsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 14, value);
-};
-
-
-/**
- * @param {!proto.communication.ItemNub=} opt_value
- * @param {number=} opt_index
- * @return {!proto.communication.ItemNub}
- */
-proto.communication.DeadlineEntity.prototype.addItems = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 14, opt_value, proto.communication.ItemNub, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.clearItemsList = function() {
-  return this.setItemsList([]);
-};
-
-
-/**
- * optional bool items_awaiting_approval = 15;
- * @return {boolean}
- */
-proto.communication.DeadlineEntity.prototype.getItemsAwaitingApproval = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineEntity} returns this
- */
-proto.communication.DeadlineEntity.prototype.setItemsAwaitingApproval = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 15, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.DeadlineNub.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.DeadlineNub.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.DeadlineNub} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.DeadlineNub.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    complete: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    expired: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    currentPayout: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    currentDate: (f = msg.getCurrentDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.DeadlineNub}
- */
-proto.communication.DeadlineNub.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.DeadlineNub;
-  return proto.communication.DeadlineNub.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.DeadlineNub} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.DeadlineNub}
- */
-proto.communication.DeadlineNub.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 25:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setComplete(value);
-      break;
-    case 31:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setExpired(value);
-      break;
-    case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setCurrentPayout(value);
-      break;
-    case 5:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setCurrentDate(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.DeadlineNub.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.DeadlineNub.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.DeadlineNub} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.DeadlineNub.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getComplete();
-  if (f) {
-    writer.writeBool(
-      25,
-      f
-    );
-  }
-  f = message.getExpired();
-  if (f) {
-    writer.writeBool(
-      31,
-      f
-    );
-  }
-  f = message.getCurrentPayout();
-  if (f !== 0) {
-    writer.writeInt64(
-      4,
-      f
-    );
-  }
-  f = message.getCurrentDate();
-  if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string id = 1;
- * @return {string}
- */
-proto.communication.DeadlineNub.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.setId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.DeadlineNub.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional bool complete = 25;
- * @return {boolean}
- */
-proto.communication.DeadlineNub.prototype.getComplete = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.setComplete = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 25, value);
-};
-
-
-/**
- * optional bool expired = 31;
- * @return {boolean}
- */
-proto.communication.DeadlineNub.prototype.getExpired = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 31, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.setExpired = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 31, value);
-};
-
-
-/**
- * optional int64 current_payout = 4;
- * @return {number}
- */
-proto.communication.DeadlineNub.prototype.getCurrentPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.setCurrentPayout = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp current_date = 5;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.communication.DeadlineNub.prototype.getCurrentDate = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 5));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.communication.DeadlineNub} returns this
-*/
-proto.communication.DeadlineNub.prototype.setCurrentDate = function(value) {
-  return jspb.Message.setWrapperField(this, 5, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.DeadlineNub} returns this
- */
-proto.communication.DeadlineNub.prototype.clearCurrentDate = function() {
-  return this.setCurrentDate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.DeadlineNub.prototype.hasCurrentDate = function() {
-  return jspb.Message.getField(this, 5) != null;
-};
-
-
-
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
 proto.communication.ContractEntity.repeatedFields_ = [5,7];
 
 
@@ -2739,11 +898,11 @@ proto.communication.ContractEntity.toObject = function(includeInstance, msg) {
     invitedEmail: jspb.Message.getFieldWithDefault(msg, 11, ""),
     invitePassword: jspb.Message.getFieldWithDefault(msg, 18, ""),
     linkShare: jspb.Message.getBooleanFieldWithDefault(msg, 22, false),
-    worker: (f = msg.getWorker()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
-    buyer: (f = msg.getBuyer()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
+    worker: (f = msg.getWorker()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
+    buyer: (f = msg.getBuyer()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
-    proto.communication.DeadlineEntity.toObject, includeInstance),
+    communication_deadline_pb.DeadlineEntity.toObject, includeInstance),
     currentDeadlineId: jspb.Message.getFieldWithDefault(msg, 15, ""),
     title: jspb.Message.getFieldWithDefault(msg, 8, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 6, ""),
@@ -2752,7 +911,7 @@ proto.communication.ContractEntity.toObject = function(includeInstance, msg) {
     workerApproved: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
     buyerApproved: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.communication.ItemEntity.toObject, includeInstance),
+    communication_item_pb.ItemEntity.toObject, includeInstance),
     roomId: jspb.Message.getFieldWithDefault(msg, 10, ""),
     disputed: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     adminRequested: jspb.Message.getBooleanFieldWithDefault(msg, 17, false),
@@ -2813,13 +972,13 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
       msg.setLinkShare(value);
       break;
     case 2:
-      var value = new proto.communication.UserNubEntity;
-      reader.readMessage(value,proto.communication.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setWorker(value);
       break;
     case 3:
-      var value = new proto.communication.UserNubEntity;
-      reader.readMessage(value,proto.communication.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setBuyer(value);
       break;
     case 4:
@@ -2828,8 +987,8 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
       msg.setPrice(value);
       break;
     case 5:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.addDeadlines(value);
       break;
     case 15:
@@ -2861,8 +1020,8 @@ proto.communication.ContractEntity.deserializeBinaryFromReader = function(msg, r
       msg.setBuyerApproved(value);
       break;
     case 7:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.addItems(value);
       break;
     case 10:
@@ -2955,7 +1114,7 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
     writer.writeMessage(
       2,
       f,
-      proto.communication.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getBuyer();
@@ -2963,7 +1122,7 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
     writer.writeMessage(
       3,
       f,
-      proto.communication.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getPrice();
@@ -2979,7 +1138,7 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
     writer.writeRepeatedMessage(
       5,
       f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getCurrentDeadlineId();
@@ -3036,7 +1195,7 @@ proto.communication.ContractEntity.serializeBinaryToWriter = function(message, w
     writer.writeRepeatedMessage(
       7,
       f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
   f = message.getRoomId();
@@ -3169,7 +1328,7 @@ proto.communication.ContractEntity.prototype.setLinkShare = function(value) {
  */
 proto.communication.ContractEntity.prototype.getWorker = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.UserNubEntity, 2));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 2));
 };
 
 
@@ -3206,7 +1365,7 @@ proto.communication.ContractEntity.prototype.hasWorker = function() {
  */
 proto.communication.ContractEntity.prototype.getBuyer = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.UserNubEntity, 3));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 3));
 };
 
 
@@ -3280,7 +1439,7 @@ proto.communication.ContractEntity.prototype.hasPrice = function() {
  */
 proto.communication.ContractEntity.prototype.getDeadlinesList = function() {
   return /** @type{!Array<!proto.communication.DeadlineEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.DeadlineEntity, 5));
+    jspb.Message.getRepeatedWrapperField(this, communication_deadline_pb.DeadlineEntity, 5));
 };
 
 
@@ -3444,7 +1603,7 @@ proto.communication.ContractEntity.prototype.setBuyerApproved = function(value) 
  */
 proto.communication.ContractEntity.prototype.getItemsList = function() {
   return /** @type{!Array<!proto.communication.ItemEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.ItemEntity, 7));
+    jspb.Message.getRepeatedWrapperField(this, communication_item_pb.ItemEntity, 7));
 };
 
 
@@ -3655,7 +1814,7 @@ proto.communication.ContractNub.toObject = function(includeInstance, msg) {
     figmaLink: jspb.Message.getFieldWithDefault(msg, 13, ""),
     figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
-    proto.communication.DeadlineNub.toObject, includeInstance)
+    communication_deadline_pb.DeadlineNub.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -3746,8 +1905,8 @@ proto.communication.ContractNub.deserializeBinaryFromReader = function(msg, read
       msg.setFigmaConnected(value);
       break;
     case 11:
-      var value = new proto.communication.DeadlineNub;
-      reader.readMessage(value,proto.communication.DeadlineNub.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineNub;
+      reader.readMessage(value,communication_deadline_pb.DeadlineNub.deserializeBinaryFromReader);
       msg.addDeadlines(value);
       break;
     default:
@@ -3876,7 +2035,7 @@ proto.communication.ContractNub.serializeBinaryToWriter = function(message, writ
     writer.writeRepeatedMessage(
       11,
       f,
-      proto.communication.DeadlineNub.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineNub.serializeBinaryToWriter
     );
   }
 };
@@ -4141,7 +2300,7 @@ proto.communication.ContractNub.prototype.setFigmaConnected = function(value) {
  */
 proto.communication.ContractNub.prototype.getDeadlinesList = function() {
   return /** @type{!Array<!proto.communication.DeadlineNub>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.DeadlineNub, 11));
+    jspb.Message.getRepeatedWrapperField(this, communication_deadline_pb.DeadlineNub, 11));
 };
 
 
@@ -4376,15 +2535,15 @@ proto.communication.ContractInviteNub.toObject = function(includeInstance, msg) 
     invitedEmail: jspb.Message.getFieldWithDefault(msg, 11, ""),
     linkShare: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
     invitedUserInSystem: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    worker: (f = msg.getWorker()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
-    buyer: (f = msg.getBuyer()) && proto.communication.UserNubEntity.toObject(includeInstance, f),
+    worker: (f = msg.getWorker()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
+    buyer: (f = msg.getBuyer()) && communication_user_pb.UserNubEntity.toObject(includeInstance, f),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
-    proto.communication.DeadlineEntity.toObject, includeInstance),
+    communication_deadline_pb.DeadlineEntity.toObject, includeInstance),
     title: jspb.Message.getFieldWithDefault(msg, 8, ""),
     summary: jspb.Message.getFieldWithDefault(msg, 6, ""),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.communication.ItemEntity.toObject, includeInstance)
+    communication_item_pb.ItemEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -4438,13 +2597,13 @@ proto.communication.ContractInviteNub.deserializeBinaryFromReader = function(msg
       msg.setInvitedUserInSystem(value);
       break;
     case 2:
-      var value = new proto.communication.UserNubEntity;
-      reader.readMessage(value,proto.communication.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setWorker(value);
       break;
     case 3:
-      var value = new proto.communication.UserNubEntity;
-      reader.readMessage(value,proto.communication.UserNubEntity.deserializeBinaryFromReader);
+      var value = new communication_user_pb.UserNubEntity;
+      reader.readMessage(value,communication_user_pb.UserNubEntity.deserializeBinaryFromReader);
       msg.setBuyer(value);
       break;
     case 4:
@@ -4453,8 +2612,8 @@ proto.communication.ContractInviteNub.deserializeBinaryFromReader = function(msg
       msg.setPrice(value);
       break;
     case 5:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.addDeadlines(value);
       break;
     case 8:
@@ -4466,8 +2625,8 @@ proto.communication.ContractInviteNub.deserializeBinaryFromReader = function(msg
       msg.setSummary(value);
       break;
     case 7:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.addItems(value);
       break;
     default:
@@ -4532,7 +2691,7 @@ proto.communication.ContractInviteNub.serializeBinaryToWriter = function(message
     writer.writeMessage(
       2,
       f,
-      proto.communication.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getBuyer();
@@ -4540,7 +2699,7 @@ proto.communication.ContractInviteNub.serializeBinaryToWriter = function(message
     writer.writeMessage(
       3,
       f,
-      proto.communication.UserNubEntity.serializeBinaryToWriter
+      communication_user_pb.UserNubEntity.serializeBinaryToWriter
     );
   }
   f = message.getPrice();
@@ -4556,7 +2715,7 @@ proto.communication.ContractInviteNub.serializeBinaryToWriter = function(message
     writer.writeRepeatedMessage(
       5,
       f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getTitle();
@@ -4578,7 +2737,7 @@ proto.communication.ContractInviteNub.serializeBinaryToWriter = function(message
     writer.writeRepeatedMessage(
       7,
       f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
 };
@@ -4662,7 +2821,7 @@ proto.communication.ContractInviteNub.prototype.setInvitedUserInSystem = functio
  */
 proto.communication.ContractInviteNub.prototype.getWorker = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.UserNubEntity, 2));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 2));
 };
 
 
@@ -4699,7 +2858,7 @@ proto.communication.ContractInviteNub.prototype.hasWorker = function() {
  */
 proto.communication.ContractInviteNub.prototype.getBuyer = function() {
   return /** @type{?proto.communication.UserNubEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.UserNubEntity, 3));
+    jspb.Message.getWrapperField(this, communication_user_pb.UserNubEntity, 3));
 };
 
 
@@ -4773,7 +2932,7 @@ proto.communication.ContractInviteNub.prototype.hasPrice = function() {
  */
 proto.communication.ContractInviteNub.prototype.getDeadlinesList = function() {
   return /** @type{!Array<!proto.communication.DeadlineEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.DeadlineEntity, 5));
+    jspb.Message.getRepeatedWrapperField(this, communication_deadline_pb.DeadlineEntity, 5));
 };
 
 
@@ -4847,7 +3006,7 @@ proto.communication.ContractInviteNub.prototype.setSummary = function(value) {
  */
 proto.communication.ContractInviteNub.prototype.getItemsList = function() {
   return /** @type{!Array<!proto.communication.ItemEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.ItemEntity, 7));
+    jspb.Message.getRepeatedWrapperField(this, communication_item_pb.ItemEntity, 7));
 };
 
 
@@ -5070,906 +3229,6 @@ proto.communication.ContractNubSet.prototype.clearContractNubsList = function() 
 
 
 
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.UserNubEntity.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.UserNubEntity.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.UserNubEntity} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.UserNubEntity.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    username: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    hasPhoto: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    photoUrl: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    workerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    buyerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.UserNubEntity}
- */
-proto.communication.UserNubEntity.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.UserNubEntity;
-  return proto.communication.UserNubEntity.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.UserNubEntity} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.UserNubEntity}
- */
-proto.communication.UserNubEntity.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUsername(value);
-      break;
-    case 5:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setHasPhoto(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPhotoUrl(value);
-      break;
-    case 6:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerModeEnabled(value);
-      break;
-    case 7:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerModeEnabled(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.UserNubEntity.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.UserNubEntity.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.UserNubEntity} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.UserNubEntity.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getUsername();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getHasPhoto();
-  if (f) {
-    writer.writeBool(
-      5,
-      f
-    );
-  }
-  f = message.getPhotoUrl();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getWorkerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      6,
-      f
-    );
-  }
-  f = message.getBuyerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      7,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string id = 1;
- * @return {string}
- */
-proto.communication.UserNubEntity.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string username = 2;
- * @return {string}
- */
-proto.communication.UserNubEntity.prototype.getUsername = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setUsername = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional bool has_photo = 5;
- * @return {boolean}
- */
-proto.communication.UserNubEntity.prototype.getHasPhoto = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setHasPhoto = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
-};
-
-
-/**
- * optional string photo_url = 4;
- * @return {string}
- */
-proto.communication.UserNubEntity.prototype.getPhotoUrl = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setPhotoUrl = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional bool worker_mode_enabled = 6;
- * @return {boolean}
- */
-proto.communication.UserNubEntity.prototype.getWorkerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setWorkerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 6, value);
-};
-
-
-/**
- * optional bool buyer_mode_enabled = 7;
- * @return {boolean}
- */
-proto.communication.UserNubEntity.prototype.getBuyerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setBuyerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 7, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ItemEntity.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ItemEntity.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ItemEntity} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ItemEntity.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    currentBody: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    workerBody: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    buyerBody: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    awaitingApproval: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    awaitingCreation: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
-    awaitingDeletion: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
-    buyerSettled: jspb.Message.getFieldWithDefault(msg, 27, 0),
-    figmaComponentId: jspb.Message.getFieldWithDefault(msg, 29, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ItemEntity}
- */
-proto.communication.ItemEntity.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ItemEntity;
-  return proto.communication.ItemEntity.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ItemEntity} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ItemEntity}
- */
-proto.communication.ItemEntity.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setCurrentBody(value);
-      break;
-    case 6:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setWorkerBody(value);
-      break;
-    case 7:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setBuyerBody(value);
-      break;
-    case 8:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAwaitingApproval(value);
-      break;
-    case 9:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAwaitingCreation(value);
-      break;
-    case 10:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAwaitingDeletion(value);
-      break;
-    case 27:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setBuyerSettled(value);
-      break;
-    case 29:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setFigmaComponentId(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ItemEntity.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ItemEntity.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ItemEntity} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ItemEntity.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getCurrentBody();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getWorkerBody();
-  if (f.length > 0) {
-    writer.writeString(
-      6,
-      f
-    );
-  }
-  f = message.getBuyerBody();
-  if (f.length > 0) {
-    writer.writeString(
-      7,
-      f
-    );
-  }
-  f = message.getAwaitingApproval();
-  if (f) {
-    writer.writeBool(
-      8,
-      f
-    );
-  }
-  f = message.getAwaitingCreation();
-  if (f) {
-    writer.writeBool(
-      9,
-      f
-    );
-  }
-  f = message.getAwaitingDeletion();
-  if (f) {
-    writer.writeBool(
-      10,
-      f
-    );
-  }
-  f = message.getBuyerSettled();
-  if (f !== 0) {
-    writer.writeUint32(
-      27,
-      f
-    );
-  }
-  f = message.getFigmaComponentId();
-  if (f.length > 0) {
-    writer.writeString(
-      29,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string id = 1;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string name = 4;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string current_body = 5;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getCurrentBody = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setCurrentBody = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional string worker_body = 6;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getWorkerBody = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setWorkerBody = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
-};
-
-
-/**
- * optional string buyer_body = 7;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getBuyerBody = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setBuyerBody = function(value) {
-  return jspb.Message.setProto3StringField(this, 7, value);
-};
-
-
-/**
- * optional bool awaiting_approval = 8;
- * @return {boolean}
- */
-proto.communication.ItemEntity.prototype.getAwaitingApproval = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setAwaitingApproval = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 8, value);
-};
-
-
-/**
- * optional bool awaiting_creation = 9;
- * @return {boolean}
- */
-proto.communication.ItemEntity.prototype.getAwaitingCreation = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setAwaitingCreation = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 9, value);
-};
-
-
-/**
- * optional bool awaiting_deletion = 10;
- * @return {boolean}
- */
-proto.communication.ItemEntity.prototype.getAwaitingDeletion = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setAwaitingDeletion = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 10, value);
-};
-
-
-/**
- * optional uint32 buyer_settled = 27;
- * @return {number}
- */
-proto.communication.ItemEntity.prototype.getBuyerSettled = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 27, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setBuyerSettled = function(value) {
-  return jspb.Message.setProto3IntField(this, 27, value);
-};
-
-
-/**
- * optional string figma_component_id = 29;
- * @return {string}
- */
-proto.communication.ItemEntity.prototype.getFigmaComponentId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 29, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemEntity} returns this
- */
-proto.communication.ItemEntity.prototype.setFigmaComponentId = function(value) {
-  return jspb.Message.setProto3StringField(this, 29, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ItemNub.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ItemNub.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ItemNub} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ItemNub.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    proposer: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ItemNub}
- */
-proto.communication.ItemNub.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ItemNub;
-  return proto.communication.ItemNub.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ItemNub} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ItemNub}
- */
-proto.communication.ItemNub.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setProposer(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ItemNub.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ItemNub.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ItemNub} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ItemNub.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getProposer();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getName();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string id = 1;
- * @return {string}
- */
-proto.communication.ItemNub.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemNub} returns this
- */
-proto.communication.ItemNub.prototype.setId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string proposer = 3;
- * @return {string}
- */
-proto.communication.ItemNub.prototype.getProposer = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemNub} returns this
- */
-proto.communication.ItemNub.prototype.setProposer = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional string name = 2;
- * @return {string}
- */
-proto.communication.ItemNub.prototype.getName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ItemNub} returns this
- */
-proto.communication.ItemNub.prototype.setName = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-
 /**
  * List of repeated fields within this message type.
  * @private {!Array<number>}
@@ -6015,9 +3274,9 @@ proto.communication.ContractCreateRequest.toObject = function(includeInstance, m
     role: jspb.Message.getFieldWithDefault(msg, 9, 0),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
-    proto.communication.DeadlineEntity.toObject, includeInstance),
+    communication_deadline_pb.DeadlineEntity.toObject, includeInstance),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.communication.ItemEntity.toObject, includeInstance)
+    communication_item_pb.ItemEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6080,13 +3339,13 @@ proto.communication.ContractCreateRequest.deserializeBinaryFromReader = function
       msg.setPrice(value);
       break;
     case 6:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.addDeadlines(value);
       break;
     case 7:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.addItems(value);
       break;
     default:
@@ -6166,7 +3425,7 @@ proto.communication.ContractCreateRequest.serializeBinaryToWriter = function(mes
     writer.writeRepeatedMessage(
       6,
       f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getItemsList();
@@ -6174,7 +3433,7 @@ proto.communication.ContractCreateRequest.serializeBinaryToWriter = function(mes
     writer.writeRepeatedMessage(
       7,
       f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
 };
@@ -6313,7 +3572,7 @@ proto.communication.ContractCreateRequest.prototype.hasPrice = function() {
  */
 proto.communication.ContractCreateRequest.prototype.getDeadlinesList = function() {
   return /** @type{!Array<!proto.communication.DeadlineEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.DeadlineEntity, 6));
+    jspb.Message.getRepeatedWrapperField(this, communication_deadline_pb.DeadlineEntity, 6));
 };
 
 
@@ -6351,7 +3610,7 @@ proto.communication.ContractCreateRequest.prototype.clearDeadlinesList = functio
  */
 proto.communication.ContractCreateRequest.prototype.getItemsList = function() {
   return /** @type{!Array<!proto.communication.ItemEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.ItemEntity, 7));
+    jspb.Message.getRepeatedWrapperField(this, communication_item_pb.ItemEntity, 7));
 };
 
 
@@ -6591,9 +3850,9 @@ proto.communication.ContractUpdateRequest.toObject = function(includeInstance, m
     role: jspb.Message.getFieldWithDefault(msg, 6, 0),
     price: (f = msg.getPrice()) && proto.communication.PriceEntity.toObject(includeInstance, f),
     deadlinesList: jspb.Message.toObjectList(msg.getDeadlinesList(),
-    proto.communication.DeadlineEntity.toObject, includeInstance),
+    communication_deadline_pb.DeadlineEntity.toObject, includeInstance),
     itemsList: jspb.Message.toObjectList(msg.getItemsList(),
-    proto.communication.ItemEntity.toObject, includeInstance)
+    communication_item_pb.ItemEntity.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6664,13 +3923,13 @@ proto.communication.ContractUpdateRequest.deserializeBinaryFromReader = function
       msg.setPrice(value);
       break;
     case 8:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.addDeadlines(value);
       break;
     case 9:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.addItems(value);
       break;
     default:
@@ -6764,7 +4023,7 @@ proto.communication.ContractUpdateRequest.serializeBinaryToWriter = function(mes
     writer.writeRepeatedMessage(
       8,
       f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getItemsList();
@@ -6772,7 +4031,7 @@ proto.communication.ContractUpdateRequest.serializeBinaryToWriter = function(mes
     writer.writeRepeatedMessage(
       9,
       f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
 };
@@ -6947,7 +4206,7 @@ proto.communication.ContractUpdateRequest.prototype.hasPrice = function() {
  */
 proto.communication.ContractUpdateRequest.prototype.getDeadlinesList = function() {
   return /** @type{!Array<!proto.communication.DeadlineEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.DeadlineEntity, 8));
+    jspb.Message.getRepeatedWrapperField(this, communication_deadline_pb.DeadlineEntity, 8));
 };
 
 
@@ -6985,7 +4244,7 @@ proto.communication.ContractUpdateRequest.prototype.clearDeadlinesList = functio
  */
 proto.communication.ContractUpdateRequest.prototype.getItemsList = function() {
   return /** @type{!Array<!proto.communication.ItemEntity>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.communication.ItemEntity, 9));
+    jspb.Message.getRepeatedWrapperField(this, communication_item_pb.ItemEntity, 9));
 };
 
 
@@ -7014,4347 +4273,6 @@ proto.communication.ContractUpdateRequest.prototype.addItems = function(opt_valu
  */
 proto.communication.ContractUpdateRequest.prototype.clearItemsList = function() {
   return this.setItemsList([]);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.QueryByIdRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.QueryByIdRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.QueryByIdRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.QueryByIdRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    contractId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    userId: jspb.Message.getFieldWithDefault(msg, 2, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.QueryByIdRequest}
- */
-proto.communication.QueryByIdRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.QueryByIdRequest;
-  return proto.communication.QueryByIdRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.QueryByIdRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.QueryByIdRequest}
- */
-proto.communication.QueryByIdRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.QueryByIdRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.QueryByIdRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.QueryByIdRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.QueryByIdRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string contract_id = 1;
- * @return {string}
- */
-proto.communication.QueryByIdRequest.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.QueryByIdRequest} returns this
- */
-proto.communication.QueryByIdRequest.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string user_id = 2;
- * @return {string}
- */
-proto.communication.QueryByIdRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.QueryByIdRequest} returns this
- */
-proto.communication.QueryByIdRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestPrice.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestPrice.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestPrice} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestPrice.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    newPrice: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestPrice}
- */
-proto.communication.ContractSuggestPrice.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestPrice;
-  return proto.communication.ContractSuggestPrice.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestPrice} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestPrice}
- */
-proto.communication.ContractSuggestPrice.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setNewPrice(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestPrice.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestPrice.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestPrice} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestPrice.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getNewPrice();
-  if (f !== 0) {
-    writer.writeInt64(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestPrice.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestPrice} returns this
- */
-proto.communication.ContractSuggestPrice.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestPrice.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestPrice} returns this
- */
-proto.communication.ContractSuggestPrice.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional int64 new_price = 3;
- * @return {number}
- */
-proto.communication.ContractSuggestPrice.prototype.getNewPrice = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractSuggestPrice} returns this
- */
-proto.communication.ContractSuggestPrice.prototype.setNewPrice = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactPrice.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactPrice.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactPrice} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactPrice.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactPrice}
- */
-proto.communication.ContractReactPrice.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactPrice;
-  return proto.communication.ContractReactPrice.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactPrice} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactPrice}
- */
-proto.communication.ContractReactPrice.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactPrice.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactPrice.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactPrice} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactPrice.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactPrice.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPrice} returns this
- */
-proto.communication.ContractReactPrice.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactPrice.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPrice} returns this
- */
-proto.communication.ContractReactPrice.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactPrice.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPrice} returns this
- */
-proto.communication.ContractReactPrice.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional uint32 status = 3;
- * @return {number}
- */
-proto.communication.ContractReactPrice.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactPrice} returns this
- */
-proto.communication.ContractReactPrice.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestDate.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestDate.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestDate} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDate.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    newDate: (f = msg.getNewDate()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestDate}
- */
-proto.communication.ContractSuggestDate.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestDate;
-  return proto.communication.ContractSuggestDate.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestDate} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestDate}
- */
-proto.communication.ContractSuggestDate.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = new google_protobuf_timestamp_pb.Timestamp;
-      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
-      msg.setNewDate(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestDate.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestDate.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestDate} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDate.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getNewDate();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestDate.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDate} returns this
- */
-proto.communication.ContractSuggestDate.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestDate.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDate} returns this
- */
-proto.communication.ContractSuggestDate.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 4;
- * @return {string}
- */
-proto.communication.ContractSuggestDate.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDate} returns this
- */
-proto.communication.ContractSuggestDate.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional google.protobuf.Timestamp new_date = 3;
- * @return {?proto.google.protobuf.Timestamp}
- */
-proto.communication.ContractSuggestDate.prototype.getNewDate = function() {
-  return /** @type{?proto.google.protobuf.Timestamp} */ (
-    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 3));
-};
-
-
-/**
- * @param {?proto.google.protobuf.Timestamp|undefined} value
- * @return {!proto.communication.ContractSuggestDate} returns this
-*/
-proto.communication.ContractSuggestDate.prototype.setNewDate = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.ContractSuggestDate} returns this
- */
-proto.communication.ContractSuggestDate.prototype.clearNewDate = function() {
-  return this.setNewDate(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.ContractSuggestDate.prototype.hasNewDate = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestPayout.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestPayout.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestPayout} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestPayout.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    newPayout: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestPayout}
- */
-proto.communication.ContractSuggestPayout.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestPayout;
-  return proto.communication.ContractSuggestPayout.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestPayout} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestPayout}
- */
-proto.communication.ContractSuggestPayout.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setNewPayout(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestPayout.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestPayout.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestPayout} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestPayout.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getNewPayout();
-  if (f !== 0) {
-    writer.writeInt64(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestPayout.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestPayout} returns this
- */
-proto.communication.ContractSuggestPayout.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestPayout.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestPayout} returns this
- */
-proto.communication.ContractSuggestPayout.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 4;
- * @return {string}
- */
-proto.communication.ContractSuggestPayout.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestPayout} returns this
- */
-proto.communication.ContractSuggestPayout.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional int64 new_payout = 3;
- * @return {number}
- */
-proto.communication.ContractSuggestPayout.prototype.getNewPayout = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractSuggestPayout} returns this
- */
-proto.communication.ContractSuggestPayout.prototype.setNewPayout = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.communication.ContractSuggestDeadlineItems.repeatedFields_ = [3];
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestDeadlineItems.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestDeadlineItems} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDeadlineItems.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    itemIdsList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestDeadlineItems}
- */
-proto.communication.ContractSuggestDeadlineItems.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestDeadlineItems;
-  return proto.communication.ContractSuggestDeadlineItems.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestDeadlineItems} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestDeadlineItems}
- */
-proto.communication.ContractSuggestDeadlineItems.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addItemIds(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestDeadlineItems.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestDeadlineItems} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDeadlineItems.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getItemIdsList();
-  if (f.length > 0) {
-    writer.writeRepeatedString(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 4;
- * @return {string}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * repeated string item_ids = 3;
- * @return {!Array<string>}
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.getItemIdsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
-};
-
-
-/**
- * @param {!Array<string>} value
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.setItemIdsList = function(value) {
-  return jspb.Message.setField(this, 3, value || []);
-};
-
-
-/**
- * @param {string} value
- * @param {number=} opt_index
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.addItemIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.ContractSuggestDeadlineItems} returns this
- */
-proto.communication.ContractSuggestDeadlineItems.prototype.clearItemIdsList = function() {
-  return this.setItemIdsList([]);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactDeadlineItems.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactDeadlineItems.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactDeadlineItems} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDeadlineItems.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactDeadlineItems}
- */
-proto.communication.ContractReactDeadlineItems.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactDeadlineItems;
-  return proto.communication.ContractReactDeadlineItems.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactDeadlineItems} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactDeadlineItems}
- */
-proto.communication.ContractReactDeadlineItems.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactDeadlineItems.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactDeadlineItems.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactDeadlineItems} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDeadlineItems.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactDeadlineItems.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDeadlineItems} returns this
- */
-proto.communication.ContractReactDeadlineItems.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactDeadlineItems.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDeadlineItems} returns this
- */
-proto.communication.ContractReactDeadlineItems.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactDeadlineItems.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDeadlineItems} returns this
- */
-proto.communication.ContractReactDeadlineItems.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string deadline_id = 5;
- * @return {string}
- */
-proto.communication.ContractReactDeadlineItems.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDeadlineItems} returns this
- */
-proto.communication.ContractReactDeadlineItems.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional uint32 status = 3;
- * @return {number}
- */
-proto.communication.ContractReactDeadlineItems.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactDeadlineItems} returns this
- */
-proto.communication.ContractReactDeadlineItems.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactDate.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactDate.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactDate} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDate.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactDate}
- */
-proto.communication.ContractReactDate.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactDate;
-  return proto.communication.ContractReactDate.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactDate} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactDate}
- */
-proto.communication.ContractReactDate.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactDate.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactDate.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactDate} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDate.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactDate.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDate} returns this
- */
-proto.communication.ContractReactDate.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactDate.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDate} returns this
- */
-proto.communication.ContractReactDate.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactDate.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDate} returns this
- */
-proto.communication.ContractReactDate.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string deadline_id = 5;
- * @return {string}
- */
-proto.communication.ContractReactDate.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDate} returns this
- */
-proto.communication.ContractReactDate.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional uint32 status = 3;
- * @return {number}
- */
-proto.communication.ContractReactDate.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactDate} returns this
- */
-proto.communication.ContractReactDate.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactPayout.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactPayout.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactPayout} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactPayout.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactPayout}
- */
-proto.communication.ContractReactPayout.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactPayout;
-  return proto.communication.ContractReactPayout.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactPayout} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactPayout}
- */
-proto.communication.ContractReactPayout.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactPayout.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactPayout.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactPayout} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactPayout.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactPayout.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPayout} returns this
- */
-proto.communication.ContractReactPayout.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactPayout.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPayout} returns this
- */
-proto.communication.ContractReactPayout.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactPayout.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPayout} returns this
- */
-proto.communication.ContractReactPayout.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string deadline_id = 5;
- * @return {string}
- */
-proto.communication.ContractReactPayout.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactPayout} returns this
- */
-proto.communication.ContractReactPayout.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional uint32 status = 3;
- * @return {number}
- */
-proto.communication.ContractReactPayout.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactPayout} returns this
- */
-proto.communication.ContractReactPayout.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    newBody: jspb.Message.getFieldWithDefault(msg, 3, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestItem}
- */
-proto.communication.ContractSuggestItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestItem;
-  return proto.communication.ContractSuggestItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestItem}
- */
-proto.communication.ContractSuggestItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setNewBody(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getNewBody();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestItem} returns this
- */
-proto.communication.ContractSuggestItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestItem} returns this
- */
-proto.communication.ContractSuggestItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string item_id = 4;
- * @return {string}
- */
-proto.communication.ContractSuggestItem.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestItem} returns this
- */
-proto.communication.ContractSuggestItem.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string new_body = 3;
- * @return {string}
- */
-proto.communication.ContractSuggestItem.prototype.getNewBody = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestItem} returns this
- */
-proto.communication.ContractSuggestItem.prototype.setNewBody = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactItem}
- */
-proto.communication.ContractReactItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactItem;
-  return proto.communication.ContractReactItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactItem}
- */
-proto.communication.ContractReactItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 5:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
-      break;
-    case 3:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
-      5,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactItem} returns this
- */
-proto.communication.ContractReactItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactItem} returns this
- */
-proto.communication.ContractReactItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactItem.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactItem} returns this
- */
-proto.communication.ContractReactItem.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string item_id = 5;
- * @return {string}
- */
-proto.communication.ContractReactItem.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactItem} returns this
- */
-proto.communication.ContractReactItem.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
-};
-
-
-/**
- * optional uint32 status = 3;
- * @return {number}
- */
-proto.communication.ContractReactItem.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactItem} returns this
- */
-proto.communication.ContractReactItem.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestAddItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestAddItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestAddItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestAddItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    item: (f = msg.getItem()) && proto.communication.ItemEntity.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestAddItem}
- */
-proto.communication.ContractSuggestAddItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestAddItem;
-  return proto.communication.ContractSuggestAddItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestAddItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestAddItem}
- */
-proto.communication.ContractSuggestAddItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
-      msg.setItem(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestAddItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestAddItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestAddItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestAddItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getItem();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestAddItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestAddItem} returns this
- */
-proto.communication.ContractSuggestAddItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestAddItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestAddItem} returns this
- */
-proto.communication.ContractSuggestAddItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional ItemEntity item = 3;
- * @return {?proto.communication.ItemEntity}
- */
-proto.communication.ContractSuggestAddItem.prototype.getItem = function() {
-  return /** @type{?proto.communication.ItemEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.ItemEntity, 3));
-};
-
-
-/**
- * @param {?proto.communication.ItemEntity|undefined} value
- * @return {!proto.communication.ContractSuggestAddItem} returns this
-*/
-proto.communication.ContractSuggestAddItem.prototype.setItem = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.ContractSuggestAddItem} returns this
- */
-proto.communication.ContractSuggestAddItem.prototype.clearItem = function() {
-  return this.setItem(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.ContractSuggestAddItem.prototype.hasItem = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactAddItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactAddItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactAddItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactAddItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 5, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactAddItem}
- */
-proto.communication.ContractReactAddItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactAddItem;
-  return proto.communication.ContractReactAddItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactAddItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactAddItem}
- */
-proto.communication.ContractReactAddItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactAddItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactAddItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactAddItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactAddItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactAddItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddItem} returns this
- */
-proto.communication.ContractReactAddItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactAddItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddItem} returns this
- */
-proto.communication.ContractReactAddItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactAddItem.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddItem} returns this
- */
-proto.communication.ContractReactAddItem.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string item_id = 3;
- * @return {string}
- */
-proto.communication.ContractReactAddItem.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddItem} returns this
- */
-proto.communication.ContractReactAddItem.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional uint32 status = 5;
- * @return {number}
- */
-proto.communication.ContractReactAddItem.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactAddItem} returns this
- */
-proto.communication.ContractReactAddItem.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestDelItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestDelItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestDelItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDelItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    item: (f = msg.getItem()) && proto.communication.ItemEntity.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestDelItem}
- */
-proto.communication.ContractSuggestDelItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestDelItem;
-  return proto.communication.ContractSuggestDelItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestDelItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestDelItem}
- */
-proto.communication.ContractSuggestDelItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = new proto.communication.ItemEntity;
-      reader.readMessage(value,proto.communication.ItemEntity.deserializeBinaryFromReader);
-      msg.setItem(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestDelItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestDelItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestDelItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDelItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getItem();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.communication.ItemEntity.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestDelItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDelItem} returns this
- */
-proto.communication.ContractSuggestDelItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestDelItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDelItem} returns this
- */
-proto.communication.ContractSuggestDelItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional ItemEntity item = 3;
- * @return {?proto.communication.ItemEntity}
- */
-proto.communication.ContractSuggestDelItem.prototype.getItem = function() {
-  return /** @type{?proto.communication.ItemEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.ItemEntity, 3));
-};
-
-
-/**
- * @param {?proto.communication.ItemEntity|undefined} value
- * @return {!proto.communication.ContractSuggestDelItem} returns this
-*/
-proto.communication.ContractSuggestDelItem.prototype.setItem = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.ContractSuggestDelItem} returns this
- */
-proto.communication.ContractSuggestDelItem.prototype.clearItem = function() {
-  return this.setItem(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.ContractSuggestDelItem.prototype.hasItem = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactDelItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactDelItem.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactDelItem} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDelItem.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 5, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactDelItem}
- */
-proto.communication.ContractReactDelItem.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactDelItem;
-  return proto.communication.ContractReactDelItem.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactDelItem} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactDelItem}
- */
-proto.communication.ContractReactDelItem.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactDelItem.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactDelItem.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactDelItem} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDelItem.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactDelItem.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelItem} returns this
- */
-proto.communication.ContractReactDelItem.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactDelItem.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelItem} returns this
- */
-proto.communication.ContractReactDelItem.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactDelItem.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelItem} returns this
- */
-proto.communication.ContractReactDelItem.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string item_id = 3;
- * @return {string}
- */
-proto.communication.ContractReactDelItem.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelItem} returns this
- */
-proto.communication.ContractReactDelItem.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional uint32 status = 5;
- * @return {number}
- */
-proto.communication.ContractReactDelItem.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactDelItem} returns this
- */
-proto.communication.ContractReactDelItem.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestAddDeadline.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestAddDeadline} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestAddDeadline.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadline: (f = msg.getDeadline()) && proto.communication.DeadlineEntity.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestAddDeadline}
- */
-proto.communication.ContractSuggestAddDeadline.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestAddDeadline;
-  return proto.communication.ContractSuggestAddDeadline.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestAddDeadline} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestAddDeadline}
- */
-proto.communication.ContractSuggestAddDeadline.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
-      msg.setDeadline(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestAddDeadline.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestAddDeadline} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestAddDeadline.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadline();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestAddDeadline} returns this
- */
-proto.communication.ContractSuggestAddDeadline.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestAddDeadline} returns this
- */
-proto.communication.ContractSuggestAddDeadline.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional DeadlineEntity deadline = 3;
- * @return {?proto.communication.DeadlineEntity}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.getDeadline = function() {
-  return /** @type{?proto.communication.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.DeadlineEntity, 3));
-};
-
-
-/**
- * @param {?proto.communication.DeadlineEntity|undefined} value
- * @return {!proto.communication.ContractSuggestAddDeadline} returns this
-*/
-proto.communication.ContractSuggestAddDeadline.prototype.setDeadline = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.ContractSuggestAddDeadline} returns this
- */
-proto.communication.ContractSuggestAddDeadline.prototype.clearDeadline = function() {
-  return this.setDeadline(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.ContractSuggestAddDeadline.prototype.hasDeadline = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactAddDeadline.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactAddDeadline.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactAddDeadline} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactAddDeadline.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 5, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactAddDeadline}
- */
-proto.communication.ContractReactAddDeadline.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactAddDeadline;
-  return proto.communication.ContractReactAddDeadline.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactAddDeadline} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactAddDeadline}
- */
-proto.communication.ContractReactAddDeadline.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactAddDeadline.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactAddDeadline.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactAddDeadline} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactAddDeadline.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactAddDeadline.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddDeadline} returns this
- */
-proto.communication.ContractReactAddDeadline.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactAddDeadline.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddDeadline} returns this
- */
-proto.communication.ContractReactAddDeadline.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactAddDeadline.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddDeadline} returns this
- */
-proto.communication.ContractReactAddDeadline.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string deadline_id = 3;
- * @return {string}
- */
-proto.communication.ContractReactAddDeadline.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactAddDeadline} returns this
- */
-proto.communication.ContractReactAddDeadline.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional uint32 status = 5;
- * @return {number}
- */
-proto.communication.ContractReactAddDeadline.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactAddDeadline} returns this
- */
-proto.communication.ContractReactAddDeadline.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSuggestDelDeadline.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSuggestDelDeadline} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDelDeadline.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadline: (f = msg.getDeadline()) && proto.communication.DeadlineEntity.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSuggestDelDeadline}
- */
-proto.communication.ContractSuggestDelDeadline.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSuggestDelDeadline;
-  return proto.communication.ContractSuggestDelDeadline.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSuggestDelDeadline} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSuggestDelDeadline}
- */
-proto.communication.ContractSuggestDelDeadline.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = new proto.communication.DeadlineEntity;
-      reader.readMessage(value,proto.communication.DeadlineEntity.deserializeBinaryFromReader);
-      msg.setDeadline(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSuggestDelDeadline.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSuggestDelDeadline} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSuggestDelDeadline.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadline();
-  if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.communication.DeadlineEntity.serializeBinaryToWriter
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDelDeadline} returns this
- */
-proto.communication.ContractSuggestDelDeadline.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSuggestDelDeadline} returns this
- */
-proto.communication.ContractSuggestDelDeadline.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional DeadlineEntity deadline = 3;
- * @return {?proto.communication.DeadlineEntity}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.getDeadline = function() {
-  return /** @type{?proto.communication.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, proto.communication.DeadlineEntity, 3));
-};
-
-
-/**
- * @param {?proto.communication.DeadlineEntity|undefined} value
- * @return {!proto.communication.ContractSuggestDelDeadline} returns this
-*/
-proto.communication.ContractSuggestDelDeadline.prototype.setDeadline = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.communication.ContractSuggestDelDeadline} returns this
- */
-proto.communication.ContractSuggestDelDeadline.prototype.clearDeadline = function() {
-  return this.setDeadline(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.communication.ContractSuggestDelDeadline.prototype.hasDeadline = function() {
-  return jspb.Message.getField(this, 3) != null;
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ContractReactDelDeadline.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractReactDelDeadline.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractReactDelDeadline} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDelDeadline.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 5, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractReactDelDeadline}
- */
-proto.communication.ContractReactDelDeadline.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractReactDelDeadline;
-  return proto.communication.ContractReactDelDeadline.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractReactDelDeadline} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractReactDelDeadline}
- */
-proto.communication.ContractReactDelDeadline.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setMessageId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setStatus(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractReactDelDeadline.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractReactDelDeadline.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractReactDelDeadline} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractReactDelDeadline.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getMessageId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getStatus();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractReactDelDeadline.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelDeadline} returns this
- */
-proto.communication.ContractReactDelDeadline.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ContractReactDelDeadline.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelDeadline} returns this
- */
-proto.communication.ContractReactDelDeadline.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string message_id = 4;
- * @return {string}
- */
-proto.communication.ContractReactDelDeadline.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelDeadline} returns this
- */
-proto.communication.ContractReactDelDeadline.prototype.setMessageId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional string deadline_id = 3;
- * @return {string}
- */
-proto.communication.ContractReactDelDeadline.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractReactDelDeadline} returns this
- */
-proto.communication.ContractReactDelDeadline.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional uint32 status = 5;
- * @return {number}
- */
-proto.communication.ContractReactDelDeadline.prototype.getStatus = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractReactDelDeadline} returns this
- */
-proto.communication.ContractReactDelDeadline.prototype.setStatus = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -11536,166 +4454,6 @@ proto.communication.ContractResponse.prototype.getRole = function() {
  */
 proto.communication.ContractResponse.prototype.setRole = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.QueryByUserRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.QueryByUserRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.QueryByUserRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.QueryByUserRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    unsorted: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.QueryByUserRequest}
- */
-proto.communication.QueryByUserRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.QueryByUserRequest;
-  return proto.communication.QueryByUserRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.QueryByUserRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.QueryByUserRequest}
- */
-proto.communication.QueryByUserRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setUnsorted(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.QueryByUserRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.QueryByUserRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.QueryByUserRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.QueryByUserRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getUnsorted();
-  if (f) {
-    writer.writeBool(
-      2,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.QueryByUserRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.QueryByUserRequest} returns this
- */
-proto.communication.QueryByUserRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional bool unsorted = 2;
- * @return {boolean}
- */
-proto.communication.QueryByUserRequest.prototype.getUnsorted = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.QueryByUserRequest} returns this
- */
-proto.communication.QueryByUserRequest.prototype.setUnsorted = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -12206,576 +4964,6 @@ proto.communication.SettleContractRequest.prototype.getContractId = function() {
  */
 proto.communication.SettleContractRequest.prototype.setContractId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.FinishDeadlineRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.FinishDeadlineRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.FinishDeadlineRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.FinishDeadlineRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 3, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.FinishDeadlineRequest}
- */
-proto.communication.FinishDeadlineRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.FinishDeadlineRequest;
-  return proto.communication.FinishDeadlineRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.FinishDeadlineRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.FinishDeadlineRequest}
- */
-proto.communication.FinishDeadlineRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.FinishDeadlineRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.FinishDeadlineRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.FinishDeadlineRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.FinishDeadlineRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.FinishDeadlineRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.FinishDeadlineRequest} returns this
- */
-proto.communication.FinishDeadlineRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.FinishDeadlineRequest.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.FinishDeadlineRequest} returns this
- */
-proto.communication.FinishDeadlineRequest.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 3;
- * @return {string}
- */
-proto.communication.FinishDeadlineRequest.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.FinishDeadlineRequest} returns this
- */
-proto.communication.FinishDeadlineRequest.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.ConfirmDeadlineRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ConfirmDeadlineRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ConfirmDeadlineRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ConfirmDeadlineRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 3, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ConfirmDeadlineRequest}
- */
-proto.communication.ConfirmDeadlineRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ConfirmDeadlineRequest;
-  return proto.communication.ConfirmDeadlineRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ConfirmDeadlineRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ConfirmDeadlineRequest}
- */
-proto.communication.ConfirmDeadlineRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ConfirmDeadlineRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ConfirmDeadlineRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ConfirmDeadlineRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ConfirmDeadlineRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ConfirmDeadlineRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ConfirmDeadlineRequest} returns this
- */
-proto.communication.ConfirmDeadlineRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.ConfirmDeadlineRequest.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ConfirmDeadlineRequest} returns this
- */
-proto.communication.ConfirmDeadlineRequest.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 3;
- * @return {string}
- */
-proto.communication.ConfirmDeadlineRequest.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ConfirmDeadlineRequest} returns this
- */
-proto.communication.ConfirmDeadlineRequest.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.UndoDeadlineRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.UndoDeadlineRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.UndoDeadlineRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.UndoDeadlineRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 3, "")
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.UndoDeadlineRequest}
- */
-proto.communication.UndoDeadlineRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.UndoDeadlineRequest;
-  return proto.communication.UndoDeadlineRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.UndoDeadlineRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.UndoDeadlineRequest}
- */
-proto.communication.UndoDeadlineRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.UndoDeadlineRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.UndoDeadlineRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.UndoDeadlineRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.UndoDeadlineRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.UndoDeadlineRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UndoDeadlineRequest} returns this
- */
-proto.communication.UndoDeadlineRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string contract_id = 2;
- * @return {string}
- */
-proto.communication.UndoDeadlineRequest.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UndoDeadlineRequest} returns this
- */
-proto.communication.UndoDeadlineRequest.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string deadline_id = 3;
- * @return {string}
- */
-proto.communication.UndoDeadlineRequest.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UndoDeadlineRequest} returns this
- */
-proto.communication.UndoDeadlineRequest.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -13365,256 +5553,6 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.communication.ContractSettleItemRequest.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.ContractSettleItemRequest.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.ContractSettleItemRequest} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSettleItemRequest.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    deadlineId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    contractId: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    itemId: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    newState: jspb.Message.getFieldWithDefault(msg, 5, 0)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.ContractSettleItemRequest}
- */
-proto.communication.ContractSettleItemRequest.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.ContractSettleItemRequest;
-  return proto.communication.ContractSettleItemRequest.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.ContractSettleItemRequest} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.ContractSettleItemRequest}
- */
-proto.communication.ContractSettleItemRequest.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setUserId(value);
-      break;
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDeadlineId(value);
-      break;
-    case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setContractId(value);
-      break;
-    case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setItemId(value);
-      break;
-    case 5:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setNewState(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.ContractSettleItemRequest.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.ContractSettleItemRequest.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.ContractSettleItemRequest} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.ContractSettleItemRequest.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getUserId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-  f = message.getDeadlineId();
-  if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
-  }
-  f = message.getContractId();
-  if (f.length > 0) {
-    writer.writeString(
-      3,
-      f
-    );
-  }
-  f = message.getItemId();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
-  f = message.getNewState();
-  if (f !== 0) {
-    writer.writeUint32(
-      5,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string user_id = 1;
- * @return {string}
- */
-proto.communication.ContractSettleItemRequest.prototype.getUserId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSettleItemRequest} returns this
- */
-proto.communication.ContractSettleItemRequest.prototype.setUserId = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
-};
-
-
-/**
- * optional string deadline_id = 2;
- * @return {string}
- */
-proto.communication.ContractSettleItemRequest.prototype.getDeadlineId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSettleItemRequest} returns this
- */
-proto.communication.ContractSettleItemRequest.prototype.setDeadlineId = function(value) {
-  return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string contract_id = 3;
- * @return {string}
- */
-proto.communication.ContractSettleItemRequest.prototype.getContractId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSettleItemRequest} returns this
- */
-proto.communication.ContractSettleItemRequest.prototype.setContractId = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
-};
-
-
-/**
- * optional string item_id = 4;
- * @return {string}
- */
-proto.communication.ContractSettleItemRequest.prototype.getItemId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.ContractSettleItemRequest} returns this
- */
-proto.communication.ContractSettleItemRequest.prototype.setItemId = function(value) {
-  return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional uint32 new_state = 5;
- * @return {number}
- */
-proto.communication.ContractSettleItemRequest.prototype.getNewState = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.ContractSettleItemRequest} returns this
- */
-proto.communication.ContractSettleItemRequest.prototype.setNewState = function(value) {
-  return jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
 proto.communication.ContractDeleteDraftRequest.prototype.toObject = function(opt_includeInstance) {
   return proto.communication.ContractDeleteDraftRequest.toObject(opt_includeInstance, this);
 };
@@ -13756,107 +5694,6 @@ proto.communication.ContractDeleteDraftRequest.prototype.getContractId = functio
  */
 proto.communication.ContractDeleteDraftRequest.prototype.setContractId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * Optional fields that are not set will be set to undefined.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
- * @param {boolean=} opt_includeInstance Deprecated. whether to include the
- *     JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.communication.NullResponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.communication.NullResponse.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Deprecated. Whether to include
- *     the JSPB instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.communication.NullResponse} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.NullResponse.toObject = function(includeInstance, msg) {
-  var f, obj = {
-
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.communication.NullResponse}
- */
-proto.communication.NullResponse.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.communication.NullResponse;
-  return proto.communication.NullResponse.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.communication.NullResponse} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.communication.NullResponse}
- */
-proto.communication.NullResponse.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.communication.NullResponse.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.communication.NullResponse.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.communication.NullResponse} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.communication.NullResponse.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
 };
 
 
@@ -15038,6 +6875,416 @@ proto.communication.FigmaFileConnectRequest.prototype.getFigmaLink = function() 
  */
 proto.communication.FigmaFileConnectRequest.prototype.setFigmaLink = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.communication.SuggestPriceReq.prototype.toObject = function(opt_includeInstance) {
+  return proto.communication.SuggestPriceReq.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.communication.SuggestPriceReq} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.communication.SuggestPriceReq.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    newPrice: jspb.Message.getFieldWithDefault(msg, 3, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.communication.SuggestPriceReq}
+ */
+proto.communication.SuggestPriceReq.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.communication.SuggestPriceReq;
+  return proto.communication.SuggestPriceReq.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.communication.SuggestPriceReq} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.communication.SuggestPriceReq}
+ */
+proto.communication.SuggestPriceReq.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUserId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNewPrice(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.communication.SuggestPriceReq.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.communication.SuggestPriceReq.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.communication.SuggestPriceReq} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.communication.SuggestPriceReq.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getUserId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getNewPrice();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string user_id = 1;
+ * @return {string}
+ */
+proto.communication.SuggestPriceReq.prototype.getUserId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.SuggestPriceReq} returns this
+ */
+proto.communication.SuggestPriceReq.prototype.setUserId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string id = 2;
+ * @return {string}
+ */
+proto.communication.SuggestPriceReq.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.SuggestPriceReq} returns this
+ */
+proto.communication.SuggestPriceReq.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int64 new_price = 3;
+ * @return {number}
+ */
+proto.communication.SuggestPriceReq.prototype.getNewPrice = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.communication.SuggestPriceReq} returns this
+ */
+proto.communication.SuggestPriceReq.prototype.setNewPrice = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * Optional fields that are not set will be set to undefined.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     net/proto2/compiler/js/internal/generator.cc#kKeyword.
+ * @param {boolean=} opt_includeInstance Deprecated. whether to include the
+ *     JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.communication.ReactPriceReq.prototype.toObject = function(opt_includeInstance) {
+  return proto.communication.ReactPriceReq.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Deprecated. Whether to include
+ *     the JSPB instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.communication.ReactPriceReq} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.communication.ReactPriceReq.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    userId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    messageId: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.communication.ReactPriceReq}
+ */
+proto.communication.ReactPriceReq.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.communication.ReactPriceReq;
+  return proto.communication.ReactPriceReq.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.communication.ReactPriceReq} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.communication.ReactPriceReq}
+ */
+proto.communication.ReactPriceReq.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setUserId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMessageId(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setStatus(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.communication.ReactPriceReq.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.communication.ReactPriceReq.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.communication.ReactPriceReq} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.communication.ReactPriceReq.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getUserId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getMessageId();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f !== 0) {
+    writer.writeUint32(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional string user_id = 1;
+ * @return {string}
+ */
+proto.communication.ReactPriceReq.prototype.getUserId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ReactPriceReq} returns this
+ */
+proto.communication.ReactPriceReq.prototype.setUserId = function(value) {
+  return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string id = 2;
+ * @return {string}
+ */
+proto.communication.ReactPriceReq.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ReactPriceReq} returns this
+ */
+proto.communication.ReactPriceReq.prototype.setId = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string message_id = 4;
+ * @return {string}
+ */
+proto.communication.ReactPriceReq.prototype.getMessageId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ReactPriceReq} returns this
+ */
+proto.communication.ReactPriceReq.prototype.setMessageId = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional uint32 status = 3;
+ * @return {number}
+ */
+proto.communication.ReactPriceReq.prototype.getStatus = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.communication.ReactPriceReq} returns this
+ */
+proto.communication.ReactPriceReq.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 

@@ -4,6 +4,9 @@ option go_package=".;communication";
 // import "google/protobuf/timestamp.proto";
 import "communication/contract.proto";
 
+import "communication/user.proto";
+import "communication/generic.proto";
+
 message StripeEntity {
     string first_name = 1;
     string last_name = 7;

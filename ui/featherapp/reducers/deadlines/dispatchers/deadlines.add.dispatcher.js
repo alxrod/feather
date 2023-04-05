@@ -1,4 +1,4 @@
-import ContractService from "../../../services/contract.service";
+import DeadlineService from "../../../services/deadline.service";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 
 import {resolTypes} from "../../../services/chat.service";
@@ -40,7 +40,7 @@ export const addDeadline = (contract_id, deadline) => {
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
-                return ContractService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
+                return DeadlineService.addDeadline(creds.access_token, creds.user_id, contract_id, deadline).then(
                     (deadline) => {
                         dispatch({
                             type: deadlineActions.CONTRACT_DEADLINE_ADD,
@@ -63,7 +63,7 @@ export const reactAddDeadline = (contract_id, message_id, deadline_id, status) =
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
-                return ContractService.reactAddDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
+                return DeadlineService.reactAddDeadline(creds.access_token, creds.user_id, contract_id, deadline_id, message_id, status).then(
                     () => {
                         return Promise.resolve();
                     },

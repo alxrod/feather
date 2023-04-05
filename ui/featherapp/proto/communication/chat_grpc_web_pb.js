@@ -23,6 +23,10 @@ grpc.web = require('grpc-web');
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
 
 var communication_contract_pb = require('../communication/contract_pb.js')
+
+var communication_deadline_pb = require('../communication/deadline_pb.js')
+
+var communication_item_pb = require('../communication/item_pb.js')
 const proto = {};
 proto.communication = require('./chat_pb.js');
 

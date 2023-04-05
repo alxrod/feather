@@ -25,6 +25,10 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 goog.object.extend(proto, google_protobuf_timestamp_pb);
 var communication_contract_pb = require('../communication/contract_pb.js');
 goog.object.extend(proto, communication_contract_pb);
+var communication_deadline_pb = require('../communication/deadline_pb.js');
+goog.object.extend(proto, communication_deadline_pb);
+var communication_item_pb = require('../communication/item_pb.js');
+goog.object.extend(proto, communication_item_pb);
 goog.exportSymbol('proto.communication.AdminMsgBody', null, global);
 goog.exportSymbol('proto.communication.ChatLabel', null, global);
 goog.exportSymbol('proto.communication.ChatMessage', null, global);
@@ -3480,7 +3484,7 @@ proto.communication.ItemCreateMsgBody.prototype.toObject = function(opt_includeI
  */
 proto.communication.ItemCreateMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    item: (f = msg.getItem()) && communication_contract_pb.ItemEntity.toObject(includeInstance, f),
+    item: (f = msg.getItem()) && communication_item_pb.ItemEntity.toObject(includeInstance, f),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -3523,8 +3527,8 @@ proto.communication.ItemCreateMsgBody.deserializeBinaryFromReader = function(msg
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new communication_contract_pb.ItemEntity;
-      reader.readMessage(value,communication_contract_pb.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.setItem(value);
       break;
     case 3:
@@ -3581,7 +3585,7 @@ proto.communication.ItemCreateMsgBody.serializeBinaryToWriter = function(message
     writer.writeMessage(
       1,
       f,
-      communication_contract_pb.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
   f = message.getType();
@@ -3628,7 +3632,7 @@ proto.communication.ItemCreateMsgBody.serializeBinaryToWriter = function(message
  */
 proto.communication.ItemCreateMsgBody.prototype.getItem = function() {
   return /** @type{?proto.communication.ItemEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.ItemEntity, 1));
+    jspb.Message.getWrapperField(this, communication_item_pb.ItemEntity, 1));
 };
 
 
@@ -3781,7 +3785,7 @@ proto.communication.ItemDeleteMsgBody.prototype.toObject = function(opt_includeI
  */
 proto.communication.ItemDeleteMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    item: (f = msg.getItem()) && communication_contract_pb.ItemEntity.toObject(includeInstance, f),
+    item: (f = msg.getItem()) && communication_item_pb.ItemEntity.toObject(includeInstance, f),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -3824,8 +3828,8 @@ proto.communication.ItemDeleteMsgBody.deserializeBinaryFromReader = function(msg
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new communication_contract_pb.ItemEntity;
-      reader.readMessage(value,communication_contract_pb.ItemEntity.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemEntity;
+      reader.readMessage(value,communication_item_pb.ItemEntity.deserializeBinaryFromReader);
       msg.setItem(value);
       break;
     case 3:
@@ -3882,7 +3886,7 @@ proto.communication.ItemDeleteMsgBody.serializeBinaryToWriter = function(message
     writer.writeMessage(
       1,
       f,
-      communication_contract_pb.ItemEntity.serializeBinaryToWriter
+      communication_item_pb.ItemEntity.serializeBinaryToWriter
     );
   }
   f = message.getType();
@@ -3929,7 +3933,7 @@ proto.communication.ItemDeleteMsgBody.serializeBinaryToWriter = function(message
  */
 proto.communication.ItemDeleteMsgBody.prototype.getItem = function() {
   return /** @type{?proto.communication.ItemEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.ItemEntity, 1));
+    jspb.Message.getWrapperField(this, communication_item_pb.ItemEntity, 1));
 };
 
 
@@ -4082,7 +4086,7 @@ proto.communication.DeadlineCreateMsgBody.prototype.toObject = function(opt_incl
  */
 proto.communication.DeadlineCreateMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    deadline: (f = msg.getDeadline()) && communication_contract_pb.DeadlineEntity.toObject(includeInstance, f),
+    deadline: (f = msg.getDeadline()) && communication_deadline_pb.DeadlineEntity.toObject(includeInstance, f),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -4125,8 +4129,8 @@ proto.communication.DeadlineCreateMsgBody.deserializeBinaryFromReader = function
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new communication_contract_pb.DeadlineEntity;
-      reader.readMessage(value,communication_contract_pb.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.setDeadline(value);
       break;
     case 3:
@@ -4183,7 +4187,7 @@ proto.communication.DeadlineCreateMsgBody.serializeBinaryToWriter = function(mes
     writer.writeMessage(
       1,
       f,
-      communication_contract_pb.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getType();
@@ -4230,7 +4234,7 @@ proto.communication.DeadlineCreateMsgBody.serializeBinaryToWriter = function(mes
  */
 proto.communication.DeadlineCreateMsgBody.prototype.getDeadline = function() {
   return /** @type{?proto.communication.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.DeadlineEntity, 1));
+    jspb.Message.getWrapperField(this, communication_deadline_pb.DeadlineEntity, 1));
 };
 
 
@@ -4383,7 +4387,7 @@ proto.communication.DeadlineDeleteMsgBody.prototype.toObject = function(opt_incl
  */
 proto.communication.DeadlineDeleteMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    deadline: (f = msg.getDeadline()) && communication_contract_pb.DeadlineEntity.toObject(includeInstance, f),
+    deadline: (f = msg.getDeadline()) && communication_deadline_pb.DeadlineEntity.toObject(includeInstance, f),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -4426,8 +4430,8 @@ proto.communication.DeadlineDeleteMsgBody.deserializeBinaryFromReader = function
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new communication_contract_pb.DeadlineEntity;
-      reader.readMessage(value,communication_contract_pb.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.setDeadline(value);
       break;
     case 3:
@@ -4484,7 +4488,7 @@ proto.communication.DeadlineDeleteMsgBody.serializeBinaryToWriter = function(mes
     writer.writeMessage(
       1,
       f,
-      communication_contract_pb.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getType();
@@ -4531,7 +4535,7 @@ proto.communication.DeadlineDeleteMsgBody.serializeBinaryToWriter = function(mes
  */
 proto.communication.DeadlineDeleteMsgBody.prototype.getDeadline = function() {
   return /** @type{?proto.communication.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.DeadlineEntity, 1));
+    jspb.Message.getWrapperField(this, communication_deadline_pb.DeadlineEntity, 1));
 };
 
 
@@ -6063,11 +6067,11 @@ proto.communication.DeadlineItemMsgBody.prototype.toObject = function(opt_includ
  */
 proto.communication.DeadlineItemMsgBody.toObject = function(includeInstance, msg) {
   var f, obj = {
-    deadline: (f = msg.getDeadline()) && communication_contract_pb.DeadlineEntity.toObject(includeInstance, f),
+    deadline: (f = msg.getDeadline()) && communication_deadline_pb.DeadlineEntity.toObject(includeInstance, f),
     deadlineId: jspb.Message.getFieldWithDefault(msg, 10, ""),
     newItemStatesList: (f = jspb.Message.getRepeatedField(msg, 11)) == null ? undefined : f,
     newItemsList: jspb.Message.toObjectList(msg.getNewItemsList(),
-    communication_contract_pb.ItemNub.toObject, includeInstance),
+    communication_item_pb.ItemNub.toObject, includeInstance),
     type: jspb.Message.getFieldWithDefault(msg, 3, 0),
     resolved: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
     resolStatus: jspb.Message.getFieldWithDefault(msg, 7, 0),
@@ -6110,8 +6114,8 @@ proto.communication.DeadlineItemMsgBody.deserializeBinaryFromReader = function(m
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new communication_contract_pb.DeadlineEntity;
-      reader.readMessage(value,communication_contract_pb.DeadlineEntity.deserializeBinaryFromReader);
+      var value = new communication_deadline_pb.DeadlineEntity;
+      reader.readMessage(value,communication_deadline_pb.DeadlineEntity.deserializeBinaryFromReader);
       msg.setDeadline(value);
       break;
     case 10:
@@ -6125,8 +6129,8 @@ proto.communication.DeadlineItemMsgBody.deserializeBinaryFromReader = function(m
       }
       break;
     case 14:
-      var value = new communication_contract_pb.ItemNub;
-      reader.readMessage(value,communication_contract_pb.ItemNub.deserializeBinaryFromReader);
+      var value = new communication_item_pb.ItemNub;
+      reader.readMessage(value,communication_item_pb.ItemNub.deserializeBinaryFromReader);
       msg.addNewItems(value);
       break;
     case 3:
@@ -6183,7 +6187,7 @@ proto.communication.DeadlineItemMsgBody.serializeBinaryToWriter = function(messa
     writer.writeMessage(
       1,
       f,
-      communication_contract_pb.DeadlineEntity.serializeBinaryToWriter
+      communication_deadline_pb.DeadlineEntity.serializeBinaryToWriter
     );
   }
   f = message.getDeadlineId();
@@ -6205,7 +6209,7 @@ proto.communication.DeadlineItemMsgBody.serializeBinaryToWriter = function(messa
     writer.writeRepeatedMessage(
       14,
       f,
-      communication_contract_pb.ItemNub.serializeBinaryToWriter
+      communication_item_pb.ItemNub.serializeBinaryToWriter
     );
   }
   f = message.getType();
@@ -6252,7 +6256,7 @@ proto.communication.DeadlineItemMsgBody.serializeBinaryToWriter = function(messa
  */
 proto.communication.DeadlineItemMsgBody.prototype.getDeadline = function() {
   return /** @type{?proto.communication.DeadlineEntity} */ (
-    jspb.Message.getWrapperField(this, communication_contract_pb.DeadlineEntity, 1));
+    jspb.Message.getWrapperField(this, communication_deadline_pb.DeadlineEntity, 1));
 };
 
 
@@ -6344,7 +6348,7 @@ proto.communication.DeadlineItemMsgBody.prototype.clearNewItemStatesList = funct
  */
 proto.communication.DeadlineItemMsgBody.prototype.getNewItemsList = function() {
   return /** @type{!Array<!proto.communication.ItemNub>} */ (
-    jspb.Message.getRepeatedWrapperField(this, communication_contract_pb.ItemNub, 14));
+    jspb.Message.getRepeatedWrapperField(this, communication_item_pb.ItemNub, 14));
 };
 
 

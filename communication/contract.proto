@@ -2,6 +2,13 @@ syntax = "proto3";
 package communication;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
+import "communication/deadline.proto";
+
+import "communication/user.proto";
+import "communication/item.proto";
+import "communication/generic.proto";
+import "communication/requests.proto";
+
 
 message PriceEntity {
     int64 current = 1;
@@ -9,51 +16,6 @@ message PriceEntity {
     int64 worker = 3;
     bool awaiting_approval = 4;
     string proposer_id = 5;
-}
-
-message DeadlineEntity {
-    string id = 1;
-    string contract_id = 2;
-    string name = 18;
-
-    bool complete = 25;
-    bool expired = 31;
-
-    bool buyer_settled = 27;
-    
-    bool awaiting_creation = 20;
-    bool awaiting_deletion = 21;
-    string deadline_proposer_id = 22;
-
-    int64 current_payout = 4;
-    int64 worker_payout = 7;
-    int64 buyer_payout = 10;
-    bool payout_awaiting_approval = 12;
-    string payout_proposer_id = 13;
-
-    google.protobuf.Timestamp current_date = 5;
-    google.protobuf.Timestamp worker_date = 8;
-    google.protobuf.Timestamp buyer_date = 11;
-    bool date_awaiting_approval = 16;
-    string date_proposer_id = 17;
-
-    bool draft_required = 19;
-
-    string items_proposer_id = 23;
-    repeated uint32 item_states = 24;
-    repeated ItemNub items = 14;
-    bool items_awaiting_approval = 15;
-}
-
-message DeadlineNub {
-    string id = 1;
-    string contract_id = 2;
-
-    bool complete = 25;
-    bool expired = 31;
-
-    int64 current_payout = 4;
-    google.protobuf.Timestamp current_date = 5;
 }
 
 message ContractEntity {
@@ -131,38 +93,6 @@ message ContractNubSet {
     repeated ContractNub contract_nubs = 2;
 }
 
-message UserNubEntity {
-    string id = 1;
-    string username = 2;
-    bool has_photo = 5;
-    string photo_url = 4;
-
-    bool worker_mode_enabled = 6;
-    bool buyer_mode_enabled = 7;
-}
-
-message ItemEntity {
-    string id = 1;
-    string contract_id = 2;
-    string name = 4;   
-    string current_body = 5;
-    string worker_body = 6;
-    string buyer_body = 7;
-    bool awaiting_approval = 8;
-    bool awaiting_creation = 9;
-    bool awaiting_deletion = 10;
-
-    uint32 buyer_settled = 27;
-
-    string figma_component_id = 29;
-}
-
-message ItemNub {
-    string id = 1;
-    string proposer = 3;
-    string name = 2;
-}
-
 message ContractCreateRequest {
     string user_id = 1;
     string title = 2;
@@ -192,136 +122,9 @@ message ContractUpdateRequest {
     repeated ItemEntity items = 9;
 }
 
-message QueryByIdRequest {
-    string contract_id = 1;
-    string user_id = 2;
-}
-
-
-message ContractSuggestPrice {
-    string user_id = 1;
-    string contract_id = 2;
-    int64 new_price = 3;
-}
-message ContractReactPrice {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    uint32 status = 3;
-}
-message ContractSuggestDate {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 4;
-    google.protobuf.Timestamp new_date = 3;
-}
-message ContractSuggestPayout {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 4;
-    int64 new_payout = 3;
-}
-message ContractSuggestDeadlineItems {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 4;
-    repeated string item_ids = 3;
-}
-message ContractReactDeadlineItems {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string deadline_id = 5;
-    uint32 status = 3;
-}
-message ContractReactDate {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string deadline_id = 5;
-    uint32 status = 3;
-}
-message ContractReactPayout {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string deadline_id = 5;
-    uint32 status = 3;
-}
-
-message ContractSuggestItem {
-    string user_id = 1;
-    string contract_id = 2;
-    string item_id = 4;
-    string new_body = 3;
-}
-message ContractReactItem {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string item_id = 5;
-    uint32 status = 3;
-}
-
-message ContractSuggestAddItem {
-    string user_id = 1;
-    string contract_id = 2;
-    ItemEntity item = 3;
-}
-message ContractReactAddItem {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string item_id = 3;
-    uint32 status = 5;
-}
-
-message ContractSuggestDelItem {
-    string user_id = 1;
-    string contract_id = 2;
-    ItemEntity item = 3;
-}
-message ContractReactDelItem {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string item_id = 3;
-    uint32 status = 5;
-}
-
-message ContractSuggestAddDeadline {
-    string user_id = 1;
-    string contract_id = 2;
-    DeadlineEntity deadline = 3;
-}
-message ContractReactAddDeadline {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string deadline_id = 3;
-    uint32 status = 5;
-}
-
-message ContractSuggestDelDeadline {
-    string user_id = 1;
-    string contract_id = 2;
-    DeadlineEntity deadline = 3;
-}
-message ContractReactDelDeadline {
-    string user_id = 1;
-    string contract_id = 2;
-    string message_id = 4;
-    string deadline_id = 3;
-    uint32 status = 5;
-}
-
 message ContractResponse {
     ContractEntity contract = 2;
     uint32 role = 3;
-}
-message QueryByUserRequest {
-    string user_id = 1;
-    bool unsorted = 2;
 }
 
 message ClaimContractRequest {
@@ -337,24 +140,6 @@ message SignContractRequest {
 message SettleContractRequest {
     string user_id = 1;
     string contract_id = 2;
-}
-
-message FinishDeadlineRequest {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 3;
-}
-
-message ConfirmDeadlineRequest {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 3;
-}
-
-message UndoDeadlineRequest {
-    string user_id = 1;
-    string contract_id = 2;
-    string deadline_id = 3;
 }
 
 message ContractAdminSupport {
@@ -374,20 +159,10 @@ message ContractReactLockRequest {
     uint32 status = 4;
 }
 
-message ContractSettleItemRequest {
-    string user_id = 1;
-    string deadline_id = 2;
-    string contract_id = 3;
-    string item_id = 4;
-    uint32 new_state = 5;
-}
-
 message ContractDeleteDraftRequest {
     string user_id = 1;
     string contract_id = 2;
 }
-
-message NullResponse {}
 
 message ContractEditResponse {}
 
@@ -424,6 +199,19 @@ message FigmaFileConnectRequest {
     string figma_link = 3;
 }
 
+message SuggestPriceReq {
+    string user_id = 1;
+    string id = 2;
+    int64 new_price = 3;
+}
+message ReactPriceReq {
+    string user_id = 1;
+    string id = 2;
+    string message_id = 4;
+    uint32 status = 3;
+}
+  
+
 service Contract {
 
     rpc Create(ContractCreateRequest) returns (ContractResponse) {};
@@ -444,40 +232,14 @@ service Contract {
     rpc QueryByUser(QueryByUserRequest) returns (ContractNubSet) {};
     rpc QueryByAdmin(QueryByUserRequest) returns (ContractNubSet) {};
 
-    rpc SuggestPrice(ContractSuggestPrice) returns (ContractEditResponse) {};
-    rpc ReactPrice(ContractReactPrice) returns (ContractEditResponse) {};
-
-    rpc SuggestDate(ContractSuggestDate) returns (ContractEditResponse) {};
-    rpc ReactDate(ContractReactDate) returns (ContractEditResponse) {};
-    rpc SuggestPayout(ContractSuggestPayout) returns (ContractEditResponse) {};
-    rpc ReactPayout(ContractReactPayout) returns (ContractEditResponse) {};
-
-    rpc SuggestItem(ContractSuggestItem) returns (ContractEditResponse) {};
-    rpc ReactItem(ContractReactItem) returns (ContractEditResponse) {};
-
-    rpc SuggestAddItem(ContractSuggestAddItem) returns (ItemEntity) {};
-    rpc ReactAddItem(ContractReactAddItem) returns (ContractEditResponse) {};
-
-    rpc SuggestDeleteItem(ContractSuggestDelItem) returns (ContractEditResponse) {};
-    rpc ReactDeleteItem(ContractReactDelItem) returns (ContractEditResponse) {};
-
-    rpc SuggestAddDeadline(ContractSuggestAddDeadline) returns (DeadlineEntity) {};
-    rpc ReactAddDeadline(ContractReactAddDeadline) returns (ContractEditResponse) {};
-
-    rpc SuggestDeleteDeadline(ContractSuggestDelDeadline) returns (ContractEditResponse) {};
-    rpc ReactDeleteDeadline(ContractReactDelDeadline) returns (ContractEditResponse) {};
-
-    rpc SuggestDeadlineItems(ContractSuggestDeadlineItems) returns (ContractEditResponse) {};
-    rpc ReactDeadlineItems(ContractReactDeadlineItems) returns (ContractEditResponse) {};
+    rpc SuggestPrice(SuggestPriceReq) returns (ContractEditResponse) {};
+    rpc ReactPrice(ReactPriceReq) returns (ContractEditResponse) {};
 
     rpc ToggleLock(ContractToggleLockRequest) returns (ContractEditResponse) {};
     rpc ReactLock(ContractReactLockRequest) returns (ContractEditResponse) {};
-
-    rpc SettleItem(ContractSettleItemRequest) returns (ContractEditResponse) {};
+    
     rpc RequestAdmin(ContractAdminSupport) returns (NullResponse) {};
     rpc ResolveAdmin(ContractAdminSupport) returns (NullResponse) {};
-
-    rpc FinishDeadline(FinishDeadlineRequest) returns (NullResponse) {};
 
     rpc SetFigmaConnected(FigmaFileConnectRequest) returns (ContractEditResponse) {};
     rpc SetItemFigmaNodes(FigmaItemRequest) returns (ContractEditResponse) {};

@@ -21,6 +21,10 @@ grpc.web = require('grpc-web');
 
 
 var communication_contract_pb = require('../communication/contract_pb.js')
+
+var communication_user_pb = require('../communication/user_pb.js')
+
+var communication_generic_pb = require('../communication/generic_pb.js')
 const proto = {};
 proto.communication = require('./stripe_pb.js');
 
@@ -269,7 +273,7 @@ const methodDescriptor_StripeService_ConfirmPaymentConnected = new grpc.web.Meth
   '/communication.StripeService/ConfirmPaymentConnected',
   grpc.web.MethodType.UNARY,
   proto.communication.SetupConfirm,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.SetupConfirm} request
    * @return {!Uint8Array}
@@ -277,7 +281,7 @@ const methodDescriptor_StripeService_ConfirmPaymentConnected = new grpc.web.Meth
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -452,7 +456,7 @@ const methodDescriptor_StripeService_DisconnectExBa = new grpc.web.MethodDescrip
   '/communication.StripeService/DisconnectExBa',
   grpc.web.MethodType.UNARY,
   proto.communication.ExBaQuery,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.ExBaQuery} request
    * @return {!Uint8Array}
@@ -460,7 +464,7 @@ const methodDescriptor_StripeService_DisconnectExBa = new grpc.web.MethodDescrip
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -513,7 +517,7 @@ const methodDescriptor_StripeService_DeleteConnectedAccount = new grpc.web.Metho
   '/communication.StripeService/DeleteConnectedAccount',
   grpc.web.MethodType.UNARY,
   proto.communication.DeleteConAccRequest,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.DeleteConAccRequest} request
    * @return {!Uint8Array}
@@ -521,7 +525,7 @@ const methodDescriptor_StripeService_DeleteConnectedAccount = new grpc.web.Metho
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -574,7 +578,7 @@ const methodDescriptor_StripeService_DisconnectFca = new grpc.web.MethodDescript
   '/communication.StripeService/DisconnectFca',
   grpc.web.MethodType.UNARY,
   proto.communication.FcaQuery,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.FcaQuery} request
    * @return {!Uint8Array}
@@ -582,7 +586,7 @@ const methodDescriptor_StripeService_DisconnectFca = new grpc.web.MethodDescript
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -635,7 +639,7 @@ const methodDescriptor_StripeService_SetDefaultFca = new grpc.web.MethodDescript
   '/communication.StripeService/SetDefaultFca',
   grpc.web.MethodType.UNARY,
   proto.communication.FcaQuery,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.FcaQuery} request
    * @return {!Uint8Array}
@@ -643,7 +647,7 @@ const methodDescriptor_StripeService_SetDefaultFca = new grpc.web.MethodDescript
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -818,7 +822,7 @@ const methodDescriptor_StripeService_TransferDeadlineFunds = new grpc.web.Method
   '/communication.StripeService/TransferDeadlineFunds',
   grpc.web.MethodType.UNARY,
   proto.communication.InternalChargeEntity,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.InternalChargeEntity} request
    * @return {!Uint8Array}
@@ -826,7 +830,7 @@ const methodDescriptor_StripeService_TransferDeadlineFunds = new grpc.web.Method
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 

@@ -2,7 +2,6 @@ import { ContractClient } from "../proto/communication/contract_grpc_web_pb";
 import { 
     DeadlineEntity,
     PriceEntity,
-    ContractEntity,
     ItemEntity,
     ItemNub,
     
@@ -17,44 +16,18 @@ import {
     InviteDataRequest,
 
     ContractSuggestPrice,
-    ContractSuggestPayout,
-    ContractSuggestDate,
-    ContractSuggestItem,
-
     ContractReactPrice,
-    ContractReactPayout,
-    ContractReactDate,
-    ContractReactItem,
-
-    ContractSuggestAddItem,
-    ContractReactAddItem,
-    ContractSuggestDelItem,
-    ContractReactDelItem,
-
-    ContractSuggestAddDeadline,
-    ContractReactAddDeadline,
-    ContractSuggestDelDeadline,
-    ContractReactDelDeadline,
-
-    ContractSuggestDeadlineItems,
-    ContractReactDeadlineItems,
 
     ClaimContractRequest,
     SignContractRequest,
     SettleContractRequest,
-    ContractSettleItemRequest,
 
     ContractToggleLockRequest,
     ContractReactLockRequest,
     ContractAdminSupport,
-    FinishDeadlineRequest,
-    ConfirmDeadlineRequest,
-    UndoDeadlineRequest,
 
     EmailChangeRequest,
     EmailResendRequest,
-
-    FigmaLinkRequest,
 
 } from "../proto/communication/contract_pb";
 import {msgMethods,decisionTypes} from "./chat.service"
@@ -378,86 +351,6 @@ class ContractService {
 
     }
 
-    suggestPayout(token, user_id, contract_id, deadline_id, new_payout) {
-        let suggestRequest = new ContractSuggestPayout();
-        suggestRequest.setUserId(user_id);
-        suggestRequest.setContractId(contract_id);
-        suggestRequest.setDeadlineId(deadline_id);
-        suggestRequest.setNewPayout(new_payout);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.suggestPayout(suggestRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve()
-            });
-        });
-    }
-    reactPayout(token, user_id, contract_id, deadline_id, message_id, status) {
-        let reactRequest = new ContractReactPayout();
-
-        reactRequest.setUserId(user_id);
-        reactRequest.setContractId(contract_id);
-        reactRequest.setMessageId(message_id);
-        reactRequest.setDeadlineId(deadline_id);
-        reactRequest.setStatus(status);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.reactPayout(reactRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response)
-            });
-        });
-
-    }
-
-    suggestDate(token, user_id, contract_id, deadline_id, new_date) {
-        let suggestRequest = new ContractSuggestDate();
-
-        suggestRequest.setUserId(user_id);
-        suggestRequest.setContractId(contract_id);
-        suggestRequest.setDeadlineId(deadline_id);
-        const new_stamp = new google_protobuf_timestamp_pb.Timestamp()
-        new_stamp.fromDate(new_date)
-        suggestRequest.setNewDate(new_stamp);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.suggestDate(suggestRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve()
-            });
-        });
-    }
-
-    reactDate(token, user_id, contract_id, deadline_id, message_id, status) {
-        let reactRequest = new ContractReactDate();
-
-        reactRequest.setUserId(user_id);
-        reactRequest.setContractId(contract_id);
-        reactRequest.setMessageId(message_id);
-        reactRequest.setDeadlineId(deadline_id);
-        reactRequest.setStatus(status);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.reactDate(reactRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response)
-            });
-        });
-
-    }
-
     suggestItem(token, user_id, contract_id, item_id, new_body) {
         let suggestRequest = new ContractSuggestItem();
 
@@ -590,129 +483,6 @@ class ContractService {
 
     }
 
-
-    addDeadline(token, user_id, contract_id, deadline) {
-        let addRequest = new ContractSuggestAddDeadline();
-        let deadlineEntity = this.generateDeadlineEntity(deadline)
-        addRequest.setDeadline(deadlineEntity)
-        addRequest.setUserId(user_id)
-        addRequest.setContractId(contract_id)
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.suggestAddDeadline(addRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                } else {
-                    resolve(cleanDeadline(response))
-                }
-            });
-        });
-
-    }
-
-    reactAddDeadline(token, user_id, contract_id, deadline_id, message_id, status) {
-        let reactRequest = new ContractReactAddDeadline();
-
-        reactRequest.setUserId(user_id);
-        reactRequest.setContractId(contract_id);
-        reactRequest.setMessageId(message_id);
-        reactRequest.setDeadlineId(deadline_id);
-        reactRequest.setStatus(status);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.reactAddDeadline(reactRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response)
-            });
-        });
-
-    }
-
-    deleteDeadline(token, user_id, contract_id, deadline) {
-        
-        let delRequest = new ContractSuggestDelDeadline();
-        let deadlineEntity = this.generateDeadlineEntity(deadline)
-        delRequest.setDeadline(deadlineEntity)
-        delRequest.setUserId(user_id)
-        delRequest.setContractId(contract_id)
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.suggestDeleteDeadline(delRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response.toObject())
-            });
-        });
-
-    }
-
-    reactDeleteDeadline(token, user_id, contract_id, deadline_id, message_id, status) {
-        let reactRequest = new ContractReactDelDeadline();
-
-        reactRequest.setUserId(user_id);
-        reactRequest.setContractId(contract_id);
-        reactRequest.setMessageId(message_id);
-        reactRequest.setDeadlineId(deadline_id);
-        reactRequest.setStatus(status);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.reactDeleteDeadline(reactRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response)
-            });
-        });
-    }
-    
-    changeDeadlineItems(token, user_id, contract_id, deadline_id, item_ids) {
-        let changeRequest = new ContractSuggestDeadlineItems();
-        changeRequest.setDeadlineId(deadline_id)
-        changeRequest.setUserId(user_id)
-        changeRequest.setContractId(contract_id)
-
-        for (let i = 0; i < item_ids.length; i++) {
-            changeRequest.addItemIds(item_ids[i], i)
-        }
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.suggestDeadlineItems(changeRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response.toObject())
-            });
-        });
-    }
-    reactDeadlineItems(token, user_id, contract_id, deadline_id, message_id, status) {
-        let reactRequest = new ContractReactDeadlineItems();
-
-        reactRequest.setUserId(user_id);
-        reactRequest.setContractId(contract_id);
-        reactRequest.setMessageId(message_id);
-        reactRequest.setDeadlineId(deadline_id);
-        reactRequest.setStatus(status);
-
-        return new Promise( (resolve, reject) => { 
-            var metadata = {"authorization": token}
-            contractClient.reactDeadlineItems(reactRequest, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response)
-            });
-        });
-    }
-
-
     claimContract(token, user_id, contract_id, password) {
         let claimRequest = new ClaimContractRequest();
         claimRequest.setUserId(user_id);
@@ -787,23 +557,6 @@ class ContractService {
         return new Promise( (resolve, reject) => {
             var metadata = {"authorization": token}
             contractClient.resolveAdmin(request, metadata, function(error, response) {
-                if (error) {
-                    reject(error)
-                }
-                resolve(response.toObject())
-            });
-        });
-    }
-
-    finishDeadline(token, user_id, contract_id, deadline_id) {
-        let request = new FinishDeadlineRequest();
-        request.setUserId(user_id);
-        request.setContractId(contract_id);
-        request.setDeadlineId(deadline_id);
-
-        return new Promise( (resolve, reject) => {
-            var metadata = {"authorization": token}
-            contractClient.finishDeadline(request, metadata, function(error, response) {
                 if (error) {
                     reject(error)
                 }

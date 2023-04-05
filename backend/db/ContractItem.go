@@ -33,7 +33,7 @@ type ContractItem struct {
 	AwaitingCreation bool               `bson:"awaiting_creation"`
 	AwaitingDeletion bool               `bson:"awaiting_deletion"`
 
-	BuyerSettled  uint32 `bson:"buyer_settled"`
+	BuyerSettled uint32 `bson:"buyer_settled"`
 
 	FigmaComponentId string `bson:"figma_component_id"`
 }
@@ -49,11 +49,11 @@ func (ci *ContractItem) Proto() *comms.ItemEntity {
 		AwaitingCreation: ci.AwaitingCreation,
 		AwaitingDeletion: ci.AwaitingDeletion,
 
-		BuyerSettled:     ci.BuyerSettled,
+		BuyerSettled: ci.BuyerSettled,
 
-		CurrentBody:  ci.CurrentBody,
-		WorkerBody:   ci.WorkerBody,
-		BuyerBody:    ci.BuyerBody,
+		CurrentBody:      ci.CurrentBody,
+		WorkerBody:       ci.WorkerBody,
+		BuyerBody:        ci.BuyerBody,
 		FigmaComponentId: ci.FigmaComponentId,
 	}
 	if !ci.Id.IsZero() {
@@ -179,35 +179,43 @@ func ContractItemDelete(item *ContractItem, database *mongo.Database) error {
 	return nil
 }
 
-func ContractItemSuggestBody(item *ContractItem, contract *Contract, user *User, newBody string, database *mongo.Database) error {
+func ContractItemSuggestBody(item *ContractItem, target *TargetWrapper, user *User, newBody string, database *mongo.Database) error {
 	if item.AwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The contract item %s is already awaiting approval of a different body change", item.Id.Hex()))
 	}
 
-	if contract.Worker != nil && user.Id == contract.Worker.Id {
-		if contract.Buyer == nil {
+	if target.ContentType == WRAPPER_CONTRACT {
+		if target.Contract.Worker != nil && user.Id == target.Contract.Worker.Id {
+			if target.Contract.Buyer == nil {
+				item.BuyerBody = newBody
+				item.WorkerBody = newBody
+				item.CurrentBody = newBody
+			} else {
+				item.WorkerBody = newBody
+				item.AwaitingApproval = true
+			}
+		} else if target.Contract.Buyer != nil && user.Id == target.Contract.Buyer.Id {
+			if target.Contract.Worker == nil {
+				item.BuyerBody = newBody
+				item.WorkerBody = newBody
+				item.CurrentBody = newBody
+			} else {
+				item.BuyerBody = newBody
+				item.AwaitingApproval = true
+			}
+		} else if user.AdminStatus {
 			item.BuyerBody = newBody
 			item.WorkerBody = newBody
 			item.CurrentBody = newBody
 		} else {
-			item.WorkerBody = newBody
-			item.AwaitingApproval = true
+			return errors.New("Invalid proposing user")
 		}
-	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
-		if contract.Worker == nil {
-			item.BuyerBody = newBody
-			item.WorkerBody = newBody
-			item.CurrentBody = newBody
-		} else {
-			item.BuyerBody = newBody
-			item.AwaitingApproval = true
-		}
-	} else if user.AdminStatus {
+		// Document Wrapper
+	} else {
 		item.BuyerBody = newBody
 		item.WorkerBody = newBody
 		item.CurrentBody = newBody
-	} else {
-		return errors.New("Invalid proposing user")
+		item.AwaitingApproval = false
 	}
 
 	item.Proposer = user.Id
@@ -238,11 +246,11 @@ func ContractItemChangeSettle(
 	}
 
 	item.BuyerSettled = newState
-	
+
 	if newState == ITEM_REJECT {
 		contract.Disputed = true
-	} 
-	
+	}
+
 	err := ContractItemReplace(item, database)
 	if err != nil {
 		return err

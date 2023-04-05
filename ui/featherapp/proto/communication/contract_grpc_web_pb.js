@@ -21,6 +21,16 @@ grpc.web = require('grpc-web');
 
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js')
+
+var communication_deadline_pb = require('../communication/deadline_pb.js')
+
+var communication_user_pb = require('../communication/user_pb.js')
+
+var communication_item_pb = require('../communication/item_pb.js')
+
+var communication_generic_pb = require('../communication/generic_pb.js')
+
+var communication_requests_pb = require('../communication/requests_pb.js')
 const proto = {};
 proto.communication = require('./contract_pb.js');
 
@@ -391,7 +401,7 @@ const methodDescriptor_Contract_ResendInviteEmail = new grpc.web.MethodDescripto
   '/communication.Contract/ResendInviteEmail',
   grpc.web.MethodType.UNARY,
   proto.communication.EmailResendRequest,
-  proto.communication.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.EmailResendRequest} request
    * @return {!Uint8Array}
@@ -399,7 +409,7 @@ const methodDescriptor_Contract_ResendInviteEmail = new grpc.web.MethodDescripto
   function(request) {
     return request.serializeBinary();
   },
-  proto.communication.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -695,7 +705,7 @@ proto.communication.ContractPromiseClient.prototype.settle =
 const methodDescriptor_Contract_QueryById = new grpc.web.MethodDescriptor(
   '/communication.Contract/QueryById',
   grpc.web.MethodType.UNARY,
-  proto.communication.QueryByIdRequest,
+  communication_requests_pb.QueryByIdRequest,
   proto.communication.ContractResponse,
   /**
    * @param {!proto.communication.QueryByIdRequest} request
@@ -756,7 +766,7 @@ proto.communication.ContractPromiseClient.prototype.queryById =
 const methodDescriptor_Contract_QueryByUser = new grpc.web.MethodDescriptor(
   '/communication.Contract/QueryByUser',
   grpc.web.MethodType.UNARY,
-  proto.communication.QueryByUserRequest,
+  communication_requests_pb.QueryByUserRequest,
   proto.communication.ContractNubSet,
   /**
    * @param {!proto.communication.QueryByUserRequest} request
@@ -817,7 +827,7 @@ proto.communication.ContractPromiseClient.prototype.queryByUser =
 const methodDescriptor_Contract_QueryByAdmin = new grpc.web.MethodDescriptor(
   '/communication.Contract/QueryByAdmin',
   grpc.web.MethodType.UNARY,
-  proto.communication.QueryByUserRequest,
+  communication_requests_pb.QueryByUserRequest,
   proto.communication.ContractNubSet,
   /**
    * @param {!proto.communication.QueryByUserRequest} request
@@ -872,16 +882,16 @@ proto.communication.ContractPromiseClient.prototype.queryByAdmin =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestPrice,
+ *   !proto.communication.SuggestPriceReq,
  *   !proto.communication.ContractEditResponse>}
  */
 const methodDescriptor_Contract_SuggestPrice = new grpc.web.MethodDescriptor(
   '/communication.Contract/SuggestPrice',
   grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestPrice,
+  proto.communication.SuggestPriceReq,
   proto.communication.ContractEditResponse,
   /**
-   * @param {!proto.communication.ContractSuggestPrice} request
+   * @param {!proto.communication.SuggestPriceReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -892,7 +902,7 @@ const methodDescriptor_Contract_SuggestPrice = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.communication.ContractSuggestPrice} request The
+ * @param {!proto.communication.SuggestPriceReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -913,7 +923,7 @@ proto.communication.ContractClient.prototype.suggestPrice =
 
 
 /**
- * @param {!proto.communication.ContractSuggestPrice} request The
+ * @param {!proto.communication.SuggestPriceReq} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -933,16 +943,16 @@ proto.communication.ContractPromiseClient.prototype.suggestPrice =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactPrice,
+ *   !proto.communication.ReactPriceReq,
  *   !proto.communication.ContractEditResponse>}
  */
 const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
   '/communication.Contract/ReactPrice',
   grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactPrice,
+  proto.communication.ReactPriceReq,
   proto.communication.ContractEditResponse,
   /**
-   * @param {!proto.communication.ContractReactPrice} request
+   * @param {!proto.communication.ReactPriceReq} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -953,7 +963,7 @@ const methodDescriptor_Contract_ReactPrice = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.communication.ContractReactPrice} request The
+ * @param {!proto.communication.ReactPriceReq} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -974,7 +984,7 @@ proto.communication.ContractClient.prototype.reactPrice =
 
 
 /**
- * @param {!proto.communication.ContractReactPrice} request The
+ * @param {!proto.communication.ReactPriceReq} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
@@ -988,982 +998,6 @@ proto.communication.ContractPromiseClient.prototype.reactPrice =
       request,
       metadata || {},
       methodDescriptor_Contract_ReactPrice);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestDate,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestDate = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestDate',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestDate,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestDate} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestDate} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestDate =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestDate',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDate,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestDate} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestDate =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestDate',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDate);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactDate,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactDate = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactDate',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactDate,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactDate} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactDate} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactDate =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactDate',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDate,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactDate} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactDate =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactDate',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDate);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestPayout,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestPayout = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestPayout',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestPayout,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestPayout} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestPayout} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestPayout =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestPayout',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestPayout,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestPayout} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestPayout =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestPayout',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestPayout);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactPayout,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactPayout = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactPayout',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactPayout,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactPayout} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactPayout} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactPayout =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactPayout',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactPayout,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactPayout} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactPayout =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactPayout',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactPayout);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestItem,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestItem,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactItem,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactItem,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestAddItem,
- *   !proto.communication.ItemEntity>}
- */
-const methodDescriptor_Contract_SuggestAddItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestAddItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestAddItem,
-  proto.communication.ItemEntity,
-  /**
-   * @param {!proto.communication.ContractSuggestAddItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ItemEntity.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestAddItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ItemEntity)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ItemEntity>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestAddItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestAddItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestAddItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestAddItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ItemEntity>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestAddItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestAddItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestAddItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactAddItem,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactAddItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactAddItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactAddItem,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactAddItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactAddItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactAddItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactAddItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactAddItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactAddItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactAddItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactAddItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactAddItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestDelItem,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestDeleteItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestDeleteItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestDelItem,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestDelItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestDelItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestDeleteItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestDeleteItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeleteItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestDelItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestDeleteItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestDeleteItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeleteItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactDelItem,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactDeleteItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactDeleteItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactDelItem,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactDelItem} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactDelItem} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactDeleteItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactDeleteItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeleteItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactDelItem} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactDeleteItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactDeleteItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeleteItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestAddDeadline,
- *   !proto.communication.DeadlineEntity>}
- */
-const methodDescriptor_Contract_SuggestAddDeadline = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestAddDeadline',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestAddDeadline,
-  proto.communication.DeadlineEntity,
-  /**
-   * @param {!proto.communication.ContractSuggestAddDeadline} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.DeadlineEntity.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestAddDeadline} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.DeadlineEntity)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.DeadlineEntity>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestAddDeadline =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestAddDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestAddDeadline,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestAddDeadline} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.DeadlineEntity>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestAddDeadline =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestAddDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestAddDeadline);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactAddDeadline,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactAddDeadline = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactAddDeadline',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactAddDeadline,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactAddDeadline} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactAddDeadline} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactAddDeadline =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactAddDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactAddDeadline,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactAddDeadline} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactAddDeadline =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactAddDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactAddDeadline);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestDelDeadline,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestDeleteDeadline = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestDeleteDeadline',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestDelDeadline,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestDelDeadline} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestDelDeadline} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestDeleteDeadline =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestDeleteDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeleteDeadline,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestDelDeadline} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestDeleteDeadline =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestDeleteDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeleteDeadline);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactDelDeadline,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactDeleteDeadline = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactDeleteDeadline',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactDelDeadline,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactDelDeadline} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactDelDeadline} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactDeleteDeadline =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactDeleteDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeleteDeadline,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactDelDeadline} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactDeleteDeadline =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactDeleteDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeleteDeadline);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSuggestDeadlineItems,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SuggestDeadlineItems = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SuggestDeadlineItems',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSuggestDeadlineItems,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSuggestDeadlineItems} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSuggestDeadlineItems} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.suggestDeadlineItems =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SuggestDeadlineItems',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeadlineItems,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSuggestDeadlineItems} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.suggestDeadlineItems =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SuggestDeadlineItems',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SuggestDeadlineItems);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractReactDeadlineItems,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_ReactDeadlineItems = new grpc.web.MethodDescriptor(
-  '/communication.Contract/ReactDeadlineItems',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractReactDeadlineItems,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractReactDeadlineItems} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractReactDeadlineItems} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.reactDeadlineItems =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/ReactDeadlineItems',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeadlineItems,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractReactDeadlineItems} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.reactDeadlineItems =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/ReactDeadlineItems',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_ReactDeadlineItems);
 };
 
 
@@ -2092,67 +1126,6 @@ proto.communication.ContractPromiseClient.prototype.reactLock =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.ContractSettleItemRequest,
- *   !proto.communication.ContractEditResponse>}
- */
-const methodDescriptor_Contract_SettleItem = new grpc.web.MethodDescriptor(
-  '/communication.Contract/SettleItem',
-  grpc.web.MethodType.UNARY,
-  proto.communication.ContractSettleItemRequest,
-  proto.communication.ContractEditResponse,
-  /**
-   * @param {!proto.communication.ContractSettleItemRequest} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.ContractEditResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.ContractSettleItemRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.ContractEditResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.ContractEditResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.settleItem =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/SettleItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SettleItem,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.ContractSettleItemRequest} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.ContractEditResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.settleItem =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/SettleItem',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_SettleItem);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
  *   !proto.communication.ContractAdminSupport,
  *   !proto.communication.NullResponse>}
  */
@@ -2160,7 +1133,7 @@ const methodDescriptor_Contract_RequestAdmin = new grpc.web.MethodDescriptor(
   '/communication.Contract/RequestAdmin',
   grpc.web.MethodType.UNARY,
   proto.communication.ContractAdminSupport,
-  proto.communication.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.ContractAdminSupport} request
    * @return {!Uint8Array}
@@ -2168,7 +1141,7 @@ const methodDescriptor_Contract_RequestAdmin = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.communication.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -2221,7 +1194,7 @@ const methodDescriptor_Contract_ResolveAdmin = new grpc.web.MethodDescriptor(
   '/communication.Contract/ResolveAdmin',
   grpc.web.MethodType.UNARY,
   proto.communication.ContractAdminSupport,
-  proto.communication.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.ContractAdminSupport} request
    * @return {!Uint8Array}
@@ -2229,7 +1202,7 @@ const methodDescriptor_Contract_ResolveAdmin = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.communication.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -2269,67 +1242,6 @@ proto.communication.ContractPromiseClient.prototype.resolveAdmin =
       request,
       metadata || {},
       methodDescriptor_Contract_ResolveAdmin);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.communication.FinishDeadlineRequest,
- *   !proto.communication.NullResponse>}
- */
-const methodDescriptor_Contract_FinishDeadline = new grpc.web.MethodDescriptor(
-  '/communication.Contract/FinishDeadline',
-  grpc.web.MethodType.UNARY,
-  proto.communication.FinishDeadlineRequest,
-  proto.communication.NullResponse,
-  /**
-   * @param {!proto.communication.FinishDeadlineRequest} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.communication.NullResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.communication.FinishDeadlineRequest} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.communication.NullResponse)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.communication.NullResponse>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.communication.ContractClient.prototype.finishDeadline =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/communication.Contract/FinishDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_FinishDeadline,
-      callback);
-};
-
-
-/**
- * @param {!proto.communication.FinishDeadlineRequest} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.communication.NullResponse>}
- *     Promise that resolves to the response
- */
-proto.communication.ContractPromiseClient.prototype.finishDeadline =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/communication.Contract/FinishDeadline',
-      request,
-      metadata || {},
-      methodDescriptor_Contract_FinishDeadline);
 };
 
 

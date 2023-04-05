@@ -26,7 +26,7 @@ type Deadline struct {
 	ContractId primitive.ObjectID `bson:"contract_id"`
 	Name       string             `bson:"name"`
 
-	BuyerSettled    bool `bson:"buyer_settled"`
+	BuyerSettled bool `bson:"buyer_settled"`
 
 	Complete bool `bson:"complete"`
 	Expired  bool `bson:"expired"`
@@ -303,44 +303,49 @@ func DeadlineReplace(deadline *Deadline, database *mongo.Database) error {
 	return nil
 }
 
-func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, userRole uint32, newPayout int64, database *mongo.Database) error {
+func DeadlineSuggestPayout(target *TargetWrapper, deadline *Deadline, user *User, userRole uint32, newPayout int64, database *mongo.Database) error {
 	if deadline.PayoutAwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The deadline %s is already awaiting approval of a different payout change", deadline.Id.Hex()))
 	}
-
 	deadline.PayoutProposerId = user.Id
-	if userRole == WORKER {
-		deadline.WorkerPayout = newPayout
-	} else if userRole == BUYER {
-		deadline.BuyerPayout = newPayout
-	}
-	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+	if target.ContentType == WRAPPER_DOCUMENT {
 		deadline.PayoutAwaitingApproval = false
 		deadline.BuyerPayout = newPayout
 		deadline.WorkerPayout = newPayout
 		deadline.CurrentPayout = newPayout
-	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
-		if contract.Buyer == nil {
-			deadline.BuyerPayout = newPayout
-			deadline.WorkerPayout = newPayout
-			deadline.CurrentPayout = newPayout
-		} else {
-			deadline.WorkerPayout = newPayout
-			deadline.PayoutAwaitingApproval = true
-		}
-	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
-		if contract.Worker == nil {
-			deadline.BuyerPayout = newPayout
-			deadline.WorkerPayout = newPayout
-			deadline.CurrentPayout = newPayout
-		} else {
-			deadline.BuyerPayout = newPayout
-			deadline.PayoutAwaitingApproval = true
-		}
 	} else {
-		return errors.New("Invalid proposing user")
+		if userRole == WORKER {
+			deadline.WorkerPayout = newPayout
+		} else if userRole == BUYER {
+			deadline.BuyerPayout = newPayout
+		}
+		if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+			deadline.PayoutAwaitingApproval = false
+			deadline.BuyerPayout = newPayout
+			deadline.WorkerPayout = newPayout
+			deadline.CurrentPayout = newPayout
+		} else if target.Contract.Worker != nil && user.Id == target.Contract.Worker.Id {
+			if target.Contract.Buyer == nil {
+				deadline.BuyerPayout = newPayout
+				deadline.WorkerPayout = newPayout
+				deadline.CurrentPayout = newPayout
+			} else {
+				deadline.WorkerPayout = newPayout
+				deadline.PayoutAwaitingApproval = true
+			}
+		} else if target.Contract.Buyer != nil && user.Id == target.Contract.Buyer.Id {
+			if target.Contract.Worker == nil {
+				deadline.BuyerPayout = newPayout
+				deadline.WorkerPayout = newPayout
+				deadline.CurrentPayout = newPayout
+			} else {
+				deadline.BuyerPayout = newPayout
+				deadline.PayoutAwaitingApproval = true
+			}
+		} else {
+			return errors.New("Invalid proposing user")
+		}
 	}
-
 	err := DeadlineReplace(deadline, database)
 	if err != nil {
 		return err
@@ -348,37 +353,44 @@ func DeadlineSuggestPayout(contract *Contract, deadline *Deadline, user *User, u
 	return nil
 }
 
-func DeadlineSuggestDate(contract *Contract, deadline *Deadline, user *User, userRole uint32, newDate time.Time, database *mongo.Database) error {
+func DeadlineSuggestDate(target *TargetWrapper, deadline *Deadline, user *User, newDate time.Time, database *mongo.Database) error {
 	if deadline.DateAwaitingApproval == true {
 		return errors.New(fmt.Sprintf("The deadline %s is already awaiting approval of a different payout change", deadline.Id.Hex()))
 	}
 
 	deadline.DateProposerId = user.Id
-	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+	if target.ContentType == WRAPPER_DOCUMENT {
 		deadline.DateAwaitingApproval = false
 		deadline.BuyerDate = newDate
 		deadline.WorkerDate = newDate
 		deadline.CurrentDate = newDate
-	} else if contract.Worker != nil && user.Id == contract.Worker.Id {
-		if contract.Buyer == nil {
-			deadline.BuyerDate = newDate
-			deadline.WorkerDate = newDate
-			deadline.CurrentDate = newDate
-		} else {
-			deadline.WorkerDate = newDate
-			deadline.DateAwaitingApproval = true
-		}
-	} else if contract.Buyer != nil && user.Id == contract.Buyer.Id {
-		if contract.Worker == nil {
-			deadline.BuyerDate = newDate
-			deadline.WorkerDate = newDate
-			deadline.CurrentDate = newDate
-		} else {
-			deadline.BuyerDate = newDate
-			deadline.DateAwaitingApproval = true
-		}
 	} else {
-		return errors.New("Invalid proposing user")
+		if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+			deadline.DateAwaitingApproval = false
+			deadline.BuyerDate = newDate
+			deadline.WorkerDate = newDate
+			deadline.CurrentDate = newDate
+		} else if target.Contract.Worker != nil && user.Id == target.Contract.Worker.Id {
+			if target.Contract.Buyer == nil {
+				deadline.BuyerDate = newDate
+				deadline.WorkerDate = newDate
+				deadline.CurrentDate = newDate
+			} else {
+				deadline.WorkerDate = newDate
+				deadline.DateAwaitingApproval = true
+			}
+		} else if target.Contract.Buyer != nil && user.Id == target.Contract.Buyer.Id {
+			if target.Contract.Worker == nil {
+				deadline.BuyerDate = newDate
+				deadline.WorkerDate = newDate
+				deadline.CurrentDate = newDate
+			} else {
+				deadline.BuyerDate = newDate
+				deadline.DateAwaitingApproval = true
+			}
+		} else {
+			return errors.New("Invalid proposing user")
+		}
 	}
 
 	err := DeadlineReplace(deadline, database)
@@ -388,21 +400,22 @@ func DeadlineSuggestDate(contract *Contract, deadline *Deadline, user *User, use
 	return nil
 }
 
-func DeadlineSuggestItems(deadline *Deadline, contract *Contract, user *User, newIds []primitive.ObjectID, database *mongo.Database) error {
+func DeadlineSuggestItems(deadline *Deadline, target *TargetWrapper, user *User, newIds []primitive.ObjectID, database *mongo.Database) error {
 	if deadline.ItemsAwaitingApproval {
 		return fmt.Errorf("the deadline %s is already awaiting approval of a different items change", deadline.Id.Hex())
 	}
 
 	overwrite := false
-	if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+	if target.ContentType == WRAPPER_DOCUMENT {
+		overwrite = true
+	} else if user.AdminStatus || (deadline.AwaitingCreation && deadline.DeadlineProposerId == user.Id) {
+		overwrite = true
+	} else if target.Contract.Buyer == nil || target.Contract.Worker == nil {
+		overwrite = true
+	} else if deadline.AwaitingCreation == true && deadline.DeadlineProposerId == user.Id {
 		overwrite = true
 	}
-	if contract.Buyer == nil || contract.Worker == nil {
-		overwrite = true
-	}
-	if deadline.AwaitingCreation == true && deadline.DeadlineProposerId == user.Id {
-		overwrite = true
-	}
+
 	newItems := make([]*ContractItem, 0)
 	newItemIds := make([]primitive.ObjectID, 0)
 	newItemStates := make([]uint32, 0)
@@ -437,7 +450,7 @@ func DeadlineSuggestItems(deadline *Deadline, contract *Contract, user *User, ne
 		if !included {
 			var appendItem *ContractItem
 			found := false
-			for _, existingItem := range contract.Items {
+			for _, existingItem := range target.GetItems() {
 				if existingItem.Id == new_id {
 					found = true
 					appendItem = existingItem
@@ -475,7 +488,7 @@ func DeadlineSuggestItems(deadline *Deadline, contract *Contract, user *User, ne
 	return nil
 }
 
-func DeadlineReactItems(deadline *Deadline, contract *Contract, user *User, decision uint32, database *mongo.Database) error {
+func DeadlineReactItems(deadline *Deadline, user *User, decision uint32, database *mongo.Database) error {
 	if !deadline.ItemsAwaitingApproval {
 		return fmt.Errorf("the deadline %s has no item changes to approve", deadline.Id.Hex())
 	}
@@ -512,7 +525,7 @@ func DeadlineReactItems(deadline *Deadline, contract *Contract, user *User, deci
 	return nil
 }
 
-func DeadlineRemoveItem(deadline *Deadline, contract *Contract, user *User, remove_item *ContractItem, database *mongo.Database) error {
+func DeadlineRemoveItem(deadline *Deadline, remove_item *ContractItem, database *mongo.Database) error {
 	newItems := make([]*ContractItem, 0)
 	newItemIds := make([]primitive.ObjectID, 0)
 	newItemStates := make([]uint32, 0)

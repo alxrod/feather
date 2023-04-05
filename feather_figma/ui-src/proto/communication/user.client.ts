@@ -8,7 +8,7 @@ import type { FigmaConnectRequest } from "./user";
 import type { ChangePasswordRequest } from "./user";
 import type { ResetConfirmResponse } from "./user";
 import type { ResetConfirmRequest } from "./user";
-import type { NullResponse } from "./contract";
+import type { NullResponse } from "./generic";
 import type { ForgotRequest } from "./user";
 import type { UserEntity } from "./user";
 import type { UserPullRequest } from "./user";

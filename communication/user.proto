@@ -4,7 +4,7 @@ option go_package=".;communication";
 
 import "google/protobuf/timestamp.proto";
 import "communication/file_service.proto";
-import "communication/contract.proto";
+import "communication/generic.proto";
 
 message UserRegisterRequest {
     string username = 1;
@@ -80,6 +80,16 @@ message UserEntity {
 
     uint32 free_contracts = 33;
 
+}
+
+message UserNubEntity {
+    string id = 1;
+    string username = 2;
+    bool has_photo = 5;
+    string photo_url = 4;
+
+    bool worker_mode_enabled = 6;
+    bool buyer_mode_enabled = 7;
 }
 
 message ForgotRequest {

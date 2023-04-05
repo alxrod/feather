@@ -54,14 +54,7 @@ const AppWrapper = (props) => {
     "^/reset-password$": UNAUTH_ROLE,
     
   }
-  const select_routes = ["/negotiate", "/view", "/settle", "/create"]
-  const contract_routes = [
-    "/contract",
-    "/create",
-    "/negotiate",
-    "/view",
-    "/settle",
-  ]
+  const select_routes = ["/contract/negotiate", "/contract/view", "/contract/settle", "/contract/create"]
 
   useEffect( () => {
     const route_base = "/"+router.pathname.split("/")[1]

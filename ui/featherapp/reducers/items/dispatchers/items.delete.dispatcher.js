@@ -1,4 +1,4 @@
-import ContractService from "../../../services/contract.service";
+import ItemService from "../../../services/item.service";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 
 import {resolTypes} from "../../../services/chat.service";
@@ -11,7 +11,7 @@ export const deleteItem = (contract_id, item_id, item_name, item_body, createMod
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.deleteItem(creds.access_token, creds.user_id, contract_id, item_id, item_name, item_body).then(
+                return ItemService.deleteItem(creds.access_token, creds.user_id, contract_id, item_id, item_name, item_body).then(
                     (data) => {
                         dispatch({
                             type: itemActions.CONTRACT_SUGGEST_ITEM_REMOVE,
@@ -40,7 +40,7 @@ export const reactDeleteItem = (contract_id, message_id, item_id, status) => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.reactDeleteItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                return ItemService.reactDeleteItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
                     () => {
                         return Promise.resolve();
                     },

@@ -24,7 +24,7 @@ var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/time
 
 var communication_file_service_pb = require('../communication/file_service_pb.js')
 
-var communication_contract_pb = require('../communication/contract_pb.js')
+var communication_generic_pb = require('../communication/generic_pb.js')
 const proto = {};
 proto.communication = require('./user_pb.js');
 
@@ -334,7 +334,7 @@ const methodDescriptor_Auth_ForgotPassword = new grpc.web.MethodDescriptor(
   '/communication.Auth/ForgotPassword',
   grpc.web.MethodType.UNARY,
   proto.communication.ForgotRequest,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.ForgotRequest} request
    * @return {!Uint8Array}
@@ -342,7 +342,7 @@ const methodDescriptor_Auth_ForgotPassword = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 
@@ -517,7 +517,7 @@ const methodDescriptor_Auth_ConnectFigma = new grpc.web.MethodDescriptor(
   '/communication.Auth/ConnectFigma',
   grpc.web.MethodType.UNARY,
   proto.communication.FigmaConnectRequest,
-  communication_contract_pb.NullResponse,
+  communication_generic_pb.NullResponse,
   /**
    * @param {!proto.communication.FigmaConnectRequest} request
    * @return {!Uint8Array}
@@ -525,7 +525,7 @@ const methodDescriptor_Auth_ConnectFigma = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  communication_contract_pb.NullResponse.deserializeBinary
+  communication_generic_pb.NullResponse.deserializeBinary
 );
 
 

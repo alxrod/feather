@@ -12,9 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSuggestPrice) (*comms.ContractEditResponse, error) {
+func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.SuggestPriceReq) (*comms.ContractEditResponse, error) {
 	log.Println(fmt.Sprintf("Suggesting a price %d", req.NewPrice))
-	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+	contract_id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	if err != nil {
 		return nil, err
 	}
-	contract, _ = db.ContractUnsign(contract, database)
+	contract.Unsign(database)
 
 	oldPrice := contract.Price.Current
 	user, err := db.UserQueryId(user_id, database)
@@ -54,7 +54,7 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	}
 	log.Println("Price Updated, attempting to send message")
 
-	err = s.ChatAgent.SendPriceMessage(contract, user, req.NewPrice, oldPrice, db.SUGGEST, database)
+	err = s.ChatAgent.SendPriceMessage(db.CastContract(contract), user, req.NewPrice, oldPrice, db.SUGGEST, database)
 	log.Println("Finished attempting to send message")
 	if err != nil {
 		return nil, err
@@ -63,8 +63,8 @@ func (s *BackServer) SuggestPrice(ctx context.Context, req *comms.ContractSugges
 	return &comms.ContractEditResponse{}, nil
 }
 
-func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPrice) (*comms.ContractEditResponse, error) {
-	contract_id, err := primitive.ObjectIDFromHex(req.ContractId)
+func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ReactPriceReq) (*comms.ContractEditResponse, error) {
+	contract_id, err := primitive.ObjectIDFromHex(req.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s *BackServer) ReactPrice(ctx context.Context, req *comms.ContractReactPri
 	if err != nil {
 		return nil, err
 	}
-	contract, _ = db.ContractUnsign(contract, database)
+	contract.Unsign(database)
 
 	user, err := db.UserQueryId(user_id, database)
 	if err != nil {

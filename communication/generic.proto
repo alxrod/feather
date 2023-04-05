@@ -1,0 +1,5 @@
+syntax = "proto3";
+package communication;
+option go_package=".;communication";
+
+message NullResponse {}

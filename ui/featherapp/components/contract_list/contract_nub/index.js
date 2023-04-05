@@ -45,21 +45,22 @@ const ContractNub = (props) => {
 
   const genLink = (contract) => {
     if (contract.stage === contractStages.CREATE) {
-      return "/create/"+contract.id
+      return "/contract/create/"+contract.id
     } else if (contract.stage == contractStages.INVITE) {
-      return "/negotiate/"+contract.id
+      return "/contract/negotiate/"+contract.id
     } else if (contract.stage == contractStages.NEGOTIATE) {
-      return "/negotiate/"+contract.id
+      return "/contract/negotiate/"+contract.id
     } else if (contract.stage == contractStages.SIGNED) {
-      return "/view/"+contract.id
+      return "/contract/view/"+contract.id
     } else if (contract.stage == contractStages.ACTIVE) {
-      return "/view/"+contract.id
+      return "/contract/view/"+contract.id
     } else if (contract.stage == contractStages.SETTLE) {
-      return "/settle/"+contract.id
+      return "/contract/settle/"+contract.id
     } else if (contract.stage == contractStages.COMPLETE) {
-      return "/view/"+contract.id
+      return "/contract/view/"+contract.id
     }
   }
+  
   return (
     <a href={link}>
       <div className="overflow-hidden rounded-lg bg-white shadow border-2 border-white hover:border-primary5">

@@ -1,4 +1,4 @@
-import ContractService from "../../../services/contract.service";
+import ItemService from "../../../services/item.service";
 import {WORKER_TYPE, BUYER_TYPE} from "../../../services/user.service";
 
 import {resolTypes} from "../../../services/chat.service";
@@ -24,7 +24,7 @@ export const addItem = (contract_id, item_name, item_body, existing_item_names=[
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
+                return ItemService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
                     (newItem) => {
                         dispatch({
                             type: itemActions.CONTRACT_ITEM_ADD,
@@ -47,7 +47,7 @@ export const reactAddItem = (contract_id, message_id, item_id, status) => {
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ContractService.reactAddItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
+                return ItemService.reactAddItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
                     () => {
                         return Promise.resolve();
                     },
