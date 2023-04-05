@@ -152,6 +152,7 @@ func DocumentInsert(req *comms.DocumentCreateRequest, user *User, database *mong
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Document for %s", user.Username)))
 		return nil, err
 	}
+	log.Println("Inserted Document into Database")
 
 	id := res.InsertedID.(primitive.ObjectID)
 	doc.Id = id

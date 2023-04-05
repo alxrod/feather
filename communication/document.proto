@@ -57,5 +57,5 @@ service Document {
   rpc CreateDoc(DocumentCreateRequest) returns (DocumentEntity) {};
 
   rpc QueryDocById(QueryByIdRequest) returns (DocumentEntity) {};
-  rpc QueryDocByUser(QueryByUserRequest) returns (DocumentNubSet) {};
+  rpc QueryDocsByUser(QueryByUserRequest) returns (DocumentNubSet) {};
 }   

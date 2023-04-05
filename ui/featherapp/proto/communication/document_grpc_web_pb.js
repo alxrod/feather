@@ -210,8 +210,8 @@ proto.communication.DocumentPromiseClient.prototype.queryDocById =
  *   !proto.communication.QueryByUserRequest,
  *   !proto.communication.DocumentNubSet>}
  */
-const methodDescriptor_Document_QueryDocByUser = new grpc.web.MethodDescriptor(
-  '/communication.Document/QueryDocByUser',
+const methodDescriptor_Document_QueryDocsByUser = new grpc.web.MethodDescriptor(
+  '/communication.Document/QueryDocsByUser',
   grpc.web.MethodType.UNARY,
   communication_requests_pb.QueryByUserRequest,
   proto.communication.DocumentNubSet,
@@ -236,13 +236,13 @@ const methodDescriptor_Document_QueryDocByUser = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.communication.DocumentNubSet>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.communication.DocumentClient.prototype.queryDocByUser =
+proto.communication.DocumentClient.prototype.queryDocsByUser =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/communication.Document/QueryDocByUser',
+      '/communication.Document/QueryDocsByUser',
       request,
       metadata || {},
-      methodDescriptor_Document_QueryDocByUser,
+      methodDescriptor_Document_QueryDocsByUser,
       callback);
 };
 
@@ -255,13 +255,13 @@ proto.communication.DocumentClient.prototype.queryDocByUser =
  * @return {!Promise<!proto.communication.DocumentNubSet>}
  *     Promise that resolves to the response
  */
-proto.communication.DocumentPromiseClient.prototype.queryDocByUser =
+proto.communication.DocumentPromiseClient.prototype.queryDocsByUser =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/communication.Document/QueryDocByUser',
+      '/communication.Document/QueryDocsByUser',
       request,
       metadata || {},
-      methodDescriptor_Document_QueryDocByUser);
+      methodDescriptor_Document_QueryDocsByUser);
 };
 
 
