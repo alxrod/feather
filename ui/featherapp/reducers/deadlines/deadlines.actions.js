@@ -1,19 +1,16 @@
 
-export const CONTRACT_UPDATE_PAYOUT = "contract/deadline/UPDATE_PAYOUT"
-export const CONTRACT_UPDATE_DATE = "contract/deadline/UPDATE_DATE"
-export const CONTRACT_DEADLINE_RELOAD = "contract/deadline/RELOAD"
 
-export const CONTRACT_DEADLINE_LOAD = "contract/deadline/LOAD"
-export const CONTRACT_DEADLINE_ADD = "contract/deadline/ADD"
 
-export const CONTRACT_DEADLINE_REPLACE = "contract/deadline/REPLACE"
-export const CONTRACT_DEADLINE_REMOVE = "contract/deadline/REMOVE"
-export const CONTRACT_DEADLINE_UPDATE = "contract/deadline/UPDATE"
+export const DEADLINE_UPDATE_DATE = "deadline/UPDATE_DATE"
+export const DEADLINE_RELOAD = "deadline/RELOAD"
 
-export const CONTRACT_DEADLINE_NAMES_UPDATE = "contract/deadline/UPDATE_NAMES"
+export const DEADLINE_LOAD = "deadline/LOAD"
+export const DEADLINE_ADD = "deadline/ADD"
 
-export const CONTRACT_DEADLINE_SUGGEST_DELETE = "contract/deadline/SUGGEST_DELETE"
+export const DEADLINE_REPLACE = "deadline/REPLACE"
+export const DEADLINE_DELETE = "deadline/DELETE"
+export const DEADLINE_UPDATE = "deadline/UPDATE"
 
-export const CONTRACT_DEADLINE_FINALIZE_SETTLE = "contract/deadline/FINALIZE_SETTLE"
+export const DEADLINE_NAMES_UPDATE = "deadline/UPDATE_NAMES"
 
-export const CONTRACT_DEADLINE_ITEM_PURGE = "contract/deadline/PURGE_ITEM"
+export const DEADLINE_ITEM_PURGE = "deadline/PURGE_ITEM"

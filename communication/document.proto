@@ -4,7 +4,7 @@ option go_package=".;communication";
 import "communication/deadline.proto";
 import "communication/user.proto";
 import "communication/item.proto";
-import "communication/requests.proto";
+import "communication/generic.proto";
 
 
 message DocumentEntity {
@@ -33,7 +33,7 @@ message DocumentNub {
 
   repeated string user_ids = 4;
 
-  string figma_link = 5;
+  string figma_file_key = 5;
   bool figma_connected = 6;
   repeated DeadlineNub deadlines = 7;
 }
@@ -51,6 +51,28 @@ message DocumentCreateRequest {
   repeated ItemEntity items = 7;
 }
 
+message FigmaFileConnectRequest {
+  string user_id = 1;
+  string doc_id = 2;
+  string figma_link = 3;
+}
+
+message FigmaItemRequest {
+  string doc_id = 1;
+  string user_id = 5;
+  string item_id = 3;
+  string component_id = 4;
+}
+
+message QueryByIdRequest {
+  string id = 1;
+  string user_id = 2;
+}
+
+message QueryByUserRequest {
+  string user_id = 1;
+  bool unsorted = 2;
+}
 
 service Document {
 
@@ -58,4 +80,7 @@ service Document {
 
   rpc QueryDocById(QueryByIdRequest) returns (DocumentEntity) {};
   rpc QueryDocsByUser(QueryByUserRequest) returns (DocumentNubSet) {};
+
+  rpc SetFigmaConnected(FigmaFileConnectRequest) returns (NullResponse) {};
+  rpc SetItemFigmaNodes(FigmaItemRequest) returns (NullResponse) {};
 }   

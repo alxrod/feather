@@ -34,18 +34,6 @@ func (s *BackServer) Register(ctx context.Context, req *comms.UserRegisterReques
 			return nil, err
 		}
 
-		if user.WorkerModeRequested {
-			log.Printf("Making it worker")
-			user, err = s.StripeAgent.CreateConnectedAccount(user, database)
-		}
-		if user.BuyerModeRequested {
-			log.Printf("Making it buyer")
-			user, err = s.StripeAgent.CreateCustomer(user, database)
-		}
-		if err != nil {
-			return nil, err
-		}
-
 		s.EmailAgent.SendNotificationEmail(
 			"user registered",
 			fmt.Sprintf("A new user with the email %s and username %s has been registered",
@@ -84,7 +72,6 @@ func (s *BackServer) Login(ctx context.Context, req *comms.UserLoginRequest) (*c
 	if err != nil {
 		return nil, err
 	}
-	log.Println(color.Ize(color.Yellow, fmt.Sprintf("Username %s is status %b", user.Username, user.AdminStatus)))
 
 	return &comms.UserSigninResponse{
 		Token:        tkn,
@@ -108,50 +95,6 @@ func (s *BackServer) Pull(ctx context.Context, req *comms.UserPullRequest) (*com
 	if err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, err
-	}
-
-	if !user.WorkerModeEnabled && user.WorkerModeRequested {
-		enabled, err := s.StripeAgent.VerifyConnectedAccountCapabilities(user.StripeConnectedAccountId)
-		if err == nil && enabled {
-			log.Printf("Stripe Account %s has been approved %b", user.StripeConnectedAccountId, enabled)
-			// Note this currently only gets the worker, saves queries by not pulling buyer
-			outstanding_charges, err := db.GetUserHoldCharges(user, database)
-			if err != nil {
-				return nil, err
-			}
-			for _, icharge := range outstanding_charges {
-				_, err := s.StripeAgent.CreateContractTransfer(
-					icharge.Worker,
-					icharge.Amount,
-					icharge.ChargeId,
-					icharge.TransferGroup,
-				)
-				if err != nil {
-					log.Println("ERROR: ", err)
-					continue
-				}
-				s.EmailAgent.SendNotificationEmail(
-					"outstanding charge transfered",
-					fmt.Sprintf("the outstanding charge %s is being transfered to %s's account for a total of %f",
-						icharge.Id.Hex(),
-						icharge.Worker.Username,
-						(float64(icharge.Amount)/100),
-					),
-				)
-				icharge.UpdateState(database, db.CHARGE_STATE_TRANSFER_CREATED)
-				user.OutstandingBalance -= icharge.Amount
-			}
-
-			user.WorkerModeEnabled = enabled
-			filter := bson.D{{"_id", id}}
-			update := bson.D{{"$set", bson.D{
-				{"worker_mode_enabled", user.WorkerModeEnabled},
-				{"outstanding_balance", user.OutstandingBalance},
-			}}}
-
-			_, err = database.Collection(db.USERS_COL).UpdateOne(context.TODO(), filter, update)
-
-		}
 	}
 	proto := user.Proto()
 	if err != nil {

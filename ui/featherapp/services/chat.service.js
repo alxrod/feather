@@ -1,6 +1,5 @@
 import { ChatClient } from "../proto/communication/chat_grpc_web_pb";
 import { 
-    ChatMessage,
     UserJoin,
     UserLeave,
     SendRequest,
@@ -8,45 +7,29 @@ import {
     CommentMsgBody,
 
     ChatPullRequest,
-    ChatLabel,
     NewMessagesRequest,
-    NewMessageSet
 
 } from "../proto/communication/chat_pb";
 
 import { 
-    CONTRACT_UPDATE_PRICE,
-    CONTRACT_STAGE_UPDATE, 
-    CONTRACT_TOGGLE_LOCK,
-    CONTRACT_ADMIN_REQUEST_CHANGED,
-    CONTRACT_PURGE_SIGNING,
-    CONTRACT_FIGMA_LINK_CHANGE,
-} from "../reducers/contract/contract.actions"
+    DOCUMENT_FIGMA_LINK_CHANGE
+} from "../reducers/document/document.actions"
 
 import { 
-    CONTRACT_UPDATE_PAYOUT,
-    CONTRACT_UPDATE_DATE,
-    CONTRACT_DEADLINE_ADD,
-    CONTRACT_DEADLINE_SUGGEST_DELETE,
-    CONTRACT_DEADLINE_REPLACE,
-    CONTRACT_DEADLINE_REMOVE,
-    CONTRACT_DEADLINE_FINALIZE_SETTLE,
+    DEADLINE_UPDATE_DATE,
+    DEADLINE_ADD,
+    DEADLINE_REPLACE,
+    DEADLINE_DELETE,
 
 } from "../reducers/deadlines/deadlines.actions"
 
 import { 
-    CONTRACT_ITEM_UPDATE_BODY,
-    CONTRACT_ITEM_RELOAD,
-    CONTRACT_ITEM_REMOVE,
-    CONTRACT_ITEM_REPLACE_SUGGEST,
-    CONTRACT_ITEM_SUGGEST_DELETE,
-    CONTRACT_ITEM_SETTLE_UPDATE,
-    CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT,
+    ITEM_UPDATE_BODY,
+    ITEM_DELETE,
+    ITEM_ADD,
+    ITEM_CHANGE_FIGMA_COMPONENT,
 } from "../reducers/items/items.actions"
 
-import {WORKER_TYPE, BUYER_TYPE} from "./user.service"
-import {contractStages } from "./contract.service"
-// var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 import { CHAT_MESSAGE_RECEIVE, CHAT_MESSAGE_UPDATE, CHAT_REJOIN_BEGIN} from "../reducers/chat/chat.actions"
 
 export const chatClient = new ChatClient(process.env.NEXT_PUBLIC_API_URL);
@@ -110,7 +93,7 @@ export const resolTypes = {
 
 class ChatService {
 
-    joinChat(token, user_id, room_id, dispatch, role) {
+    joinChat(token, user_id, room_id, dispatch) {
         let joinRequest = new UserJoin();
         joinRequest.setUserId(user_id);
         joinRequest.setRoomId(room_id);
@@ -122,7 +105,7 @@ class ChatService {
         stream.on('data', function (response) {
             const msg = response.toObject()
             const formatedMsg = reformatBody(msg)
-            parseMessage(formatedMsg, role, user_id, dispatch)
+            parseMessage(formatedMsg, user_id, dispatch)
             if (msg.method !== msgMethods.REVISION) {
                 dispatch({
                     type: CHAT_MESSAGE_RECEIVE,
@@ -193,9 +176,10 @@ class ChatService {
 
     }
 
-    pullNewMessages(token, user_id) {
+    pullNewMessages(token, user_id, doc_mode) {
         let req = new NewMessagesRequest();
         req.setUserId(user_id);
+        req.setDocMode(doc_mode);
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -208,7 +192,7 @@ class ChatService {
                     
                     for (let i=0; i<resp.messagesList.length; i++) {
                         const reformMsg = reformatBody(resp.messagesList[i].message)
-                        reformMsg.contractInfo = resp.messagesList[i].contract
+                        reformMsg.documentInfo = resp.messagesList[i].document
                         messages.push(reformMsg)
                     }
 
@@ -219,22 +203,14 @@ class ChatService {
         
     }
 
-    sendMessage(token, user_id, room_id, text, label) {
+    sendMessage(token, user_id, room_id, text) {
         let sendRequest = new SendRequest();
         sendRequest.setUserId(user_id);
         sendRequest.setRoomId(room_id);
-        sendRequest.setMethod(msgMethods.COMMENT)
 
-        
         let body = new CommentMsgBody();
         body.setMessage(text);
-        sendRequest.setCommentBody(body);
-
-        let labelEntity = new ChatLabel();
-        labelEntity.setType(label.type);
-        labelEntity.setName(label.name);
-        labelEntity.setItemId(label.id);
-        sendRequest.setLabel(labelEntity);
+        sendRequest.setBody(body);
 
         return new Promise( (resolve, reject) => { 
             var metadata = {"authorization": token}
@@ -250,242 +226,61 @@ class ChatService {
     }
 }
 
-const adjustNewVersion = (newVersion, msg, this_user_id, role) => {
-    if (msg.body.resolStatus === resolTypes.APPROVED) {
-        newVersion.current = msg.body.newVersion
-        newVersion.buyer = msg.body.newVersion
-        newVersion.worker = msg.body.newVersion
-    } else if (this_user_id === msg.user.id) {
-        if (role === WORKER_TYPE) {
-            newVersion.worker = msg.body.newVersion
-        } else {
-            newVersion.buyer = msg.body.newVersion
-        }   
-    } else if (this_user_id !== msg.user.id) {
-        if (role === WORKER_TYPE) {
-            newVersion.buyer = msg.body.newVersion
-        } else {
-            newVersion.worker = msg.body.newVersion
-        }   
-    }
-    return newVersion
-}
-const parseMessage = (msg, role, this_user_id, dispatch) => {
-    if (msg.method === msgMethods.PRICE) {
-        let newPrice = {
-            proposerId: msg.user.id,
-            current: msg.body.oldVersion,
-            awaitingApproval: !msg.body.resolved,
-            buyer: msg.body.oldVersion,
-            worker: msg.body.oldVersion,
-        }
-        newPrice = adjustNewVersion(newPrice, msg, this_user_id, role)
-        
-        dispatch({
-            type: CONTRACT_UPDATE_PRICE,
-            payload: newPrice,
-        })
-        dispatch({
-            type: CONTRACT_PURGE_SIGNING
-        })
-    } else if (msg.method === msgMethods.PAYOUT) {
-        let newPayout = {
-            proposerId: msg.user.id,
-            deadlineId: msg.body.deadlineId,
-            current: msg.body.oldVersion,
-            awaitingApproval: !msg.body.resolved,
-            buyer: msg.body.oldVersion,
-            worker: msg.body.oldVersion,
-        }
-        newPayout = adjustNewVersion(newPayout, msg, this_user_id, role)
-
-        dispatch({
-            type: CONTRACT_UPDATE_PAYOUT,
-            payload: newPayout,
-        })
-        dispatch({
-            type: CONTRACT_PURGE_SIGNING
-        })
-
-    } else if (msg.method === msgMethods.DATE) {
+const parseMessage = (msg, dispatch) => {
+    if (msg.method === msgMethods.DATE) {
         let newDate = {
-            proposerId: msg.user.id,
             deadlineId: msg.body.deadlineId,
-            current: msg.body.oldVersion,
-            awaitingApproval: !msg.body.resolved,
-            buyer: msg.body.oldVersion,
-            worker: msg.body.oldVersion,
+            oldVersion: new Date(msg.body.oldVersion.seconds*1000),
+            newVersion: new Date(msg.body.newVersion.seconds*1000)
         }
-        newDate = adjustNewVersion(newDate, msg, this_user_id, role)
-        newDate.current = new Date(newDate.current.seconds*1000)
-        newDate.worker = new Date(newDate.worker.seconds*1000)
-        newDate.buyer = new Date(newDate.buyer.seconds*1000)
-
         dispatch({
-            type: CONTRACT_UPDATE_DATE,
+            type: DEADLINE_UPDATE_DATE,
             payload: newDate,
-        })
-        dispatch({
-            type: CONTRACT_PURGE_SIGNING
         })
     } else if (msg.method === msgMethods.ITEM) {
         let newBody = {
-            proposerId: msg.user.id,
             itemId: msg.body.itemId,
-            current: msg.body.oldVersion,
-            awaitingApproval: !msg.body.resolved,
-            buyer: msg.body.oldVersion,
-            worker: msg.body.oldVersion,
+            oldVersion: msg.body.oldVersion,
+            newVersion: msg.body.newVersion
         }
-        newBody = adjustNewVersion(newBody, msg, this_user_id, role)
         dispatch({
-            type: CONTRACT_ITEM_UPDATE_BODY,
+            type: ITEM_UPDATE_BODY,
             payload: newBody,
-        })
-        dispatch({
-            type: CONTRACT_PURGE_SIGNING
         })
     } else if (msg.method === msgMethods.ITEM_CREATE) {
         dispatch({
-            type: CONTRACT_ITEM_REPLACE_SUGGEST,
+            type: ITEM_ADD,
             payload: msg.body.item,
         });
     } else if (msg.method === msgMethods.ITEM_DELETE) {
-        if (msg.body.resolved) {
-            dispatch({
-                type: CONTRACT_ITEM_REMOVE,
-                payload: msg.body.item,
-            });
-        } else {
-            dispatch({
-                type: CONTRACT_ITEM_SUGGEST_DELETE,
-                payload: msg.body.item.id,
-            });
-        }
         dispatch({
-            type: CONTRACT_PURGE_SIGNING
-        })
-        
+            type: ITEM_DELETE,
+            payload: msg.body.item,
+        });
     } else if (msg.method === msgMethods.DEADLINE_CREATE) {
         dispatch({
-            type: CONTRACT_DEADLINE_ADD,
+            type: DEADLINE_ADD,
             payload: msg.body.deadline,
         });
     } else if (msg.method === msgMethods.DEADLINE_DELETE) {
-        if (msg.body.resolved) {
-            dispatch({
-                type: CONTRACT_DEADLINE_REMOVE,
-                payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
-            });
-        } else {
-            dispatch({
-                type: CONTRACT_DEADLINE_SUGGEST_DELETE,
-                payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
-            });
-        }
         dispatch({
-            type: CONTRACT_PURGE_SIGNING
-        })
+            type: DEADLINE_DELETE,
+            payload: {id: msg.body.deadline.id, proposerId: msg.user.id},
+        });
+    
     } else if (msg.method === msgMethods.DEADLINE_ITEMS) {
         dispatch({
-            type: CONTRACT_DEADLINE_REPLACE,
+            type: DEADLINE_REPLACE,
             payload: msg.body.deadline,
-        })
-        dispatch({
-            type: CONTRACT_PURGE_SIGNING
-        })
-    } else if (msg.method === msgMethods.REVISION) {
-        dispatch({
-            type: CHAT_MESSAGE_UPDATE,
-            payload: msg,
-        })
-    } else if (msg.method === msgMethods.CONTRACT_SIGN || msg.method === msgMethods.CONTRACT_SETTLE) {
-        let workerApproved = false;
-        let buyerApproved = false;
-        if (msg.body.signerId === this_user_id) {
-            if (role === WORKER_TYPE) {
-                workerApproved = true
-            } else if (role === BUYER_TYPE) {
-                buyerApproved = true
-            }
-        } else {
-            if (role === WORKER_TYPE) {
-                buyerApproved = true
-            } else if (role === BUYER_TYPE) {
-                workerApproved = true
-            }
-        }
-        dispatch({
-            type: CONTRACT_STAGE_UPDATE,
-            payload: {
-                stage: msg.body.contractStage,
-                workerApproved: workerApproved,
-                buyerApproved: buyerApproved,
-                id: msg.body.contractId,
-            }
-        })
-    } else if (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) {
-        dispatch({
-            type: CONTRACT_ITEM_SETTLE_UPDATE,
-            payload: {
-                workerSettled: msg.body.itemWorkerSettle,
-                buyerSettled: msg.body.itemBuyerSettle,
-                adminSettled: msg.body.itemAdminSettle,
-                itemId: msg.body.itemId,
-            }
-        })
-    } else if (msg.method === msgMethods.CONTRACT_LOCK) {
-        if (msg.isAdmin) {
-            dispatch({
-                type: CONTRACT_TOGGLE_LOCK,
-                payload: {
-                    lockState: msg.body.contractLock
-                }
-            });
-        }
-    } else if (msg.method === msgMethods.REQUEST_ADMIN) {
-        dispatch({
-            type: CONTRACT_ADMIN_REQUEST_CHANGED,
-            payload: true,
-        })
-    } else if (msg.method === msgMethods.RESOLVE_ADMIN) {
-        dispatch({
-            type: CONTRACT_ADMIN_REQUEST_CHANGED,
-            payload: false
-        })
-    } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
-        dispatch({
-            type: CONTRACT_DEADLINE_FINALIZE_SETTLE,
-            payload: msg.body
-        })
-    } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
-        dispatch({
-            type: CONTRACT_STAGE_UPDATE,
-            payload: {
-                stage: contractStages.SETTLE,
-                workerApproved: true,
-                buyerApproved: true,
-                id: msg.body.contractId,
-            }
-        })
-    } else if (msg.method === msgMethods.DEADLINE_SETTLED) {
-        dispatch({
-            type: CONTRACT_STAGE_UPDATE,
-            payload: {
-                stage: msg.body.contractStage,
-                workerApproved: false,
-                buyerApproved: false,
-                id: msg.body.contractId,
-            }
         })
     } else if (msg.method === msgMethods.CONTRACT_FIGMA_SET) {
         dispatch({
-            type: CONTRACT_FIGMA_LINK_CHANGE,
+            type: DOCUMENT_FIGMA_LINK_CHANGE,
             payload: {link: msg.body.figmaLink}
         })
     } else if (msg.method === msgMethods.FIGMA_ITEM_NODES) {
         dispatch({
-            type: CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT,
+            type: ITEM_CHANGE_FIGMA_COMPONENT,
             payload: {
                 item_id: msg.body.itemId,
                 component_id: msg.body.componentId,
@@ -499,14 +294,8 @@ const reformatBody = (msg) => {
         msg.body = msg.commentBody
     } else if (msg.method === msgMethods.ITEM) {
         msg.body = msg.itemBody
-    } else if (msg.method === msgMethods.PAYOUT) {
-        msg.body = msg.payoutBody
-    } else if (msg.method === msgMethods.DATE) {
+    } if (msg.method === msgMethods.DATE) {
         msg.body = msg.dateBody
-    } else if (msg.method === msgMethods.PRICE) {
-        msg.body = msg.priceBody
-    } else if (msg.method === msgMethods.REVISION) {
-        msg.body = msg.revBody
     } else if (msg.method === msgMethods.ITEM_CREATE) {
         msg.body = msg.itemCreateBody
     } else if (msg.method === msgMethods.ITEM_DELETE) {
@@ -526,20 +315,6 @@ const reformatBody = (msg) => {
         msg.deadlineItemBody.deadline.workerDate = new Date(1000 * msg.deadlineItemBody.deadline.workerDate.seconds)
         msg.deadlineItemBody.deadline.buyerDate = new Date(1000 * msg.deadlineItemBody.deadline.buyerDate.seconds)
         msg.body = msg.deadlineItemBody
-    } else if (msg.method === msgMethods.CONTRACT_SIGN) {
-        msg.body = msg.contractSignBody 
-    } else if (msg.method === msgMethods.CONTRACT_LOCK) {
-        msg.body = msg.contractLockBody
-    } else if (msg.method === msgMethods.CONTRACT_SETTLE) {
-        msg.body = msg.contractSettleBody 
-    } else if (msg.method === msgMethods.CONTRACT_ITEM_SETTLE) {
-        msg.body = msg.settleItemBody
-    } else if (msg.method === msgMethods.FINALIZE_SETTLE) {
-        msg.body = msg.finalizeBody
-    } else if (msg.method === msgMethods.DEADLINE_EXPIRED) {
-        msg.body = msg.deadlineExpireBody
-    } else if (msg.method === msgMethods.DEADLINE_SETTLED) {
-        msg.body = msg.deadlineSettledBody
     } else if (msg.method === msgMethods.CONTRACT_FIGMA_SET) {
         msg.body = msg.figmaLinkBody
     } else if (msg.method === msgMethods.FIGMA_ITEM_NODES) {

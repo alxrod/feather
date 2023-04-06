@@ -1,15 +1,9 @@
 import Navbar from "../components/navbar";
-import { useState, useEffect } from "react";
 import store from '../store'
 import { Provider } from 'react-redux'
 import '../styles/globals.css'
 import AppWrapper from "../components/app_wrapper";
 import Head from 'next/head';
-
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 const FeatherApp = ({Component, pageProps}) => {
   return (
@@ -35,10 +29,8 @@ const FeatherApp = ({Component, pageProps}) => {
       </Head>
       <Provider store={store}>
         <AppWrapper>
-          <Elements stripe={stripePromise}>
-            <Navbar/>
-            <Component {...pageProps}/>
-          </Elements>
+          <Navbar/>
+          <Component {...pageProps}/>
         </AppWrapper>
       </Provider>
     </>

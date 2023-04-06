@@ -78,36 +78,34 @@ func (s *BackServer) ConnectFigma(ctx context.Context, req *comms.FigmaConnectRe
 	return &comms.NullResponse{}, nil
 }
 
-func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFileConnectRequest) (*comms.ContractEditResponse, error) {
+func (s *BackServer) SetFigmaConnected(ctx context.Context, req *comms.FigmaFileConnectRequest) (*comms.NullResponse, error) {
 	database := s.dbClient.Database(s.dbName)
-	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	user, document, err := UnpackUserDoc(req.UserId, req.DocId, database)
 	if err != nil {
 		return nil, err
 	}
-	if (contract.Worker != nil && contract.Worker.Id != user.Id) && (contract.Buyer != nil && contract.Buyer.Id != user.Id) {
-		return nil, errors.New("User is not part of contract")
-	}
-	contract.FigmaConnected = true
-	contract.FigmaLink = req.FigmaLink
-	filter := bson.D{{"_id", contract.Id}}
+
+	document.FigmaConnected = true
+	document.FigmaLink = req.FigmaLink
+	filter := bson.D{{"_id", document.Id}}
 	update := bson.D{{"$set", bson.D{
-		{"figma_link", contract.FigmaLink},
+		{"figma_link", document.FigmaLink},
 	}}}
 
-	_, err = database.Collection(db.CON_COL).UpdateOne(context.TODO(), filter, update)
+	_, err = database.Collection(db.DOC_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.ChatAgent.SendFigmaLinkMessage(db.CastContract(contract), user, database)
+	err = s.ChatAgent.SendFigmaLinkMessage(document, user, database)
 	if err != nil {
 		return nil, err
 	}
 
-	return &comms.ContractEditResponse{}, nil
+	return &comms.NullResponse{}, nil
 }
 
-func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.ContractEditResponse, error) {
+func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItemRequest) (*comms.NullResponse, error) {
 	database := s.dbClient.Database(s.dbName)
 
 	item_id, err := primitive.ObjectIDFromHex(req.ItemId)
@@ -115,13 +113,13 @@ func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItem
 		return nil, errors.New("Invalid item id")
 	}
 
-	user, contract, err := pullUserContract(req.UserId, req.ContractId, database)
+	user, document, err := UnpackUserDoc(req.UserId, req.DocId, database)
 	if err != nil {
 		return nil, err
 	}
 
-	var cur_item *db.ContractItem
-	for _, item := range contract.Items {
+	var cur_item *db.Item
+	for _, item := range document.Items {
 		if item.Id == item_id {
 			cur_item = item
 			break
@@ -136,9 +134,9 @@ func (s *BackServer) SetItemFigmaNodes(ctx context.Context, req *comms.FigmaItem
 		return nil, errors.New("Could not save item nodes")
 	}
 
-	if err = s.ChatAgent.SendFigmaItemNodesMessage(user, contract, cur_item, database); err != nil {
+	if err = s.ChatAgent.SendFigmaItemNodesMessage(user, document, cur_item, database); err != nil {
 		return nil, errors.New("Couldn't broadcast Items Message")
 	}
 
-	return &comms.ContractEditResponse{}, nil
+	return &comms.NullResponse{}, nil
 }

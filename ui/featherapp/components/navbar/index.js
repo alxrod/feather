@@ -73,6 +73,14 @@ const NavBar = (props) => {
                   <>
                   <div className="flex px-1 pt-1 font-medium ">
                     <Link
+                        href="/documents"
+                        className=" text-primary7 inline-flex items-center"
+                    >
+                      Documents
+                    </Link>
+                  </div>
+                  <div className="flex px-1 pt-1 font-medium ">
+                    <Link
                         href="/contracts"
                         className=" text-primary7 inline-flex items-center"
                     >
@@ -182,6 +190,12 @@ const NavBar = (props) => {
                 href="#"
                 className="bg-indigo-50 text-black-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
               >
+                <Link
+                  href="/documents"
+                  className=" text-gray-900 inline-flex items-center"
+                >
+                  Documents
+                </Link>
                 <Link
                   href="/contracts"
                   className=" text-gray-900 inline-flex items-center"

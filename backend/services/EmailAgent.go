@@ -6,7 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strings"
+
 	"time"
 
 	"crypto/tls"
@@ -191,23 +191,23 @@ func (agent *EmailAgent) SendNotificationEmail(title string, body string) {
 	}(agent, title, body)
 }
 
-func (agent *EmailAgent) SendInviteEmail(contract *db.Contract, user *db.User, secret string) error {
-	if contract == nil || user == nil {
-		return errors.New("Invalid contract or user")
-	}
-	email := &Email{
-		Recipient: contract.InvitedEmail,
-		Subject:   fmt.Sprintf("%s invited you to a contract on Feather", strings.Title(user.FirstName)),
-		BodyType:  "text/plain",
-		Body: fmt.Sprintf(
-			"Click this link to view the invitation \n %s%s",
-			agent.RootURL,
-			fmt.Sprintf("/contract/invite/%s/%s", contract.Id.Hex(), secret),
-		),
-	}
-	if err := agent.SendEmail(email); err != nil {
-		return err
-	}
+// func (agent *EmailAgent) SendInviteEmail(document *db.Document, user *db.User, secret string) error {
+// 	if contract == nil || user == nil {
+// 		return errors.New("Invalid contract or user")
+// 	}
+// 	email := &Email{
+// 		Recipient: contract.InvitedEmail,
+// 		Subject:   fmt.Sprintf("%s invited you to a contract on Feather", strings.Title(user.FirstName)),
+// 		BodyType:  "text/plain",
+// 		Body: fmt.Sprintf(
+// 			"Click this link to view the invitation \n %s%s",
+// 			agent.RootURL,
+// 			fmt.Sprintf("/contract/invite/%s/%s", contract.Id.Hex(), secret),
+// 		),
+// 	}
+// 	if err := agent.SendEmail(email); err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

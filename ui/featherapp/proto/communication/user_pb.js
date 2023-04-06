@@ -13,7 +13,13 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global = Function('return this')();
+var global =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof global !== 'undefined' && global) ||
+    (typeof self !== 'undefined' && self) ||
+    (function () { return this; }).call(null) ||
+    Function('return this')();
 
 var google_protobuf_timestamp_pb = require('google-protobuf/google/protobuf/timestamp_pb.js');
 goog.object.extend(proto, google_protobuf_timestamp_pb);
@@ -171,7 +177,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.communication.UserEntity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.communication.UserEntity.repeatedFields_, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
 goog.inherits(proto.communication.UserEntity, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -1371,13 +1377,6 @@ proto.communication.UserPullRequest.prototype.setUserId = function(value) {
 
 
 
-/**
- * List of repeated fields within this message type.
- * @private {!Array<number>}
- * @const
- */
-proto.communication.UserEntity.repeatedFields_ = [6];
-
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -1416,27 +1415,11 @@ proto.communication.UserEntity.toObject = function(includeInstance, msg) {
     firstName: jspb.Message.getFieldWithDefault(msg, 20, ""),
     lastName: jspb.Message.getFieldWithDefault(msg, 21, ""),
     phoneNumber: jspb.Message.getFieldWithDefault(msg, 22, ""),
-    contractIdsList: (f = jspb.Message.getRepeatedField(msg, 6)) == null ? undefined : f,
-    instaAccount: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    instaFollowers: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    instaVerified: jspb.Message.getBooleanFieldWithDefault(msg, 9, false),
-    tiktokAccount: jspb.Message.getFieldWithDefault(msg, 10, ""),
-    tiktokFollowers: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    tiktokVerified: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    paymentSetup: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
-    adminStatus: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     profilePhotoUploaded: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     profilePhotoId: jspb.Message.getFieldWithDefault(msg, 17, ""),
     profilePhoto: (f = msg.getProfilePhoto()) && communication_file_service_pb.ProfileImageEntity.toObject(includeInstance, f),
-    workerModeRequested: jspb.Message.getBooleanFieldWithDefault(msg, 25, false),
-    buyerModeRequested: jspb.Message.getBooleanFieldWithDefault(msg, 26, false),
-    workerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 27, false),
-    buyerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 28, false),
-    defaultFca: jspb.Message.getFieldWithDefault(msg, 29, ""),
-    outstandingBalance: jspb.Message.getFieldWithDefault(msg, 30, 0),
     figmaConnected: jspb.Message.getBooleanFieldWithDefault(msg, 31, false),
-    figmaCode: jspb.Message.getFieldWithDefault(msg, 32, ""),
-    freeContracts: jspb.Message.getFieldWithDefault(msg, 33, 0)
+    figmaCode: jspb.Message.getFieldWithDefault(msg, 32, "")
   };
 
   if (includeInstance) {
@@ -1501,44 +1484,6 @@ proto.communication.UserEntity.deserializeBinaryFromReader = function(msg, reade
       var value = /** @type {string} */ (reader.readString());
       msg.setPhoneNumber(value);
       break;
-    case 6:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
-      for (var i = 0; i < values.length; i++) {
-        msg.addContractIds(values[i]);
-      }
-      break;
-    case 7:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setInstaAccount(value);
-      break;
-    case 8:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setInstaFollowers(value);
-      break;
-    case 9:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setInstaVerified(value);
-      break;
-    case 10:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTiktokAccount(value);
-      break;
-    case 11:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setTiktokFollowers(value);
-      break;
-    case 12:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setTiktokVerified(value);
-      break;
-    case 13:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPaymentSetup(value);
-      break;
-    case 15:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setAdminStatus(value);
-      break;
     case 16:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setProfilePhotoUploaded(value);
@@ -1552,30 +1497,6 @@ proto.communication.UserEntity.deserializeBinaryFromReader = function(msg, reade
       reader.readMessage(value,communication_file_service_pb.ProfileImageEntity.deserializeBinaryFromReader);
       msg.setProfilePhoto(value);
       break;
-    case 25:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerModeRequested(value);
-      break;
-    case 26:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerModeRequested(value);
-      break;
-    case 27:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerModeEnabled(value);
-      break;
-    case 28:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerModeEnabled(value);
-      break;
-    case 29:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setDefaultFca(value);
-      break;
-    case 30:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setOutstandingBalance(value);
-      break;
     case 31:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setFigmaConnected(value);
@@ -1583,10 +1504,6 @@ proto.communication.UserEntity.deserializeBinaryFromReader = function(msg, reade
     case 32:
       var value = /** @type {string} */ (reader.readString());
       msg.setFigmaCode(value);
-      break;
-    case 33:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setFreeContracts(value);
       break;
     default:
       reader.skipField();
@@ -1666,69 +1583,6 @@ proto.communication.UserEntity.serializeBinaryToWriter = function(message, write
       f
     );
   }
-  f = message.getContractIdsList();
-  if (f.length > 0) {
-    writer.writePackedUint32(
-      6,
-      f
-    );
-  }
-  f = message.getInstaAccount();
-  if (f.length > 0) {
-    writer.writeString(
-      7,
-      f
-    );
-  }
-  f = message.getInstaFollowers();
-  if (f !== 0) {
-    writer.writeUint32(
-      8,
-      f
-    );
-  }
-  f = message.getInstaVerified();
-  if (f) {
-    writer.writeBool(
-      9,
-      f
-    );
-  }
-  f = message.getTiktokAccount();
-  if (f.length > 0) {
-    writer.writeString(
-      10,
-      f
-    );
-  }
-  f = message.getTiktokFollowers();
-  if (f !== 0) {
-    writer.writeUint32(
-      11,
-      f
-    );
-  }
-  f = message.getTiktokVerified();
-  if (f) {
-    writer.writeBool(
-      12,
-      f
-    );
-  }
-  f = message.getPaymentSetup();
-  if (f) {
-    writer.writeBool(
-      13,
-      f
-    );
-  }
-  f = message.getAdminStatus();
-  if (f) {
-    writer.writeBool(
-      15,
-      f
-    );
-  }
   f = message.getProfilePhotoUploaded();
   if (f) {
     writer.writeBool(
@@ -1751,48 +1605,6 @@ proto.communication.UserEntity.serializeBinaryToWriter = function(message, write
       communication_file_service_pb.ProfileImageEntity.serializeBinaryToWriter
     );
   }
-  f = message.getWorkerModeRequested();
-  if (f) {
-    writer.writeBool(
-      25,
-      f
-    );
-  }
-  f = message.getBuyerModeRequested();
-  if (f) {
-    writer.writeBool(
-      26,
-      f
-    );
-  }
-  f = message.getWorkerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      27,
-      f
-    );
-  }
-  f = message.getBuyerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      28,
-      f
-    );
-  }
-  f = message.getDefaultFca();
-  if (f.length > 0) {
-    writer.writeString(
-      29,
-      f
-    );
-  }
-  f = message.getOutstandingBalance();
-  if (f !== 0) {
-    writer.writeInt64(
-      30,
-      f
-    );
-  }
   f = message.getFigmaConnected();
   if (f) {
     writer.writeBool(
@@ -1804,13 +1616,6 @@ proto.communication.UserEntity.serializeBinaryToWriter = function(message, write
   if (f.length > 0) {
     writer.writeString(
       32,
-      f
-    );
-  }
-  f = message.getFreeContracts();
-  if (f !== 0) {
-    writer.writeUint32(
-      33,
       f
     );
   }
@@ -1944,187 +1749,6 @@ proto.communication.UserEntity.prototype.setPhoneNumber = function(value) {
 
 
 /**
- * repeated uint32 contract_ids = 6;
- * @return {!Array<number>}
- */
-proto.communication.UserEntity.prototype.getContractIdsList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 6));
-};
-
-
-/**
- * @param {!Array<number>} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setContractIdsList = function(value) {
-  return jspb.Message.setField(this, 6, value || []);
-};
-
-
-/**
- * @param {number} value
- * @param {number=} opt_index
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.addContractIds = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 6, value, opt_index);
-};
-
-
-/**
- * Clears the list making it empty but non-null.
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.clearContractIdsList = function() {
-  return this.setContractIdsList([]);
-};
-
-
-/**
- * optional string insta_account = 7;
- * @return {string}
- */
-proto.communication.UserEntity.prototype.getInstaAccount = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setInstaAccount = function(value) {
-  return jspb.Message.setProto3StringField(this, 7, value);
-};
-
-
-/**
- * optional uint32 insta_followers = 8;
- * @return {number}
- */
-proto.communication.UserEntity.prototype.getInstaFollowers = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setInstaFollowers = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional bool insta_verified = 9;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getInstaVerified = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 9, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setInstaVerified = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 9, value);
-};
-
-
-/**
- * optional string tiktok_account = 10;
- * @return {string}
- */
-proto.communication.UserEntity.prototype.getTiktokAccount = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setTiktokAccount = function(value) {
-  return jspb.Message.setProto3StringField(this, 10, value);
-};
-
-
-/**
- * optional uint32 tiktok_followers = 11;
- * @return {number}
- */
-proto.communication.UserEntity.prototype.getTiktokFollowers = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setTiktokFollowers = function(value) {
-  return jspb.Message.setProto3IntField(this, 11, value);
-};
-
-
-/**
- * optional bool tiktok_verified = 12;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getTiktokVerified = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setTiktokVerified = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 12, value);
-};
-
-
-/**
- * optional bool payment_setup = 13;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getPaymentSetup = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setPaymentSetup = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 13, value);
-};
-
-
-/**
- * optional bool admin_status = 15;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getAdminStatus = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setAdminStatus = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 15, value);
-};
-
-
-/**
  * optional bool profile_photo_uploaded = 16;
  * @return {boolean}
  */
@@ -2198,114 +1822,6 @@ proto.communication.UserEntity.prototype.hasProfilePhoto = function() {
 
 
 /**
- * optional bool worker_mode_requested = 25;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getWorkerModeRequested = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 25, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setWorkerModeRequested = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 25, value);
-};
-
-
-/**
- * optional bool buyer_mode_requested = 26;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getBuyerModeRequested = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 26, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setBuyerModeRequested = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 26, value);
-};
-
-
-/**
- * optional bool worker_mode_enabled = 27;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getWorkerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 27, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setWorkerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 27, value);
-};
-
-
-/**
- * optional bool buyer_mode_enabled = 28;
- * @return {boolean}
- */
-proto.communication.UserEntity.prototype.getBuyerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 28, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setBuyerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 28, value);
-};
-
-
-/**
- * optional string default_fca = 29;
- * @return {string}
- */
-proto.communication.UserEntity.prototype.getDefaultFca = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 29, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setDefaultFca = function(value) {
-  return jspb.Message.setProto3StringField(this, 29, value);
-};
-
-
-/**
- * optional int64 outstanding_balance = 30;
- * @return {number}
- */
-proto.communication.UserEntity.prototype.getOutstandingBalance = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 30, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setOutstandingBalance = function(value) {
-  return jspb.Message.setProto3IntField(this, 30, value);
-};
-
-
-/**
  * optional bool figma_connected = 31;
  * @return {boolean}
  */
@@ -2338,24 +1854,6 @@ proto.communication.UserEntity.prototype.getFigmaCode = function() {
  */
 proto.communication.UserEntity.prototype.setFigmaCode = function(value) {
   return jspb.Message.setProto3StringField(this, 32, value);
-};
-
-
-/**
- * optional uint32 free_contracts = 33;
- * @return {number}
- */
-proto.communication.UserEntity.prototype.getFreeContracts = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 33, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.communication.UserEntity} returns this
- */
-proto.communication.UserEntity.prototype.setFreeContracts = function(value) {
-  return jspb.Message.setProto3IntField(this, 33, value);
 };
 
 
@@ -2394,9 +1892,7 @@ proto.communication.UserNubEntity.toObject = function(includeInstance, msg) {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     username: jspb.Message.getFieldWithDefault(msg, 2, ""),
     hasPhoto: jspb.Message.getBooleanFieldWithDefault(msg, 5, false),
-    photoUrl: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    workerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 6, false),
-    buyerModeEnabled: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+    photoUrl: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2448,14 +1944,6 @@ proto.communication.UserNubEntity.deserializeBinaryFromReader = function(msg, re
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setPhotoUrl(value);
-      break;
-    case 6:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setWorkerModeEnabled(value);
-      break;
-    case 7:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setBuyerModeEnabled(value);
       break;
     default:
       reader.skipField();
@@ -2511,20 +1999,6 @@ proto.communication.UserNubEntity.serializeBinaryToWriter = function(message, wr
   if (f.length > 0) {
     writer.writeString(
       4,
-      f
-    );
-  }
-  f = message.getWorkerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      6,
-      f
-    );
-  }
-  f = message.getBuyerModeEnabled();
-  if (f) {
-    writer.writeBool(
-      7,
       f
     );
   }
@@ -2600,42 +2074,6 @@ proto.communication.UserNubEntity.prototype.getPhotoUrl = function() {
  */
 proto.communication.UserNubEntity.prototype.setPhotoUrl = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional bool worker_mode_enabled = 6;
- * @return {boolean}
- */
-proto.communication.UserNubEntity.prototype.getWorkerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 6, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setWorkerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 6, value);
-};
-
-
-/**
- * optional bool buyer_mode_enabled = 7;
- * @return {boolean}
- */
-proto.communication.UserNubEntity.prototype.getBuyerModeEnabled = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.communication.UserNubEntity} returns this
- */
-proto.communication.UserNubEntity.prototype.setBuyerModeEnabled = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 

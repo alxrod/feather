@@ -17,15 +17,13 @@ import (
 // These need to be updated by final secur verison
 
 type MainServer struct {
-	router  *http.ServeMux
-	webhook *WebhookServer
+	router *http.ServeMux
 }
 
 func NewMainServer() (*MainServer, error) {
 
 	srv := &MainServer{
-		router:  http.NewServeMux(),
-		webhook: NewWebHookServer(),
+		router: http.NewServeMux(),
 	}
 
 	return srv, nil
@@ -50,7 +48,7 @@ func (srv *MainServer) HandleAssetRequest(w http.ResponseWriter, r *http.Request
 }
 
 func (srv *MainServer) SetUpHandler(multiplex *grpcMultiplexer) error {
-	srv.router.Handle("/", multiplex.Handler(srv.HandleAssetRequest, srv.webhook))
+	srv.router.Handle("/", multiplex.Handler(srv.HandleAssetRequest))
 	return nil
 }
 
@@ -75,7 +73,7 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
-func (m *grpcMultiplexer) Handler(assetHandler func(w http.ResponseWriter, r *http.Request), webhook *WebhookServer) http.Handler {
+func (m *grpcMultiplexer) Handler(assetHandler func(w http.ResponseWriter, r *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if m.IsGrpcWebRequest(r) || m.IsAcceptableGrpcCorsRequest(r) || r.Header.Get("Content-Type") == "application/grpc" || r.Header.Get("content-type") == "application/protobuf" {
@@ -92,12 +90,6 @@ func (m *grpcMultiplexer) Handler(assetHandler func(w http.ResponseWriter, r *ht
 
 		}
 		path := fmt.Sprintf("%v", r.URL)
-
-		if strings.Contains(path, "/web-hook/") {
-			fmt.Printf(color.Ize(color.Blue, fmt.Sprintf("Web Hook Request for : %s\n", r.URL)))
-			webhook.router.ServeHTTP(w, r)
-			return
-		}
 
 		if strings.Contains(path, "/asset-cache/") {
 			fmt.Printf(color.Ize(color.Blue, fmt.Sprintf("Asset Request for : %s\n", r.URL)))

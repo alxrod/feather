@@ -9,33 +9,33 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case actions.CONTRACT_ITEM_ADD:
+        case actions.ITEM_ADD:
             return {
                 ...state,
                 itemsChanged: !state.itemsChanged,
                 items: [...state.items, action.payload]
             }
         
-        case actions.CONTRACT_ITEM_EDIT:
+        case actions.ITEM_EDIT:
             return {
                 ...state,
                 itemsChanged: !state.itemsChanged,
                 items: helpers.replaceContractItem(state.items, action.payload)
             }
         
-        case actions.CONTRACT_ITEM_LOAD:
+        case actions.ITEM_LOAD:
             return {
                 ...state,
                 itemsChanged: !state.itemsChanged,
                 items: [...action.payload],
             }
-        case actions.CONTRACT_ITEM_RELOAD:
+        case actions.ITEM_RELOAD:
             return {
                 ...state,
                 itemsChanged: !state.itemsChanged,
             }
 
-        case actions.CONTRACT_ITEM_UPDATE_BODY:
+        case actions.ITEM_UPDATE_BODY:
             const newItem = helpers.contractItemUpdateBody(helpers.getContractItem(state.items, action.payload.itemId), action.payload)
             const newItemsList = helpers.replaceContractItem(state.items, newItem)
             return {
@@ -44,7 +44,7 @@ export default (state = initialState, action) => {
                 items: newItemsList,
             }
 
-        case actions.CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT:
+        case actions.ITEM_CHANGE_FIGMA_COMPONENT:
             const replacedItem = helpers.contractItemUpdateFigmaComponent(helpers.getContractItem(state.items, action.payload.item_id), action.payload.component_id)
             const repItemsList = helpers.replaceContractItem(state.items, replacedItem)
             return {
@@ -53,22 +53,7 @@ export default (state = initialState, action) => {
                 items: repItemsList,
             }
 
-        case actions.CONTRACT_SUGGEST_ITEM_REMOVE:
-            return {
-                ...state,
-                itemsChanged: !state.itemsChanged,
-                items: helpers.deleteContractItem(state.items, action.payload)
-            }
-        
-        case actions.CONTRACT_ITEM_REPLACE_SUGGEST:
-            const replacementList = helpers.replaceSuggestItemCurCon(state.items, action.payload)
-            return {
-                ...state,
-                itemsChanged: !state.itemsChanged,
-                items: replacementList,
-            }
-
-        case actions.CONTRACT_ITEM_REPLACE:
+        case actions.ITEM_REPLACE:
             const addReplacementList = helpers.replaceItemCurCon(state.items, action.payload)
             return {
                 ...state,
@@ -76,7 +61,7 @@ export default (state = initialState, action) => {
                 items: addReplacementList,
             }
             
-        case actions.CONTRACT_ITEM_REMOVE:
+        case actions.ITEM_DELETE:
             const removeReplacementList = helpers.removeItemCurCon(state.items, action.payload)
             return {
                 ...state,
@@ -84,28 +69,6 @@ export default (state = initialState, action) => {
                 items: removeReplacementList,
             }
         
-        case actions.CONTRACT_ITEM_SUGGEST_DELETE:
-            const deletedItemInList = helpers.activateDeletionOfItem(state.items, action.payload)
-            return {
-                ...state,
-                itemsChanged: !state.itemsChanged,
-                items: deletedItemInList,
-            }
-
-        case actions.CONTRACT_ITEM_SETTLE_UPDATE:
-            return {
-                ...state,
-                itemsChanged: !state.itemsChanged,
-                items: helpers.replaceContractItem(
-                    state.items,
-                    helpers.updateSettledStates(
-                        helpers.getContractItem(state.items, action.payload.itemId),
-                        action.payload.workerSettled,
-                        action.payload.buyerSettled,
-                        action.payload.adminSettled,
-                    )
-                )
-            }
         default:
             return state
     }

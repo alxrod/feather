@@ -7,150 +7,87 @@ import "communication/generic.proto";
 
 message DeadlineEntity {
   string id = 1;
-  string contract_id = 2;
-  string name = 18;
+  string doc_id = 2;
+  string name = 3;
 
-  bool complete = 25;
-  bool expired = 31;
+  bool complete = 4;
+  bool expired = 5;
 
-  bool buyer_settled = 27;
-  
-  bool awaiting_creation = 20;
-  bool awaiting_deletion = 21;
-  string deadline_proposer_id = 22;
+  google.protobuf.Timestamp current_date = 9;
+  repeated ItemNub items = 15;
 
-  int64 current_payout = 4;
-  int64 worker_payout = 7;
-  int64 buyer_payout = 10;
-  bool payout_awaiting_approval = 12;
-  string payout_proposer_id = 13;
-
-  google.protobuf.Timestamp current_date = 5;
-  google.protobuf.Timestamp worker_date = 8;
-  google.protobuf.Timestamp buyer_date = 11;
-  bool date_awaiting_approval = 16;
-  string date_proposer_id = 17;
-
-  bool draft_required = 19;
-
-  string items_proposer_id = 23;
-  repeated uint32 item_states = 24;
-  repeated ItemNub items = 14;
-  bool items_awaiting_approval = 15;
 }
 
 message DeadlineNub {
   string id = 1;
-  string contract_id = 2;
+  string doc_id = 2;
 
-  bool complete = 25;
-  bool expired = 31;
+  bool complete = 3;
+  bool expired = 4;
 
-  int64 current_payout = 4;
-  google.protobuf.Timestamp current_date = 5;
+  google.protobuf.Timestamp current_date = 6;
 }
 
 message SuggestDateReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   string deadline_id = 4;
   google.protobuf.Timestamp new_date = 3;
-  bool doc_mode = 5;
-}
-message SuggestPayoutReq {
-  string user_id = 1;
-  string id = 2;
-  string deadline_id = 4;
-  int64 new_payout = 3;
-  bool doc_mode = 5;
-}
-message SuggestDeadlineItemsReq {
-  string user_id = 1;
-  string id = 2;
-  string deadline_id = 4;
-  repeated string item_ids = 3;
-  bool doc_mode = 5;
-}
-message ReactDeadlineItemsReq {
-  string user_id = 1;
-  string id = 2;
-  string message_id = 4;
-  string deadline_id = 5;
-  uint32 status = 3;
-  bool doc_mode = 6;
 }
 message ReactDateReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   string message_id = 4;
   string deadline_id = 5;
   uint32 status = 3;
-  bool doc_mode = 6;
 }
-message ReactPayoutReq {
+message SuggestDeadlineItemsReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
+  string deadline_id = 3;
+  repeated string item_ids = 4;
+}
+message ReactDeadlineItemsReq {
+  string user_id = 1;
+  string doc_id = 2;
   string message_id = 4;
   string deadline_id = 5;
   uint32 status = 3;
-  bool doc_mode = 6;
 }
 
 message SuggestAddDeadlineReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   DeadlineEntity deadline = 3;
-  bool doc_mode = 4;
 }
 message ReactAddDeadlineReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   string message_id = 4;
   string deadline_id = 3;
   uint32 status = 5;
-  bool doc_mode = 6;
 }
-
 message SuggestDelDeadlineReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   DeadlineEntity deadline = 3;
-  bool doc_mode = 4;
 }
 message ReactDelDeadlineReq {
   string user_id = 1;
-  string id = 2;
+  string doc_id = 2;
   string message_id = 4;
   string deadline_id = 3;
   uint32 status = 5;
   bool doc_mode = 6;
 }
 
-message FinishDeadlineRequest {
-  string user_id = 1;
-  string contract_id = 2;
-  string deadline_id = 3;
-  bool doc_mode = 4;
-}
-
-
-
 service Deadline {
-  rpc SuggestDate(SuggestDateReq) returns (NullResponse) {};
-  rpc ReactDate(ReactDateReq) returns (NullResponse) {};
+  rpc ChangeDate(SuggestDateReq) returns (NullResponse) {};
 
-  rpc SuggestPayout(SuggestPayoutReq) returns (NullResponse) {};
-  rpc ReactPayout(ReactPayoutReq) returns (NullResponse) {};
+  rpc ChangeDeadlineItems(SuggestDeadlineItemsReq) returns (NullResponse) {};
 
+  rpc AddDeadline(SuggestAddDeadlineReq) returns (DeadlineEntity) {};
 
-  rpc SuggestDeadlineItems(SuggestDeadlineItemsReq) returns (NullResponse) {};
-  rpc ReactDeadlineItems(ReactDeadlineItemsReq) returns (NullResponse) {};
+  rpc DeleteDeadline(SuggestDelDeadlineReq) returns (NullResponse) {};
 
-  rpc SuggestAddDeadline(SuggestAddDeadlineReq) returns (DeadlineEntity) {};
-  rpc ReactAddDeadline(ReactAddDeadlineReq) returns (NullResponse) {};
-
-  rpc SuggestDeleteDeadline(SuggestDelDeadlineReq) returns (NullResponse) {};
-  rpc ReactDeleteDeadline(ReactDelDeadlineReq) returns (NullResponse) {};
-
-  rpc FinishDeadline(FinishDeadlineRequest) returns (NullResponse) {};
 }

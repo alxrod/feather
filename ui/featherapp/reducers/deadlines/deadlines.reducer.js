@@ -16,14 +16,7 @@ const debug_log = (action) => {
 }
 export default (state = initialState, action) => {
     switch (action.type) {
-
-        case actions.CONTRACT_DEADLINE_UPDATE:
-            debug_log(action)
-            return {
-                ...state,
-                deadlinesChanged: !state.deadlinesChanged
-            }
-        case actions.CONTRACT_DEADLINE_ITEM_PURGE:
+        case actions.DEADLINE_ITEM_PURGE:
             debug_log(action)
             return {
                 ...state,
@@ -31,15 +24,8 @@ export default (state = initialState, action) => {
                 deadlinesPurged: !state.deadlinesPurged,
                 deadlines: helpers.purgeItem(state.deadlines, action.payload)
             }
-        case actions.CONTRACT_UPDATE_PAYOUT:
-            debug_log(action)
-            return {
-                ...state,
-                deadlinesChanged: !state.deadlinesChanged,
-                deadlines: helpers.editDeadlinePayout(state.deadlines , action.payload)
-            }
-        
-        case actions.CONTRACT_UPDATE_DATE:
+
+        case actions.DEADLINE_UPDATE_DATE:
             debug_log(action)
             return {
                 ...state,
@@ -47,14 +33,14 @@ export default (state = initialState, action) => {
                 deadlines: helpers.editDeadlineDate(state.deadlines, action.payload)
             }
         
-        case actions.CONTRACT_DEADLINE_RELOAD:
+        case actions.DEADLINE_RELOAD:
             debug_log(action)
             return {
                 ...state,
                 deadlinesChanged: !state.deadlinesChanged,
             }
         
-        case actions.CONTRACT_DEADLINE_LOAD:
+        case actions.DEADLINE_LOAD:
             debug_log(action)
             return {
                 ...state,
@@ -62,7 +48,7 @@ export default (state = initialState, action) => {
                 deadlines: [...action.payload],
             }
         
-        case actions.CONTRACT_DEADLINE_ADD:
+        case actions.DEADLINE_ADD:
             debug_log(action)
             const newDeadlinesWDB = helpers.addOrReplaceDeadline(state.deadlines, action.payload)
             return {
@@ -71,7 +57,7 @@ export default (state = initialState, action) => {
                 deadlines: newDeadlinesWDB
             }
          
-        case actions.CONTRACT_DEADLINE_NAMES_UPDATE:
+        case actions.DEADLINE_NAMES_UPDATE:
             debug_log(action)
             const renamedDeadlines = helpers.applyRenameDeadlines(state.deadlines, action.payload)
             return {
@@ -80,7 +66,7 @@ export default (state = initialState, action) => {
                 deadlines: renamedDeadlines
             }
         
-        case actions.CONTRACT_DEADLINE_REPLACE:
+        case actions.DEADLINE_REPLACE:
             debug_log(action)
             const replacedDeadlines = helpers.replaceDeadline(state.deadlines, action.payload)
             return {
@@ -89,7 +75,7 @@ export default (state = initialState, action) => {
                 deadlines: replacedDeadlines,
             }
 
-        case actions.CONTRACT_DEADLINE_REMOVE:
+        case actions.DEADLINE_DELETE:
             debug_log(action)
             const removedDeadlines = helpers.removeDeadline(state.deadlines, action.payload.id)
             return {
@@ -97,29 +83,7 @@ export default (state = initialState, action) => {
                 deadlinesChanged: !state.deadlinesChanged,
                 deadlines: removedDeadlines,
             }
-        
-        case actions.CONTRACT_DEADLINE_SUGGEST_DELETE:
-            debug_log(action)
-            const deletedOneDeadline = helpers.suggestDeleteDeadline(state.deadlines, action.payload)
-            return {
-                ...state,
-                deadlinesChanged: !state.deadlinesChanged,
-                deadlines: deletedOneDeadline
-            }
-        
-        case actions.CONTRACT_DEADLINE_FINALIZE_SETTLE:
-            debug_log(action)
-            return {
-                ...state,
-                deadlinesChanged: !state.deadlinesChanged,
-                deadlines: helpers.replaceDeadline(
-                    state.deadlines,
-                    helpers.updateSettleInfo(
-                        helpers.getDeadline(state.deadlines, action.payload.deadlineId), 
-                        action.payload,
-                    )
-                )
-            }
+
 
         default:
             return state

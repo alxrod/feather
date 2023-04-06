@@ -172,7 +172,7 @@ func (room *ChatRoom) AddMessageInternal(msg *Message, database *mongo.Database)
 		return msg, nil
 	}
 	var err error
-	msg.Id, err = MessageInsertInternal(msg, room, database)
+	msg.Id, err = msg.InsertInternal(room, database)
 	if err != nil {
 		return nil, err
 	}

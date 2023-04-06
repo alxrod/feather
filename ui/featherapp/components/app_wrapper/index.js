@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux'
 
 // Reducer Actions:
 import { clearSelected } from "../../reducers/contract/dispatchers/contract.dispatcher";
+import { clearSelectedDoc } from "../../reducers/document/dispatchers/document.dispatcher";
 import { clearChat } from "../../reducers/chat/dispatchers/chat.dispatcher"; 
 import { setUser, pullUser, setRedirect } from "../../reducers/user/dispatchers/user.dispatcher";
 import { setNavbar, toggleFromRegister } from "../../reducers/site/site.reducer";
@@ -61,6 +62,7 @@ const AppWrapper = (props) => {
     
     if (!select_routes.includes(route_base)) {
       props.clearSelected()
+      props.clearSelectedDoc()
     }
     if (props.fromRegister && !(route_base === "/register" || route_base === "/setup-payment")) {
       props.toggleFromRegister(false)
@@ -123,7 +125,7 @@ const AppWrapper = (props) => {
         }
       )
     } else if (user !== null && routes[used_key] === UNAUTH_ROLE) {
-      router.push("/contracts")
+      router.push("/documents")
       return false
     }
     return true
@@ -172,6 +174,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   clearSelected,
   clearChat,
   toggleFromRegister,
+  clearSelectedDoc
 }, dispatch)
 
 export default connect(

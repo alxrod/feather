@@ -1,18 +1,15 @@
-export const CONTRACT_ITEM_ADD = "contract/item/ADD"
-export const CONTRACT_ITEM_EDIT = "contract/item/EDIT"
-export const CONTRACT_ITEM_LOAD = "contract/item/LOAD"
-export const CONTRACT_ITEM_UPDATE_BODY = "contract/item/UPDATE_BODY"
-export const CONTRACT_ITEM_RELOAD = "contract/item/RELOAD"
 
-export const CONTRACT_SUGGEST_ITEM_REMOVE = "contract/item/SUGGEST_REMOVE"
-export const CONTRACT_ITEM_REPLACE_SUGGEST = "contract/item/REPLACE_SUGGEST"
 
-export const CONTRACT_ITEM_REMOVE = "contract/item/REMOVE"
-export const CONTRACT_ITEM_REPLACE = "contract/item/REPLACE"
+export const ITEM_ADD = "item/ADD"
+export const ITEM_EDIT = "item/EDIT"
+export const ITEM_LOAD = "item/LOAD"
+export const ITEM_UPDATE_BODY = "item/UPDATE_BODY"
+export const ITEM_RELOAD = "item/RELOAD"
 
-export const CONTRACT_ITEM_SUGGEST_DELETE = "contract/item/SUGGEST_DELETE"
+export const ITEM_REPLACE_SUGGEST = "item/REPLACE_SUGGEST"
 
-export const CONTRACT_ITEM_SETTLE_UPDATE = "contract/item/SETTLE_UPDATE"
+export const ITEM_DELETE = "item/DELETE"
+export const ITEM_REPLACE = "item/REPLACE"
 
-export const CONTRACT_ITEM_CHANGE_FIGMA_COMPONENT = "contract/item/CHANGE_FIGMA_COMPONENT"
+export const ITEM_CHANGE_FIGMA_COMPONENT = "item/CHANGE_FIGMA_COMPONENT"
 

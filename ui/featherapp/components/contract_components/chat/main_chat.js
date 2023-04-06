@@ -37,13 +37,13 @@ const MainChat = (props) => {
 
     let localRoomId = ""
     const [role, setRole] = useState(WORKER_TYPE)
+    
     useEffect( () => {
-        if (props.roomId === undefined || props.user === undefined || props.curContract.id === undefined) {
+        if (props.roomId === undefined || props.user === undefined ) {
             return
         }
         if (props.roomId !== undefined && props.roomId !== localRoomId) {
-            setRole(props.curContract.role)
-            props.joinChat(props.roomId, props.curContract.role)
+            props.joinChat(props.roomId)
             props.pullRecord(props.roomId)
         }
     }, [props.user, props.curContract])
@@ -58,7 +58,6 @@ const MainChat = (props) => {
    
 
 const mapStateToProps = ({ user, contract, chat }) => ({
-  curContract: contract.curContract,
   user: user.user,
   messages: chat.messages,
 })

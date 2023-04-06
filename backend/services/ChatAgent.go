@@ -147,9 +147,6 @@ func (agent *ChatAgent) SendMessageInternal(msg *db.Message, database *mongo.Dat
 		msg, err = room.AddMessageInternal(msg, database)
 		return err
 	}
-	if !msg.SystemMessage && msg.User.AdminStatus {
-		msg.IsAdmin = true
-	}
 	entry.mu.Lock()
 	msg, err := entry.room.AddMessageInternal(msg, database)
 	if err != nil {

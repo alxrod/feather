@@ -29,7 +29,7 @@ type Document struct {
 	Deadlines   []*Deadline          `bson:"-"`
 	DeadlineIds []primitive.ObjectID `bson:"deadline_ids"`
 
-	Items   []*ContractItem      `bson:"-"`
+	Items   []*Item              `bson:"-"`
 	ItemIds []primitive.ObjectID `bson:"item_ids"`
 
 	RoomId primitive.ObjectID `bson:"room_id"`
@@ -37,11 +37,12 @@ type Document struct {
 	LinkShare bool `bson:"link_share"`
 
 	FigmaLink      string `bson:"figma_link,omitempty"`
+	FigmaKey       string `bson:"figma_key,omitempty"`
 	FigmaConnected bool   `bson:"figma_connected,omitempty"`
 }
 
-func (doc *Document) GetFigmaKey() string {
-	splits := strings.Split(doc.FigmaLink, "/file/")
+func (doc *Document) GetFigmaKey(link string) string {
+	splits := strings.Split(link, "/file/")
 	if len(splits) < 2 {
 		return ""
 	}
@@ -69,7 +70,7 @@ func (doc *Document) Proto() *comms.DocumentEntity {
 
 		Items:          items,
 		FigmaLink:      doc.FigmaLink,
-		FigmaFileKey:   doc.GetFigmaKey(),
+		FigmaFileKey:   doc.FigmaKey,
 		FigmaConnected: doc.FigmaConnected,
 	}
 	if !doc.Id.IsZero() {
@@ -127,7 +128,7 @@ func (doc *Document) NubProto(user *User) (*comms.DocumentNub, error) {
 	}
 	proto.Deadlines = deadlines
 
-	proto.FigmaLink = doc.FigmaLink
+	proto.FigmaFileKey = doc.FigmaKey
 	proto.FigmaConnected = doc.FigmaConnected
 
 	user_ids := make([]string, len(doc.Users))
@@ -152,7 +153,6 @@ func DocumentInsert(req *comms.DocumentCreateRequest, user *User, database *mong
 		log.Println(color.Ize(color.Red, fmt.Sprintf("Failed to Insert Document for %s", user.Username)))
 		return nil, err
 	}
-	log.Println("Inserted Document into Database")
 
 	id := res.InsertedID.(primitive.ObjectID)
 	doc.Id = id
@@ -216,7 +216,7 @@ func (doc *Document) SetDeadlines(user *User, deadlines []*comms.DeadlineEntity,
 func (doc *Document) SetItems(items []*comms.ItemEntity, database *mongo.Database) error {
 	if len(items) > 0 {
 		itemsCollection := database.Collection(ITEM_COL)
-		docItems := make([]*ContractItem, len(items))
+		docItems := make([]*Item, len(items))
 		item_ids := make([]primitive.ObjectID, len(items))
 
 		for idx, item := range items {
@@ -261,9 +261,9 @@ func DocumentsByUser(user_id primitive.ObjectID, database *mongo.Database) ([]*D
 	cur.Close(context.Background())
 
 	for _, doc := range documents {
-		items := make([]*ContractItem, len(doc.ItemIds))
+		items := make([]*Item, len(doc.ItemIds))
 		for idx, id := range doc.ItemIds {
-			item, err := ContractItemById(id, database.Collection(ITEM_COL))
+			item, err := ItemById(id, database.Collection(ITEM_COL))
 			if err != nil {
 				return nil, err
 			}
@@ -296,9 +296,9 @@ func DocumentById(document_id primitive.ObjectID, database *mongo.Database) (*Do
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("document not found")
 	}
-	items := make([]*ContractItem, len(doc.ItemIds))
+	items := make([]*Item, len(doc.ItemIds))
 	for idx, id := range doc.ItemIds {
-		item, err := ContractItemById(id, database.Collection(ITEM_COL))
+		item, err := ItemById(id, database.Collection(ITEM_COL))
 		if err != nil {
 			return nil, err
 		}
@@ -319,7 +319,7 @@ func DocumentById(document_id primitive.ObjectID, database *mongo.Database) (*Do
 	return doc, nil
 }
 
-func (doc *Document) AddUser(user *User, contract *Contract, database *mongo.Database) error {
+func (doc *Document) AddUser(user *User, database *mongo.Database) error {
 	for _, id := range doc.UserIds {
 		if user.Id == id {
 			return fmt.Errorf("User %s already in document %s", user.Id, doc.Id)
@@ -358,7 +358,7 @@ func (doc *Document) UpdateField(update bson.D, database *mongo.Database) error 
 	return nil
 }
 
-func (doc *Document) AddItem(item *ContractItem, database *mongo.Database) error {
+func (doc *Document) AddItem(item *Item, database *mongo.Database) error {
 	doc.ItemIds = append(doc.ItemIds, item.Id)
 	doc.Items = append(doc.Items, item)
 	update := bson.D{{"$set", bson.D{{"item_ids", doc.ItemIds}}}}
@@ -380,17 +380,17 @@ func (doc *Document) AddDeadline(deadline *Deadline, database *mongo.Database) e
 	return nil
 }
 
-func (doc *Document) RemoveItem(item *ContractItem, user *User, database *mongo.Database) error {
+func (doc *Document) RemoveItem(item *Item, user *User, database *mongo.Database) error {
 	for _, deadline := range doc.Deadlines {
 		for _, id := range deadline.ItemIds {
 			if id == item.Id {
-				DeadlineRemoveItem(deadline, item, database)
+				deadline.RemoveItem(item, database)
 			}
 		}
 	}
 
 	newIds := make([]primitive.ObjectID, 0)
-	newItems := make([]*ContractItem, 0)
+	newItems := make([]*Item, 0)
 	for idx, id := range doc.ItemIds {
 		if id != item.Id {
 			newIds = append(newIds, id)

@@ -51,7 +51,7 @@ proto-full:
 	--ts_out="${PWD}/feather_figma/ui-src/proto" \
 	--ts_opt generate_dependencies \
 	--proto_path "${PWD}" \
-	${PWD}/communication/contract.proto ${PWD}/communication/user.proto
+	${PWD}/communication/document.proto ${PWD}/communication/user.proto
 
 .PHONY: start-db
 start-db:

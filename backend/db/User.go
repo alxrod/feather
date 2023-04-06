@@ -40,26 +40,10 @@ type User struct {
 	PhoneNumber string `bson:"phone"`
 
 	Active_token string `bson:"-"`
-	AdminStatus  bool   `bson:"admin_status"`
 
 	ProfilePhotoUploaded bool               `bson:"profile_photo_uploaded"`
 	ProfilePhotoId       primitive.ObjectID `bson:"profile_photo_id,omitempty"`
 	ProfilePhoto         *ProfileImage      `bson:"-"`
-
-	BuyerModeRequested  bool `bson:"buyer_mode_requested"`
-	WorkerModeRequested bool `bson:"worker_mode_requested"`
-	BuyerModeEnabled    bool `bson:"buyer_mode_enabled"`
-	WorkerModeEnabled   bool `bson:"worker_mode_enabled"`
-
-	OutstandingBalance int64 `bson:"outstanding_balance"`
-
-	// ================================= STRIPE INFO =================================
-	StripeCustomerId         string `bson:"stripe_customer_id,omitempty"`
-	StripeConnectedAccountId string `bson:"stripe_account_id,omitempty"`
-
-	StripeDefaultFCA string   `bson:"default_fca,omitempty"`
-	StripeFCAlist    []string `bson:"fca_ids,omitempty"`
-	// ================================================================================
 
 	// ================================= FIGMA ========================================
 	FigmaConnected   bool   `bson:"figma_connected"`
@@ -68,11 +52,6 @@ type User struct {
 	FigmaExpireIn    int64  `bson:"figma_expire_in,omitempty"`
 
 	CreationTime time.Time `bson:"creation_time,omitempty"`
-
-	AccountAddsInDay uint32    `bson:"account_adds_in_day"`
-	MostRecentAdd    time.Time `bson:"most_recent_add"`
-
-	FreeContracts uint32 `bson:"free_contracts"`
 }
 
 func (user *User) Proto() *comms.UserEntity {
@@ -89,31 +68,16 @@ func (user *User) Proto() *comms.UserEntity {
 		LastName:    user.LastName,
 		PhoneNumber: user.PhoneNumber,
 
-		AdminStatus:          user.AdminStatus,
 		ProfilePhotoUploaded: user.ProfilePhotoUploaded,
-
-		WorkerModeRequested: user.WorkerModeRequested,
-		BuyerModeRequested:  user.BuyerModeRequested,
-		WorkerModeEnabled:   user.WorkerModeEnabled,
-		BuyerModeEnabled:    user.BuyerModeEnabled,
-
-		OutstandingBalance: user.OutstandingBalance,
 
 		FigmaConnected: user.FigmaConnected,
 		FigmaCode:      user.FigmaCode,
-		FreeContracts:  user.FreeContracts,
 	}
 
 	if user.ProfilePhotoUploaded && !user.ProfilePhotoId.IsZero() {
 		resp.ProfilePhotoId = user.ProfilePhotoId.Hex()
 		resp.ProfilePhoto = user.ProfilePhoto.Proto()
 	}
-
-	if user.BuyerModeRequested {
-		resp.DefaultFca = user.StripeDefaultFCA
-	}
-
-	resp.PaymentSetup = false
 	return resp
 }
 
@@ -141,7 +105,6 @@ func (user *User) Nub(author_status bool) *UserNub {
 	}
 	userNub.Id = user.Id
 	userNub.Username = user.Username
-	userNub.Author = author_status
 	if user.ProfilePhoto != nil && user.ProfilePhoto.InCache {
 		userNub.PhotoUrl = user.ProfilePhoto.CacheUrl
 		userNub.HasPhoto = true
@@ -279,13 +242,12 @@ func UserInsert(req *comms.UserRegisterRequest, database *mongo.Database) (*User
 	}
 
 	userD := &User{
-		Username:      req.Username,
-		Password:      string(hashedPassword),
-		CreationTime:  time.Now(),
-		Email:         req.Email,
-		FirstName:     req.FirstName,
-		LastName:      req.LastName,
-		FreeContracts: 2,
+		Username:     req.Username,
+		Password:     string(hashedPassword),
+		CreationTime: time.Now(),
+		Email:        req.Email,
+		FirstName:    req.FirstName,
+		LastName:     req.LastName,
 	}
 
 	res, err := database.Collection(USERS_COL).InsertOne(context.TODO(), userD)

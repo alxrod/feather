@@ -59,7 +59,6 @@ const Register = (props) => {
 
 const mapStateToProps = ({ user }) => ({
     user: user.user,
-    defaultRegisterRole: user.defaultRegisterRole,
     redirectLink: user.redirectLink
 })
 

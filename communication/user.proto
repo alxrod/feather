@@ -48,48 +48,22 @@ message UserEntity {
     string last_name = 21;
     string phone_number = 22;
 
-    repeated uint32 contract_ids = 6 [packed=true];
-
-    string insta_account = 7;
-    uint32 insta_followers = 8;
-    bool insta_verified = 9;
-
-    string tiktok_account = 10;
-    uint32 tiktok_followers = 11;
-    bool tiktok_verified = 12;
-
-    bool payment_setup = 13;
-
-    bool admin_status = 15;
     bool profile_photo_uploaded = 16;
 
     string profile_photo_id = 17;
     ProfileImageEntity profile_photo = 18;
 
-    bool worker_mode_requested = 25;
-    bool buyer_mode_requested = 26;
-    bool worker_mode_enabled = 27;
-    bool buyer_mode_enabled = 28;
-
-    string default_fca = 29;
-
-    int64 outstanding_balance = 30;
-
     bool figma_connected = 31;
     string figma_code = 32;
-
-    uint32 free_contracts = 33;
 
 }
 
 message UserNubEntity {
     string id = 1;
     string username = 2;
+
     bool has_photo = 5;
     string photo_url = 4;
-
-    bool worker_mode_enabled = 6;
-    bool buyer_mode_enabled = 7;
 }
 
 message ForgotRequest {

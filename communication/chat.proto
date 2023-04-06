@@ -3,7 +3,6 @@ package communication;
 option go_package=".;communication";
 import "google/protobuf/timestamp.proto";
 
-import "communication/contract.proto";
 import "communication/document.proto";
 import "communication/deadline.proto";
 import "communication/item.proto";
@@ -15,55 +14,36 @@ message UserHandle {
 
 message ChatMessage {
     string id = 1;
-    bool system_message = 28;
-    UserHandle user = 2;
-    google.protobuf.Timestamp timestamp = 3;
-    ChatLabel label =  5;
-    uint32 method = 4;
-    bool is_admin = 21;
+    string doc_id = 2;
 
-    bool admin_override = 22;
-    uint32 admin_status = 23;
-    bool expired = 29;
-    bool silent = 41;
-    
-    repeated ReadReceiptEntity read_receipts = 40;
+    bool system_message = 3;
+    UserHandle user = 4;
+
+    google.protobuf.Timestamp timestamp = 5;
+    string label =  6;
+    uint32 method = 7;
+
+    bool silent = 8;
+    repeated ReadReceiptEntity read_receipts = 9;
 
     oneof body {
-        CommentMsgBody comment_body = 6;
-        PayoutMsgBody payout_body = 7;
-        DateMsgBody date_body = 11;
-        PriceMsgBody price_body = 8;
-        ItemMsgBody item_body = 9;
-        RevMsgBody rev_body = 10;
-        ItemCreateMsgBody item_create_body = 12;
-        ItemDeleteMsgBody item_delete_body = 13;
-        DeadlineCreateMsgBody deadline_create_body = 14;
-        DeadlineDeleteMsgBody deadline_delete_body = 15;
-        DeadlineItemMsgBody deadline_item_body = 16;
-        ContractSignMsgBody contract_sign_body = 17;
-        ContractLockMsgBody contract_lock_body = 18;
-        ContractSettleMsgBody contract_settle_body = 19;
-        ContractSettleItemMsgBody settle_item_body = 20;
-        AdminMsgBody request_admin_body = 24;
-        AdminMsgBody resolve_admin_body = 25;
-        FinalizeMsgBody finalize_body = 26;
-        DeadlineExpireMsgBody deadline_expire_body = 27;
-        DeadlineSettledMsgBody deadline_settled_body = 39;
-        FigmaLinkMsgBody figma_link_body = 43;
-        FigmaItemNodesMsgBody figma_item_nodes_body = 44;
+        CommentMsgBody comment_body = 50;
+        DateMsgBody date_body = 51;
+        ItemMsgBody item_body = 52;
+        ItemCreateMsgBody item_create_body = 53;
+        ItemDeleteMsgBody item_delete_body = 54;
+        DeadlineCreateMsgBody deadline_create_body = 55;
+        DeadlineDeleteMsgBody deadline_delete_body = 56;
+        DeadlineItemMsgBody deadline_item_body = 57;
+
+        FigmaLinkMsgBody figma_link_body = 58;
+        FigmaItemNodesMsgBody figma_item_nodes_body = 59;
     }   
 }
 
 message ReadReceiptEntity {
     string user_id = 1;
     bool read = 2;
-}
-
-message ChatLabel {
-    uint32 type = 1;
-    string name = 2;
-    string item_id = 3;
 }
 
 message FigmaItemNodesMsgBody {
@@ -81,151 +61,32 @@ message CommentMsgBody {
 
 message ItemCreateMsgBody {
     ItemEntity item = 1;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 message ItemDeleteMsgBody {
     ItemEntity item = 1;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 message DeadlineCreateMsgBody {
     DeadlineEntity deadline = 1;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 message DeadlineDeleteMsgBody {
     DeadlineEntity deadline = 1;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 
 message ItemMsgBody {
     string item_id = 8;
     string new_version = 1;
     string old_version = 2;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 
 message DateMsgBody {
     string deadline_id = 8;
     google.protobuf.Timestamp new_version = 1;
     google.protobuf.Timestamp old_version = 2;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
-}
-message PayoutMsgBody {
-    string deadline_id = 8;
-    int64 new_version = 1;
-    int64 old_version = 2;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
-}
-
-message PriceMsgBody {
-    int64 new_version = 1;
-    int64 old_version = 2;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
 }
 
 message DeadlineItemMsgBody {
     DeadlineEntity deadline = 1;
-    string deadline_id = 10;
-    repeated uint32 new_item_states = 11;
     repeated ItemNub new_items = 14;
-    uint32 type = 3;
-    bool resolved = 4;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
-}
-
-message ContractSignMsgBody {
-    uint32 contract_stage = 1;
-    string signer_id = 2;
-    string contract_id = 3;
-}
-
-message ContractSettleItemMsgBody {
-    string contract_id = 2;
-    string deadline_id = 3;
-    string item_id = 4;
-    uint32 item_worker_settle = 5;
-    uint32 item_buyer_settle = 6;
-    uint32 item_admin_settle = 7;
-}
-message ContractSettleMsgBody {
-    uint32 contract_stage = 1;
-    string signer_id = 2;
-    string contract_id = 3;
-    string deadline_id = 4;
-}
-
-message ContractLockMsgBody {
-    bool contract_lock = 1;
-    string contract_id = 3;
-    uint32 type = 4;
-    bool resolved = 5;
-    uint32 resol_status = 6;
-    uint32 worker_status = 7;
-    uint32 buyer_status = 8;
-}
-
-message AdminMsgBody {
-}
-
-message FinalizeMsgBody {
-    string contract_id = 1;
-    string deadline_id = 9;
-
-    uint32 contract_stage = 4;
-
-    bool buyer_settled = 7;
-}
-
-message DeadlineExpireMsgBody {
-    string contract_id = 1;
-    string deadline_id = 2;
-}
-message DeadlineSettledMsgBody {
-    string contract_id = 1;
-    uint32 contract_stage = 3;
-    string deadline_id = 2;
-}
-
-message RevMsgBody {
-    string msg_id = 1;
-    bool resolved = 2;
-    uint32 resol_status = 7;
-    uint32 worker_status = 5;
-    uint32 buyer_status = 6;
-    uint32 admin_status = 8;
 }
 
 message UserJoin {
@@ -241,15 +102,7 @@ message UserClose{}
 message SendRequest {
     string user_id = 1;
     string room_id = 2;
-    uint32 method = 10;
-    oneof body {
-        CommentMsgBody comment_body = 6;
-        PayoutMsgBody payout_body = 7;
-        DateMsgBody date_body = 11;
-        PriceMsgBody price_body = 8;
-        ItemMsgBody item_body = 9;
-    }  
-    ChatLabel label = 4;
+    CommentMsgBody body = 4;
 }
 
 message SendResponse{}
@@ -265,14 +118,11 @@ message ChatMessageSet{
 
 message NewMessagesRequest{
     string user_id = 1;
-    bool doc_mode = 2;
 }
 
 message NewMessageEntity {
     ChatMessage message = 1;
-    ContractNub contract = 2;
     DocumentNub document = 3;
-    bool DocMode = 4;
 }
 message NewMessageSet{
     repeated NewMessageEntity messages = 2;

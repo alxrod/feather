@@ -73,44 +73,17 @@ export const removeDeadline = (deadlines, removal) => {
     return newDeadlines
 }
 
-export const editDeadlinePayout = (deadlines, payout_info) => {
-    let deadline = {}
-    let i=0;
-    while (i<deadlines.length) {
-        if (deadlines[i].id === payout_info.deadlineId) {
-            deadline = deadlines[i]
-            break
-        }
-        i++
-    }
-
-    deadline.payoutAwaitingApproval = payout_info.awaitingApproval
-    deadline.workerPayout = payout_info.worker
-    deadline.buyerPayout = payout_info.buyer
-    deadline.currentPayout = payout_info.current
-    deadline.payoutProposerId = payout_info.proposerId
-
-    deadlines[i] = deadline
-    return deadlines   
-}
-
 export const editDeadlineDate = (deadlines, date_info) => {
     let deadline = {}
     let i=0;
     while (i<deadlines.length) {
         if (deadlines[i].id === date_info.deadlineId) {
-            deadline =deadlines[i]
+            deadline = deadlines[i]
             break
         }
         i++
     }
-
-    deadline.dateAwaitingApproval = date_info.awaitingApproval
-    deadline.workerDate = date_info.worker
-    deadline.buyerDate = date_info.buyer
-    deadline.currentDate = date_info.current
-    deadline.dateProposerId = date_info.proposerId
-
+    deadline.currentDate = date_info.newVersion
     deadlines[i] = deadline
     return deadlines
     

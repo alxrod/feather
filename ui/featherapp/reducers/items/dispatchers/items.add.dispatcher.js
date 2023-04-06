@@ -6,7 +6,7 @@ import * as helpers from "../../helpers"
 import * as itemActions from "../items.actions";
 import * as deadlineActions from "../../deadlines/deadlines.actions";
 
-export const addItem = (contract_id, item_name, item_body, existing_item_names=[]) => {
+export const addItem = (doc_id, item_name, item_body, existing_item_names=[]) => {
     if (item_name === "") {
         let maxNum = 0
         for (let i = 0; i < existing_item_names.length; i++) {
@@ -24,10 +24,10 @@ export const addItem = (contract_id, item_name, item_body, existing_item_names=[
     return dispatch => {
         return helpers.authCheck(dispatch).then(
             (creds) => {
-                return ItemService.addItem(creds.access_token, creds.user_id, contract_id, item_name, item_body).then(
+                return ItemService.addItem(creds.access_token, creds.user_id, doc_id, item_name, item_body).then(
                     (newItem) => {
                         dispatch({
-                            type: itemActions.CONTRACT_ITEM_ADD,
+                            type: itemActions.ITEM_ADD,
                             payload: newItem,
                         });
                         return Promise.resolve(newItem);
@@ -42,49 +42,3 @@ export const addItem = (contract_id, item_name, item_body, existing_item_names=[
         );
     }
 };
-
-export const reactAddItem = (contract_id, message_id, item_id, status) => {
-    return dispatch => {
-        return helpers.authCheck(dispatch).then(
-            (creds) => {
-                return ItemService.reactAddItem(creds.access_token, creds.user_id, contract_id, item_id, message_id, status).then(
-                    () => {
-                        return Promise.resolve();
-                    },
-                    (error) => {
-                        return helpers.parseError(error, dispatch);
-                    }
-                );
-            },
-            () => {
-            }
-        );
-    }
-}
-
-export const updateLocalItemAdd = (msg) => {
-    return dispatch => {
-        if (msg.body.resolStatus == resolTypes.APPROVED) {
-            msg.body.item.awaitingApproval = false
-            msg.body.item.awaitingCreation = false
-            dispatch({
-                type: itemActions.CONTRACT_ITEM_REPLACE,
-                payload: msg.body.item,
-            });
-        } else {
-            dispatch({
-                type: itemActions.CONTRACT_ITEM_REMOVE,
-                payload: msg.body.item,
-            });
-            dispatch({
-                type: deadlineActions.CONTRACT_DEADLINE_ITEM_PURGE,
-                payload: msg.body.item.id
-            })
-        }
-
-        
-        dispatch({
-            type: itemActions.CONTRACT_ITEM_RELOAD,
-        });
-    }
-}

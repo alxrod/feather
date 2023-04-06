@@ -47,7 +47,6 @@ func accessibleRoles() []string {
 type BackServer struct {
 	comms.UnimplementedAuthServer
 
-	comms.UnimplementedContractServer
 	comms.UnimplementedDocumentServer
 	comms.UnimplementedDeadlineServer
 	comms.UnimplementedItemServer
@@ -55,15 +54,12 @@ type BackServer struct {
 	comms.UnimplementedChatServer
 
 	comms.UnimplementedFileServiceServer
-	comms.UnimplementedStripeServiceServer
 
-	JwtManager    *services.JWTManager
-	ChatAgent     *services.ChatAgent
-	DeadlineAgent *services.DeadlineAgent
+	JwtManager *services.JWTManager
+	ChatAgent  *services.ChatAgent
 
-	StripeAgent *services.StripeAgent
-	AWSAgent    *services.AWSAgent
-	EmailAgent  *services.EmailAgent
+	AWSAgent   *services.AWSAgent
+	EmailAgent *services.EmailAgent
 
 	GrpcSrv  *grpc.Server
 	lis      net.Listener
@@ -124,20 +120,15 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 		ChatAgent: &services.ChatAgent{
 			ActiveRooms: map[primitive.ObjectID]*services.CacheEntry{},
 		},
-		DeadlineAgent: &services.DeadlineAgent{
-			Database:      client.Database(s_dbName),
-			INTERVAL_TIME: 5,
-		},
-		AWSAgent:    &services.AWSAgent{},
-		EmailAgent:  &services.EmailAgent{},
-		StripeAgent: &services.StripeAgent{},
+
+		AWSAgent:   &services.AWSAgent{},
+		EmailAgent: &services.EmailAgent{},
 
 		dbName:   s_dbName,
 		dbClient: client,
 		dbCtx:    ctx,
 	}
 
-	s.StripeAgent.Initialize()
 	s.AWSAgent.Initialize()
 	// needs to be fixed for actual prod to be valid TLS configs
 	s.EmailAgent.Initialize(&tls.Config{
@@ -147,14 +138,13 @@ func NewBackServer(server_cert, server_key, addr string, dbName ...string) (*Bac
 	// Have to add this for every service
 	comms.RegisterAuthServer(grpcServer, s)
 
-	comms.RegisterContractServer(grpcServer, s)
 	comms.RegisterDocumentServer(grpcServer, s)
 	comms.RegisterItemServer(grpcServer, s)
+
 	comms.RegisterDeadlineServer(grpcServer, s)
 	comms.RegisterChatServer(grpcServer, s)
-	
+
 	comms.RegisterFileServiceServer(grpcServer, s)
-	comms.RegisterStripeServiceServer(grpcServer, s)
 
 	return s, nil
 }
@@ -186,7 +176,7 @@ func NewGrpcServer(pemPath, keyPath string, jwtManager *services.JWTManager) (*g
 }
 
 func (s *BackServer) Serve() {
-	s.DeadlineAgent.StartDeadlineLoop(s.ChatAgent.SendDeadlineExpireMessage)
+
 	log.Fatal(s.GrpcSrv.Serve(s.lis))
 }
 

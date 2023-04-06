@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from 'redux'
 
-
-import AccountInfo from "../../components/profile/account_page/account_info";
-import PaymentInfo from "../../components/profile/account_page/payment_info";
-
 import ProfilePhotoUpload from "../../components/profile/profile_photo/profile_photo_upload.js"
-
 import { setFigmaParams } from "../../reducers/site/site.reducer"
 
 import Image from "next/image"
@@ -77,37 +72,19 @@ const Profile = (props) => {
             </>
           )}
           {props.user && (
-            <>
-              <br/>
-              <AccountInfo user={props.user}/>
-              <br/>
-              <PaymentInfo/>
-
-              <div className="overflow-hidden bg-white shadow sm:rounded-lg w-full max-w-2xl mt-10">
-                <div className="p-4 sm:p-6 flex items-center justify-between w-full">
-                  <h1 className="text-4xl font-bold leading-6 text-gray-700">Figma Settings</h1>
-                  {props.user.workerModeEnabled && (
-                    <button
-                      type="button"
-                      className="inline-flex items-center px-3 py-2 text-base rounded-md shadow-sm font-medium leading-4 bg-red-100 text-red-800"
-                    >
-                      Disconnect Account
-                    </button>
-                  )}
-                </div>
-                <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-center items-center ">
-                  <a href={figmaLink} onClick={() => {
-                    props.setFigmaParams(state, "/profile")
-                  }}>
-                    <button 
-                      className="px-4 py-1.5 text-white bg-primary4 rounded-md shadow-sm text-xl font-semibold"
-                    >
-                      Connect to Figma 
-                    </button>
-                  </a>
-                </div>
+            <div className="overflow-hidden bg-white shadow sm:rounded-lg w-full max-w-2xl mt-10">
+              <div className="px-8 pb-8 pt-2 border-gray-200 flex justify-center items-center ">
+                <a href={figmaLink} onClick={() => {
+                  props.setFigmaParams(state, "/profile")
+                }}>
+                  <button 
+                    className="px-4 py-1.5 text-white bg-primary4 rounded-md shadow-sm text-xl font-semibold"
+                  >
+                    Connect to Figma 
+                  </button>
+                </a>
               </div>
-            </>
+            </div>
           )}
             
         </div>

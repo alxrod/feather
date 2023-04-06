@@ -102,11 +102,11 @@ export const pullRecord = (room_id) => {
     }
 };
 
-export const pullNewMessages = () => {
+export const pullNewMessages = (doc_mode = false) => {
     return dispatch => {
         return helpers.authCheck().then(
             (creds) => {
-                return ChatService.pullNewMessages(creds.access_token, creds.user_id).then(
+                return ChatService.pullNewMessages(creds.access_token, creds.user_id, doc_mode).then(
                     (data) => {
                         dispatch({
                             type: chatActions.CHAT_PULL_NEW_MESSAGES,
