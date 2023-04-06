@@ -245,7 +245,7 @@ func DocumentsByUser(user_id primitive.ObjectID, database *mongo.Database) ([]*D
 	documents := make([]*Document, 0)
 
 	user_filter := bson.D{{"user_ids", user_id}}
-	cur, err := database.Collection(CON_COL).Find(context.TODO(), user_filter)
+	cur, err := database.Collection(DOC_COL).Find(context.TODO(), user_filter)
 	if err != nil {
 		return nil, err
 	}
@@ -292,7 +292,7 @@ func DocumentById(document_id primitive.ObjectID, database *mongo.Database) (*Do
 	filter := bson.D{{"_id", document_id}}
 	var doc *Document
 	var err error
-	if err = database.Collection(CON_COL).FindOne(context.TODO(), filter).Decode(&doc); err != nil {
+	if err = database.Collection(DOC_COL).FindOne(context.TODO(), filter).Decode(&doc); err != nil {
 		log.Println(color.Ize(color.Red, err.Error()))
 		return nil, errors.New("document not found")
 	}
@@ -351,7 +351,7 @@ func (doc *Document) ReplaceInDB(database *mongo.Database) error {
 
 func (doc *Document) UpdateField(update bson.D, database *mongo.Database) error {
 	filter := bson.D{{"_id", doc.Id}}
-	_, err := database.Collection(CON_COL).UpdateOne(context.TODO(), filter, update)
+	_, err := database.Collection(DOC_COL).UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return err
 	}

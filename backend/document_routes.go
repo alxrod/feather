@@ -79,7 +79,7 @@ func (s *BackServer) QueryDocsByUser(ctx context.Context, req *comms.QueryByUser
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Contracts queried successfully")
+	log.Printf("%d documents queried successfully", len(docs))
 
 	if !req.Unsorted {
 		docs = db.SortDocumnets(docs)
