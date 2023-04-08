@@ -22,6 +22,7 @@ const (
 type Item struct {
 	Id    primitive.ObjectID `bson:"_id,omitempty"`
 	DocId primitive.ObjectID `bson:"doc_id"`
+	DeadlineId primitive.ObjectID `bson:"deadline_id,omitempty"`
 	Name  string             `bson:"name"`
 
 	CurrentBody      string `bson:"current_body"`
@@ -44,6 +45,9 @@ func (ci *Item) Proto() *comms.ItemEntity {
 	}
 	if !ci.DocId.IsZero() {
 		proto.DocId = ci.DocId.Hex()
+	}
+	if !ci.DeadlineId.IsZero() {
+		proto.DeadlineId = ci.DeadlineId.Hex()
 	}
 	return proto
 }
@@ -106,6 +110,13 @@ func ItemInsert(item *comms.ItemEntity, doc_id primitive.ObjectID, collection *m
 		DocId: doc_id,
 
 		CurrentBody: item.CurrentBody,
+	}
+	if item.DeadlineId != "" {
+		deadline_id, err := primitive.ObjectIDFromHex(item.DeadlineId)
+		if err != nil {
+			return nil, errors.New("Invalid Deadline Id")
+		}
+		contract_item.DeadlineId = deadline_id
 	}
 
 	res, err := collection.InsertOne(context.TODO(), contract_item)

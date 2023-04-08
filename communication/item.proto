@@ -6,6 +6,7 @@ import "communication/generic.proto";
 message ItemEntity {
   string id = 1;
   string doc_id = 2;
+  string deadline_id = 6;
   string name = 4;   
 
   string current_body = 5;

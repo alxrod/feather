@@ -13,13 +13,7 @@
 
 var jspb = require('google-protobuf');
 var goog = jspb;
-var global =
-    (typeof globalThis !== 'undefined' && globalThis) ||
-    (typeof window !== 'undefined' && window) ||
-    (typeof global !== 'undefined' && global) ||
-    (typeof self !== 'undefined' && self) ||
-    (function () { return this; }).call(null) ||
-    Function('return this')();
+var global = Function('return this')();
 
 var communication_generic_pb = require('../communication/generic_pb.js');
 goog.object.extend(proto, communication_generic_pb);
@@ -167,6 +161,7 @@ proto.communication.ItemEntity.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     docId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    deadlineId: jspb.Message.getFieldWithDefault(msg, 6, ""),
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
     currentBody: jspb.Message.getFieldWithDefault(msg, 5, ""),
     figmaComponentId: jspb.Message.getFieldWithDefault(msg, 29, "")
@@ -213,6 +208,10 @@ proto.communication.ItemEntity.deserializeBinaryFromReader = function(msg, reade
     case 2:
       var value = /** @type {string} */ (reader.readString());
       msg.setDocId(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDeadlineId(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
@@ -266,6 +265,13 @@ proto.communication.ItemEntity.serializeBinaryToWriter = function(message, write
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getDeadlineId();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -326,6 +332,24 @@ proto.communication.ItemEntity.prototype.getDocId = function() {
  */
 proto.communication.ItemEntity.prototype.setDocId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string deadline_id = 6;
+ * @return {string}
+ */
+proto.communication.ItemEntity.prototype.getDeadlineId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.communication.ItemEntity} returns this
+ */
+proto.communication.ItemEntity.prototype.setDeadlineId = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 
